@@ -57,7 +57,6 @@ ContinuousCost compute_state_metric_value(State state)
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_problem_and_domain_axioms().empty()),
-    m_state_builder(),
     m_states(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
@@ -141,16 +140,10 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    m_state_builder.serialize(buffering::PackedStateData { Index(-1),
-                                                           valla::first(state_fluent_atoms_slot),
-                                                           valla::second(state_fluent_atoms_slot),
-                                                           valla::first(state_derived_atoms_slot),
-                                                           valla::second(state_derived_atoms_slot),
-                                                           state_numeric_variables });
-    auto it = m_states.find(m_state_builder);
+    auto it = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(*it, problem);
+        auto state = State(&*it, problem);
         return { state, compute_state_metric_value(state) };
     }
 
@@ -169,14 +162,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
-    m_state_builder.serialize(buffering::PackedStateData { Index(m_states.size()),
-                                                           valla::first(state_fluent_atoms_slot),
-                                                           valla::second(state_fluent_atoms_slot),
-                                                           valla::first(state_derived_atoms_slot),
-                                                           valla::second(state_derived_atoms_slot),
-                                                           state_numeric_variables });
-    auto result = m_states.insert(m_state_builder);
-    auto state = State(*result.first, problem);
+    auto result = m_states.insert(InternalStateImpl(Index(m_states.size()), state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto state = State(&*result.first, problem);
 
     return { state, compute_state_metric_value(state) };
 }
@@ -351,17 +338,11 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
 
     // Check if non-extended state exists in cache
-    m_state_builder.serialize(buffering::PackedStateData { Index(-1),
-                                                           valla::first(state_fluent_atoms_slot),
-                                                           valla::second(state_fluent_atoms_slot),
-                                                           valla::first(state_derived_atoms_slot),
-                                                           valla::second(state_derived_atoms_slot),
-                                                           state_numeric_variables });
-    auto it = m_states.find(m_state_builder);
+    auto it = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto successor_state = State(*it, problem);
-        return { successor_state, successor_state_metric_value };
+        auto state = State(&*it, problem);
+        return { state, successor_state_metric_value };
     }
 
     /* 3. If necessary, apply axioms to construct extended state. */
@@ -379,14 +360,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     }
 
     // Cache and return the extended state.
-    m_state_builder.serialize(buffering::PackedStateData { Index(m_states.size()),
-                                                           valla::first(state_fluent_atoms_slot),
-                                                           valla::second(state_fluent_atoms_slot),
-                                                           valla::first(state_derived_atoms_slot),
-                                                           valla::second(state_derived_atoms_slot),
-                                                           state_numeric_variables });
-    auto result = m_states.insert(m_state_builder);
-    auto successor_state = State(*result.first, problem);
+    auto result = m_states.insert(InternalStateImpl(Index(m_states.size()), state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto successor_state = State(&*result.first, problem);
 
     return { successor_state, successor_state_metric_value };
 }
@@ -395,7 +370,7 @@ const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluat
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
-const buffering::PackedStateSet& StateRepositoryImpl::get_states() const { return m_states; }
+const InternalStateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
 
 const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 

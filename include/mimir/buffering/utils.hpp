@@ -114,11 +114,7 @@ private:
 public:
     StreamBufferWriter() : buffer(), bit(0) {}
 
-    void reset()
-    {
-        buffer.clear();
-        bit = 0;
-    }
+    void reset() { bit = 0; }
 
     template<std::unsigned_integral T>
     StreamBufferWriter& operator<<(AllocateByteSizePrefix<T>)

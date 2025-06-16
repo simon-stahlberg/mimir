@@ -128,7 +128,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    using OpenListType = PriorityQueue<double, buffering::PackedStateView>;
+    using OpenListType = PriorityQueue<double, InternalState>;
     auto preferred_openlist = OpenListType();
     auto standard_openlist = OpenListType();
     auto openlist = AlternatingOpenList<OpenListType, OpenListType>(preferred_openlist, standard_openlist, openlist_weights);
@@ -167,7 +167,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    preferred_openlist.insert(start_f_value, start_state.get_packed());
+    preferred_openlist.insert(start_f_value, start_state.get_internal());
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -312,11 +312,11 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
                 if (is_preferred)
                 {
-                    preferred_openlist.insert(successor_f_value, successor_state.get_packed());
+                    preferred_openlist.insert(successor_f_value, successor_state.get_internal());
                 }
                 else
                 {
-                    standard_openlist.insert(successor_f_value, successor_state.get_packed());
+                    standard_openlist.insert(successor_f_value, successor_state.get_internal());
                 }
             }
             else

@@ -37,86 +37,45 @@
 #include <valla/root_slot.hpp>
 #include <valla/tree_compression.hpp>
 
-namespace mimir::buffering
-{
-
-namespace v = valla::plain;
-
-// The format of the data as follows:
-// - num bits b1 for state index (6 bit)
-// - state index (b1 bits)
-// - num bits b2 for fluent tree node index
-// - fluent tree node index (b2 bits)
-// - num bits b3 for fluent tree node size
-// - fluent tree node size (b3 bits)
-// - num bits b4 for derived tree node index
-// - derived tree node index (b4 bits)
-// - num bits b5 for derived tree node size
-// - derived tree node size (b5 bits)
-// - num bits b6 for numeric variables list index
-// - numeric variables list index (b6 bits)
-struct PackedState
-{
-};
-
-template<>
-struct Data<PackedState>
-{
-    Index index;  // complete 4 byte range for index for byte aligned hashing and comparison of the remainder.
-    VarUint<Index> fluent_atoms_index;
-    VarUint<Index> fluent_atoms_size;
-    VarUint<Index> derived_atoms_index;
-    VarUint<Index> derived_atoms_size;
-    VarUint<Index> numeric_variables;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    v::RootSlotType get_atoms() const;
-};
-
-template<>
-class Builder<PackedState>
-{
-private:
-    Data<PackedState> m_data;
-
-    StreamBufferWriter m_buffer;
-
-    void serialize();
-
-public:
-    Builder() = default;
-
-    void serialize(Data<PackedState> data);
-
-    const StreamBufferWriter& get_buffer_writer() const;
-};
-
-template<>
-class View<PackedState>
-{
-private:
-    const uint8_t* m_buffer;
-
-public:
-    View(const uint8_t* buffer);
-
-    View(const Builder<PackedState>& builder);
-
-    Data<PackedState> deserialize() const;
-
-    const uint8_t* get_buffer() const;
-    size_t get_buffer_size() const;
-};
-
-using PackedStateData = Data<PackedState>;
-using PackedStateBuilder = Builder<PackedState>;
-using PackedStateView = View<PackedState>;
-using PackedStateSet = UnorderedSet<PackedState>;
-}
-
 namespace mimir::search
 {
 namespace v = valla::plain;
+
+/**
+ * InternalState
+ */
+
+/// @brief `InternalStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
+class InternalStateImpl
+{
+private:
+    Index m_index;
+    Index m_fluent_atoms_index;
+    Index m_fluent_atoms_size;
+    Index m_derived_atoms_index;
+    Index m_derived_atoms_size;
+    Index m_numeric_variables;
+
+    InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
+
+    friend class StateRepositoryImpl;
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    /**
+     * Getters
+     */
+
+    Index get_index() const;
+    template<formalism::IsFluentOrDerivedTag P>
+    v::RootSlotType get_atoms() const;
+    Index get_numeric_variables() const;
+};
+
+static_assert(sizeof(InternalStateImpl) == 24);
 
 /**
  * State
@@ -125,13 +84,11 @@ namespace v = valla::plain;
 class State
 {
 private:
-    buffering::View<buffering::PackedState> m_packed;
+    InternalState m_internal;
     const formalism::ProblemImpl* m_problem;
 
-    buffering::Data<buffering::PackedState> m_unpacked;
-
 public:
-    State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem);
+    State(InternalState internal, const formalism::ProblemImpl& problem);
     State(const State&) = default;
     State(State&&) noexcept = default;
     State& operator=(const State&) = default;
@@ -145,7 +102,7 @@ public:
      * Getters
      */
 
-    buffering::View<buffering::PackedState> get_packed() const;
+    InternalState get_internal() const;
     const formalism::ProblemImpl& get_problem() const;
 
     Index get_index() const;
@@ -187,7 +144,7 @@ public:
 template<formalism::IsFluentOrDerivedTag P>
 auto State::get_atoms() const
 {
-    return std::ranges::subrange(v::begin(m_unpacked.get_atoms<P>(), m_problem->get_tree_table()), v::end());
+    return std::ranges::subrange(v::begin(m_internal->get_atoms<P>(), m_problem->get_tree_table()), v::end());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
@@ -208,19 +165,17 @@ std::ostream& operator<<(std::ostream& os, const search::State& state);
 namespace loki
 {
 template<>
-struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
+struct Hash<mimir::search::InternalStateImpl>
 {
-    using V = mimir::buffering::View<mimir::buffering::PackedState>;
-
-    size_t operator()(V el) const
+    size_t operator()(const mimir::search::InternalStateImpl& el) const
     {
-        size_t seed = el.get_buffer_size();
+        static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
+        static_assert(sizeof(mimir::search::InternalStateImpl) == sizeof(mimir::Index) * 6, "Unexpected padding in InternalStateImpl");
+
+        size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
-        loki::MurmurHash3_x64_128(el.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index),
-                                  el.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index),
-                                  seed,
-                                  hash);
+        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el) + sizeof(mimir::Index), sizeof(mimir::Index) * 5, seed, hash);
 
         loki::hash_combine(seed, hash[0]);
         loki::hash_combine(seed, hash[1]);
@@ -230,23 +185,12 @@ struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
 };
 
 template<>
-struct EqualTo<mimir::buffering::View<mimir::buffering::PackedState>>
+struct EqualTo<mimir::search::InternalStateImpl>
 {
-    using V = mimir::buffering::View<mimir::buffering::PackedState>;
-
-    bool operator()(V lhs, V rhs) const
+    bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
     {
-        auto lhs_begin = lhs.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index);
-        auto rhs_begin = rhs.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index);
-        auto lhs_amount = lhs.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index);
-        auto rhs_amount = rhs.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index);
-
-        if (lhs_amount != rhs_amount)
-        {
-            return false;
-        }
-
-        return std::equal(lhs_begin, lhs_begin + lhs_amount, rhs_begin);
+        return lhs.get_atoms<mimir::formalism::FluentTag>() == rhs.get_atoms<mimir::formalism::FluentTag>()
+               && lhs.get_numeric_variables() == rhs.get_numeric_variables();
     }
 };
 
@@ -255,7 +199,7 @@ struct Hash<mimir::search::State>
 {
     size_t operator()(const mimir::search::State& el) const
     {
-        return hash_combine(Hash<mimir::buffering::View<mimir::buffering::PackedState>> {}(el.get_packed()), &el.get_problem());
+        return hash_combine(Hash<mimir::search::InternalStateImpl> {}(*el.get_internal()), &el.get_problem());
     }
 };
 
@@ -264,14 +208,15 @@ struct EqualTo<mimir::search::State>
 {
     bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
     {
-        return EqualTo<mimir::buffering::View<mimir::buffering::PackedState>> {}(lhs.get_packed(), rhs.get_packed())
-               && &lhs.get_problem() == &rhs.get_problem();
+        return EqualTo<mimir::search::InternalStateImpl> {}(*lhs.get_internal(), *rhs.get_internal()) && &lhs.get_problem() == &rhs.get_problem();
     }
 };
 }
 
 namespace mimir::search
 {
+using InternalStateImplSet = absl::node_hash_set<InternalStateImpl, loki::Hash<InternalStateImpl>, loki::EqualTo<InternalStateImpl>>;
+
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;
 template<typename T>

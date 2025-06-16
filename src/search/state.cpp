@@ -27,102 +27,53 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::buffering
+namespace mimir::search
 {
 
+/* InternalState */
+
+InternalStateImpl::InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
+    m_index(index),
+    m_fluent_atoms_index(valla::first(fluent_atoms)),
+    m_fluent_atoms_size(valla::second(fluent_atoms)),
+    m_derived_atoms_index(valla::first(derived_atoms)),
+    m_derived_atoms_size(valla::second(derived_atoms)),
+    m_numeric_variables(numeric_variables)
+{
+}
+
+Index InternalStateImpl::get_index() const { return m_index; }
+
 template<formalism::IsFluentOrDerivedTag P>
-v::RootSlotType Data<PackedState>::get_atoms() const
+v::RootSlotType InternalStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return valla::make_slot(fluent_atoms_index.value, fluent_atoms_size.value);
+        return valla::make_slot(m_fluent_atoms_index, m_fluent_atoms_size);
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return valla::make_slot(derived_atoms_index.value, derived_atoms_size.value);
+        return valla::make_slot(m_derived_atoms_index, m_derived_atoms_size);
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for IsFluentOrDerivedTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
     }
 }
 
-template v::RootSlotType Data<PackedState>::get_atoms<FluentTag>() const;
-template v::RootSlotType Data<PackedState>::get_atoms<DerivedTag>() const;
+template v::RootSlotType InternalStateImpl::get_atoms<FluentTag>() const;
+template v::RootSlotType InternalStateImpl::get_atoms<DerivedTag>() const;
 
-void Builder<PackedState>::serialize(Data<PackedState> data)
-{
-    m_data = std::move(data);
-
-    serialize();
-}
-
-void Builder<PackedState>::serialize()
-{
-    m_buffer.reset();
-
-    m_buffer << buffering::AllocateByteSizePrefix<uint8_t> {};
-    m_buffer << m_data.index;
-    m_buffer << m_data.fluent_atoms_index;
-    m_buffer << m_data.fluent_atoms_size;
-    m_buffer << m_data.derived_atoms_index;
-    m_buffer << m_data.derived_atoms_size;
-    m_buffer << m_data.numeric_variables;
-    m_buffer << buffering::WriteZeroPadding {};
-    m_buffer << buffering::WriteByteSizePrefix<uint8_t> {};
-}
-
-const StreamBufferWriter& Builder<PackedState>::get_buffer_writer() const { return m_buffer; }
-
-View<PackedState>::View(const uint8_t* buffer) : m_buffer(buffer) {}
-
-View<PackedState>::View(const Builder<PackedState>& builder) : m_buffer(builder.get_buffer_writer().get_buffer().data()) {}
-
-Data<PackedState> View<PackedState>::deserialize() const
-{
-    auto reader = StreamBufferReader(m_buffer);
-    auto prefix = buffering::ReadByteSizePrefix { uint8_t(0) };
-    auto result = Data<PackedState> {};
-
-    reader >> prefix;
-    reader >> result.index;
-    reader >> result.fluent_atoms_index;
-    reader >> result.fluent_atoms_size;
-    reader >> result.derived_atoms_index;
-    reader >> result.derived_atoms_size;
-    reader >> result.numeric_variables;
-
-    return result;
-}
-
-size_t View<PackedState>::get_buffer_size() const
-{
-    auto reader = StreamBufferReader(m_buffer);
-    auto prefix = buffering::ReadByteSizePrefix { uint8_t(0) };
-
-    reader >> prefix;
-
-    return prefix.size;
-}
-
-const uint8_t* View<PackedState>::get_buffer() const { return m_buffer; }
-
-}
-
-namespace mimir::search
-{
+Index InternalStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
 /**
  * State
  */
 
-State::State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem) :
-    m_packed(packed),
-    m_problem(&problem),
-    m_unpacked(m_packed.deserialize())
+State::State(InternalState internal, const formalism::ProblemImpl& problem) : m_internal(internal), m_problem(&problem)
 {
-    assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
-    assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(internal->template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(internal->template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
@@ -159,13 +110,13 @@ bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_
                        [this, &static_numeric_variables](auto&& arg) { return this->numeric_constraint_holds(arg, static_numeric_variables); });
 }
 
-buffering::View<buffering::PackedState> State::get_packed() const { return m_packed; }
+InternalState State::get_internal() const { return m_internal; }
 
 const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 
-Index State::get_index() const { return m_unpacked.index; }
+Index State::get_index() const { return m_internal->get_index(); }
 
-const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_unpacked.numeric_variables.value); }
+const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_internal->get_numeric_variables()); }
 
 /**
  * Pretty printing

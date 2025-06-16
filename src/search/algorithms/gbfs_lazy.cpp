@@ -136,8 +136,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    using GreedyOpenListType = PriorityQueue<Index, buffering::PackedStateView>;
-    using OpenListType = PriorityQueue<std::tuple<double, double, Index>, buffering::PackedStateView>;
+    using GreedyOpenListType = PriorityQueue<Index, InternalState>;
+    using OpenListType = PriorityQueue<std::tuple<double, double, Index>, InternalState>;
     auto compatible_greedy_and_preferred_openlist = GreedyOpenListType();
     auto compatible_greedy_openlist = GreedyOpenListType();
     auto compatible_exhaustive_and_preferred_openlist = OpenListType();
@@ -190,7 +190,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     const auto use_exploration_strategy = std::any_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 4, [](double w) { return w > 0; });
     auto applicable_actions = GroundActionList {};
-    standard_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state.get_packed());
+    standard_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state.get_internal());
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -337,29 +337,29 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             if (options.openlist_weights[0] > 0 && is_compatible && is_preferred && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_and_preferred_openlist.insert(step++, successor_state.get_packed());
+                compatible_greedy_and_preferred_openlist.insert(step++, successor_state.get_internal());
             }
             else if (options.openlist_weights[1] > 0 && is_compatible && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_openlist.insert(step++, successor_state.get_packed());
+                compatible_greedy_openlist.insert(step++, successor_state.get_internal());
             }
             else if (options.openlist_weights[2] > 0 && is_compatible && is_preferred)
             {
                 compatible_exhaustive_and_preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++),
-                                                                    successor_state.get_packed());
+                                                                    successor_state.get_internal());
             }
             else if (options.openlist_weights[3] > 0 && is_compatible)
             {
-                compatible_exhaustive_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_packed());
+                compatible_exhaustive_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
             }
             else if (options.openlist_weights[4] > 0 && is_preferred)
             {
-                preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_packed());
+                preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
             }
             else
             {
-                standard_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_packed());
+                standard_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
             }
         }
     }

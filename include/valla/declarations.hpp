@@ -49,7 +49,7 @@ inline std::pair<Index, Index> read_slot(Slot slot) { return { Index(slot >> 32)
 
 inline Index first(Slot slot) { return Index(slot >> 32); }
 
-inline Index second(Slot slot) { return Index(slot); }
+inline Index second(Slot slot) { return Index(slot) & (Index(-1)); }
 
 inline Index read_pos(Slot slot, size_t pos)
 {
