@@ -13,7 +13,6 @@ from pymimir.advanced.formalism import DerivedGroundLiteralList as AdvancedDeriv
 from pymimir.advanced.formalism import DerivedLiteral as AdvancedDerivedLiteral
 from pymimir.advanced.formalism import DerivedLiteralList as AdvancedDerivedLiteralList
 from pymimir.advanced.formalism import DerivedPredicate as AdvancedDerivedPredicate
-from pymimir.advanced.formalism import Domain as AdvancedDomain
 from pymimir.advanced.formalism import FluentAtom as AdvancedFluentAtom
 from pymimir.advanced.formalism import FluentGroundAtom as AdvancedFluentGroundAtom
 from pymimir.advanced.formalism import FluentGroundAtomList as AdvancedFluentGroundAtomList
@@ -32,7 +31,6 @@ from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
 from pymimir.advanced.formalism import Parser as AdvancedParser
 from pymimir.advanced.formalism import ParserOptions as AdvancedParserOptions
 from pymimir.advanced.formalism import Problem as AdvancedProblem
-from pymimir.advanced.formalism import Repositories as AdvancedRepositories
 from pymimir.advanced.formalism import StaticAtom as AdvancedStaticAtom
 from pymimir.advanced.formalism import StaticGroundAtom as AdvancedStaticGroundAtom
 from pymimir.advanced.formalism import StaticGroundAtomList as AdvancedStaticGroundAtomList
@@ -1596,6 +1594,15 @@ class Problem:
         """
         return self._advanced_problem.get_index()
 
+    def get_domain(self) -> 'Domain':
+        """
+        Get the domain of the problem.
+
+        :return: The domain of the problem.
+        :rtype: Domain
+        """
+        return self._domain
+
     def get_name(self) -> 'str':
         """
         Get the name of the problem.
@@ -2141,15 +2148,19 @@ class GroundConjunctiveCondition:
         holds_negative = state.contains_none(self._static_neg_advanced_ground_atoms) and state.contains_none(self._fluent_neg_advanced_ground_atoms) and state.contains_none(self._derived_neg_advanced_ground_atoms)
         return holds_positive and holds_negative
 
-    def lift(self) -> 'ConjunctiveCondition':
+    def lift(self, add_inequalities: bool = False) -> 'ConjunctiveCondition':
         """
         Lift the ground conjunctive condition to a conjunctive condition.
 
+        :param add_inequalities: If True, add inequalities to the lifted condition. This is ignored if the domain does not support equality.
+        :type add_inequalities: bool
         :return: A ConjunctiveCondition object representing the lifted condition.
         :rtype: ConjunctiveCondition
         """
+        problem = self._problem
         variable_map = {}
         lifted_literals = []
+        # Lift the ground literals in the  ground conjunctive condition.
         for literal in self.__iter__():
             predicate = literal.get_atom().get_predicate()
             polarity = literal.get_polarity()
@@ -2160,14 +2171,28 @@ class GroundConjunctiveCondition:
                     variable = variable_map[obj.get_index()]
                 else:
                     variable_id = len(variable_map)
-                    variable = Variable.new(f'?x{variable_id}', variable_id, self._problem)
+                    variable = Variable.new(f'?x{variable_id}', variable_id, problem)
                     variable_map[obj.get_index()] = variable
                 lifted_terms.append(variable)
-            lifted_atom = Atom.new(predicate, lifted_terms, self._problem)
-            lifted_literals.append(Literal.new(lifted_atom, polarity, self._problem))
+            lifted_atom = Atom.new(predicate, lifted_terms, problem)
+            lifted_literals.append(Literal.new(lifted_atom, polarity, problem))
+        # If the domain supports :equality, add inequalities if asked for.
+        domain = problem.get_domain()
+        requirements = domain.get_requirements()
+        if add_inequalities and ':equality' in requirements:
+            predicate_equal = domain.get_predicate('=')
+            keys = list(variable_map.keys())
+            for idx_i in range(len(keys)):
+                for idx_j in range(idx_i + 1, len(keys)):
+                    var_i = variable_map[keys[idx_i]]
+                    var_j = variable_map[keys[idx_j]]
+                    equality_atom = Atom.new(predicate_equal, [var_i, var_j], problem)
+                    inequality_literal = Literal.new(equality_atom, False, problem)
+                    lifted_literals.append(inequality_literal)
+        # Construct the lifted conjunctive condition
         variables = list(variable_map.values())
         variables.sort(key=lambda x: x.get_index())
-        return ConjunctiveCondition.new(variables, lifted_literals, self._problem)
+        return ConjunctiveCondition.new(variables, lifted_literals, problem)
 
     def __iter__(self) -> 'Iterable[GroundLiteral]':
         """

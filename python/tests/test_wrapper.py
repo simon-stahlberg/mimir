@@ -346,6 +346,19 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         assert lifted_goal.get_literals()[1].get_atom().get_terms()[0] == lifted_goal.get_parameters()[2]
         assert lifted_goal.get_literals()[1].get_atom().get_terms()[1] == lifted_goal.get_parameters()[1]
 
+    def test_lift_inequalities(self):
+        domain_path = DATA_DIR / 'hiking' / 'domain.pddl'
+        problem_path = DATA_DIR / 'hiking' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        grounded_goal = problem.get_goal_condition()
+        lifted_goal_with_inequalities = grounded_goal.lift(True)
+        assert len(lifted_goal_with_inequalities.get_parameters()) == 2
+        assert len(lifted_goal_with_inequalities.get_literals()) == 2
+        lifted_goal_without_inequalities = grounded_goal.lift(False)
+        assert len(lifted_goal_without_inequalities.get_parameters()) == 2
+        assert len(lifted_goal_without_inequalities.get_literals()) == 1
+
     def test_new_grounded_condition(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
