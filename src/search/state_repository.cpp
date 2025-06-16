@@ -143,7 +143,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(it->first, it->second, problem);
+        auto state = State(it->second, it->first, problem);
         return { state, compute_state_metric_value(state) };
     }
 
@@ -163,7 +163,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     // Cache and return the extended state.
     auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
-    auto state = State(result.first->first, result.first->second, problem);
+    auto state = State(result.first->second, result.first->first, problem);
 
     return { state, compute_state_metric_value(state) };
 }
@@ -341,7 +341,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(it->first, it->second, problem);
+        auto state = State(it->second, it->first, problem);
         return { state, successor_state_metric_value };
     }
 
@@ -361,12 +361,12 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
     // Cache and return the extended state.
     auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
-    auto successor_state = State(result.first->first, result.first->second, problem);
+    auto successor_state = State(result.first->second, result.first->first, problem);
 
     return { successor_state, successor_state_metric_value };
 }
 
-State StateRepositoryImpl::get_state(const InternalStateImpl& state) const { return State(state, m_states.at(state), *m_axiom_evaluator->get_problem()); }
+State StateRepositoryImpl::get_state(const InternalStateImpl& state) const { return State(m_states.at(state), state, *m_axiom_evaluator->get_problem()); }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
 

@@ -67,7 +67,7 @@ Index InternalStateImpl::get_numeric_variables() const { return m_numeric_variab
  * State
  */
 
-State::State(const InternalStateImpl& internal, Index index, const formalism::ProblemImpl& problem) : m_internal(&internal), m_problem(&problem), m_index(index)
+State::State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem) : m_internal(&internal), m_problem(&problem), m_index(index)
 {
     assert(std::is_sorted(get_atoms<FluentTag>().begin(), get_atoms<FluentTag>().end()));
     assert(std::is_sorted(get_atoms<DerivedTag>().begin(), get_atoms<DerivedTag>().end()));

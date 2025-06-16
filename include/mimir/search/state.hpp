@@ -85,7 +85,7 @@ private:
     Index m_index;
 
 public:
-    State(const InternalStateImpl& internal, Index index, const formalism::ProblemImpl& problem);
+    State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
     State(const State&) = default;
     State(State&&) noexcept = default;
     State& operator=(const State&) = default;
@@ -187,21 +187,6 @@ struct EqualTo<mimir::search::InternalStateImpl>
     {
         return lhs.get_atoms<mimir::formalism::FluentTag>() == rhs.get_atoms<mimir::formalism::FluentTag>()
                && lhs.get_numeric_variables() == rhs.get_numeric_variables();
-    }
-};
-
-template<>
-struct Hash<ObserverPtr<const mimir::search::InternalStateImpl>>
-{
-    size_t operator()(ObserverPtr<const mimir::search::InternalStateImpl> el) const { return Hash<mimir::search::InternalStateImpl> {}(*el); }
-};
-
-template<>
-struct EqualTo<ObserverPtr<const mimir::search::InternalStateImpl>>
-{
-    bool operator()(ObserverPtr<const mimir::search::InternalStateImpl> lhs, ObserverPtr<const mimir::search::InternalStateImpl> rhs) const
-    {
-        return EqualTo<mimir::search::InternalStateImpl> {}(*lhs, *rhs);
     }
 };
 
