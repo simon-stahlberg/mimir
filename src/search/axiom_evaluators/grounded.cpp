@@ -75,13 +75,13 @@ void GroundedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_sta
 
             applicable_axioms.clear();
 
-            match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, applicable_axioms);
+            match_tree->generate_applicable_elements_iteratively(dense_state, applicable_axioms);
 
             /* Apply applicable axioms */
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(is_applicable(grounded_axiom, *m_problem, dense_state));
+                assert(is_applicable(grounded_axiom, dense_state));
 
                 assert(grounded_axiom->get_literal()->get_polarity());
 

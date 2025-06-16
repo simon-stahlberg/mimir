@@ -55,8 +55,7 @@ public:
     MatchTreeImpl(MatchTreeImpl&& other) = delete;
     MatchTreeImpl& operator=(MatchTreeImpl&& other) = delete;
 
-    void
-    generate_applicable_elements_iteratively(const DenseState& state, const formalism::ProblemImpl& problem, std::vector<const E*>& out_applicable_elements);
+    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const E*>& out_applicable_elements);
 
     const Statistics& get_statistics() const;
 };

@@ -185,8 +185,10 @@ struct EqualTo<mimir::search::InternalStateImpl>
 {
     bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
     {
-        return lhs.get_atoms<mimir::formalism::FluentTag>() == rhs.get_atoms<mimir::formalism::FluentTag>()
-               && lhs.get_numeric_variables() == rhs.get_numeric_variables();
+        const auto lhs_begin = reinterpret_cast<const uint8_t*>(&lhs);
+        const auto rhs_begin = reinterpret_cast<const uint8_t*>(&rhs);
+
+        return std::equal(lhs_begin, lhs_begin + sizeof(mimir::search::InternalStateImpl), rhs_begin);
     }
 };
 

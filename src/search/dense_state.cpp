@@ -27,7 +27,9 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-DenseState::DenseState(const State& state)
+DenseState::DenseState(const formalism::ProblemImpl& problem) : m_index(0), m_fluent_atoms(), m_derived_atoms(), m_numeric_variables(), m_problem(problem) {}
+
+DenseState::DenseState(const State& state) : m_problem(state.get_problem())
 {
     insert_into_bitset(state.get_atoms<FluentTag>(), m_fluent_atoms);
     insert_into_bitset(state.get_atoms<DerivedTag>(), m_derived_atoms);
@@ -40,6 +42,8 @@ DenseState::DenseState(const State& state)
 
 void DenseState::translate(const State& state, DenseState& out_state)
 {
+    assert(&out_state.m_problem == &state.get_problem());
+
     auto& fluent_atoms = out_state.get_atoms<FluentTag>();
     auto& derived_atoms = out_state.get_atoms<DerivedTag>();
     auto& numeric_variables = out_state.get_numeric_variables();
@@ -133,4 +137,6 @@ template FlatBitset& DenseState::get_atoms<FluentTag>();
 template FlatBitset& DenseState::get_atoms<DerivedTag>();
 
 FlatDoubleList& DenseState::get_numeric_variables() { return m_numeric_variables; }
+
+const formalism::ProblemImpl& DenseState::get_problem() const { return m_problem; }
 }

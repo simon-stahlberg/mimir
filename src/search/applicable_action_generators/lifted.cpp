@@ -52,7 +52,7 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
     m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),
-    m_dense_state(),
+    m_dense_state(*m_problem),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
@@ -116,7 +116,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
     for (auto& condition_grounder : m_action_grounding_data)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), problem, dense_state))
+        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), dense_state))
         {
             continue;
         }
@@ -131,7 +131,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
 
             const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
 
-            assert(is_applicable(ground_action, problem, dense_state));
+            assert(is_applicable(ground_action, dense_state));
 
             m_event_handler->on_ground_action(ground_action);
 

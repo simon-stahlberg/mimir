@@ -118,7 +118,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), problem, dense_state))
+                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), dense_state))
                 {
                     continue;
                 }
@@ -135,7 +135,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, problem, dense_state));
+                    assert(is_applicable(ground_axiom, dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

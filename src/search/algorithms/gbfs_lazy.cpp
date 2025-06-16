@@ -229,7 +229,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         const auto& preferred_actions = heuristic->get_preferred_actions();
         // Ensure that preferred actions are applicable.
-        assert(std::all_of(preferred_actions.data.begin(), preferred_actions.data.end(), [&](auto&& action) { return is_applicable(action, problem, state); }));
+        assert(std::all_of(preferred_actions.data.begin(), preferred_actions.data.end(), [&](auto&& action) { return is_applicable(action, state); }));
 
         /* Expand the successors of the state. */
 

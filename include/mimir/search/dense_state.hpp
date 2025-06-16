@@ -31,12 +31,13 @@ namespace mimir::search
 /// We use it internally for constant time randomized access.
 struct DenseState
 {
-    Index m_index = Index(0);
-    FlatBitset m_fluent_atoms = FlatBitset();
-    FlatBitset m_derived_atoms = FlatBitset();
-    FlatDoubleList m_numeric_variables = FlatDoubleList();
+    Index m_index;
+    FlatBitset m_fluent_atoms;
+    FlatBitset m_derived_atoms;
+    FlatDoubleList m_numeric_variables;
+    const formalism::ProblemImpl& m_problem;
 
-    DenseState() = default;
+    explicit DenseState(const formalism::ProblemImpl& problem);
     DenseState(const State& state);
 
     static void translate(const State& state, DenseState& out_state);
@@ -72,6 +73,8 @@ struct DenseState
     FlatBitset& get_atoms();
 
     FlatDoubleList& get_numeric_variables();
+
+    const formalism::ProblemImpl& get_problem() const;
 };
 
 }

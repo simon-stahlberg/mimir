@@ -60,7 +60,7 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_states(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
-    m_dense_state_builder(),
+    m_dense_state_builder(*m_axiom_evaluator->get_problem()),
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
     m_state_fluent_atoms(),
@@ -262,7 +262,7 @@ static void apply_action_effects(GroundAction action,
 
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        if (is_applicable(conditional_effect, problem, dense_state))
+        if (is_applicable(conditional_effect, dense_state))
         {
             insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_propositional_effects<NegativeTag>(), ref_negative_applied_effects);
             insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>(), ref_positive_applied_effects);

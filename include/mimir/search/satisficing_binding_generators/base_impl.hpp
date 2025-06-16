@@ -264,7 +264,7 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_problem(std::move(problem)),
     m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandlerImpl>()),
     m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::StaticTag>()),
-    m_dense_state(),
+    m_dense_state(*m_problem),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
@@ -301,7 +301,7 @@ SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
        To avoid accidental errors, we ensure that we checked whether all nullary conditions are satisfied. */
-    assert(nullary_conditions_hold(m_conjunctive_condition, *m_problem, dense_state));
+    assert(nullary_conditions_hold(m_conjunctive_condition, dense_state));
 
     if (m_conjunctive_condition->get_arity() == 0)
     {
@@ -344,7 +344,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     const auto& pddl_repositories = problem.get_repositories();
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
-    if (!nullary_conditions_hold(m_conjunctive_condition, problem, dense_state))
+    if (!nullary_conditions_hold(m_conjunctive_condition, dense_state))
     {
         co_return;
     }

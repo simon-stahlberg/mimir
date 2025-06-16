@@ -41,7 +41,7 @@ static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& probl
     insert_into_bitset(action->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
     for (const auto& cond_effect : action->get_conditional_effects())
     {
-        if (is_applicable(cond_effect, problem, state))
+        if (is_applicable(cond_effect, state))
         {
             insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<PositiveTag, FluentTag>(), positive);
             insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
@@ -56,7 +56,7 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
     auto negative = FlatBitset();
     for (const auto& cond_effect : action->get_conditional_effects())
     {
-        if (is_applicable(cond_effect, problem, state))
+        if (is_applicable(cond_effect, state))
         {
             insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>(), positive);
             insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<NegativeTag>(), negative);

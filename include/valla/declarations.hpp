@@ -88,9 +88,21 @@ inline void hash_combine(size_t& seed, const T& value)
 
 inline uint64_t cantor_pair(uint64_t a, uint64_t b) { return (((a + b) * (a + b + 1)) >> 1) + b; }
 
+/* Source: https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp */
+inline uint64_t fmix64(uint64_t k)
+{
+    k ^= k >> 33;
+    k *= 0xff51afd7ed558ccd;
+    k ^= k >> 33;
+    k *= 0xc4ceb9fe1a85ec53;
+    k ^= k >> 33;
+
+    return k;
+}
+
 struct SlotHash
 {
-    size_t operator()(Slot el) const { return cantor_pair(read_pos(el, 0), read_pos(el, 1)); }
+    size_t operator()(Slot el) const { return fmix64(el); }
 };
 
 }

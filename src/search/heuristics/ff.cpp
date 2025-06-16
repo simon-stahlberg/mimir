@@ -190,7 +190,7 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(c
 
     m_relaxed_plan.insert(action.get_unrelaxed_action());
 
-    if (is_applicable(action.get_unrelaxed_action(), this->get_problem(), state))
+    if (is_applicable(action.get_unrelaxed_action(), state))
     {
         this->m_preferred_actions.data.insert(action.get_unrelaxed_action());
     }
