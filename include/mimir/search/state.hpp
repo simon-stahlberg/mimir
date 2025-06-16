@@ -175,7 +175,10 @@ struct Hash<mimir::search::InternalStateImpl>
         size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
-        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el) + sizeof(mimir::Index), sizeof(mimir::Index) * 5, seed, hash);
+        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el) + sizeof(mimir::Index),
+                                  sizeof(mimir::search::InternalStateImpl) - sizeof(mimir::Index),
+                                  seed,
+                                  hash);
 
         loki::hash_combine(seed, hash[0]);
         loki::hash_combine(seed, hash[1]);
