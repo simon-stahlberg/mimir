@@ -36,7 +36,7 @@ private:
     NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     /// @brief Accept a `IVisitor`.

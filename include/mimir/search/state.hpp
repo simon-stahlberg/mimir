@@ -59,7 +59,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     /**
@@ -168,6 +168,7 @@ struct Hash<mimir::search::InternalStateImpl>
     size_t operator()(const mimir::search::InternalStateImpl& el) const
     {
         static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
+
         size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
@@ -185,6 +186,8 @@ struct EqualTo<mimir::search::InternalStateImpl>
 {
     bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
     {
+        static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
+
         const auto lhs_begin = reinterpret_cast<const uint8_t*>(&lhs);
         const auto rhs_begin = reinterpret_cast<const uint8_t*>(&rhs);
 

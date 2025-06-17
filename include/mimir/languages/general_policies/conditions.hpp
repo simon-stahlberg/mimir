@@ -30,7 +30,7 @@ private:
     PositiveBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -45,7 +45,7 @@ private:
     NegativeBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -60,7 +60,7 @@ private:
     GreaterNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -75,7 +75,7 @@ private:
     EqualNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 

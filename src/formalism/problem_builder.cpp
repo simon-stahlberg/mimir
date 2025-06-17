@@ -36,7 +36,7 @@ static void verify_indexing_scheme(const std::vector<const T*>& elements, const 
 }
 
 ProblemBuilder::ProblemBuilder(Domain domain) :
-    m_repositories(),
+    m_repositories(&domain->get_repositories()),
     m_domain(domain),
     m_filepath(std::nullopt),
     m_name(""),
@@ -51,14 +51,6 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
     m_optimization_metric(nullptr),
     m_axioms()
 {
-    boost::hana::for_each(m_repositories.get_hana_repositories(),
-                          [&](auto&& pair)
-                          {
-                              auto key = boost::hana::first(pair);
-                              auto& value = boost::hana::second(pair);
-
-                              value.set_parent(boost::hana::at_key(domain->get_repositories().get_hana_repositories(), key));
-                          });
 }
 
 Problem ProblemBuilder::get_result(Index problem_index)

@@ -32,50 +32,50 @@ namespace mimir::languages::dl::cnf_grammar
  */
 
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-using NonTerminalRepository = loki::SegmentedRepository<NonTerminalImpl<D>>;
+using NonTerminalRepository = loki::IndexedHashSet<NonTerminalImpl<D>>;
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-using DerivationRuleRepository = loki::SegmentedRepository<DerivationRuleImpl<D>>;
+using DerivationRuleRepository = loki::IndexedHashSet<DerivationRuleImpl<D>>;
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-using SubstitutionRuleRepository = loki::SegmentedRepository<SubstitutionRuleImpl<D>>;
+using SubstitutionRuleRepository = loki::IndexedHashSet<SubstitutionRuleImpl<D>>;
 
-using ConceptBotRepository = loki::SegmentedRepository<ConceptBotImpl>;
-using ConceptTopRepository = loki::SegmentedRepository<ConceptTopImpl>;
+using ConceptBotRepository = loki::IndexedHashSet<ConceptBotImpl>;
+using ConceptTopRepository = loki::IndexedHashSet<ConceptTopImpl>;
 template<formalism::IsStaticOrFluentOrDerivedTag P>
-using ConceptAtomicStateRepositoryImpl = loki::SegmentedRepository<ConceptAtomicStateImpl<P>>;
+using ConceptAtomicStateRepositoryImpl = loki::IndexedHashSet<ConceptAtomicStateImpl<P>>;
 template<formalism::IsStaticOrFluentOrDerivedTag P>
-using ConceptAtomicGoalRepository = loki::SegmentedRepository<ConceptAtomicGoalImpl<P>>;
-using ConceptIntersectionRepository = loki::SegmentedRepository<ConceptIntersectionImpl>;
-using ConceptUnionRepository = loki::SegmentedRepository<ConceptUnionImpl>;
-using ConceptNegationRepository = loki::SegmentedRepository<ConceptNegationImpl>;
-using ConceptValueRestrictionRepository = loki::SegmentedRepository<ConceptValueRestrictionImpl>;
-using ConceptExistentialQuantificationRepository = loki::SegmentedRepository<ConceptExistentialQuantificationImpl>;
-using ConceptRoleValueMapContainmentRepository = loki::SegmentedRepository<ConceptRoleValueMapContainmentImpl>;
-using ConceptRoleValueMapEqualityRepository = loki::SegmentedRepository<ConceptRoleValueMapEqualityImpl>;
-using ConceptNominalRepository = loki::SegmentedRepository<ConceptNominalImpl>;
+using ConceptAtomicGoalRepository = loki::IndexedHashSet<ConceptAtomicGoalImpl<P>>;
+using ConceptIntersectionRepository = loki::IndexedHashSet<ConceptIntersectionImpl>;
+using ConceptUnionRepository = loki::IndexedHashSet<ConceptUnionImpl>;
+using ConceptNegationRepository = loki::IndexedHashSet<ConceptNegationImpl>;
+using ConceptValueRestrictionRepository = loki::IndexedHashSet<ConceptValueRestrictionImpl>;
+using ConceptExistentialQuantificationRepository = loki::IndexedHashSet<ConceptExistentialQuantificationImpl>;
+using ConceptRoleValueMapContainmentRepository = loki::IndexedHashSet<ConceptRoleValueMapContainmentImpl>;
+using ConceptRoleValueMapEqualityRepository = loki::IndexedHashSet<ConceptRoleValueMapEqualityImpl>;
+using ConceptNominalRepository = loki::IndexedHashSet<ConceptNominalImpl>;
 
-using RoleUniversalRepository = loki::SegmentedRepository<RoleUniversalImpl>;
+using RoleUniversalRepository = loki::IndexedHashSet<RoleUniversalImpl>;
 template<formalism::IsStaticOrFluentOrDerivedTag P>
-using RoleAtomicStateRepositoryImpl = loki::SegmentedRepository<RoleAtomicStateImpl<P>>;
+using RoleAtomicStateRepositoryImpl = loki::IndexedHashSet<RoleAtomicStateImpl<P>>;
 template<formalism::IsStaticOrFluentOrDerivedTag P>
-using RoleAtomicGoalRepository = loki::SegmentedRepository<RoleAtomicGoalImpl<P>>;
-using RoleIntersectionRepository = loki::SegmentedRepository<RoleIntersectionImpl>;
-using RoleUnionRepository = loki::SegmentedRepository<RoleUnionImpl>;
-using RoleComplementRepository = loki::SegmentedRepository<RoleComplementImpl>;
-using RoleInverseRepository = loki::SegmentedRepository<RoleInverseImpl>;
-using RoleCompositionRepository = loki::SegmentedRepository<RoleCompositionImpl>;
-using RoleTransitiveClosureRepository = loki::SegmentedRepository<RoleTransitiveClosureImpl>;
-using RoleReflexiveTransitiveClosureRepository = loki::SegmentedRepository<RoleReflexiveTransitiveClosureImpl>;
-using RoleRestrictionRepository = loki::SegmentedRepository<RoleRestrictionImpl>;
-using RoleIdentityRepository = loki::SegmentedRepository<RoleIdentityImpl>;
+using RoleAtomicGoalRepository = loki::IndexedHashSet<RoleAtomicGoalImpl<P>>;
+using RoleIntersectionRepository = loki::IndexedHashSet<RoleIntersectionImpl>;
+using RoleUnionRepository = loki::IndexedHashSet<RoleUnionImpl>;
+using RoleComplementRepository = loki::IndexedHashSet<RoleComplementImpl>;
+using RoleInverseRepository = loki::IndexedHashSet<RoleInverseImpl>;
+using RoleCompositionRepository = loki::IndexedHashSet<RoleCompositionImpl>;
+using RoleTransitiveClosureRepository = loki::IndexedHashSet<RoleTransitiveClosureImpl>;
+using RoleReflexiveTransitiveClosureRepository = loki::IndexedHashSet<RoleReflexiveTransitiveClosureImpl>;
+using RoleRestrictionRepository = loki::IndexedHashSet<RoleRestrictionImpl>;
+using RoleIdentityRepository = loki::IndexedHashSet<RoleIdentityImpl>;
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
-using BooleanAtomicStateRepository = loki::SegmentedRepository<BooleanAtomicStateImpl<P>>;
+using BooleanAtomicStateRepository = loki::IndexedHashSet<BooleanAtomicStateImpl<P>>;
 template<IsConceptOrRoleTag D>
-using BooleanNonemptyRepository = loki::SegmentedRepository<BooleanNonemptyImpl<D>>;
+using BooleanNonemptyRepository = loki::IndexedHashSet<BooleanNonemptyImpl<D>>;
 
 template<IsConceptOrRoleTag D>
-using NumericalCountRepository = loki::SegmentedRepository<NumericalCountImpl<D>>;
-using NumericalDistanceRepository = loki::SegmentedRepository<NumericalDistanceImpl>;
+using NumericalCountRepository = loki::IndexedHashSet<NumericalCountImpl<D>>;
+using NumericalDistanceRepository = loki::IndexedHashSet<NumericalDistanceImpl>;
 
 using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<NonTerminalImpl<ConceptTag>>, NonTerminalRepository<ConceptTag>>,

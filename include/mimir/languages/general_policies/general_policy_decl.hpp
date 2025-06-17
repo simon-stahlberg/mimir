@@ -162,7 +162,7 @@ private:
     GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool is_terminating(graphs::PolicyGraph& policy_graph, Repositories& repositories) const;
 
