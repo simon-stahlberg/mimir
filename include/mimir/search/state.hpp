@@ -85,12 +85,6 @@ private:
     FlatBitset m_derived_atoms;
     FlatDoubleList m_numeric_variables;
 
-    /// @brief Internal-less constructor used during state construction.
-    /// @param problem
-    explicit State(const formalism::ProblemImpl& problem);
-
-    friend class StateRepositoryImpl;
-
 public:
     State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
     State(const State&) = default;

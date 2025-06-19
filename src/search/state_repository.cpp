@@ -37,7 +37,6 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-namespace v = valla::plain;
 
 ContinuousCost compute_state_metric_value(State state)
 {
@@ -63,16 +62,8 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
     m_state_fluent_atoms(),
-    m_state_derived_atoms(),
-    m_empty_index_list(),
-    m_empty_double_list()
+    m_state_derived_atoms()
 {
-    // We could move this to Problem.
-    auto tmp_index_list = FlatIndexList {};
-    tmp_index_list.compress();
-    m_empty_index_list = m_axiom_evaluator->get_problem()->get_or_create_index_list(tmp_index_list).second;
-    auto tmp_double_list = FlatDoubleList {};
-    m_empty_double_list = m_axiom_evaluator->get_problem()->get_or_create_double_list(tmp_double_list).second;
 }
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
@@ -116,16 +107,16 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     m_state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
     /* Sparse state */
-    auto state_fluent_atoms_slot = v::get_empty_root_slot();
-    auto state_derived_atoms_slot = v::get_empty_root_slot();
-    auto state_numeric_variables = m_empty_double_list;
+    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_numeric_variables_slot = valla::doubles::plain::get_empty_root_slot();
 
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+    state_numeric_variables_slot = valla::doubles::plain::insert(dense_fluent_numeric_variables, tree_table, double_table);
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -133,12 +124,12 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables_slot));
     if (it != m_states.end())
     {
         auto state = State(it->second, it->first, problem);
@@ -152,7 +143,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table);
+            state_derived_atoms_slot = valla::plain::insert(dense_derived_atoms, tree_table);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
@@ -160,7 +151,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
-    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
+    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables_slot), m_states.size());
     auto state = State(result.first->second, result.first->first, problem);
 
     return { state, compute_state_metric_value(state) };
@@ -311,9 +302,9 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = v::get_empty_root_slot();
-    auto state_derived_atoms_slot = v::get_empty_root_slot();
-    auto state_numeric_variables = m_empty_double_list;
+    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_numeric_variables_slot = valla::doubles::plain::get_empty_root_slot();
 
     auto successor_state_metric_value = state_metric_value;
 
@@ -329,13 +320,13 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+    state_numeric_variables_slot = valla::doubles::plain::insert(dense_fluent_numeric_variables, tree_table, double_table);
 
     // Check if non-extended state exists in cache
-    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables_slot));
     if (it != m_states.end())
     {
         auto state = State(it->second, it->first, problem);
@@ -357,7 +348,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     }
 
     // Cache and return the extended state.
-    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
+    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables_slot), m_states.size());
     auto successor_state = State(result.first->second, result.first->first, problem);
 
     return { successor_state, successor_state_metric_value };

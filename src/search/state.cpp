@@ -68,16 +68,6 @@ v::RootSlotType InternalStateImpl::get_numeric_variables() const { return valla:
  * State
  */
 
-State::State(const formalism::ProblemImpl& problem) :
-    m_internal(nullptr),
-    m_problem(&problem),
-    m_index(-1),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_numeric_variables()
-{
-}
-
 State::State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem) :
     m_internal(&internal),
     m_problem(&problem),
