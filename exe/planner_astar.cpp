@@ -184,6 +184,7 @@ int main(int argc, char** argv)
 
     std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
     std::cout << "Num tree nodes: " << problem->get_tree_table().size() << std::endl;
+    std::cout << "Num doubles: " << problem->get_double_table().size() << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

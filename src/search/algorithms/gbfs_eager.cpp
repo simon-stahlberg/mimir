@@ -123,7 +123,24 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto openlist = PriorityQueue<std::tuple<double, double, Index>, InternalState>();
+    struct QueueEntry
+    {
+        using KeyType = std::tuple<ContinuousCost, ContinuousCost, Index, SearchNodeStatus>;
+        using ItemType = InternalState;
+
+        ContinuousCost g_value;
+        ContinuousCost h_value;
+        InternalState internal_state;
+        Index step;
+        SearchNodeStatus status;
+
+        KeyType get_key() const { return std::make_tuple(h_value, g_value, step, status); }
+        ItemType get_item() const { return internal_state; }
+    };
+
+    static_assert(sizeof(QueueEntry) == 32);
+
+    auto openlist = PriorityQueue<QueueEntry>();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -158,7 +175,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     }
 
     auto applicable_actions = GroundActionList {};
-    openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state.get_internal());
+    openlist.insert(QueueEntry { start_g_value, start_h_value, start_state.get_internal(), step++, start_search_node.get_status() });
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -278,7 +295,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value, step++), successor_state.get_internal());
+            openlist.insert(
+                QueueEntry { successor_state_metric_value, successor_h_value, successor_state.get_internal(), step++, successor_search_node.get_status() });
         }
     }
 

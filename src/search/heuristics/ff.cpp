@@ -67,7 +67,7 @@ void FFHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposition
 {
     auto& annotations = this->get_proposition_annotations()[proposition.get_index()];
     get_cost(annotations) = 0;
-    this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
+    this->m_queue.insert(QueueEntry { 0, proposition.get_index() });
 }
 
 void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
@@ -105,7 +105,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Action& action, const Prop
         auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
         get_achiever(ff_proposition_annotations) = action.get_index();
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
@@ -122,7 +122,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propos
         auto& ff_axiom_annotations = get<Axiom>(get_ff_structures_annotations())[axiom.get_index()];
         get_achiever(ff_proposition_annotations) = get_achiever(ff_axiom_annotations);  // Forward the achiever action
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 

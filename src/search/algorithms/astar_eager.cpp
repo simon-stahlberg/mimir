@@ -124,7 +124,22 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto openlist = PriorityQueue<double, InternalState>();
+    struct QueueEntry
+    {
+        using KeyType = std::pair<ContinuousCost, SearchNodeStatus>;
+        using ItemType = InternalState;
+
+        ContinuousCost f_value;
+        InternalState internal_state;
+        SearchNodeStatus status;
+
+        KeyType get_key() const { return std::make_pair(f_value, status); }
+        ItemType get_item() const { return internal_state; }
+    };
+
+    static_assert(sizeof(QueueEntry) == 24);
+
+    auto openlist = PriorityQueue<QueueEntry>();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -160,7 +175,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    openlist.insert(start_f_value, start_state.get_internal());
+    openlist.insert(QueueEntry { start_f_value, start_state.get_internal(), start_search_node.get_status() });
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -298,7 +313,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
-                openlist.insert(successor_f_value, successor_state.get_internal());
+                openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal(), successor_search_node.get_status() });
             }
             else
             {

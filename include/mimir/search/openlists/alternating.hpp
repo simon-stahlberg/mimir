@@ -90,7 +90,7 @@ public:
     {
     }
 
-    const ItemType& top()
+    ItemType top()
     {
         assert(!empty());
 
@@ -99,10 +99,10 @@ public:
             find_next_nonempty_queue();
         }
 
-        const ItemType* result = nullptr;
-        visit_at(m_queues, m_pos, [&result](auto&& queue) { result = &queue.get().top(); });
+        ItemType result;
+        visit_at(m_queues, m_pos, [&result](auto&& queue) { result = queue.get().top(); });
         assert(result);
-        return *result;
+        return result;
     }
 
     void pop()
@@ -138,7 +138,6 @@ private:
     size_t m_count;
 };
 
-static_assert((IsOpenListComposition<AlternatingOpenList<PriorityQueue<int, int>, PriorityQueue<double, int>>>) );
 }
 
 #endif

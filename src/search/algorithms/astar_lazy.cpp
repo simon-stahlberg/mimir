@@ -125,7 +125,21 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    using OpenListType = PriorityQueue<double, InternalState>;
+    struct QueueEntry
+    {
+        using KeyType = ContinuousCost;
+        using ItemType = InternalState;
+
+        KeyType f_value;
+        ItemType internal_state;
+
+        KeyType get_key() const { return f_value; }
+        ItemType get_item() const { return internal_state; }
+    };
+
+    static_assert(sizeof(QueueEntry) == 16);
+
+    using OpenListType = PriorityQueue<QueueEntry>;
     auto preferred_openlist = OpenListType();
     auto standard_openlist = OpenListType();
     auto openlist = AlternatingOpenList<OpenListType, OpenListType>(preferred_openlist, standard_openlist, openlist_weights);
@@ -164,7 +178,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    preferred_openlist.insert(start_f_value, start_state.get_internal());
+    preferred_openlist.insert(QueueEntry { start_f_value, start_state.get_internal() });
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -307,11 +321,11 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
                 if (is_preferred)
                 {
-                    preferred_openlist.insert(successor_f_value, successor_state.get_internal());
+                    preferred_openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal() });
                 }
                 else
                 {
-                    standard_openlist.insert(successor_f_value, successor_state.get_internal());
+                    standard_openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal() });
                 }
             }
             else

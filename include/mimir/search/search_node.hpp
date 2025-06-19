@@ -28,11 +28,11 @@ namespace mimir::search
 
 enum SearchNodeStatus
 {
-    NEW = 0,
-    OPEN = 1,
+    GOAL = 0,
+    DEAD_END = 1,
     CLOSED = 2,
-    DEAD_END = 3,
-    GOAL = 4,
+    OPEN = 3,
+    NEW = 4,
 };
 
 /// @brief `SearchNodeImpl` encapsulates per state information during search.

@@ -134,8 +134,40 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    using GreedyOpenListType = PriorityQueue<Index, InternalState>;
-    using OpenListType = PriorityQueue<std::tuple<double, double, Index>, InternalState>;
+    struct GreedyQueueEntry
+    {
+        using KeyType = std::tuple<Index, SearchNodeStatus>;
+        using ItemType = InternalState;
+
+        InternalState internal_state;
+        Index step;
+        SearchNodeStatus status;
+
+        KeyType get_key() const { return std::make_tuple(step, status); }
+        ItemType get_item() const { return internal_state; }
+    };
+
+    static_assert(sizeof(GreedyQueueEntry) == 16);
+
+    struct ExhaustiveQueueEntry
+    {
+        using KeyType = std::tuple<ContinuousCost, ContinuousCost, Index, SearchNodeStatus>;
+        using ItemType = InternalState;
+
+        ContinuousCost g_value;
+        ContinuousCost h_value;
+        InternalState internal_state;
+        Index step;
+        SearchNodeStatus status;
+
+        KeyType get_key() const { return std::make_tuple(h_value, g_value, step, status); }
+        ItemType get_item() const { return internal_state; }
+    };
+
+    static_assert(sizeof(ExhaustiveQueueEntry) == 32);
+
+    using GreedyOpenListType = PriorityQueue<GreedyQueueEntry>;
+    using OpenListType = PriorityQueue<ExhaustiveQueueEntry>;
     auto compatible_greedy_and_preferred_openlist = GreedyOpenListType();
     auto compatible_greedy_openlist = GreedyOpenListType();
     auto compatible_exhaustive_and_preferred_openlist = OpenListType();
@@ -188,7 +220,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     const auto use_exploration_strategy = std::any_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 4, [](double w) { return w > 0; });
     auto applicable_actions = GroundActionList {};
-    standard_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state.get_internal());
+    standard_openlist.insert(ExhaustiveQueueEntry { start_g_value, start_h_value, start_state.get_internal(), step++, start_search_node.get_status() });
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -333,29 +365,45 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             if (options.openlist_weights[0] > 0 && is_compatible && is_preferred && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_and_preferred_openlist.insert(step++, successor_state.get_internal());
+                compatible_greedy_and_preferred_openlist.insert(
+                    GreedyQueueEntry { successor_state.get_internal(), step++, successor_search_node.get_status() });
             }
             else if (options.openlist_weights[1] > 0 && is_compatible && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_openlist.insert(step++, successor_state.get_internal());
+                compatible_greedy_openlist.insert(GreedyQueueEntry { successor_state.get_internal(), step++, successor_search_node.get_status() });
             }
             else if (options.openlist_weights[2] > 0 && is_compatible && is_preferred)
             {
-                compatible_exhaustive_and_preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++),
-                                                                    successor_state.get_internal());
+                compatible_exhaustive_and_preferred_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                                           state_h_value,
+                                                                                           start_state.get_internal(),
+                                                                                           step++,
+                                                                                           successor_search_node.get_status() });
             }
             else if (options.openlist_weights[3] > 0 && is_compatible)
             {
-                compatible_exhaustive_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
+                compatible_exhaustive_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                             state_h_value,
+                                                                             start_state.get_internal(),
+                                                                             step++,
+                                                                             successor_search_node.get_status() });
             }
             else if (options.openlist_weights[4] > 0 && is_preferred)
             {
-                preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
+                preferred_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                 state_h_value,
+                                                                 start_state.get_internal(),
+                                                                 step++,
+                                                                 successor_search_node.get_status() });
             }
             else
             {
-                standard_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state.get_internal());
+                standard_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                state_h_value,
+                                                                start_state.get_internal(),
+                                                                step++,
+                                                                successor_search_node.get_status() });
             }
         }
     }

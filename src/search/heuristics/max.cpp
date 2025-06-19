@@ -53,7 +53,7 @@ void MaxHeuristicImpl::initialize_or_annotations_and_queue_impl(const Propositio
 {
     auto& annotations = this->get_proposition_annotations()[proposition.get_index()];
     get_cost(annotations) = 0;
-    this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
+    this->m_queue.insert(QueueEntry { 0, proposition.get_index() });
 }
 
 void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
@@ -82,7 +82,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const Action& action, const Pro
     if (firing_cost < get_cost(proposition_annotations))
     {
         get_cost(proposition_annotations) = firing_cost;
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
@@ -94,7 +94,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propo
     if (get_cost(axiom_annotations) < get_cost(proposition_annotations))
     {
         get_cost(proposition_annotations) = get_cost(axiom_annotations);
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 

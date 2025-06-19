@@ -256,7 +256,7 @@ private:
 
         while (!m_queue.empty())
         {
-            const auto entry = m_queue.top();
+            const auto entry = m_queue.top_entry();
             m_queue.pop();
 
             const auto& proposition = get_propositions()[entry.proposition_index];
@@ -337,11 +337,17 @@ private:
 
     struct QueueEntry
     {
-        Index proposition_index;
-        DiscreteCost cost;
+        using KeyType = DiscreteCost;
+        using ItemType = Index;
+
+        KeyType cost;
+        ItemType proposition_index;
+
+        KeyType get_key() const { return cost; }
+        ItemType get_item() const { return proposition_index; }
     };
 
-    PriorityQueue<DiscreteCost, QueueEntry> m_queue;
+    PriorityQueue<QueueEntry> m_queue;
 };
 
 }
