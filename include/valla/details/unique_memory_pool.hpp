@@ -61,39 +61,9 @@ public:
 
     UniqueMemoryPoolPtr(UniqueMemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) {}
 
-    /// @brief Copy other into this through an additional allocation from the pool.
-    /// Requires a user define copy operation of the data.
-    /// @param other
-    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) : m_pool(nullptr), m_object(nullptr)
-    {
-        if (other.m_pool && other.m_object)
-        {
-            *this = other.m_pool->get_or_allocate();
-            copy(*other.m_object, *m_object);
-        }
-    }
+    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) = delete;
 
-    /// @brief Assign other into this through an additional allocation from the pool.
-    /// Requires a user define copy operation of the data.
-    /// @param other
-    /// @return
-    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other)
-    {
-        if (this != &other)
-        {
-            if (other.m_pool && other.m_object)
-            {
-                m_pool = other.m_pool;
-                if (!m_object)
-                {
-                    auto pointer = m_pool->get_or_allocate();
-                    m_object = pointer.release();
-                }
-                copy(*other.m_object, *m_object);
-            }
-        }
-        return *this;
-    }
+    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other) = delete;
 
     // Movable
     UniqueMemoryPoolPtr(UniqueMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
@@ -117,7 +87,19 @@ public:
         return *this;
     }
 
-    UniqueMemoryPoolPtr clone() const { return UniqueMemoryPoolPtr(*this); }
+    UniqueMemoryPoolPtr clone() const
+    {
+        if (m_pool && m_object)
+        {
+            UniqueMemoryPoolPtr pointer = m_pool->get_or_allocate();
+            copy(this->operator*(), *pointer);
+            return pointer;
+        }
+        else
+        {
+            return UniqueMemoryPoolPtr();
+        }
+    }
 
     ~UniqueMemoryPoolPtr()
     {

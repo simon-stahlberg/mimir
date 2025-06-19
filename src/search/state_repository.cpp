@@ -28,9 +28,8 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
-#include <valla/canonical_delta_tree_compression.hpp>
-#include <valla/canonical_tree_compression.hpp>
 #include <valla/delta_tree_compression.hpp>
+#include <valla/double_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
 #include <valla/tree_compression.hpp>
 
@@ -105,8 +104,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 {
     auto& problem = *m_axiom_evaluator->get_problem();
     auto& tree_table = problem.get_tree_table();
-    auto& bitset_pool = problem.get_bitset_pool();
-    auto& bitset_repository = problem.get_bitset_repository();
+    auto& double_table = problem.get_double_table();
 
     /* Dense state */
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
@@ -299,8 +297,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 {
     auto& problem = *m_axiom_evaluator->get_problem();
     auto& tree_table = problem.get_tree_table();
-    auto& bitset_pool = problem.get_bitset_pool();
-    auto& bitset_repository = problem.get_bitset_repository();
+    auto& double_table = problem.get_double_table();
 
     /* Dense state*/
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();

@@ -32,12 +32,13 @@ namespace mimir::search
 
 /* InternalState */
 
-InternalStateImpl::InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
+InternalStateImpl::InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, v::RootSlotType numeric_variables) :
     m_fluent_atoms_index(valla::first(fluent_atoms)),
     m_fluent_atoms_size(valla::second(fluent_atoms)),
     m_derived_atoms_index(valla::first(derived_atoms)),
     m_derived_atoms_size(valla::second(derived_atoms)),
-    m_numeric_variables(numeric_variables)
+    m_numeric_variables_index(valla::first(numeric_variables)),
+    m_numeric_variables_size(valla::second(numeric_variables))
 {
 }
 
@@ -61,16 +62,45 @@ v::RootSlotType InternalStateImpl::get_atoms() const
 template v::RootSlotType InternalStateImpl::get_atoms<FluentTag>() const;
 template v::RootSlotType InternalStateImpl::get_atoms<DerivedTag>() const;
 
-Index InternalStateImpl::get_numeric_variables() const { return m_numeric_variables; }
+v::RootSlotType InternalStateImpl::get_numeric_variables() const { return valla::make_slot(m_numeric_variables_index, m_numeric_variables_size); }
 
 /**
  * State
  */
 
-State::State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem) : m_internal(&internal), m_problem(&problem), m_index(index)
+State::State(const formalism::ProblemImpl& problem) :
+    m_internal(nullptr),
+    m_problem(&problem),
+    m_index(-1),
+    m_fluent_atoms(),
+    m_derived_atoms(),
+    m_numeric_variables()
 {
-    assert(std::is_sorted(get_atoms<FluentTag>().begin(), get_atoms<FluentTag>().end()));
-    assert(std::is_sorted(get_atoms<DerivedTag>().begin(), get_atoms<DerivedTag>().end()));
+}
+
+State::State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem) :
+    m_internal(&internal),
+    m_problem(&problem),
+    m_index(index),
+    m_fluent_atoms(),
+    m_derived_atoms(),
+    m_numeric_variables()
+{
+    for (const auto index : get_atoms_range<FluentTag>())
+    {
+        m_fluent_atoms.set(index);
+    }
+    for (const auto index : get_atoms_range<DerivedTag>())
+    {
+        m_derived_atoms.set(index);
+    }
+    for (const auto value : get_numeric_variables_range())
+    {
+        m_numeric_variables.push_back(value);
+    }
+
+    assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
+    assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
@@ -97,7 +127,7 @@ template bool State::literals_hold(const GroundLiteralList<DerivedTag>& literals
 
 bool State::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
-    return evaluate(numeric_constraint, static_numeric_variables, get_numeric_variables());
+    return evaluate(numeric_constraint, static_numeric_variables, m_numeric_variables);
 }
 
 bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const
@@ -113,7 +143,27 @@ const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 
 Index State::get_index() const { return m_index; }
 
-const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_internal->get_numeric_variables()); }
+template<formalism::IsFluentOrDerivedTag P>
+const FlatBitset& State::get_atoms() const
+{
+    if constexpr (std::is_same_v<P, formalism::FluentTag>)
+    {
+        return m_fluent_atoms;
+    }
+    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+    {
+        return m_derived_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+    }
+}
+
+template const FlatBitset& State::get_atoms<FluentTag>() const;
+template const FlatBitset& State::get_atoms<DerivedTag>() const;
+
+const FlatDoubleList& State::get_numeric_variables() const { return m_numeric_variables; }
 
 /**
  * Pretty printing

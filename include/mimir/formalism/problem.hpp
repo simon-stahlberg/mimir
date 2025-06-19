@@ -23,9 +23,7 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-#include <valla/bitset_pool.hpp>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/root_slot.hpp>
 
 namespace mimir::formalism
 {
@@ -61,9 +59,8 @@ private:
     FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
     std::vector<const FlatDoubleList*> m_flat_double_lists;
 
-    valla::IndexedHashSet m_tree_table;
-    valla::BitsetPool m_bitset_pool;
-    valla::BitsetRepository m_bitset_repository;
+    valla::IndexedHashSet<valla::Slot> m_tree_table;
+    valla::IndexedHashSet<ContinuousCost> m_double_table;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -129,12 +126,10 @@ public:
      * Additional members
      */
 
-    valla::IndexedHashSet& get_tree_table();
-    valla::BitsetPool& get_bitset_pool();
-    valla::BitsetRepository& get_bitset_repository();
-    const valla::IndexedHashSet& get_tree_table() const;
-    const valla::BitsetPool& get_bitset_pool() const;
-    const valla::BitsetRepository& get_bitset_repository() const;
+    valla::IndexedHashSet<valla::Slot>& get_tree_table();
+    valla::IndexedHashSet<ContinuousCost>& get_double_table();
+    const valla::IndexedHashSet<valla::Slot>& get_tree_table() const;
+    const valla::IndexedHashSet<ContinuousCost>& get_double_table() const;
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;

@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_STATE_HPP_
 
 #include "mimir/common/hash.hpp"
-#include "mimir/common/indexed_hash_set.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -28,11 +27,8 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/canonical_delta_tree_compression.hpp>
-#include <valla/canonical_tree_compression.hpp>
-#include <valla/delta_tree_compression.hpp>
+#include <valla/double_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/root_slot.hpp>
 #include <valla/tree_compression.hpp>
 
 namespace mimir::search
@@ -51,9 +47,10 @@ private:
     Index m_fluent_atoms_size;
     Index m_derived_atoms_index;
     Index m_derived_atoms_size;
-    Index m_numeric_variables;
+    Index m_numeric_variables_index;
+    Index m_numeric_variables_size;
 
-    InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
+    InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, v::RootSlotType numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -68,10 +65,10 @@ public:
 
     template<formalism::IsFluentOrDerivedTag P>
     v::RootSlotType get_atoms() const;
-    Index get_numeric_variables() const;
+    v::RootSlotType get_numeric_variables() const;
 };
 
-static_assert(sizeof(InternalStateImpl) == 20);
+static_assert(sizeof(InternalStateImpl) == 24);
 
 /**
  * State
@@ -83,6 +80,16 @@ private:
     InternalState m_internal;
     const formalism::ProblemImpl* m_problem;
     Index m_index;
+
+    FlatBitset m_fluent_atoms;
+    FlatBitset m_derived_atoms;
+    FlatDoubleList m_numeric_variables;
+
+    /// @brief Internal-less constructor used during state construction.
+    /// @param problem
+    explicit State(const formalism::ProblemImpl& problem);
+
+    friend class StateRepositoryImpl;
 
 public:
     State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
@@ -104,8 +111,12 @@ public:
 
     Index get_index() const;
     template<formalism::IsFluentOrDerivedTag P>
-    auto get_atoms() const;
+    const FlatBitset& get_atoms() const;
     const FlatDoubleList& get_numeric_variables() const;
+
+    template<formalism::IsFluentOrDerivedTag P>
+    auto get_atoms_range() const;
+    auto get_numeric_variables_range() const;
 
     /**
      * Utils
@@ -139,9 +150,15 @@ public:
  */
 
 template<formalism::IsFluentOrDerivedTag P>
-auto State::get_atoms() const
+auto State::get_atoms_range() const
 {
     return std::ranges::subrange(v::begin(m_internal->get_atoms<P>(), m_problem->get_tree_table()), v::end());
+}
+
+inline auto State::get_numeric_variables_range() const
+{
+    return std::ranges::subrange(valla::doubles::plain::begin(m_internal->get_numeric_variables(), m_problem->get_tree_table(), m_problem->get_double_table()),
+                                 valla::doubles::plain::end());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>

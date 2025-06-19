@@ -24,20 +24,20 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <stack>
 
 namespace valla
 {
 /// @brief `IndexedHashSet` encapsulates a bijective function f : Slot -> Index with inverse mapping f^{-1} : Index -> Slot
 /// where the indices in the image are enumerated 0,1,2,... and so on.
-///
-/// TODO: think more about how to implement this using a Cleary table!
-/// Current understanding: reduces current memory overhead from 5/2 to 1 at the cost of a bidirectional probing search!!!
-/// Found some code on this: https://github.com/DaanWoltgens/ClearyCuckooParallel/tree/main
+template<typename S>
 class IndexedHashSet
 {
 public:
-    auto insert(Slot slot)
+    auto insert(S slot)
     {
+        assert(m_slot_to_index.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
+
         const auto result = m_slot_to_index.emplace(slot, m_slot_to_index.size());
 
         if (result.second)
@@ -48,7 +48,7 @@ public:
         return result;
     }
 
-    Slot get_slot(Index index) const
+    S operator[](Index index) const
     {
         assert(index < m_index_to_slot.size() && "Index out of bounds");
 
@@ -57,21 +57,84 @@ public:
 
     size_t size() const { return m_index_to_slot.size(); }
 
-    size_t get_memory_usage() const
+private:
+    absl::flat_hash_map<S, Index, SlotHash<S>> m_slot_to_index;
+    std::vector<S> m_index_to_slot;
+};
+
+template<>
+class IndexedHashSet<double>
+{
+public:
+    struct Value
     {
-        size_t usage = 0;
+        uint32_t index;
+        uint32_t ref_count;
+    };
 
-        usage += m_slot_to_index.capacity() * (sizeof(Slot) + sizeof(Index));
-        usage += m_slot_to_index.capacity();
+    auto insert(double slot)
+    {
+        assert(m_slot_to_index.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
-        usage += m_index_to_slot.capacity() * sizeof(Slot);
+        Index index;
+        if (m_free_list.empty())
+        {
+            index = m_slot_to_index.size();
+        }
+        else
+        {
+            index = m_free_list.top();
+            m_free_list.pop();
+        }
 
-        return usage;
+        auto result = m_slot_to_index.emplace(slot, Value { index, 1 });
+
+        if (result.second)
+        {
+            if (index == m_index_to_slot.size())
+            {
+                m_index_to_slot.push_back(slot);
+            }
+            else
+            {
+                m_index_to_slot[index] = slot;
+            }
+        }
+        else
+        {
+            ++result.first->second.ref_count;
+        }
+
+        return result;
     }
 
+    void erase(double slot)
+    {
+        auto it = m_slot_to_index.find(slot);
+        assert(it != m_slot_to_index.end());
+
+        --it->second.ref_count;
+
+        if (it->second.ref_count == 0)
+        {
+            m_free_list.push(it->second.index);
+            m_slot_to_index.erase(it);
+        }
+    }
+
+    double operator[](Index index) const
+    {
+        assert(index < m_index_to_slot.size() && "Index out of bounds");
+
+        return m_index_to_slot[index];
+    }
+
+    size_t size() const { return m_index_to_slot.size(); }
+
 private:
-    absl::flat_hash_map<Slot, Index, SlotHash> m_slot_to_index;
-    std::vector<Slot> m_index_to_slot;
+    absl::flat_hash_map<double, Value, SlotHash<double>> m_slot_to_index;
+    std::vector<double> m_index_to_slot;
+    std::stack<Index> m_free_list;
 };
 }
 

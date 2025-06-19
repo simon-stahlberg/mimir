@@ -89,8 +89,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_double_list_map(),
     m_flat_double_lists(),
     m_tree_table(),
-    m_bitset_pool(),
-    m_bitset_repository(m_bitset_pool)
+    m_double_table()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -251,12 +250,10 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
  * Additional members
  */
 
-valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
-valla::BitsetPool& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
-valla::BitsetRepository& ProblemImpl::get_bitset_repository() { return m_bitset_repository; }
-const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
-const valla::BitsetPool& ProblemImpl::get_bitset_pool() const { return m_bitset_pool; }
-const valla::BitsetRepository& ProblemImpl::get_bitset_repository() const { return m_bitset_repository; }
+valla::IndexedHashSet<valla::Slot>& ProblemImpl::get_tree_table() { return m_tree_table; }
+valla::IndexedHashSet<ContinuousCost>& ProblemImpl::get_double_table() { return m_double_table; }
+const valla::IndexedHashSet<valla::Slot>& ProblemImpl::get_tree_table() const { return m_tree_table; }
+const valla::IndexedHashSet<ContinuousCost>& ProblemImpl::get_double_table() const { return m_double_table; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {

@@ -1,0 +1,292 @@
+/*
+ * Copyright (C) 2025 Dominik Drexler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef VALLA_INCLUDE_DOUBLE_TREE_COMPRESSION_HPP_
+#define VALLA_INCLUDE_DOUBLE_TREE_COMPRESSION_HPP_
+
+#include "valla/declarations.hpp"
+#include "valla/details/shared_memory_pool.hpp"
+#include "valla/details/unique_memory_pool.hpp"
+#include "valla/indexed_hash_set.hpp"
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <concepts>
+#include <iostream>
+#include <ranges>
+#include <stack>
+
+namespace valla::doubles::plain
+{
+
+/**
+ * Utility
+ */
+
+using RootSlotType = Slot;
+
+inline Slot get_empty_root_slot() { return Slot(0); }
+
+/**
+ * Insert recursively
+ */
+
+template<std::input_iterator Iterator>
+    requires std::same_as<std::iter_value_t<Iterator>, double>
+inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedHashSet<Slot>& tree_table, IndexedHashSet<double>& double_table)
+{
+    /* Base cases */
+    if (size == 1)
+        return double_table.insert(*it).first->second.index;  ///< Skip node creation
+
+    if (size == 2)
+        return tree_table.insert(make_slot(double_table.insert(*it).first->second.index, double_table.insert(*(it + 1)).first->second.index)).first->second;
+
+    /* Divide */
+    const auto mid = std::bit_floor(size - 1);
+
+    /* Conquer */
+    const auto mid_it = it + mid;
+    const auto i1 = insert_recursively(it, mid_it, mid, tree_table, double_table);
+    const auto i2 = insert_recursively(mid_it, end, size - mid, tree_table, double_table);
+
+    return tree_table.insert(make_slot(i1, i2)).first->second;
+}
+
+template<std::ranges::input_range Range>
+    requires std::same_as<std::ranges::range_value_t<Range>, double>
+auto insert(const Range& state, IndexedHashSet<Slot>& tree_table, IndexedHashSet<double>& double_table)
+{
+    assert(std::is_sorted(state.begin(), state.end()));
+
+    // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
+    const auto size = static_cast<size_t>(std::distance(state.begin(), state.end()));
+
+    if (size == 0)                     ///< Special case for empty state.
+        return get_empty_root_slot();  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+
+    return make_slot(insert_recursively(state.begin(), state.end(), size, tree_table, double_table), size);
+}
+
+/**
+ * Read recursively
+ */
+
+/// @brief Recursively reads the state from the tree induced by the given `index` and the `len`.
+/// @param index is the index of the slot in the tree table.
+/// @param size is the length of the state that defines the shape of the tree at the index.
+/// @param tree_table is the tree table.
+/// @param out_state is the output state.
+inline void
+read_state_recursively(Index index, size_t size, const IndexedHashSet<Slot>& tree_table, const IndexedHashSet<double>& double_table, DoubleList& ref_state)
+{
+    /* Base case */
+    if (size == 1)
+    {
+        ref_state.push_back(double_table[index]);
+        return;
+    }
+
+    const auto [i1, i2] = read_slot(tree_table[index]);
+
+    /* Base case */
+    if (size == 2)
+    {
+        ref_state.push_back(double_table[i1]);
+        ref_state.push_back(double_table[i2]);
+        return;
+    }
+
+    /* Divide */
+    const auto mid = std::bit_floor(size - 1);
+
+    /* Conquer */
+    read_state_recursively(i1, mid, tree_table, double_table, ref_state);
+    read_state_recursively(i2, size - mid, tree_table, double_table, ref_state);
+}
+
+/// @brief Read the `out_state` from the given `tree_index` from the `tree_table`.
+/// @param index
+/// @param size
+/// @param tree_table
+/// @param out_state
+inline void read_state(Index tree_index, size_t size, const IndexedHashSet<Slot>& tree_table, const IndexedHashSet<double>& double_table, DoubleList& out_state)
+{
+    out_state.clear();
+
+    if (size == 0)  ///< Special case for empty state.
+        return;
+
+    read_state_recursively(tree_index, size, tree_table, double_table, out_state);
+}
+
+/// @brief Read the `out_state` from the given `root_index` from the `root_table`.
+/// @param root_index is the index of the slot in the root table.
+/// @param tree_table is the tree table.
+/// @param root_table is the root table.
+/// @param out_state is the output state.
+inline void read_state(Slot root_slot, const IndexedHashSet<Slot>& tree_table, const IndexedHashSet<double>& double_table, DoubleList& out_state)
+{
+    /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
+    const auto [tree_index, size] = read_slot(root_slot);
+
+    read_state(tree_index, size, tree_table, double_table, out_state);
+}
+
+/**
+ * ConstIterator
+ */
+
+struct Entry
+{
+    Index m_index;
+    Index m_size;
+    Index m_bit;
+};
+
+static thread_local UniqueMemoryPool<std::vector<Entry>> s_stack_pool = UniqueMemoryPool<std::vector<Entry>> {};
+
+inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
+{
+    dst.clear();
+    dst.insert(dst.end(), src.begin(), src.end());
+}
+
+class const_iterator
+{
+private:
+    const IndexedHashSet<Slot>* m_tree_table;
+    const IndexedHashSet<double>* m_double_table;
+    UniqueMemoryPoolPtr<std::vector<Entry>> m_stack;
+    double m_value;
+
+    static constexpr const Index END_POS = Index(-1);
+
+    const IndexedHashSet<Slot>& tree_table() const
+    {
+        assert(m_tree_table);
+        return *m_tree_table;
+    }
+    const IndexedHashSet<double>& double_table() const
+    {
+        assert(m_double_table);
+        return *m_double_table;
+    }
+
+    void advance()
+    {
+        while (!m_stack->empty())
+        {
+            auto entry = m_stack->back();
+            m_stack->pop_back();
+
+            if (entry.m_size == 1)
+            {
+                m_value = double_table()[entry.m_index];
+                return;
+            }
+
+            const auto [i1, i2] = read_slot(tree_table()[entry.m_index]);
+
+            Index mid = std::bit_floor(entry.m_size - 1);
+
+            // Emplace right first to ensure left is visited first in dfs.
+            m_stack->emplace_back(i2, entry.m_size - mid);
+            m_stack->emplace_back(i1, mid);
+        }
+
+        m_value = END_POS;
+    }
+
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = double;
+    using pointer = value_type*;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
+    using iterator_concept = std::input_iterator_tag;
+
+    const_iterator() : m_tree_table(nullptr), m_stack(), m_value(END_POS) {}
+    const_iterator(const const_iterator& other) :
+        m_tree_table(other.m_tree_table),
+        m_double_table(other.m_double_table),
+        m_stack(other.m_stack.clone()),
+        m_value(other.m_value)
+    {
+    }
+    const_iterator& operator=(const const_iterator& other)
+    {
+        if (*this != other)
+        {
+            m_tree_table = other.m_tree_table;
+            m_double_table = other.m_double_table;
+            m_stack = other.m_stack.clone();
+            m_value = other.m_value;
+        }
+        return *this;
+    }
+    const_iterator(const_iterator&& other) = default;
+    const_iterator& operator=(const_iterator&& other) = default;
+    const_iterator(const IndexedHashSet<Slot>& tree_table, const IndexedHashSet<double>& double_table, Slot root, bool begin) :
+        m_tree_table(&tree_table),
+        m_double_table(&double_table),
+        m_stack(),
+        m_value(END_POS)
+    {
+        assert(m_tree_table);
+
+        if (begin)
+        {
+            m_stack = s_stack_pool.get_or_allocate();
+            m_stack->clear();
+
+            const auto [tree_idx, size] = read_slot(root);
+
+            if (size > 0)  ///< Push to stack only if there leafs
+            {
+                m_stack->emplace_back(tree_idx, size);
+                advance();
+            }
+        }
+    }
+    value_type operator*() const { return m_value; }
+    const_iterator& operator++()
+    {
+        advance();
+        return *this;
+    }
+    const_iterator operator++(int)
+    {
+        auto it = *this;
+        ++it;
+        return it;
+    }
+    bool operator==(const const_iterator& other) const { return m_value == other.m_value; }
+    bool operator!=(const const_iterator& other) const { return !(*this == other); }
+};
+
+inline const_iterator begin(Slot root, const IndexedHashSet<Slot>& tree_table, const IndexedHashSet<double>& double_table)
+{
+    return const_iterator(tree_table, double_table, root, true);
+}
+
+inline const_iterator end() { return const_iterator(); }
+
+}
+
+#endif

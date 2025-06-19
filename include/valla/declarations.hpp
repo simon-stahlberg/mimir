@@ -34,10 +34,14 @@
 
 namespace valla
 {
-// Observe: there is no sentinel value required in contrast to several other tree compression data structures.
 
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
-using Slot = uint64_t;   ///< A slot is made up of two indices.
+
+/**
+ * Integer slot
+ */
+
+using Slot = uint64_t;  ///< A slot is made up of two indices.
 
 static constexpr const Slot EMPTY_ROOT_SLOT = Slot(0);  ///< represents the empty state.
 
@@ -57,14 +61,14 @@ inline Index read_pos(Slot slot, size_t pos)
     return Index((slot >> ((1 - pos) * 32)));
 }
 
-using State = std::vector<Index>;
-using RootIndices = std::vector<Index>;
+using IndexList = std::vector<Index>;
+using DoubleList = std::vector<double>;
 
 /**
  * Printing
  */
 
-inline std::ostream& operator<<(std::ostream& out, const State& state)
+inline std::ostream& operator<<(std::ostream& out, const IndexList& state)
 {
     out << "[";
     for (const auto x : state)
@@ -100,10 +104,19 @@ inline uint64_t fmix64(uint64_t k)
     return k;
 }
 
+template<typename S>
 struct SlotHash
 {
-    size_t operator()(Slot el) const { return fmix64(el); }
+    size_t operator()(S el) const { return el; }
 };
+
+template<>
+struct SlotHash<Slot>
+{
+    size_t operator()(Slot el) const { return cantor_pair(first(el), second(el)); }
+};
+
+constexpr Slot SlotSentinel = std::numeric_limits<Slot>::max();
 
 }
 

@@ -54,7 +54,7 @@ inline Slot get_empty_root_slot() { return Slot(0); }
 /// @return the index of the slot at the root.
 template<std::input_iterator Iterator>
     requires std::same_as<std::iter_value_t<Iterator>, Index>
-inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedHashSet& table)
+inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedHashSet<Slot>& table)
 {
     /* Base cases */
     if (size == 1)
@@ -81,7 +81,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
 /// @return A pair (it, bool) where it points to the entry in the root table and bool is true if and only if the state was newly inserted.
 template<std::ranges::input_range Range>
     requires std::same_as<std::ranges::range_value_t<Range>, Index>
-auto insert(const Range& state, IndexedHashSet& tree_table)
+auto insert(const Range& state, IndexedHashSet<Slot>& tree_table)
 {
     assert(std::is_sorted(state.begin(), state.end()));
 
@@ -103,7 +103,7 @@ auto insert(const Range& state, IndexedHashSet& tree_table)
 /// @param size is the length of the state that defines the shape of the tree at the index.
 /// @param tree_table is the tree table.
 /// @param out_state is the output state.
-inline void read_state_recursively(Index index, size_t size, const IndexedHashSet& tree_table, State& ref_state)
+inline void read_state_recursively(Index index, size_t size, const IndexedHashSet<Slot>& tree_table, IndexList& ref_state)
 {
     /* Base case */
     if (size == 1)
@@ -112,7 +112,7 @@ inline void read_state_recursively(Index index, size_t size, const IndexedHashSe
         return;
     }
 
-    const auto [i1, i2] = read_slot(tree_table.get_slot(index));
+    const auto [i1, i2] = read_slot(tree_table[index]);
 
     /* Base case */
     if (size == 2)
@@ -135,7 +135,7 @@ inline void read_state_recursively(Index index, size_t size, const IndexedHashSe
 /// @param size
 /// @param tree_table
 /// @param out_state
-inline void read_state(Index tree_index, size_t size, const IndexedHashSet& tree_table, State& out_state)
+inline void read_state(Index tree_index, size_t size, const IndexedHashSet<Slot>& tree_table, IndexList& out_state)
 {
     out_state.clear();
 
@@ -150,7 +150,7 @@ inline void read_state(Index tree_index, size_t size, const IndexedHashSet& tree
 /// @param tree_table is the tree table.
 /// @param root_table is the root table.
 /// @param out_state is the output state.
-inline void read_state(Slot root_slot, const IndexedHashSet& tree_table, State& out_state)
+inline void read_state(Slot root_slot, const IndexedHashSet<Slot>& tree_table, IndexList& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
     const auto [tree_index, size] = read_slot(root_slot);
@@ -180,20 +180,17 @@ inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
 class const_iterator
 {
 private:
-    const IndexedHashSet* m_tree_table;
+    const IndexedHashSet<Slot>* m_tree_table;
     UniqueMemoryPoolPtr<std::vector<Entry>> m_stack;
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);
 
-    const_iterator(const IndexedHashSet* tree_table, UniqueMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
-        m_tree_table(tree_table),
-        m_stack(stack),
-        m_value(value)
+    const IndexedHashSet<Slot>& tree_table() const
     {
+        assert(m_tree_table);
+        return *m_tree_table;
     }
-
-    const_iterator clone() const { return const_iterator(m_tree_table, m_stack.clone(), m_value); }
 
     void advance()
     {
@@ -208,7 +205,7 @@ private:
                 return;
             }
 
-            const auto [i1, i2] = read_slot(m_tree_table->get_slot(entry.m_index));
+            const auto [i1, i2] = read_slot(tree_table()[entry.m_index]);
 
             Index mid = std::bit_floor(entry.m_size - 1);
 
@@ -229,7 +226,20 @@ public:
     using iterator_concept = std::input_iterator_tag;
 
     const_iterator() : m_tree_table(nullptr), m_stack(), m_value(END_POS) {}
-    const_iterator(const IndexedHashSet* tree_table, Slot root, bool begin) : m_tree_table(tree_table), m_stack(), m_value(END_POS)
+    const_iterator(const const_iterator& other) : m_tree_table(other.m_tree_table), m_stack(other.m_stack.clone()), m_value(other.m_value) {}
+    const_iterator& operator=(const const_iterator& other)
+    {
+        if (*this != other)
+        {
+            m_tree_table = other.m_tree_table;
+            m_stack = other.m_stack.clone();
+            m_value = other.m_value;
+        }
+        return *this;
+    }
+    const_iterator(const_iterator&& other) = default;
+    const_iterator& operator=(const_iterator&& other) = default;
+    const_iterator(const IndexedHashSet<Slot>& tree_table, Slot root, bool begin) : m_tree_table(&tree_table), m_stack(), m_value(END_POS)
     {
         assert(m_tree_table);
 
@@ -263,7 +273,7 @@ public:
     bool operator!=(const const_iterator& other) const { return !(*this == other); }
 };
 
-inline const_iterator begin(Slot root, const IndexedHashSet& tree_table) { return const_iterator(&tree_table, root, true); }
+inline const_iterator begin(Slot root, const IndexedHashSet<Slot>& tree_table) { return const_iterator(tree_table, root, true); }
 
 inline const_iterator end() { return const_iterator(); }
 
