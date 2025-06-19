@@ -27,11 +27,9 @@
 namespace mimir
 {
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPool;
 
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPoolPtr
 {
 private:
@@ -61,39 +59,9 @@ public:
 
     UniqueMemoryPoolPtr(UniqueMemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) {}
 
-    /// @brief Copy other into this through an additional allocation from the pool.
-    /// Requires a user define copy operation of the data.
-    /// @param other
-    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) : m_pool(nullptr), m_object(nullptr)
-    {
-        if (other.m_pool && other.m_object)
-        {
-            *this = other.m_pool->get_or_allocate();
-            copy(*other.m_object, *m_object);
-        }
-    }
+    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) = delete;
 
-    /// @brief Assign other into this through an additional allocation from the pool.
-    /// Requires a user define copy operation of the data.
-    /// @param other
-    /// @return
-    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other)
-    {
-        if (this != &other)
-        {
-            if (other.m_pool && other.m_object)
-            {
-                m_pool = other.m_pool;
-                if (!m_object)
-                {
-                    auto pointer = m_pool->get_or_allocate();
-                    m_object = pointer.release();
-                }
-                copy(*other.m_object, *m_object);
-            }
-        }
-        return *this;
-    }
+    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other) = delete;
 
     // Movable
     UniqueMemoryPoolPtr(UniqueMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
@@ -115,6 +83,20 @@ public:
             other.m_object = nullptr;
         }
         return *this;
+    }
+
+    UniqueMemoryPoolPtr clone() const
+    {
+        if (m_pool && m_object)
+        {
+            UniqueMemoryPoolPtr pointer = m_pool->get_or_allocate();
+            copy(this->operator*(), *pointer);
+            return pointer;
+        }
+        else
+        {
+            return UniqueMemoryPoolPtr();
+        }
     }
 
     ~UniqueMemoryPoolPtr()
@@ -139,16 +121,16 @@ public:
 };
 
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPool
 {
 private:
     std::vector<std::unique_ptr<T>> m_storage;
     std::stack<T*> m_stack;
 
-    void allocate()
+    template<typename... Args>
+    void allocate(Args&&... args)
     {
-        m_storage.push_back(std::make_unique<T>(T()));
+        m_storage.push_back(std::make_unique<T>(T(std::forward<Args>(args)...)));
         m_stack.push(m_storage.back().get());
     }
 
@@ -164,11 +146,14 @@ public:
     UniqueMemoryPool(UniqueMemoryPool&& other) = delete;
     UniqueMemoryPool& operator=(UniqueMemoryPool&& other) = delete;
 
-    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate()
+    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
+
+    template<typename... Args>
+    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate(Args&&... args)
     {
         if (m_stack.empty())
         {
-            allocate();
+            allocate(std::forward<Args>(args)...);
         }
         T* element = m_stack.top();
         m_stack.pop();

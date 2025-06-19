@@ -68,29 +68,14 @@ v::RootSlotType InternalStateImpl::get_numeric_variables() const { return valla:
  * State
  */
 
-State::State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem) :
+State::State(Index index, const InternalStateImpl& internal, SharedMemoryPoolPtr<DenseState> dense_state, const formalism::ProblemImpl& problem) :
     m_internal(&internal),
     m_problem(&problem),
     m_index(index),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_numeric_variables()
+    m_dense_state(std::move(dense_state))
 {
-    for (const auto index : get_atoms_range<FluentTag>())
-    {
-        m_fluent_atoms.set(index);
-    }
-    for (const auto index : get_atoms_range<DerivedTag>())
-    {
-        m_derived_atoms.set(index);
-    }
-    for (const auto value : get_numeric_variables_range())
-    {
-        m_numeric_variables.push_back(value);
-    }
-
-    assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
-    assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
+    assert(std::is_sorted(m_dense_state->fluent_atoms.begin(), m_dense_state->fluent_atoms.end()));
+    assert(std::is_sorted(m_dense_state->derived_atoms.begin(), m_dense_state->derived_atoms.end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
@@ -117,7 +102,7 @@ template bool State::literals_hold(const GroundLiteralList<DerivedTag>& literals
 
 bool State::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
-    return evaluate(numeric_constraint, static_numeric_variables, m_numeric_variables);
+    return evaluate(numeric_constraint, static_numeric_variables, m_dense_state->get_numeric_variables());
 }
 
 bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const
@@ -136,24 +121,15 @@ Index State::get_index() const { return m_index; }
 template<formalism::IsFluentOrDerivedTag P>
 const FlatBitset& State::get_atoms() const
 {
-    if constexpr (std::is_same_v<P, formalism::FluentTag>)
-    {
-        return m_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-    {
-        return m_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-    }
+    return m_dense_state->get_atoms<P>();
 }
 
 template const FlatBitset& State::get_atoms<FluentTag>() const;
 template const FlatBitset& State::get_atoms<DerivedTag>() const;
 
-const FlatDoubleList& State::get_numeric_variables() const { return m_numeric_variables; }
+const FlatDoubleList& State::get_numeric_variables() const { return m_dense_state->get_numeric_variables(); }
+
+const DenseState& State::get_dense_state() const { return *m_dense_state; }
 
 /**
  * Pretty printing

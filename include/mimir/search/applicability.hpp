@@ -51,6 +51,7 @@ extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_cond
 /// @brief Return true iff all functions in numeric effects are well-defined in the state.
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
                           const DenseState& dense_state,
+                          const formalism::ProblemImpl& problem,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
@@ -70,6 +71,7 @@ extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
 /// app(c) <=> app(pre) && app(eff)
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
                           const DenseState& dense_state,
+                          const formalism::ProblemImpl& problem,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
@@ -90,6 +92,7 @@ extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
 /// If we use this, we should always assert via is_applicable.
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect,
                                    const DenseState& dense_state,
+                                   const formalism::ProblemImpl& problem,
                                    std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                                    std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
 

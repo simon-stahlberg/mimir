@@ -52,7 +52,6 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
     m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),
-    m_dense_state(*m_problem),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
@@ -77,18 +76,11 @@ LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Prob
     return std::shared_ptr<LiftedApplicableActionGeneratorImpl>(new LiftedApplicableActionGeneratorImpl(std::move(problem), std::move(event_handler)));
 }
 
-mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(State state)
+mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
-    DenseState::translate(state, m_dense_state);
-
-    return create_applicable_action_generator(m_dense_state);
-}
-
-mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const DenseState& dense_state)
-{
-    auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
-    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
-    auto& dense_numeric_variables = dense_state.get_numeric_variables();
+    const auto& dense_fluent_atoms = state.get_atoms<FluentTag>();
+    const auto& dense_derived_atoms = state.get_atoms<DerivedTag>();
+    const auto& dense_numeric_variables = state.get_numeric_variables();
 
     const auto& problem = *m_problem;
     const auto& pddl_repositories = problem.get_repositories();
@@ -116,12 +108,12 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
     for (auto& condition_grounder : m_action_grounding_data)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), dense_state))
+        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_dense_state()))
         {
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
+        for (auto&& binding : condition_grounder.create_binding_generator(state,
                                                                           m_fluent_assignment_set,
                                                                           m_derived_assignment_set,
                                                                           static_numeric_assignment_set,
@@ -131,7 +123,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
 
             const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
 
-            assert(is_applicable(ground_action, dense_state));
+            assert(is_applicable(ground_action, state));
 
             m_event_handler->on_ground_action(ground_action);
 

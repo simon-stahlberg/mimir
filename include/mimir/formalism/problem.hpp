@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
+#include "mimir/algorithms/shared_memory_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
@@ -61,6 +62,10 @@ private:
 
     valla::IndexedHashSet<valla::Slot> m_tree_table;
     valla::IndexedHashSet<ContinuousCost> m_double_table;
+
+    SharedMemoryPool<FlatBitset> m_bitset_pool;
+    SharedMemoryPool<FlatIndexList> m_index_list_pool;
+    SharedMemoryPool<FlatDoubleList> m_double_list_pool;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -135,6 +140,10 @@ public:
     const FlatIndexList* get_index_list(size_t pos) const;
     std::pair<const FlatDoubleList*, Index> get_or_create_double_list(const FlatDoubleList& list);
     const FlatDoubleList* get_double_list(size_t pos) const;
+
+    SharedMemoryPool<FlatBitset>& get_bitset_pool();
+    SharedMemoryPool<FlatIndexList>& get_index_list_pool();
+    SharedMemoryPool<FlatDoubleList>& get_double_list_pool();
 
     /* Objects */
     const Object get_object(const std::string& name) const;

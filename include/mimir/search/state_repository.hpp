@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
+#include "mimir/algorithms/shared_memory_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
@@ -30,8 +31,7 @@ namespace mimir::search
 class StateRepositoryImpl
 {
 private:
-    AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
-    bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
+    AxiomEvaluator m_axiom_evaluator;  ///< The axiom evaluator.
 
     InternalStateImplMap m_states;  ///< Stores all created extended states.
 
@@ -39,13 +39,11 @@ private:
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
     /* Memory for reuse */
-    DenseState m_dense_state_builder;
 
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
-    FlatIndexList m_state_fluent_atoms;
-    FlatIndexList m_state_derived_atoms;
+    SharedMemoryPool<DenseState> m_dense_state_pool;
 
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
@@ -73,23 +71,12 @@ public:
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the state.
     /// @return the successor state and its associated metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
-
-    /// @brief Get or create the successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
-    /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
-    /// @param dense_state is the dense state.
-    /// @param action is the ground action.
-    /// @param state_metric_value is the metric value of the dense state.
-    /// @return the successor state and its associated metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
-                                                                   DenseState& dense_state,
-                                                                   formalism::GroundAction action,
-                                                                   ContinuousCost state_metric_value);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(const State& state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
     /// @brief Get the state with the given internal state.
     /// @param state is the internal state.
     /// @return the state.
-    State get_state(const InternalStateImpl& state) const;
+    State get_state(const InternalStateImpl& state);
 
     /**
      * Getters

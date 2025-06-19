@@ -238,7 +238,7 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
 
 bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const DenseState& dense_state)
 {
-    s_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(dense_state.numeric_variables.size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(conjunctive_effect, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -280,7 +280,7 @@ bool is_applicable(GroundConditionalEffect conditional_effect,
 
 bool is_applicable(GroundConditionalEffect conditional_effect, const DenseState& dense_state)
 {
-    s_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(dense_state.numeric_variables.size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(conditional_effect, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -318,7 +318,7 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
 
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const DenseState& dense_state)
 {
-    s_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(dense_state.numeric_variables.size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable_if_fires(conditional_effect, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -338,7 +338,7 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const St
 
 bool is_dynamically_applicable(GroundAction action, const DenseState& dense_state)
 {
-    s_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(dense_state.numeric_variables.size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_dynamically_applicable(action->get_conjunctive_condition(), dense_state)  //
@@ -349,7 +349,7 @@ bool is_dynamically_applicable(GroundAction action, const DenseState& dense_stat
 
 bool is_applicable(GroundAction action, const DenseState& dense_state)
 {
-    s_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(dense_state.numeric_variables.size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(action->get_conjunctive_condition(), dense_state)  //

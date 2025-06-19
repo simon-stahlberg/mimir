@@ -23,6 +23,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -81,12 +82,13 @@ private:
     const formalism::ProblemImpl* m_problem;
     Index m_index;
 
-    FlatBitset m_fluent_atoms;
-    FlatBitset m_derived_atoms;
-    FlatDoubleList m_numeric_variables;
+    SharedMemoryPoolPtr<DenseState> m_dense_state;
+
+    State(Index index, const InternalStateImpl& internal, SharedMemoryPoolPtr<DenseState> dense_state, const formalism::ProblemImpl& problem);
+
+    friend class StateRepositoryImpl;
 
 public:
-    State(Index index, const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
     State(const State&) = default;
     State(State&&) noexcept = default;
     State& operator=(const State&) = default;
@@ -111,6 +113,8 @@ public:
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms_range() const;
     auto get_numeric_variables_range() const;
+
+    const DenseState& get_dense_state() const;
 
     /**
      * Utils

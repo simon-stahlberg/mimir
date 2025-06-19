@@ -31,50 +31,49 @@ namespace mimir::search
 /// We use it internally for constant time randomized access.
 struct DenseState
 {
-    Index m_index;
-    FlatBitset m_fluent_atoms;
-    FlatBitset m_derived_atoms;
-    FlatDoubleList m_numeric_variables;
-    const formalism::ProblemImpl& m_problem;
+    FlatBitset fluent_atoms;
+    FlatBitset derived_atoms;
+    FlatDoubleList numeric_variables;
 
-    explicit DenseState(const formalism::ProblemImpl& problem);
-    DenseState(const State& state);
-
-    static void translate(const State& state, DenseState& out_state);
+    const formalism::ProblemImpl& problem;
 
     template<formalism::IsFluentOrDerivedTag P>
-    bool contains(formalism::GroundAtom<P> atom) const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literal_holds(formalism::GroundLiteral<P> literal) const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
-
-    template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
-        requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
-    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
+    FlatBitset& get_atoms()
     {
-        return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+        if constexpr (std::is_same_v<P, formalism::FluentTag>)
+        {
+            return fluent_atoms;
+        }
+        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+        {
+            return derived_atoms;
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+        }
     }
-
-    /* Immutable Getters */
-
-    Index get_index() const;
-
     template<formalism::IsFluentOrDerivedTag P>
-    const FlatBitset& get_atoms() const;
+    const FlatBitset& get_atoms() const
+    {
+        if constexpr (std::is_same_v<P, formalism::FluentTag>)
+        {
+            return fluent_atoms;
+        }
+        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+        {
+            return derived_atoms;
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+        }
+    }
+    FlatDoubleList& get_numeric_variables() { return numeric_variables; }
+    const FlatDoubleList& get_numeric_variables() const { return numeric_variables; }
+    const formalism::ProblemImpl& get_problem() const { return problem; }
 
-    const FlatDoubleList& get_numeric_variables() const;
-
-    Index& get_index();
-
-    template<formalism::IsFluentOrDerivedTag P>
-    FlatBitset& get_atoms();
-
-    FlatDoubleList& get_numeric_variables();
-
-    const formalism::ProblemImpl& get_problem() const;
+    DenseState(const formalism::ProblemImpl& problem) : fluent_atoms(), derived_atoms(), numeric_variables(), problem(problem) {}
 };
 
 }

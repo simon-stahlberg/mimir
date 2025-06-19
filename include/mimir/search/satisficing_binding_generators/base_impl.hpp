@@ -279,15 +279,17 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state,
                                                                 const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
                                                                 const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
                                                                 const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
                                                                 const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
-    DenseState::translate(state, m_dense_state);
-
-    return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
+    return create_binding_generator(state.get_dense_state(),
+                                    fluent_assignment_set,
+                                    derived_assignment_set,
+                                    static_numeric_assignment_set,
+                                    fluent_numeric_assignment_set);
 }
 
 template<typename Derived_>
@@ -322,11 +324,9 @@ mimir::generator<std::pair<formalism::ObjectList,
                            std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                       formalism::GroundLiteralList<formalism::FluentTag>,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
-SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(State state)
+SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const State& state)
 {
-    DenseState::translate(state, m_dense_state);
-
-    return create_ground_conjunction_generator(m_dense_state);
+    return create_ground_conjunction_generator(state.get_dense_state());
 }
 
 template<typename Derived_>

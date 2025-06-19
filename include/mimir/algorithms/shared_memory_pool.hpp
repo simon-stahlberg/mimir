@@ -28,11 +28,9 @@
 namespace mimir
 {
 template<typename T>
-    requires std::default_initializable<T>
 class SharedMemoryPool;
 
 template<typename T>
-    requires std::default_initializable<T>
 class SharedMemoryPoolPtr
 {
 private:
@@ -67,8 +65,6 @@ private:
     void dec_ref_count()
     {
         assert(m_object);
-
-        assert(m_object->first > 0 && "Double-free or underflow of ref count");
 
         --m_object->first;
 
@@ -189,7 +185,6 @@ public:
 };
 
 template<typename T>
-    requires std::default_initializable<T>
 class SharedMemoryPool
 {
 private:
@@ -198,9 +193,10 @@ private:
     std::vector<std::unique_ptr<Entry>> m_storage;
     std::stack<Entry*> m_stack;
 
-    void allocate()
+    template<typename... Args>
+    void allocate(Args&&... args)
     {
-        m_storage.push_back(std::make_unique<Entry>(size_t(0), T()));
+        m_storage.push_back(std::make_unique<Entry>(size_t(0), T(std::forward<Args>(args)...)));
         m_stack.push(m_storage.back().get());
     }
 
@@ -216,11 +212,14 @@ public:
     SharedMemoryPool(SharedMemoryPool&& other) = delete;
     SharedMemoryPool& operator=(SharedMemoryPool&& other) = delete;
 
-    [[nodiscard]] SharedMemoryPoolPtr<T> get_or_allocate()
+    [[nodiscard]] SharedMemoryPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
+
+    template<typename... Args>
+    [[nodiscard]] SharedMemoryPoolPtr<T> get_or_allocate(Args&&... args)
     {
         if (m_stack.empty())
         {
-            allocate();
+            allocate(std::forward<Args>(args)...);
         }
         Entry* element = m_stack.top();
         m_stack.pop();

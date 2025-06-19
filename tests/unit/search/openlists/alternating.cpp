@@ -26,23 +26,47 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchOpenListsAlternatingTest)
 {
-    using Queue0 = PriorityQueue<double, int>;
-    using Queue1 = PriorityQueue<int, int>;
+    struct Queue0Entry
+    {
+        using KeyType = double;
+        using ItemType = int;
+
+        double k;
+        int v;
+
+        KeyType get_key() const { return k; }
+        ItemType get_item() const { return v; }
+    };
+
+    struct Queue1Entry
+    {
+        using KeyType = int;
+        using ItemType = int;
+
+        int k;
+        int v;
+
+        KeyType get_key() const { return k; }
+        ItemType get_item() const { return v; }
+    };
+
+    using Queue0 = PriorityQueue<Queue0Entry>;
+    using Queue1 = PriorityQueue<Queue1Entry>;
 
     auto priority_queue_0 = Queue0();
     auto priority_queue_1 = Queue1();
     auto alternating_queue = AlternatingOpenList<Queue0, Queue1>(priority_queue_0, priority_queue_1, std::array<size_t, 2> { 2, 1 });
 
-    priority_queue_0.insert(1.1, 0);
-    priority_queue_0.insert(4.4, 1);
-    priority_queue_0.insert(3.3, 2);
-    priority_queue_0.insert(2.2, 3);
-    priority_queue_0.insert(5.5, 4);
-    priority_queue_1.insert(1, 5);
-    priority_queue_1.insert(4, 6);
-    priority_queue_1.insert(3, 7);
-    priority_queue_1.insert(2, 8);
-    priority_queue_1.insert(5, 9);
+    priority_queue_0.insert(Queue0Entry { 1.1, 0 });
+    priority_queue_0.insert(Queue0Entry { 4.4, 1 });
+    priority_queue_0.insert(Queue0Entry { 3.3, 2 });
+    priority_queue_0.insert(Queue0Entry { 2.2, 3 });
+    priority_queue_0.insert(Queue0Entry { 5.5, 4 });
+    priority_queue_1.insert(Queue1Entry { 1, 5 });
+    priority_queue_1.insert(Queue1Entry { 4, 6 });
+    priority_queue_1.insert(Queue1Entry { 3, 7 });
+    priority_queue_1.insert(Queue1Entry { 2, 8 });
+    priority_queue_1.insert(Queue1Entry { 5, 9 });
 
     EXPECT_EQ(alternating_queue.size(), 10);
     EXPECT_FALSE(alternating_queue.empty());

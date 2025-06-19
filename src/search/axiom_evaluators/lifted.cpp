@@ -67,9 +67,9 @@ LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, EventHand
 
 void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state)
 {
-    const auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
-    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
-    auto& dense_numeric_variables = dense_state.get_numeric_variables();
+    const auto& dense_fluent_atoms = dense_state.fluent_atoms;
+    auto& dense_derived_atoms = dense_state.derived_atoms;
+    auto& dense_numeric_variables = dense_state.numeric_variables;
 
     /* 1. Initialize assignment set */
 
@@ -135,7 +135,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, dense_state));
+                    assert(is_applicable(ground_axiom, dense_state, *m_problem));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

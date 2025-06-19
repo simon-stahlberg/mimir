@@ -89,7 +89,10 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_double_list_map(),
     m_flat_double_lists(),
     m_tree_table(),
-    m_double_table()
+    m_double_table(),
+    m_bitset_pool(),
+    m_index_list_pool(),
+    m_double_list_pool()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -291,6 +294,10 @@ const FlatDoubleList* ProblemImpl::get_double_list(size_t pos) const
     assert(pos < m_flat_double_lists.size());
     return m_flat_double_lists[pos];
 }
+
+SharedMemoryPool<FlatBitset>& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
+SharedMemoryPool<FlatIndexList>& ProblemImpl::get_index_list_pool() { return m_index_list_pool; }
+SharedMemoryPool<FlatDoubleList>& ProblemImpl::get_double_list_pool() { return m_double_list_pool; }
 
 /* Objects */
 const Object ProblemImpl::get_object(const std::string& name) const { return get_name_to_object().at(name); }

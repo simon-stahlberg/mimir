@@ -48,7 +48,7 @@ public:
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
     mimir::generator<formalism::ObjectList>
-    create_binding_generator(State state,
+    create_binding_generator(const State& state,
                              const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
                              const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
                              const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
@@ -65,7 +65,7 @@ public:
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                           formalism::GroundLiteralList<formalism::FluentTag>,
                                           formalism::GroundLiteralList<formalism::DerivedTag>>>>
-    create_ground_conjunction_generator(State state);
+    create_ground_conjunction_generator(const State& state);
 
     mimir::generator<std::pair<formalism::ObjectList,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
