@@ -109,7 +109,7 @@ public:
  * Utils
  */
 
-extern ContinuousCost compute_state_metric_value(State state);
+extern ContinuousCost compute_state_metric_value(const State& state);
 
 }
 

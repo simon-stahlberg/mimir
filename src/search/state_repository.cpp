@@ -38,7 +38,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-ContinuousCost compute_state_metric_value(State state)
+ContinuousCost compute_state_metric_value(const State& state)
 {
     if (state.get_problem().get_auxiliary_function_value().has_value())
     {

@@ -33,7 +33,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& problem, State state, GroundAction action)
+static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& problem, const State& state, GroundAction action)
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
@@ -50,7 +50,7 @@ static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& probl
     return std::make_pair(std::move(positive), std::move(negative));
 }
 
-static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem, State state, GroundAction action)
+static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem, const State& state, GroundAction action)
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
@@ -65,7 +65,7 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
     return std::make_pair(std::move(positive), std::move(negative));
 }
 
-static bool must_precede(const ProblemImpl& problem, State lhs_state, GroundAction lhs_action, State rhs_state, GroundAction rhs_action)
+static bool must_precede(const ProblemImpl& problem, const State& lhs_state, GroundAction lhs_action, const State& rhs_state, GroundAction rhs_action)
 {
     if (!lhs_state.get_atoms<DerivedTag>().count() || !rhs_state.get_atoms<DerivedTag>().count())
     {

@@ -855,11 +855,11 @@ const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { re
  * NoveltyPruning
  */
 
-ArityZeroNoveltyPruningStrategyImpl::ArityZeroNoveltyPruningStrategyImpl(State initial_state) : m_initial_state(initial_state) {}
+ArityZeroNoveltyPruningStrategyImpl::ArityZeroNoveltyPruningStrategyImpl(State initial_state) : m_initial_state(std::move(initial_state)) {}
 
 ArityZeroNoveltyPruningStrategy ArityZeroNoveltyPruningStrategyImpl::create(State initial_state)
 {
-    return std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(initial_state);
+    return std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(std::move(initial_state));
 }
 
 bool ArityZeroNoveltyPruningStrategyImpl::test_prune_initial_state(const State& state) { return false; }
