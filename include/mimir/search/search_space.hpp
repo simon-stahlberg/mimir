@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_SEARCH_SPACE_HPP_
 #define MIMIR_SEARCH_SEARCH_SPACE_HPP_
 
+#include "mimir/common/segmented_vector.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -26,26 +27,24 @@ namespace mimir::search
 {
 
 /// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
-/// @tparam ...SearchNodeProperties
+/// @tparam ...SearchNode is the search node type.
 /// @param search_nodes are all search nodes.
 /// @param final_search_node is the final search node.
 /// @param final_state_index is the final state index.
 /// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
-template<typename... SearchNodeProperties>
-IndexList extract_state_trajectory(const SearchNodeVector<SearchNodeProperties...>& search_nodes,
-                                   const SearchNode<SearchNodeProperties...>& final_search_node,
-                                   Index final_state_index)
+template<IsSearchNode SearchNode>
+IndexList extract_state_trajectory(const SegmentedVector<SearchNode>& search_nodes, const SearchNode& final_search_node, Index final_state_index)
 {
     auto trajectory = IndexList {};
     trajectory.push_back(final_state_index);
 
     auto cur_search_node = &final_search_node;
 
-    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
+    while (cur_search_node->parent_state != std::numeric_limits<Index>::max())
     {
-        trajectory.push_back(cur_search_node->get_parent_state());
+        trajectory.push_back(cur_search_node->parent_state);
 
-        cur_search_node = &search_nodes.at(cur_search_node->get_parent_state());
+        cur_search_node = &search_nodes.at(cur_search_node->parent_state);
     }
 
     std::reverse(trajectory.begin(), trajectory.end());
@@ -54,18 +53,19 @@ IndexList extract_state_trajectory(const SearchNodeVector<SearchNodeProperties..
 }
 
 /// @brief Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.
+/// @tparam ...SearchNode is the search node type.
 /// @param start_state is the start state.
 /// @param start_state_metric_value is the metric value of the start state
 /// @param final_search_node is the final search node.
 /// @param final_state_index is the final state index.
 /// @param search_nodes are all search nodes.
 /// @param context is the search context.
-template<typename... SearchNodeProperties>
+template<IsSearchNode SearchNode>
 inline Plan extract_total_ordered_plan(State start_state,
                                        ContinuousCost start_state_metric_value,
-                                       const SearchNode<SearchNodeProperties...>& final_search_node,
+                                       const SearchNode& final_search_node,
                                        Index final_state_index,
-                                       const SearchNodeVector<SearchNodeProperties...>& search_nodes,
+                                       const SegmentedVector<SearchNode>& search_nodes,
                                        const SearchContext& context)
 {
     const auto state_trajectory = extract_state_trajectory(search_nodes, final_search_node, final_state_index);
@@ -98,13 +98,6 @@ inline Plan extract_total_ordered_plan(State start_state,
             }
         }
         assert(lowest_state && lowest_action);
-        // std::cout << std::make_tuple(lowest_action, std::cref(*state_repository.get_problem_context().get_repositories()), FullActionFormatterTag {})
-        //           << std::endl;
-        // std::cout << std::make_tuple(state_repository.get_problem_context().get_problem(),
-        //                              lowest_state,
-        //                              std::cref(*state_repository.get_problem_context().get_repositories()))
-        //           << std::endl;
-        // std::cout << lowest_metric_value << " " << lowest_metric_value - state_metric_value << std::endl << std::endl << std::endl;
         actions.push_back(lowest_action);
         states.push_back(lowest_state.value());
         state = lowest_state.value();

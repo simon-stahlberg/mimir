@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/astar_eager.hpp"
 
+#include "mimir/common/segmented_vector.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -44,20 +45,21 @@ namespace mimir::search::astar_eager
  * AStar search node
  */
 
-using AStarSearchNode = SearchNode<ContinuousCost, ContinuousCost>;
-using AStarSearchNodeVector = SearchNodeVector<ContinuousCost, ContinuousCost>;
-
-static_assert(sizeof(AStarSearchNode) == 24);
-
-static void set_g_value(AStarSearchNode& node, ContinuousCost g_value) { node.get_property<0>() = g_value; }
-static void set_h_value(AStarSearchNode& node, ContinuousCost h_value) { node.get_property<1>() = h_value; }
-
-static ContinuousCost get_g_value(const AStarSearchNode& node) { return node.get_property<0>(); }
-static ContinuousCost get_h_value(const AStarSearchNode& node) { return node.get_property<1>(); }
-
-static AStarSearchNode& get_or_create_search_node(size_t state_index, AStarSearchNodeVector& search_nodes)
+struct SearchNode
 {
-    static constexpr auto default_node = AStarSearchNode(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0));
+    ContinuousCost g_value;
+    ContinuousCost h_value;
+    Index parent_state;
+    SearchNodeStatus status;
+};
+
+static_assert(sizeof(SearchNode) == 24);
+
+using SearchNodeVector = SegmentedVector<SearchNode>;
+
+static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVector& search_nodes)
+{
+    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0), MAX_INDEX, SearchNodeStatus::NEW };
 
     while (state_index >= search_nodes.size())
     {
@@ -65,6 +67,27 @@ static AStarSearchNode& get_or_create_search_node(size_t state_index, AStarSearc
     }
     return search_nodes[state_index];
 }
+
+/**
+ * AStar queue entry
+ */
+
+struct QueueEntry
+{
+    using KeyType = std::pair<ContinuousCost, SearchNodeStatus>;
+    using ItemType = InternalState;
+
+    ContinuousCost f_value;
+    InternalState internal_state;
+    SearchNodeStatus status;
+
+    KeyType get_key() const { return std::make_pair(f_value, status); }
+    ItemType get_item() const { return internal_state; }
+};
+
+static_assert(sizeof(QueueEntry) == 24);
+
+using Queue = PriorityQueue<QueueEntry>;
 
 /**
  * AStar
@@ -100,7 +123,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto search_nodes = AStarSearchNodeVector();
+    auto search_nodes = SearchNodeVector();
 
     /* Test whether initial state is goal. */
 
@@ -124,22 +147,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    struct QueueEntry
-    {
-        using KeyType = std::pair<ContinuousCost, SearchNodeStatus>;
-        using ItemType = InternalState;
-
-        ContinuousCost f_value;
-        InternalState internal_state;
-        SearchNodeStatus status;
-
-        KeyType get_key() const { return std::make_pair(f_value, status); }
-        ItemType get_item() const { return internal_state; }
-    };
-
-    static_assert(sizeof(QueueEntry) == 24);
-
-    auto openlist = PriorityQueue<QueueEntry>();
+    auto openlist = Queue();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -151,13 +159,13 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     event_handler->on_start_search(start_state, start_g_value, start_f_value);
 
     auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
-    start_search_node.get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
-    set_g_value(start_search_node, start_g_value);
-    set_h_value(start_search_node, start_h_value);
+    start_search_node.status = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
+    start_search_node.g_value = start_g_value;
+    start_search_node.h_value = start_h_value;
 
     /* Test whether start state is deadend. */
 
-    if (start_search_node.get_status() == SearchNodeStatus::DEAD_END)
+    if (start_search_node.status == SearchNodeStatus::DEAD_END)
     {
         event_handler->on_unsolvable();
 
@@ -175,7 +183,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    openlist.insert(QueueEntry { start_f_value, start_state.get_internal(), start_search_node.get_status() });
+    openlist.insert(QueueEntry { start_f_value, start_state.get_internal(), start_search_node.status });
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -197,14 +205,14 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
 
-        if (search_node.get_status() == SearchNodeStatus::CLOSED || search_node.get_status() == SearchNodeStatus::DEAD_END)
+        if (search_node.status == SearchNodeStatus::CLOSED || search_node.status == SearchNodeStatus::DEAD_END)
         {
             continue;
         }
 
         /* Report search progress. */
 
-        const auto search_node_f_value = get_g_value(search_node) + get_h_value(search_node);
+        const auto search_node_f_value = search_node.g_value + search_node.h_value;
 
         if (search_node_f_value > f_value)
         {
@@ -216,7 +224,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         /* Test whether state achieves the dynamic goal. */
 
-        if (search_node.get_status() == SearchNodeStatus::GOAL)
+        if (search_node.status == SearchNodeStatus::GOAL)
         {
             event_handler->on_expand_goal_state(state);
 
@@ -246,14 +254,13 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         /* Ensure that the state is closed */
 
-        search_node.get_status() = SearchNodeStatus::CLOSED;
+        search_node.status = SearchNodeStatus::CLOSED;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
-            const auto [successor_state, successor_state_metric_value] =
-                state_repository.get_or_create_successor_state(state, action, get_g_value(search_node));
+            const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, search_node.g_value);
             auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
-            const auto action_cost = successor_state_metric_value - get_g_value(search_node);
+            const auto action_cost = successor_state_metric_value - search_node.g_value;
 
             if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
             {
@@ -262,7 +269,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            const bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
+            const bool is_new_successor_state = (successor_search_node.status == SearchNodeStatus::NEW);
 
             if (is_new_successor_state && search_nodes.size() >= options.max_num_states)
             {
@@ -280,40 +287,40 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             /* Check whether state must be reopened or not. */
 
-            if (successor_state_metric_value < get_g_value(successor_search_node))
+            if (successor_state_metric_value < successor_search_node.g_value)
             {
                 /* Open/Reopen state with updated f_value. */
 
-                successor_search_node.get_status() = SearchNodeStatus::OPEN;
-                successor_search_node.get_parent_state() = state.get_index();
-                set_g_value(successor_search_node, successor_state_metric_value);
+                successor_search_node.status = SearchNodeStatus::OPEN;
+                successor_search_node.parent_state = state.get_index();
+                successor_search_node.g_value = successor_state_metric_value;
                 if (is_new_successor_state)
                 {
                     // Compute heuristic if state is new.
                     const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
                     if (successor_is_goal_state)
                     {
-                        successor_search_node.get_status() = SearchNodeStatus::GOAL;
+                        successor_search_node.status = SearchNodeStatus::GOAL;
                     }
                     const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
-                    set_h_value(successor_search_node, successor_h_value);
+                    successor_search_node.h_value = successor_h_value;
 
                     if (successor_h_value == INFINITY_CONTINUOUS_COST)
                     {
-                        successor_search_node.get_status() = SearchNodeStatus::DEAD_END;
+                        successor_search_node.status = SearchNodeStatus::DEAD_END;
                         continue;
                     }
                 }
 
-                if (successor_search_node.get_status() == SearchNodeStatus::DEAD_END)
+                if (successor_search_node.status == SearchNodeStatus::DEAD_END)
                 {
                     continue;
                 }
 
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);
 
-                const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
-                openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal(), successor_search_node.get_status() });
+                const auto successor_f_value = successor_search_node.g_value + successor_search_node.h_value;
+                openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal(), successor_search_node.status });
             }
             else
             {
