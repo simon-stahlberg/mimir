@@ -320,6 +320,33 @@ class Predicate:
         """
         return [Variable(x) for x in self._advanced_predicate.get_parameters()]
 
+    def is_static(self) -> 'bool':
+        """
+        Get whether the predicate is static.
+
+        :return: True if the predicate is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_predicate, AdvancedStaticPredicate)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the predicate is fluent.
+
+        :return: True if the predicate is fluent, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_predicate, AdvancedFluentPredicate)
+
+    def is_derived(self) -> 'bool':
+        """
+        Get whether the predicate is derived.
+
+        :return: True if the predicate is derived, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_predicate, AdvancedDerivedPredicate)
+
     def __str__(self):
         """
         Get the string representation of the predicate.
@@ -1489,6 +1516,21 @@ class Domain:
                 return action
         raise ValueError(f"Action '{action_name}' not found in the domain.")
 
+    def has_action(self, action_name: 'str') -> 'bool':
+        """
+        Check if the domain has an action with the specified name.
+
+        :param action_name: The name of the action to check.
+        :type action_name: str
+        :return: True if the action exists, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(action_name, str), "Invalid action name type."
+        for action in self.get_actions():
+            if action.get_name() == action_name:
+                return True
+        return False
+
     def get_constants(self) -> 'list[Object]':
         """
         Get the constants of the domain.
@@ -1512,6 +1554,21 @@ class Domain:
             if constant.get_name() == constant_name:
                 return constant
         raise ValueError(f"Constant '{constant_name}' not found in the domain.")
+
+    def has_constant(self, constant_name: 'str') -> 'bool':
+        """
+        Check if the domain has a constant with the specified name.
+
+        :param constant_name: The name of the constant to check.
+        :type constant_name: str
+        :return: True if the constant exists, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(constant_name, str), "Invalid constant name type."
+        for constant in self.get_constants():
+            if constant.get_name() == constant_name:
+                return True
+        return False
 
     def get_predicates(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[Predicate]':
         """
@@ -1552,6 +1609,21 @@ class Domain:
             if predicate.get_name() == predicate_name:
                 return predicate
         raise ValueError(f"Predicate '{predicate_name}' not found in the domain.")
+
+    def has_predicate(self, predicate_name: 'str') -> 'bool':
+        """
+        Check if the domain has a predicate with the specified name.
+
+        :param predicate_name: The name of the predicate to check.
+        :type predicate_name: str
+        :return: True if the predicate exists, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(predicate_name, str), "Invalid predicate name type."
+        for predicate in self.get_predicates():
+            if predicate.get_name() == predicate_name:
+                return True
+        return False
 
 
 class Problem:
@@ -1635,6 +1707,21 @@ class Problem:
             if obj.get_name() == object_name:
                 return obj
         raise ValueError(f"Object '{object_name}' not found in the problem.")
+
+    def has_object(self, object_name: 'str') -> 'bool':
+        """
+        Check if the problem has an object with the specified name.
+
+        :param object_name: The name of the object to check.
+        :type object_name: str
+        :return: True if the object exists, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(object_name, str), "Invalid object name type."
+        for obj in self.get_objects():
+            if obj.get_name() == object_name:
+                return True
+        return False
 
     def get_requirements(self) -> 'list[str]':
         """
@@ -2331,7 +2418,7 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
-    def ground(self, state: 'State', max_groundings: int = -1) -> 'list[GroundConjunctiveCondition]':
+    def ground(self, state: 'State', max_groundings: int = -1, blacklist: list[Predicate] = None) -> 'list[GroundConjunctiveCondition]':
         """
         Ground the conjunctive condition.
 
@@ -2339,10 +2426,14 @@ class ConjunctiveCondition:
         :type state: State
         :param max_groundings: The maximum number of groundings to generate. If -1, generate all groundings.
         :type max_groundings: int
+        :param blacklist: A list of predicates to be removed from the resulting groundings; these predicates are still included in the grounding process.
+        :type blacklist: list[Predicate] | None
         :return: A list of GroundConjunctiveCondition objects representing the grounded conditions.
         :rtype: list[GroundConjunctiveCondition]
         """
         assert isinstance(state, State), "Invalid state type."
+        assert isinstance(max_groundings, int), "Invalid max_groundings type."
+        assert blacklist is None or isinstance(blacklist, list), "Invalid blacklist type."
         if max_groundings < 0:
             max_groundings = 1_000_000_000  # Generate all groundings
         problem = state._problem
@@ -2350,12 +2441,23 @@ class ConjunctiveCondition:
         if not hasattr(self, '_satisficing_binding_generator'):
             self._satisficing_binding_generator = ConjunctiveConditionSatisficingBindingGenerator(self._advanced_conjunctive_condition, advanced_problem)
         result = []
-        groundings = self._satisficing_binding_generator.generate_ground_conjunctions(state._advanced_state, max_groundings)
-        for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
-            advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals,
-                                                                                             fluent_ground_literals,
-                                                                                             derived_ground_literals)
-            result.append(GroundConjunctiveCondition(advanced_condition, problem))
+        if (blacklist is None) or (len(blacklist) == 0):
+            groundings = self._satisficing_binding_generator.generate_ground_conjunctions(state._advanced_state, max_groundings)
+            for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
+                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals)
+                result.append(GroundConjunctiveCondition(advanced_condition, problem))
+        else:
+            static_blacklist = {x.get_index() for x in blacklist if x.is_static()}
+            fluent_blacklist = {x.get_index() for x in blacklist if x.is_fluent()}
+            derived_blacklist = {x.get_index() for x in blacklist if x.is_derived()}
+            assert (len(static_blacklist) + len(fluent_blacklist) + len(derived_blacklist)) == len(blacklist), "Invalid blacklist, contains non-predicate elements."
+            groundings = self._satisficing_binding_generator.generate_ground_conjunctions(state._advanced_state, max_groundings)
+            for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
+                static_ground_literals = AdvancedStaticGroundLiteralList([x for x in static_ground_literals if x.get_atom().get_predicate().get_index() not in static_blacklist])
+                fluent_ground_literals = AdvancedFluentGroundLiteralList([x for x in fluent_ground_literals if x.get_atom().get_predicate().get_index() not in fluent_blacklist])
+                derived_ground_literals = AdvancedDerivedGroundLiteralList([x for x in derived_ground_literals if x.get_atom().get_predicate().get_index() not in derived_blacklist])
+                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals)
+                result.append(GroundConjunctiveCondition(advanced_condition, problem))
         return result
 
     def __str__(self):

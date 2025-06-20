@@ -332,6 +332,18 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         assert len(all_groundings) == 4
         assert len(single_grounding) == 1
 
+    def test_grounder_blacklist(self):
+        domain_path = DATA_DIR / 'gripper' / 'domain.pddl'
+        problem_path = DATA_DIR / 'gripper' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        pickup_condition = domain.get_action('pick').get_precondition()
+        blacklist = [domain.get_predicate('ball')]
+        all_groundings = pickup_condition.ground(initial_state, blacklist=blacklist)
+        assert len(all_groundings) == 4
+        assert len(all_groundings[0]) == 5
+
     def test_lift(self):
         domain_path = DATA_DIR / 'gripper' / 'domain.pddl'
         problem_path = DATA_DIR / 'gripper' / 'test_problem2.pddl'
