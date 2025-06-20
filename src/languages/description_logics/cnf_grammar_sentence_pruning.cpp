@@ -41,7 +41,6 @@ StateListRefinementPruningFunction::StateListRefinementPruningFunction(const dat
 StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
                                                                        const graphs::ClassGraph& class_graph,
                                                                        DenotationRepositories& ref_denotation_repositories) :
-    m_generalized_state_space(generalized_state_space),
     m_denotation_repositories(ref_denotation_repositories),
     m_denotations_repositories(),
     m_states()

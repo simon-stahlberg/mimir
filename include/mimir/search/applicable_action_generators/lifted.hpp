@@ -45,17 +45,9 @@ public:
     using DefaultEventHandlerImpl = applicable_action_generator::lifted::DefaultEventHandlerImpl;
     using DefaultEventHandler = applicable_action_generator::lifted::DefaultEventHandler;
 
-    /// @brief Simplest construction
-    LiftedApplicableActionGeneratorImpl(formalism::Problem problem);
+    LiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    /// @brief Complete construction
-    LiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler);
-
-    /// @brief Simplest construction
-    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem);
-
-    /// @brief Complete construction
-    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler);
+    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler = nullptr);
 
     // Uncopyable
     LiftedApplicableActionGeneratorImpl(const LiftedApplicableActionGeneratorImpl& other) = delete;

@@ -496,16 +496,15 @@ void bind_module_definitions(nb::module_& m)
                                                                    "ILiftedApplicableActionGeneratorEventHandler");  //
     nb::class_<LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
-        "DefaultLiftedApplicableActionGeneratorEventHandler")  //
-        .def(nb::init<>());
+        "DefaultLiftedApplicableActionGeneratorEventHandler")
+        .def_static("create", &LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<LiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DebugLiftedApplicableActionGeneratorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &LiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<LiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
                                                                                 "LiftedApplicableActionGenerator")  //
-        .def(nb::init<Problem>(), "problem"_a)
-        .def(nb::init<Problem, LiftedApplicableActionGeneratorImpl::EventHandler>(), "problem"_a, "event_handler"_a);
+        .def_static("create", &LiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -513,11 +512,11 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, GroundedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DefaultGroundedApplicableActionGeneratorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<GroundedApplicableActionGeneratorImpl::DebugEventHandlerImpl, GroundedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DebugGroundedApplicableActionGeneratorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &GroundedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<GroundedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m, "GroundedApplicableActionGenerator");
 
     /* IAxiomEvaluator */
@@ -528,31 +527,29 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<LiftedAxiomEvaluatorImpl::IEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
     nb::class_<LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
                                                                                                            "DefaultLiftedAxiomEvaluatorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<LiftedAxiomEvaluatorImpl::DebugEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
                                                                                                          "DebugLiftedAxiomEvaluatorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &LiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<LiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
-        .def(nb::init<Problem>(), "problem"_a)
-        .def(nb::init<Problem, LiftedAxiomEvaluatorImpl::EventHandler>(), "problem"_a, "event_handler"_a);
+        .def_static("create", &LiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedAxiomEvaluatorImpl::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
     nb::class_<GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl, GroundedAxiomEvaluatorImpl::IEventHandler>(m,
                                                                                                                "DefaultGroundedAxiomEvaluatorEventHandler")  //
-        .def(nb::init<>());
+        .def_static("create", &GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<GroundedAxiomEvaluatorImpl::DebugEventHandlerImpl, GroundedAxiomEvaluatorImpl::IEventHandler>(m,
                                                                                                              "DebugGroundedAxiomEvaluatorEventHandler")  //
-        .def(nb::init<>());
-    nb::class_<GroundedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "GroundedAxiomEvaluator")  //
-        ;
+        .def_static("create", &GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<GroundedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "GroundedAxiomEvaluator");
 
     /* StateRepositoryImpl */
     m.def("compute_state_metric_value", &compute_state_metric_value, "state"_a);
 
-    nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
-        .def(nb::init<AxiomEvaluator>(), "axiom_evaluator"_a)
-        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state)
+    nb::class_<StateRepositoryImpl>(m, "StateRepository")
+        .def_static("create", &StateRepositoryImpl::create, "axiom_evaluator"_a)
+        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, nb::rv_policy::copy)
         .def(
             "get_or_create_state",
             [](StateRepositoryImpl& self, const GroundAtomList<FluentTag>& fluent_atoms, const ContinuousCostList& numeric_variables)
@@ -566,6 +563,8 @@ void bind_module_definitions(nb::module_& m)
              "action"_a,
              "state_metric_value"_a,
              nb::rv_policy::copy)
+        .def("get_state", &StateRepositoryImpl::get_state, nb::rv_policy::copy, "packed_state"_a)
+        .def("get_state_index", &StateRepositoryImpl::get_state_index, nb::rv_policy::copy, "packed_state"_a)
         .def("get_state_count", &StateRepositoryImpl::get_state_count, nb::rv_policy::copy)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);
@@ -604,22 +603,22 @@ void bind_module_definitions(nb::module_& m)
         .def("get_preferred_actions", &IHeuristic::get_preferred_actions, nb::rv_policy::reference_internal);
 
     nb::class_<BlindHeuristicImpl, IHeuristic>(m, "BlindHeuristic")  //
-        .def(nb::init<Problem>(), "problem"_a);
+        .def_static("create", &BlindHeuristicImpl::create, "problem"_a);
 
     nb::class_<PerfectHeuristicImpl, IHeuristic>(m, "PerfectHeuristic")  //
-        .def(nb::init<SearchContext>(), "search_context"_a);
+        .def_static("create", &PerfectHeuristicImpl::create, "search_context"_a);
 
     nb::class_<MaxHeuristicImpl, IHeuristic>(m, "MaxHeuristic")  //
-        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+        .def_static("create", &MaxHeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
 
     nb::class_<AddHeuristicImpl, IHeuristic>(m, "AddHeuristic")  //
-        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+        .def_static("create", &AddHeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
 
     nb::class_<SetAddHeuristicImpl, IHeuristic>(m, "SetAddHeuristic")  //
-        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+        .def_static("create", &SetAddHeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
 
     nb::class_<FFHeuristicImpl, IHeuristic>(m, "FFHeuristic")  //
-        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+        .def_static("create", &FFHeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
 
     /* Algorithms */
 
@@ -637,7 +636,6 @@ void bind_module_definitions(nb::module_& m)
         .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, "state"_a);
 
     nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")  //
-        .def(nb::init<Problem>(), "problem"_a)
         .def_static("create", &ProblemGoalStrategyImpl::create, "problem"_a);
 
     // PruningStrategy

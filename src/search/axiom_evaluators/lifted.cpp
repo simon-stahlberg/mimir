@@ -35,11 +35,9 @@ namespace mimir::search
  * LiftedAxiomEvaluator
  */
 
-LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem) : LiftedAxiomEvaluatorImpl(std::move(problem), DefaultEventHandlerImpl::create()) {}
-
 LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler event_handler) :
     m_problem(problem),
-    m_event_handler(event_handler),
+    m_event_handler(event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()),
     m_condition_grounders(),
     m_fluent_atoms(),
     m_derived_atoms(),
@@ -58,11 +56,10 @@ LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler
     }
 }
 
-LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem) { return create(std::move(problem), DefaultEventHandlerImpl::create()); }
-
 LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler)
 {
-    return std::shared_ptr<LiftedAxiomEvaluatorImpl>(new LiftedAxiomEvaluatorImpl(std::move(problem), std::move(event_handler)));
+    return std::shared_ptr<LiftedAxiomEvaluatorImpl>(
+        new LiftedAxiomEvaluatorImpl(std::move(problem), event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()));
 }
 
 void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)

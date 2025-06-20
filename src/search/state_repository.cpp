@@ -361,6 +361,8 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     return State(m_states.at(state), &state, std::move(unpacked_state), shared_from_this());
 }
 
+Index StateRepositoryImpl::get_state_index(const PackedStateImpl& state) { return m_states.at(state); }
+
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }

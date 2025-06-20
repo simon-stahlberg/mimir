@@ -13,9 +13,9 @@ def test_applicable_action_generator_ownership():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
 
-    applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
-    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
-    state_repository = search.StateRepository(axiom_evaluator)
+    applicable_action_generator = search.LiftedApplicableActionGenerator.create(problem)
+    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    state_repository = search.StateRepository.create(axiom_evaluator)
     initial_state, initial_metric_value = state_repository.get_or_create_initial_state()
     actions = applicable_action_generator.generate_applicable_actions(initial_state)
 

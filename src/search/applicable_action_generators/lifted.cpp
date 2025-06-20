@@ -43,14 +43,9 @@ namespace mimir::search
  * LiftedApplicableActionGenerator
  */
 
-LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(formalism::Problem problem) :
-    LiftedApplicableActionGeneratorImpl(std::move(problem), DefaultEventHandlerImpl::create())
-{
-}
-
 LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem problem, EventHandler event_handler) :
     m_problem(problem),
-    m_event_handler(event_handler),
+    m_event_handler(event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()),
     m_action_grounding_data(),
     m_fluent_atoms(),
     m_derived_atoms(),
@@ -69,11 +64,10 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
     }
 }
 
-LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem) { return create(problem, DefaultEventHandlerImpl::create()); }
-
 LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler)
 {
-    return std::shared_ptr<LiftedApplicableActionGeneratorImpl>(new LiftedApplicableActionGeneratorImpl(std::move(problem), std::move(event_handler)));
+    return std::shared_ptr<LiftedApplicableActionGeneratorImpl>(
+        new LiftedApplicableActionGeneratorImpl(std::move(problem), event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()));
 }
 
 mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)

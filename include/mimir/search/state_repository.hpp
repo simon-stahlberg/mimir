@@ -75,10 +75,17 @@ public:
     /// @return the successor state and its associated metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(const State& state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
-    /// @brief Get the state with the given internal state.
-    /// @param state is the internal state.
+    /// @brief Get the state with the given packed state.
+    /// This operation unpacks the state.
+    /// @param state is the packed state.
     /// @return the state.
     State get_state(const PackedStateImpl& state);
+
+    /// @brief Get the index of a given packed state.
+    /// This operation has constant time.
+    /// @param state is the packed state.
+    /// @return the index.
+    Index get_state_index(const PackedStateImpl& state);
 
     /**
      * Getters

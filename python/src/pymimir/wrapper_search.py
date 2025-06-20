@@ -53,7 +53,7 @@ class AddHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
-        self._advanced_heuristic = AdvancedAddHeuristic(delete_relaxed)
+        self._advanced_heuristic = AdvancedAddHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
         """
@@ -76,7 +76,7 @@ class BlindHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        self._advanced_heuristic = AdvancedBlindHeuristic(problem._advanced_problem)
+        self._advanced_heuristic = AdvancedBlindHeuristic.create(problem._advanced_problem)
 
     def get_problem(self) -> 'Problem':
         """
@@ -100,7 +100,7 @@ class MaxHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
-        self._advanced_heuristic = AdvancedMaxHeuristic(delete_relaxed)
+        self._advanced_heuristic = AdvancedMaxHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
         """
@@ -123,7 +123,7 @@ class PerfectHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        self._advanced_heuristic = AdvancedPerfectHeuristic(problem._search_context)
+        self._advanced_heuristic = AdvancedPerfectHeuristic.create(problem._search_context)
 
     def get_problem(self) -> 'Problem':
         """
@@ -147,7 +147,7 @@ class SetAddHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
-        self._advanced_heuristic = AdvancedSetAddHeuristic(delete_relaxed)
+        self._advanced_heuristic = AdvancedSetAddHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
         """
@@ -171,7 +171,7 @@ class FFHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
-        self._advanced_heuristic = AdvancedFFHeuristic(delete_relaxed)
+        self._advanced_heuristic = AdvancedFFHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
         """
@@ -290,7 +290,7 @@ def astar_eager(
     class EventHandler(AdvancedAStarEagerEventHandler):
         def on_close_state(self, arg0):
             pass # Ignored
-        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
+        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5):
             pass  # Ignored
         def on_exhausted(self):
             pass  # Ignored

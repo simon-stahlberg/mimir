@@ -41,7 +41,7 @@ class State
 private:
     StateRepository m_parent;
     PackedState m_packed;
-    UnpackedState m_unpacked;
+    UnpackedState m_unpacked;  ///< we could remove it fall back to it returning iterators
     Index m_index;
 
     State(Index index, PackedState packed, UnpackedState unpacked, StateRepository parent);

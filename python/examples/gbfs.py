@@ -43,7 +43,7 @@ class CustomGBFSEventHandler(search.IGBFSEagerEventHandler):
     def on_new_best_h_value(self, h_value : float):
         pass
 
-    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_problem: int, num_bytes_for_nodes: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
+    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
     def on_solved(self, plan: search.Plan):
@@ -65,14 +65,14 @@ def main():
 
     # Create the search context
     problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
-    applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
-    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
-    state_repository = search.StateRepository(axiom_evaluator)
+    applicable_action_generator = search.LiftedApplicableActionGenerator.create(problem)
+    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    state_repository = search.StateRepository.create(axiom_evaluator)
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 
     # Create some heuristics
     delete_relaxation = search.DeleteRelaxedProblemExplorator(problem)
-    heuristic = search.FFHeuristic(delete_relaxation)
+    heuristic = search.FFHeuristic.create(delete_relaxation)
 
     # Create the goal strategy
     goal_strategy = search.ProblemGoalStrategy.create(search_context.get_problem())
