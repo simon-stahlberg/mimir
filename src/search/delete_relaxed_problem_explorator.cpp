@@ -28,8 +28,8 @@
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -82,7 +82,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         for (const auto& action : delete_free_applicable_action_generator.create_applicable_action_generator(state))
         {
-            // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
+            // Note that get_or_create_successor_state already modifies unpacked_state to be the successor state.
             // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
             auto [successor_state, metric_value] = delete_free_state_repository.get_or_create_successor_state(state, action, 0);
             state = successor_state;

@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -35,7 +35,7 @@ ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*
 }
 
 template<formalism::HasConjunctiveCondition E>
-void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
+void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const UnpackedStateImpl& state, std::vector<const E*>& ref_applicable_elements) const
 {
     if constexpr (std::is_same_v<E, GroundActionImpl>)
     {
@@ -83,7 +83,7 @@ ElementGeneratorNode_Imperfect<E>::ElementGeneratorNode_Imperfect(std::span<cons
 }
 
 template<formalism::HasConjunctiveCondition E>
-void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
+void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const UnpackedStateImpl& state, std::vector<const E*>& ref_applicable_elements) const
 {
     for (const auto& element : this->m_elements)
     {

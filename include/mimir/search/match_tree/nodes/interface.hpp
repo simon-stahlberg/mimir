@@ -53,7 +53,7 @@ class INode
 public:
     virtual ~INode() = default;
 
-    virtual void generate_applicable_actions(const DenseState& state,
+    virtual void generate_applicable_actions(const UnpackedStateImpl& state,
                                              std::vector<const INode<E>*>& ref_applicable_nodes,
                                              std::vector<const E*>& ref_applicable_elements) const = 0;
 

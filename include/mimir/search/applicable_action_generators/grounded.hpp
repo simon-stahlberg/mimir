@@ -22,9 +22,9 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 #include <variant>
 

@@ -24,7 +24,7 @@
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
@@ -55,7 +55,7 @@ public:
                              const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
     mimir::generator<formalism::ObjectList>
-    create_binding_generator(const DenseState& dense_state,
+    create_binding_generator(const UnpackedStateImpl& unpacked_state,
                              const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
                              const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
                              const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
@@ -71,7 +71,7 @@ public:
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                           formalism::GroundLiteralList<formalism::FluentTag>,
                                           formalism::GroundLiteralList<formalism::DerivedTag>>>>
-    create_ground_conjunction_generator(const DenseState& dense_state);
+    create_ground_conjunction_generator(const UnpackedStateImpl& unpacked_state);
 
     /**
      * Getters
@@ -90,7 +90,6 @@ protected:
     formalism::StaticConsistencyGraph m_static_consistency_graph;
 
     /* Memory for reuse */
-    DenseState m_dense_state;
     formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
     formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
     formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
@@ -113,19 +112,19 @@ protected:
     bool
     is_valid_binding(const formalism::NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(formalism::ConjunctiveCondition condition, const DenseState& dense_state, const formalism::ObjectList& binding);
+    bool is_valid_binding(formalism::ConjunctiveCondition condition, const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(const DenseState& dense_state, const formalism::ObjectList& binding);
+    bool is_valid_binding(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
 
-    mimir::generator<formalism::ObjectList> nullary_case(const DenseState& dense_state);
+    mimir::generator<formalism::ObjectList> nullary_case(const UnpackedStateImpl& unpacked_state);
 
-    mimir::generator<formalism::ObjectList> unary_case(const DenseState& dense_state,
+    mimir::generator<formalism::ObjectList> unary_case(const UnpackedStateImpl& unpacked_state,
                                                        const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
                                                        const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
                                                        const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
                                                        const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
-    mimir::generator<formalism::ObjectList> general_case(const DenseState& dense_state,
+    mimir::generator<formalism::ObjectList> general_case(const UnpackedStateImpl& unpacked_state,
                                                          const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
                                                          const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
                                                          const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,

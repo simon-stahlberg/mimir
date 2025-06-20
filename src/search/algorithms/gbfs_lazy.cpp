@@ -81,14 +81,14 @@ static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVecto
 struct GreedyQueueEntry
 {
     using KeyType = std::tuple<Index, SearchNodeStatus>;
-    using ItemType = InternalState;
+    using ItemType = PackedState;
 
-    InternalState internal_state;
+    PackedState packed_state;
     Index step;
     SearchNodeStatus status;
 
     KeyType get_key() const { return std::make_tuple(step, status); }
-    ItemType get_item() const { return internal_state; }
+    ItemType get_item() const { return packed_state; }
 };
 
 static_assert(sizeof(GreedyQueueEntry) == 16);
@@ -96,16 +96,16 @@ static_assert(sizeof(GreedyQueueEntry) == 16);
 struct ExhaustiveQueueEntry
 {
     using KeyType = std::tuple<ContinuousCost, ContinuousCost, Index, SearchNodeStatus>;
-    using ItemType = InternalState;
+    using ItemType = PackedState;
 
     ContinuousCost g_value;
     ContinuousCost h_value;
-    InternalState internal_state;
+    PackedState packed_state;
     Index step;
     SearchNodeStatus status;
 
     KeyType get_key() const { return std::make_tuple(h_value, g_value, step, status); }
-    ItemType get_item() const { return internal_state; }
+    ItemType get_item() const { return packed_state; }
 };
 
 static_assert(sizeof(ExhaustiveQueueEntry) == 32);
@@ -227,7 +227,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     const auto use_exploration_strategy = std::any_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 4, [](double w) { return w > 0; });
     auto applicable_actions = GroundActionList {};
-    standard_openlist.insert(ExhaustiveQueueEntry { start_g_value, start_h_value, start_state.get_internal(), step++, start_search_node.status });
+    standard_openlist.insert(ExhaustiveQueueEntry { start_g_value, start_h_value, start_state.get_packed_state(), step++, start_search_node.status });
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -371,32 +371,32 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             if (options.openlist_weights[0] > 0 && is_compatible && is_preferred && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_and_preferred_openlist.insert(GreedyQueueEntry { successor_state.get_internal(), step++, successor_search_node.status });
+                compatible_greedy_and_preferred_openlist.insert(GreedyQueueEntry { successor_state.get_packed_state(), step++, successor_search_node.status });
             }
             else if (options.openlist_weights[1] > 0 && is_compatible && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_openlist.insert(GreedyQueueEntry { successor_state.get_internal(), step++, successor_search_node.status });
+                compatible_greedy_openlist.insert(GreedyQueueEntry { successor_state.get_packed_state(), step++, successor_search_node.status });
             }
             else if (options.openlist_weights[2] > 0 && is_compatible && is_preferred)
             {
                 compatible_exhaustive_and_preferred_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_internal(), step++, successor_search_node.status });
+                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
             }
             else if (options.openlist_weights[3] > 0 && is_compatible)
             {
                 compatible_exhaustive_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_internal(), step++, successor_search_node.status });
+                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
             }
             else if (options.openlist_weights[4] > 0 && is_preferred)
             {
                 preferred_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_internal(), step++, successor_search_node.status });
+                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
             }
             else
             {
                 standard_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_internal(), step++, successor_search_node.status });
+                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
             }
         }
     }

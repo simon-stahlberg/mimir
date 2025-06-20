@@ -22,8 +22,8 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 namespace mimir::search
 {
@@ -33,7 +33,7 @@ class StateRepositoryImpl
 private:
     AxiomEvaluator m_axiom_evaluator;  ///< The axiom evaluator.
 
-    InternalStateImplMap m_states;  ///< Stores all created extended states.
+    PackedStateImplMap m_states;  ///< Stores all created extended states.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -43,7 +43,9 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
-    SharedMemoryPool<DenseState> m_dense_state_pool;
+    SharedMemoryPool<UnpackedStateImpl> m_unpacked_state_pool;
+
+    Index m_empty_double_list;
 
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
@@ -76,7 +78,7 @@ public:
     /// @brief Get the state with the given internal state.
     /// @param state is the internal state.
     /// @return the state.
-    State get_state(const InternalStateImpl& state);
+    State get_state(const PackedStateImpl& state);
 
     /**
      * Getters
@@ -90,7 +92,7 @@ public:
 
     /// @brief Return the state map.
     /// @return the states map.
-    const InternalStateImplMap& get_states() const;
+    const PackedStateImplMap& get_states() const;
 
     /// @brief Return the reached fluent ground atoms.
     /// @return a bitset that stores the reached fluent ground atom indices.

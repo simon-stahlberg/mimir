@@ -75,14 +75,14 @@ static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVecto
 struct QueueEntry
 {
     using KeyType = std::pair<ContinuousCost, SearchNodeStatus>;
-    using ItemType = InternalState;
+    using ItemType = PackedState;
 
     ContinuousCost f_value;
-    InternalState internal_state;
+    PackedState packed_state;
     SearchNodeStatus status;
 
     KeyType get_key() const { return std::make_pair(f_value, status); }
-    ItemType get_item() const { return internal_state; }
+    ItemType get_item() const { return packed_state; }
 };
 
 static_assert(sizeof(QueueEntry) == 24);
@@ -183,7 +183,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    openlist.insert(QueueEntry { start_f_value, start_state.get_internal(), start_search_node.status });
+    openlist.insert(QueueEntry { start_f_value, start_state.get_packed_state(), start_search_node.status });
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -320,7 +320,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);
 
                 const auto successor_f_value = successor_search_node.g_value + successor_search_node.h_value;
-                openlist.insert(QueueEntry { successor_f_value, successor_state.get_internal(), successor_search_node.status });
+                openlist.insert(QueueEntry { successor_f_value, successor_state.get_packed_state(), successor_search_node.status });
             }
             else
             {

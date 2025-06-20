@@ -57,7 +57,7 @@ public:
     GroundedAxiomEvaluatorImpl(GroundedAxiomEvaluatorImpl&& other) = delete;
     GroundedAxiomEvaluatorImpl& operator=(GroundedAxiomEvaluatorImpl&& other) = delete;
 
-    void generate_and_apply_axioms(DenseState& dense_state) override;
+    void generate_and_apply_axioms(UnpackedStateImpl& unpacked_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

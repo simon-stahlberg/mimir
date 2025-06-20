@@ -23,12 +23,11 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/double_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
 #include <valla/tree_compression.hpp>
 
@@ -37,21 +36,20 @@ namespace mimir::search
 namespace v = valla::plain;
 
 /**
- * InternalState
+ * PackedState
  */
 
-/// @brief `InternalStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
-class InternalStateImpl
+/// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
+class PackedStateImpl
 {
 private:
     Index m_fluent_atoms_index;
     Index m_fluent_atoms_size;
     Index m_derived_atoms_index;
     Index m_derived_atoms_size;
-    Index m_numeric_variables_index;
-    Index m_numeric_variables_size;
+    Index m_numeric_variables;
 
-    InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, v::RootSlotType numeric_variables);
+    PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -66,10 +64,10 @@ public:
 
     template<formalism::IsFluentOrDerivedTag P>
     v::RootSlotType get_atoms() const;
-    v::RootSlotType get_numeric_variables() const;
+    Index get_numeric_variables() const;
 };
 
-static_assert(sizeof(InternalStateImpl) == 24);
+static_assert(sizeof(PackedStateImpl) == 20);
 
 /**
  * State
@@ -78,13 +76,11 @@ static_assert(sizeof(InternalStateImpl) == 24);
 class State
 {
 private:
-    InternalState m_internal;
-    const formalism::ProblemImpl* m_problem;
+    PackedState m_packed;
+    UnpackedState m_unpacked;
     Index m_index;
 
-    SharedMemoryPoolPtr<DenseState> m_dense_state;
-
-    State(Index index, const InternalStateImpl& internal, SharedMemoryPoolPtr<DenseState> dense_state, const formalism::ProblemImpl& problem);
+    State(Index index, PackedState packed, UnpackedState unpacked);
 
     friend class StateRepositoryImpl;
 
@@ -102,19 +98,14 @@ public:
      * Getters
      */
 
-    InternalState get_internal() const;
+    Index get_index() const;
+    PackedState get_packed_state() const;
+    const UnpackedStateImpl& get_unpacked_state() const;
     const formalism::ProblemImpl& get_problem() const;
 
-    Index get_index() const;
     template<formalism::IsFluentOrDerivedTag P>
     const FlatBitset& get_atoms() const;
     const FlatDoubleList& get_numeric_variables() const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    auto get_atoms_range() const;
-    auto get_numeric_variables_range() const;
-
-    const DenseState& get_dense_state() const;
 
     /**
      * Utils
@@ -147,18 +138,6 @@ public:
  * Implementations
  */
 
-template<formalism::IsFluentOrDerivedTag P>
-auto State::get_atoms_range() const
-{
-    return std::ranges::subrange(v::begin(m_internal->get_atoms<P>(), m_problem->get_tree_table()), v::end());
-}
-
-inline auto State::get_numeric_variables_range() const
-{
-    return std::ranges::subrange(valla::doubles::plain::begin(m_internal->get_numeric_variables(), m_problem->get_tree_table(), m_problem->get_double_table()),
-                                 valla::doubles::plain::end());
-}
-
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
@@ -178,16 +157,16 @@ std::ostream& operator<<(std::ostream& os, const search::State& state);
 namespace loki
 {
 template<>
-struct Hash<mimir::search::InternalStateImpl>
+struct Hash<mimir::search::PackedStateImpl>
 {
-    size_t operator()(const mimir::search::InternalStateImpl& el) const
+    size_t operator()(const mimir::search::PackedStateImpl& el) const
     {
-        static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
+        static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
 
         size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
-        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el), sizeof(mimir::search::InternalStateImpl), seed, hash);
+        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el), sizeof(mimir::search::PackedStateImpl), seed, hash);
 
         loki::hash_combine(seed, hash[0]);
         loki::hash_combine(seed, hash[1]);
@@ -197,16 +176,16 @@ struct Hash<mimir::search::InternalStateImpl>
 };
 
 template<>
-struct EqualTo<mimir::search::InternalStateImpl>
+struct EqualTo<mimir::search::PackedStateImpl>
 {
-    bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
+    bool operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
     {
-        static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
+        static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
 
         const auto lhs_begin = reinterpret_cast<const uint8_t*>(&lhs);
         const auto rhs_begin = reinterpret_cast<const uint8_t*>(&rhs);
 
-        return std::equal(lhs_begin, lhs_begin + sizeof(mimir::search::InternalStateImpl), rhs_begin);
+        return std::equal(lhs_begin, lhs_begin + sizeof(mimir::search::PackedStateImpl), rhs_begin);
     }
 };
 
@@ -215,7 +194,7 @@ struct Hash<mimir::search::State>
 {
     size_t operator()(const mimir::search::State& el) const
     {
-        return hash_combine(Hash<mimir::search::InternalStateImpl> {}(*el.get_internal()), &el.get_problem());
+        return hash_combine(Hash<mimir::search::PackedStateImpl> {}(*el.get_packed_state()), &el.get_problem());
     }
 };
 
@@ -224,14 +203,14 @@ struct EqualTo<mimir::search::State>
 {
     bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
     {
-        return EqualTo<mimir::search::InternalStateImpl> {}(*lhs.get_internal(), *rhs.get_internal()) && &lhs.get_problem() == &rhs.get_problem();
+        return EqualTo<mimir::search::PackedStateImpl> {}(*lhs.get_packed_state(), *rhs.get_packed_state()) && &lhs.get_problem() == &rhs.get_problem();
     }
 };
 }
 
 namespace mimir::search
 {
-using InternalStateImplMap = absl::node_hash_map<InternalStateImpl, Index, loki::Hash<InternalStateImpl>, loki::EqualTo<InternalStateImpl>>;
+using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
 
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;

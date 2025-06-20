@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -42,7 +42,7 @@ NumericConstraintSelectorNode_T<E>::NumericConstraintSelectorNode_T(Node<E>&& tr
 }
 
 template<formalism::HasConjunctiveCondition E>
-void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const DenseState& state,
+void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                      std::vector<const E*>&) const
 {
@@ -78,7 +78,7 @@ NumericConstraintSelectorNode_TX<E>::NumericConstraintSelectorNode_TX(Node<E>&& 
 }
 
 template<formalism::HasConjunctiveCondition E>
-void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const DenseState& state,
+void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                                       std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                       std::vector<const E*>&) const
 {

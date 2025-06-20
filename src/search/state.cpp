@@ -30,20 +30,19 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-/* InternalState */
+/* PackedState */
 
-InternalStateImpl::InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, v::RootSlotType numeric_variables) :
+PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
     m_fluent_atoms_index(valla::first(fluent_atoms)),
     m_fluent_atoms_size(valla::second(fluent_atoms)),
     m_derived_atoms_index(valla::first(derived_atoms)),
     m_derived_atoms_size(valla::second(derived_atoms)),
-    m_numeric_variables_index(valla::first(numeric_variables)),
-    m_numeric_variables_size(valla::second(numeric_variables))
+    m_numeric_variables(numeric_variables)
 {
 }
 
 template<formalism::IsFluentOrDerivedTag P>
-v::RootSlotType InternalStateImpl::get_atoms() const
+v::RootSlotType PackedStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
@@ -59,28 +58,33 @@ v::RootSlotType InternalStateImpl::get_atoms() const
     }
 }
 
-template v::RootSlotType InternalStateImpl::get_atoms<FluentTag>() const;
-template v::RootSlotType InternalStateImpl::get_atoms<DerivedTag>() const;
+template v::RootSlotType PackedStateImpl::get_atoms<FluentTag>() const;
+template v::RootSlotType PackedStateImpl::get_atoms<DerivedTag>() const;
 
-v::RootSlotType InternalStateImpl::get_numeric_variables() const { return valla::make_slot(m_numeric_variables_index, m_numeric_variables_size); }
+Index PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
 /**
  * State
  */
 
-State::State(Index index, const InternalStateImpl& internal, SharedMemoryPoolPtr<DenseState> dense_state, const formalism::ProblemImpl& problem) :
-    m_internal(&internal),
-    m_problem(&problem),
-    m_index(index),
-    m_dense_state(std::move(dense_state))
+State::State(Index index, PackedState packed, UnpackedState unpacked) : m_packed(packed), m_unpacked(std::move(unpacked)), m_index(index)
 {
-    assert(std::is_sorted(m_dense_state->fluent_atoms.begin(), m_dense_state->fluent_atoms.end()));
-    assert(std::is_sorted(m_dense_state->derived_atoms.begin(), m_dense_state->derived_atoms.end()));
+    assert(m_packed && m_unpacked);
+    assert(std::is_sorted(get_atoms<FluentTag>().begin(), get_atoms<FluentTag>().end()));
+    assert(std::is_sorted(get_atoms<DerivedTag>().begin(), get_atoms<DerivedTag>().end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
 
 bool State::operator!=(const State& other) const noexcept { return !(*this == other); }
+
+Index State::get_index() const { return m_index; }
+
+PackedState State::get_packed_state() const { return m_packed; }
+
+const UnpackedStateImpl& State::get_unpacked_state() const { return *m_unpacked; }
+
+const formalism::ProblemImpl& State::get_problem() const { return m_unpacked->get_problem(); }
 
 template<IsFluentOrDerivedTag P>
 bool State::literal_holds(GroundLiteral<P> literal) const
@@ -102,7 +106,7 @@ template bool State::literals_hold(const GroundLiteralList<DerivedTag>& literals
 
 bool State::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
-    return evaluate(numeric_constraint, static_numeric_variables, m_dense_state->get_numeric_variables());
+    return evaluate(numeric_constraint, static_numeric_variables, m_unpacked->get_numeric_variables());
 }
 
 bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const
@@ -112,24 +116,16 @@ bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_
                        [this, &static_numeric_variables](auto&& arg) { return this->numeric_constraint_holds(arg, static_numeric_variables); });
 }
 
-InternalState State::get_internal() const { return m_internal; }
-
-const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
-
-Index State::get_index() const { return m_index; }
-
 template<formalism::IsFluentOrDerivedTag P>
 const FlatBitset& State::get_atoms() const
 {
-    return m_dense_state->get_atoms<P>();
+    return m_unpacked->get_atoms<P>();
 }
 
 template const FlatBitset& State::get_atoms<FluentTag>() const;
 template const FlatBitset& State::get_atoms<DerivedTag>() const;
 
-const FlatDoubleList& State::get_numeric_variables() const { return m_dense_state->get_numeric_variables(); }
-
-const DenseState& State::get_dense_state() const { return *m_dense_state; }
+const FlatDoubleList& State::get_numeric_variables() const { return m_unpacked->get_numeric_variables(); }
 
 /**
  * Pretty printing

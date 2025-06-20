@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_DECLARATIONS_HPP_
 
 // Do not include headers with transitive dependencies.
+#include "mimir/algorithms/shared_memory_pool.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/concepts.hpp"
 
@@ -40,15 +41,16 @@ using GeneralizedSearchContext = std::shared_ptr<GeneralizedSearchContextImpl>;
 class StateRepositoryImpl;
 using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 
-// InternalState
-class InternalStateImpl;
-using InternalState = const InternalStateImpl*;
+// PackedState
+class PackedStateImpl;
+using PackedState = const PackedStateImpl*;
+
+// UnpackedStateImpl
+class UnpackedStateImpl;
+using UnpackedState = SharedMemoryPoolPtr<UnpackedStateImpl>;
 
 // State
 class State;
-
-// DenseState
-struct DenseState;
 
 /* DeleteRelaxedProblemExplorator */
 class DeleteRelaxedProblemExplorator;

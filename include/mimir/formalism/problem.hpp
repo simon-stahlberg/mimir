@@ -60,8 +60,7 @@ private:
     FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
     std::vector<const FlatDoubleList*> m_flat_double_lists;
 
-    valla::IndexedHashSet<valla::Slot> m_tree_table;
-    valla::IndexedHashSet<ContinuousCost> m_double_table;
+    valla::IndexedHashSet m_tree_table;
 
     SharedMemoryPool<FlatBitset> m_bitset_pool;
     SharedMemoryPool<FlatIndexList> m_index_list_pool;
@@ -131,10 +130,8 @@ public:
      * Additional members
      */
 
-    valla::IndexedHashSet<valla::Slot>& get_tree_table();
-    valla::IndexedHashSet<ContinuousCost>& get_double_table();
-    const valla::IndexedHashSet<valla::Slot>& get_tree_table() const;
-    const valla::IndexedHashSet<ContinuousCost>& get_double_table() const;
+    valla::IndexedHashSet& get_tree_table();
+    const valla::IndexedHashSet& get_tree_table() const;
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;

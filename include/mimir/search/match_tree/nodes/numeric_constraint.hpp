@@ -65,7 +65,7 @@ public:
 
     NumericConstraintSelectorNode_T(Node<E>&& true_child, formalism::GroundNumericConstraint constraint);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const UnpackedStateImpl& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
 };
@@ -89,7 +89,7 @@ public:
 
     NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, formalism::GroundNumericConstraint constraint);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const UnpackedStateImpl& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
     const Node<E>& get_dontcare_child() const;

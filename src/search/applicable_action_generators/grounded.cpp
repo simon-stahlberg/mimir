@@ -59,7 +59,7 @@ GroundedApplicableActionGeneratorImpl::create(Problem problem, match_tree::Match
 mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
     auto ground_actions = GroundActionList {};
-    m_match_tree->generate_applicable_elements_iteratively(state.get_dense_state(), ground_actions);
+    m_match_tree->generate_applicable_elements_iteratively(state.get_unpacked_state(), ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {

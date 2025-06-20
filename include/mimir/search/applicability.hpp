@@ -30,18 +30,18 @@ namespace mimir::search
  */
 
 /// @brief Return true iff all nullary literals and constraints in the precondition hold, false otherwise.
-extern bool nullary_conditions_hold(formalism::ConjunctiveCondition precondition, const DenseState& dense_state);
+extern bool nullary_conditions_hold(formalism::ConjunctiveCondition precondition, const UnpackedStateImpl& unpacked_state);
 
 /**
  * GroundConjunctiveCondition
  */
 
-extern bool is_dynamically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const DenseState& dense_state);
+extern bool is_dynamically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const UnpackedStateImpl& unpacked_state);
 extern bool is_dynamically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const State& state);
 
 extern bool is_statically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const FlatBitset& static_positive_atoms);
 
-extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const State& state);
 
 /**
@@ -50,7 +50,7 @@ extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_cond
 
 /// @brief Return true iff all functions in numeric effects are well-defined in the state.
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
-                          const DenseState& dense_state,
+                          const UnpackedStateImpl& unpacked_state,
                           const formalism::ProblemImpl& problem,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
@@ -58,7 +58,7 @@ extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
                           const State& state,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
-extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const State& state);
 
 /**
@@ -70,7 +70,7 @@ extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
 /// More formally, consider conditional effect c = <pre, eff>.
 /// app(c) <=> app(pre) && app(eff)
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
-                          const DenseState& dense_state,
+                          const UnpackedStateImpl& unpacked_state,
                           const formalism::ProblemImpl& problem,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
@@ -78,7 +78,7 @@ extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
                           const State& state,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
-extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const State& state);
 
 /// @brief Return true iff the conditional effect is applicable in the problem and state when it fires,
@@ -91,7 +91,7 @@ extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
 /// Now we have a more efficient form that tests app(eff) before app(pre).
 /// If we use this, we should always assert via is_applicable.
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect,
-                                   const DenseState& dense_state,
+                                   const UnpackedStateImpl& unpacked_state,
                                    const formalism::ProblemImpl& problem,
                                    std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                                    std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
@@ -100,7 +100,7 @@ extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditiona
                                    const State& state,
                                    std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                                    std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
-extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const DenseState& dense_state);
+extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const State& state);
 
 /**
@@ -109,10 +109,10 @@ extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditiona
 
 /// @brief Return true iff the ground action is applicable in the state.
 /// If we use this, we should always assert via is_applicable.
-extern bool is_dynamically_applicable(formalism::GroundAction action, const DenseState& dense_state);
+extern bool is_dynamically_applicable(formalism::GroundAction action, const UnpackedStateImpl& unpacked_state);
 
 /// @brief Return true iff the ground action is applicable in the problem and state.
-extern bool is_applicable(formalism::GroundAction action, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundAction action, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundAction action, const State& state);
 
 /**
@@ -121,10 +121,10 @@ extern bool is_applicable(formalism::GroundAction action, const State& state);
 
 /// @brief Return true iff the ground axiom is applicable in the state.
 /// If we use this, we should always assert via is_applicable.
-extern bool is_dynamically_applicable(formalism::GroundAxiom axiom, const DenseState& dense_state);
+extern bool is_dynamically_applicable(formalism::GroundAxiom axiom, const UnpackedStateImpl& unpacked_state);
 
 /// @brief Return true iff the ground axiom is applicable in the problem and state.
-extern bool is_applicable(formalism::GroundAxiom axiom, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundAxiom axiom, const UnpackedStateImpl& unpacked_state);
 }
 
 #endif

@@ -108,7 +108,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
     for (auto& condition_grounder : m_action_grounding_data)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_dense_state()))
+        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_unpacked_state()))
         {
             continue;
         }

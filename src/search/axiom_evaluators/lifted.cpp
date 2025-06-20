@@ -25,7 +25,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers/interface.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -65,11 +65,11 @@ LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, EventHand
     return std::shared_ptr<LiftedAxiomEvaluatorImpl>(new LiftedAxiomEvaluatorImpl(std::move(problem), std::move(event_handler)));
 }
 
-void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state)
+void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
 {
-    const auto& dense_fluent_atoms = dense_state.fluent_atoms;
-    auto& dense_derived_atoms = dense_state.derived_atoms;
-    auto& dense_numeric_variables = dense_state.numeric_variables;
+    const auto& dense_fluent_atoms = unpacked_state.get_atoms<FluentTag>();
+    auto& dense_derived_atoms = unpacked_state.get_atoms<DerivedTag>();
+    auto& dense_numeric_variables = unpacked_state.get_numeric_variables();
 
     /* 1. Initialize assignment set */
 
@@ -118,14 +118,14 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), dense_state))
+                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), unpacked_state))
                 {
                     continue;
                 }
 
                 auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
-                for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
+                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state,
                                                                                   m_fluent_assignment_set,
                                                                                   m_derived_assignment_set,
                                                                                   static_numeric_assignment_set,
@@ -135,7 +135,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, dense_state, *m_problem));
+                    assert(is_applicable(ground_axiom, unpacked_state, *m_problem));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

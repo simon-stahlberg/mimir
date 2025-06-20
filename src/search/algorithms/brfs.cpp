@@ -82,7 +82,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
 
     auto result = SearchResult();
     auto search_nodes = SearchNodeVector();
-    auto queue = std::deque<InternalState>();
+    auto queue = std::deque<PackedState>();
 
     auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
     start_search_node.status = SearchNodeStatus::OPEN;
@@ -109,7 +109,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
         return result;
     }
 
-    queue.emplace_back(start_state.get_internal());
+    queue.emplace_back(start_state.get_packed_state());
 
     auto g_value = DiscreteCost(0);
 
@@ -199,7 +199,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             successor_search_node.parent_state = state.get_index();
             successor_search_node.g_value = search_node.g_value + 1;
 
-            queue.emplace_back(successor_state.get_internal());
+            queue.emplace_back(successor_state.get_packed_state());
 
             if (search_nodes.size() >= options.max_num_states)
             {

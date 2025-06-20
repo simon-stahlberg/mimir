@@ -79,7 +79,7 @@ MatchTreeImpl<E>::MatchTreeImpl(const Repositories& pddl_repositories, std::vect
 }
 
 template<formalism::HasConjunctiveCondition E>
-void MatchTreeImpl<E>::generate_applicable_elements_iteratively(const DenseState& state, std::vector<const E*>& out_applicable_elements)
+void MatchTreeImpl<E>::generate_applicable_elements_iteratively(const UnpackedStateImpl& state, std::vector<const E*>& out_applicable_elements)
 {
     m_evaluate_stack.clear();
     out_applicable_elements.clear();

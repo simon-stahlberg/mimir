@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_DENSE_STATE_HPP_
-#define MIMIR_SEARCH_DENSE_STATE_HPP_
+#ifndef MIMIR_SEARCH_STATE_UNPACKED_HPP_
+#define MIMIR_SEARCH_STATE_UNPACKED_HPP_
 
 #include "cista/serialization.h"
 #include "mimir/common/printers.hpp"
@@ -27,15 +27,19 @@
 namespace mimir::search
 {
 
-/// @brief `DenseState` is an intermediate representation of a `StateImpl`.
-/// We use it internally for constant time randomized access.
-struct DenseState
+/// @brief `UnpackedStateImpl` is an unpacked representation of a `PackedStateImpl`.
+/// We unpack for constant time randomized access.
+class UnpackedStateImpl
 {
+private:
     FlatBitset fluent_atoms;
     FlatBitset derived_atoms;
     FlatDoubleList numeric_variables;
 
     const formalism::ProblemImpl& problem;
+
+public:
+    UnpackedStateImpl(const formalism::ProblemImpl& problem) : fluent_atoms(), derived_atoms(), numeric_variables(), problem(problem) {}
 
     template<formalism::IsFluentOrDerivedTag P>
     FlatBitset& get_atoms()
@@ -72,8 +76,6 @@ struct DenseState
     FlatDoubleList& get_numeric_variables() { return numeric_variables; }
     const FlatDoubleList& get_numeric_variables() const { return numeric_variables; }
     const formalism::ProblemImpl& get_problem() const { return problem; }
-
-    DenseState(const formalism::ProblemImpl& problem) : fluent_atoms(), derived_atoms(), numeric_variables(), problem(problem) {}
 };
 
 }
