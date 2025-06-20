@@ -79,6 +79,7 @@ public:
 
             m_pool = other.m_pool;
             m_object = other.m_object;
+
             other.m_pool = nullptr;
             other.m_object = nullptr;
         }

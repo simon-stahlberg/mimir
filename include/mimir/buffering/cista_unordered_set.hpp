@@ -94,8 +94,6 @@ public:
         m_buf.reset();
         cista::serialize<Mode>(m_buf, element);
 
-        std::cout << "Serialized buffer size " << m_buf.size() << std::endl;
-
         /* Add padding to ensure that subsequent elements are aligned correctly. */
 
         if constexpr (RequireAlignment)

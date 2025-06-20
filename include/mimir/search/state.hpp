@@ -23,6 +23,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state_packed.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
@@ -34,44 +35,6 @@
 namespace mimir::search
 {
 namespace v = valla::plain;
-
-/**
- * PackedState
- */
-
-/// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
-class PackedStateImpl
-{
-private:
-    Index m_fluent_atoms_index;
-    Index m_fluent_atoms_size;
-    Index m_derived_atoms_index;
-    Index m_derived_atoms_size;
-    Index m_numeric_variables;
-
-    PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
-
-    friend class StateRepositoryImpl;
-
-    // Give access to the constructor.
-    template<typename T, typename Hash, typename EqualTo>
-    friend class loki::IndexedHashSet;
-
-public:
-    /**
-     * Getters
-     */
-
-    template<formalism::IsFluentOrDerivedTag P>
-    v::RootSlotType get_atoms() const;
-    Index get_numeric_variables() const;
-};
-
-static_assert(sizeof(PackedStateImpl) == 20);
-
-/**
- * State
- */
 
 class State
 {
@@ -157,54 +120,15 @@ std::ostream& operator<<(std::ostream& os, const search::State& state);
 namespace loki
 {
 template<>
-struct Hash<mimir::search::PackedStateImpl>
-{
-    size_t operator()(const mimir::search::PackedStateImpl& el) const
-    {
-        static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
-
-        size_t seed = 0;
-        size_t hash[2] = { 0, 0 };
-
-        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el), sizeof(mimir::search::PackedStateImpl), seed, hash);
-
-        loki::hash_combine(seed, hash[0]);
-        loki::hash_combine(seed, hash[1]);
-
-        return seed;
-    }
-};
-
-template<>
-struct EqualTo<mimir::search::PackedStateImpl>
-{
-    bool operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
-    {
-        static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
-
-        const auto lhs_begin = reinterpret_cast<const uint8_t*>(&lhs);
-        const auto rhs_begin = reinterpret_cast<const uint8_t*>(&rhs);
-
-        return std::equal(lhs_begin, lhs_begin + sizeof(mimir::search::PackedStateImpl), rhs_begin);
-    }
-};
-
-template<>
 struct Hash<mimir::search::State>
 {
-    size_t operator()(const mimir::search::State& el) const
-    {
-        return hash_combine(Hash<mimir::search::PackedStateImpl> {}(*el.get_packed_state()), &el.get_problem());
-    }
+    size_t operator()(const mimir::search::State& el) const;
 };
 
 template<>
 struct EqualTo<mimir::search::State>
 {
-    bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
-    {
-        return EqualTo<mimir::search::PackedStateImpl> {}(*lhs.get_packed_state(), *rhs.get_packed_state()) && &lhs.get_problem() == &rhs.get_problem();
-    }
+    bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const;
 };
 }
 

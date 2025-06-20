@@ -18,4 +18,4 @@ def test_state_repository_ownership():
 
     del state_repository
 
-    assert initial_state.to_string(problem)
+    assert str(initial_state)

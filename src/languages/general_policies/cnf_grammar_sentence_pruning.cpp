@@ -162,12 +162,12 @@ GeneralPoliciesRefinementPruningFunction::GeneralPoliciesRefinementPruningFuncti
     {
         const auto& src_problem_v = generalized_state_space->get_problem_vertex(generalized_state_space->get_graph().get_vertex(edge.get_source()));
         const auto& dst_problem_v = generalized_state_space->get_problem_vertex(generalized_state_space->get_graph().get_vertex(edge.get_target()));
-        const auto& src_state = graphs::get_state(src_problem_v);
-        const auto& src_problem = graphs::get_problem(src_problem_v);
-        const auto& dst_state = graphs::get_state(dst_problem_v);
-        const auto& dst_problem = graphs::get_problem(dst_problem_v);
+        auto src_state = graphs::get_state(src_problem_v);
+        auto src_problem = graphs::get_problem(src_problem_v);
+        auto dst_state = graphs::get_state(dst_problem_v);
+        auto dst_problem = graphs::get_problem(dst_problem_v);
 
-        m_transitions.emplace_back(std::make_pair(src_state, src_problem), std::make_pair(dst_state, dst_problem));
+        m_transitions.emplace_back(std::make_pair(std::move(src_state), std::move(src_problem)), std::make_pair(std::move(dst_state), std::move(dst_problem)));
     }
     // Sort to decrease allocations/deallocations during sequential evaluation.
     std::sort(m_transitions.begin(),

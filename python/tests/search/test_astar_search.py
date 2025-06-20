@@ -26,6 +26,8 @@ def test_astar_search():
 
 
 def test_astar_search_2():
+    """
+    """
     domain_filepath = str(ROOT_DIR / "data" / "blocks_4" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "blocks_4" / "test_problem.pddl")
 

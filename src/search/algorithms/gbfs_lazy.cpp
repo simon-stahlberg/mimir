@@ -380,23 +380,35 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             }
             else if (options.openlist_weights[2] > 0 && is_compatible && is_preferred)
             {
-                compatible_exhaustive_and_preferred_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
+                compatible_exhaustive_and_preferred_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                                           state_h_value,
+                                                                                           successor_state.get_packed_state(),
+                                                                                           step++,
+                                                                                           successor_search_node.status });
             }
             else if (options.openlist_weights[3] > 0 && is_compatible)
             {
-                compatible_exhaustive_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
+                compatible_exhaustive_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                             state_h_value,
+                                                                             successor_state.get_packed_state(),
+                                                                             step++,
+                                                                             successor_search_node.status });
             }
             else if (options.openlist_weights[4] > 0 && is_preferred)
             {
-                preferred_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
+                preferred_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                 state_h_value,
+                                                                 successor_state.get_packed_state(),
+                                                                 step++,
+                                                                 successor_search_node.status });
             }
             else
             {
-                standard_openlist.insert(
-                    ExhaustiveQueueEntry { successor_state_metric_value, state_h_value, start_state.get_packed_state(), step++, successor_search_node.status });
+                standard_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                state_h_value,
+                                                                successor_state.get_packed_state(),
+                                                                step++,
+                                                                successor_search_node.status });
             }
         }
     }

@@ -41,16 +41,17 @@ StateListRefinementPruningFunction::StateListRefinementPruningFunction(const dat
 StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
                                                                        const graphs::ClassGraph& class_graph,
                                                                        DenotationRepositories& ref_denotation_repositories) :
+    m_generalized_state_space(generalized_state_space),
     m_denotation_repositories(ref_denotation_repositories),
     m_denotations_repositories(),
     m_states()
 {
     for (const auto& vertex : class_graph.get_vertices())
     {
-        const auto& problem = graphs::get_problem(generalized_state_space->get_problem_vertex(vertex));
-        const auto& state = graphs::get_state(generalized_state_space->get_problem_vertex(vertex));
+        auto problem = graphs::get_problem(generalized_state_space->get_problem_vertex(vertex));
+        auto state = graphs::get_state(generalized_state_space->get_problem_vertex(vertex));
 
-        m_states.emplace_back(state, problem);
+        m_states.emplace_back(std::move(state), std::move(problem));
     }
     // Sort to decrease allocations/deallocations during sequential evaluation.
     std::sort(m_states.begin(), m_states.end(), [](auto&& lhs, auto&& rhs) { return lhs.second->get_objects().size() > rhs.second->get_objects().size(); });

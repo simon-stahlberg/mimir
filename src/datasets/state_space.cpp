@@ -58,9 +58,7 @@ namespace mimir::graphs
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
 {
     out << "problem_v_idx=" << vertex.get_index() << "\n"  //
-        << " state=";
-    mimir::operator<<(out, std::make_tuple(get_state(vertex), std::cref(*get_problem(vertex))));
-    out << "\n"
+        << " state=" << get_state(vertex) << "\n"
         << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
         << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
         << " is_initial=" << is_initial(vertex) << "\n"                      //

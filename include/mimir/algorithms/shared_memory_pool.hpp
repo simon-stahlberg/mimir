@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <concepts>
+#include <iostream>
 #include <memory>
 #include <stack>
 #include <utility>
@@ -60,13 +61,18 @@ private:
         assert(m_object);
 
         ++m_object->first;
+
+        std::cout << "Inc ref count to " << m_object->first << " for " << this << std::endl;
     }
 
     void dec_ref_count()
     {
         assert(m_object);
+        assert(m_object->first > 0);
 
         --m_object->first;
+
+        std::cout << "Dec ref count to " << m_object->first << " for " << this << std::endl;
 
         if (m_object->first == 0)
         {
@@ -79,6 +85,8 @@ public:
 
     SharedMemoryPoolPtr(SharedMemoryPool<T>* pool, std::pair<size_t, T>* object) : m_pool(pool), m_object(object)
     {
+        std::cout << "Construct: " << this << " " << m_pool << " " << m_object << std::endl;
+
         if (m_pool && m_object)
             inc_ref_count();
     }
@@ -86,15 +94,15 @@ public:
     /// @brief Copy other into this through an additional allocation from the pool.
     /// Requires a user define copy operation of the data.
     /// @param other
-    SharedMemoryPoolPtr(const SharedMemoryPoolPtr& other) : m_pool(nullptr), m_object(nullptr)
+    SharedMemoryPoolPtr(const SharedMemoryPoolPtr& other) : SharedMemoryPoolPtr()
     {
-        if (other.m_pool && other.m_object)
-        {
-            m_pool = other.m_pool;
-            m_object = other.m_object;
+        std::cout << "COPY: from " << &other << " to " << this << std::endl;
 
+        m_pool = other.m_pool;
+        m_object = other.m_object;
+
+        if (m_pool && m_object)
             inc_ref_count();
-        }
     }
 
     /// @brief Assign other into this through an additional allocation from the pool.
@@ -103,17 +111,18 @@ public:
     /// @return
     SharedMemoryPoolPtr& operator=(const SharedMemoryPoolPtr& other)
     {
+        std::cout << "COPY ASSIGN: from " << &other << " to " << this << std::endl;
+
         if (this != &other)
         {
-            if (other.m_pool && other.m_object)
-            {
-                if (m_pool && m_object)
-                    dec_ref_count();
+            if (m_pool && m_object)
+                dec_ref_count();
 
-                m_pool = other.m_pool;
-                m_object = other.m_object;
+            m_pool = other.m_pool;
+            m_object = other.m_object;
+
+            if (m_pool && m_object)
                 inc_ref_count();
-            }
         }
         return *this;
     }
@@ -121,12 +130,16 @@ public:
     // Movable
     SharedMemoryPoolPtr(SharedMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
     {
+        std::cout << "MOVE: from " << &other << " to " << this << std::endl;
+
         other.m_pool = nullptr;
         other.m_object = nullptr;
     }
 
     SharedMemoryPoolPtr& operator=(SharedMemoryPoolPtr&& other) noexcept
     {
+        std::cout << "MOVE ASSIGN: from " << &other << " to " << this << std::endl;
+
         if (this != &other)
         {
             if (m_pool && m_object)
@@ -143,10 +156,10 @@ public:
 
     ~SharedMemoryPoolPtr()
     {
+        std::cout << "DESTRUCT " << this << std::endl;
+
         if (m_pool && m_object)
-        {
             dec_ref_count();
-        }
     }
 
     SharedMemoryPoolPtr clone() const

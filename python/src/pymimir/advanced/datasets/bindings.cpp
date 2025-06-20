@@ -1,7 +1,6 @@
 #include "bindings.hpp"
 
 #include "../init_declarations.hpp"
-
 #include "mimir/datasets/state_space_sampler.hpp"
 
 using namespace mimir;
@@ -15,7 +14,17 @@ void bind_module_definitions(nb::module_& m)
 {
     /* ProblemGraph */
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
-    m.def("get_state", [](const graphs::ProblemVertex& self) -> search::State { return graphs::get_state(self); }, "vertex"_a, nb::rv_policy::reference);
+    m.def(
+        "get_state",
+        [](const graphs::ProblemVertex& self) -> search::State { return graphs::get_state(self); },
+        "vertex"_a,
+        nb::rv_policy::copy,
+        nb::keep_alive<0, 1>());  ///< keep vertex alive to be able to return UnpackedState to the StateRepository.
+    m.def(
+        "get_state_repository",
+        [](const graphs::ProblemVertex& self) -> const search::StateRepository& { return graphs::get_state_repository(self); },
+        "vertex"_a,
+        nb::rv_policy::reference);
     m.def("get_problem", [](const graphs::ProblemVertex& self) -> const Problem& { return graphs::get_problem(self); }, "vertex"_a, nb::rv_policy::reference);
     m.def("get_unit_goal_distance", [](const graphs::ProblemVertex& self) -> DiscreteCost { return graphs::get_unit_goal_distance(self); }, "vertex"_a);
     m.def("get_action_goal_distance", [](const graphs::ProblemVertex& self) -> ContinuousCost { return graphs::get_action_goal_distance(self); }, "vertex"_a);

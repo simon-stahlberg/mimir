@@ -16,7 +16,7 @@ public:
     /* Trampoline (need one for each virtual function) */
     bool test_static_goal() override { NB_OVERRIDE_PURE(test_static_goal); }
 
-    bool test_dynamic_goal(State state) override { NB_OVERRIDE_PURE(test_dynamic_goal, state); }
+    bool test_dynamic_goal(const State& state) override { NB_OVERRIDE_PURE(test_dynamic_goal, state); }
 };
 
 class IPyPruningStrategy : public IPruningStrategy
@@ -25,9 +25,9 @@ public:
     NB_TRAMPOLINE(IPruningStrategy, 2);
 
     /* Trampoline (need one for each virtual function) */
-    bool test_prune_initial_state(State state) override { NB_OVERRIDE_PURE(test_prune_initial_state, state); }
+    bool test_prune_initial_state(const State& state) override { NB_OVERRIDE_PURE(test_prune_initial_state, state); }
 
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override
     {
         NB_OVERRIDE_PURE(test_prune_successor_state, state, succ_state, is_new_succ);
     }
@@ -39,7 +39,10 @@ public:
     NB_TRAMPOLINE(IExplorationStrategy, 1);
 
     /* Trampoline (need one for each virtual function) */
-    bool on_generate_state(State state, GroundAction action, State succ_state) override { NB_OVERRIDE_PURE(on_generate_state, state, action, succ_state); }
+    bool on_generate_state(const State& state, GroundAction action, const State& succ_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state, state, action, succ_state);
+    }
 };
 
 class IPyHeuristic : public IHeuristic
@@ -48,7 +51,7 @@ public:
     NB_TRAMPOLINE(IHeuristic, 2);
 
     /* Trampoline (need one for each virtual function) */
-    ContinuousCost compute_heuristic(State state, bool is_goal_state) override { NB_OVERRIDE_PURE(compute_heuristic, state, is_goal_state); }
+    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override { NB_OVERRIDE_PURE(compute_heuristic, state, is_goal_state); }
 
     const PreferredActions& get_preferred_actions() const override { NB_OVERRIDE(get_preferred_actions); }
 };
@@ -59,47 +62,37 @@ public:
     NB_TRAMPOLINE(astar_eager::IEventHandler, 14);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+    void on_expand_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+    void on_expand_goal_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_relaxed(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state);
     }
-    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_relaxed(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state);
     }
-    void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
+    void on_close_state(const State& state) override { NB_OVERRIDE_PURE(on_close_state, state); }
     void on_finish_f_layer(ContinuousCost f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
-    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    void on_prune_state(const State& state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
                        uint64_t num_axioms) override
     {
-        NB_OVERRIDE_PURE(on_end_search,
-                         num_reached_fluent_atoms,
-                         num_reached_derived_atoms,
-                         num_bytes_for_problem,
-                         num_bytes_for_nodes,
-                         num_states,
-                         num_nodes,
-                         num_actions,
-                         num_axioms);
+        NB_OVERRIDE_PURE(on_end_search, num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
     }
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
@@ -113,47 +106,37 @@ public:
     NB_TRAMPOLINE(astar_lazy::IEventHandler, 14);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+    void on_expand_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+    void on_expand_goal_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_relaxed(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state);
     }
-    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_relaxed(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state);
     }
-    void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
+    void on_close_state(const State& state) override { NB_OVERRIDE_PURE(on_close_state, state); }
     void on_finish_f_layer(ContinuousCost f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
-    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    void on_prune_state(const State& state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
                        uint64_t num_axioms) override
     {
-        NB_OVERRIDE_PURE(on_end_search,
-                         num_reached_fluent_atoms,
-                         num_reached_derived_atoms,
-                         num_bytes_for_problem,
-                         num_bytes_for_nodes,
-                         num_states,
-                         num_nodes,
-                         num_actions,
-                         num_axioms);
+        NB_OVERRIDE_PURE(on_end_search, num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
     }
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
@@ -167,43 +150,33 @@ public:
     NB_TRAMPOLINE(brfs::IEventHandler, 12);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+    void on_expand_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+    void on_expand_goal_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_in_search_tree(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_in_search_tree, state, action, action_cost, successor_state);
     }
-    void on_generate_state_not_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_in_search_tree(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state_not_in_search_tree, state, action, action_cost, successor_state);
     }
 
     void on_finish_g_layer(DiscreteCost g_value) override { NB_OVERRIDE_PURE(on_finish_g_layer, g_value); }
-    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_start_search(const State& start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
                        uint64_t num_axioms) override
     {
-        NB_OVERRIDE_PURE(on_end_search,
-                         num_reached_fluent_atoms,
-                         num_reached_derived_atoms,
-                         num_bytes_for_problem,
-                         num_bytes_for_nodes,
-                         num_states,
-                         num_nodes,
-                         num_actions,
-                         num_axioms);
+        NB_OVERRIDE_PURE(on_end_search, num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
     }
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
@@ -217,38 +190,28 @@ public:
     NB_TRAMPOLINE(gbfs_eager::IEventHandler, 11);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+    void on_expand_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+    void on_expand_goal_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    void on_prune_state(const State& state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
     void on_new_best_h_value(ContinuousCost h_value) override { NB_OVERRIDE_PURE(on_new_best_h_value, h_value); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
                        uint64_t num_axioms) override
     {
-        NB_OVERRIDE_PURE(on_end_search,
-                         num_reached_fluent_atoms,
-                         num_reached_derived_atoms,
-                         num_bytes_for_problem,
-                         num_bytes_for_nodes,
-                         num_states,
-                         num_nodes,
-                         num_actions,
-                         num_axioms);
+        NB_OVERRIDE_PURE(on_end_search, num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
     }
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
@@ -262,38 +225,28 @@ public:
     NB_TRAMPOLINE(gbfs_lazy::IEventHandler, 11);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+    void on_expand_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+    void on_expand_goal_state(const State& state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    void on_prune_state(const State& state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
     void on_new_best_h_value(ContinuousCost h_value) override { NB_OVERRIDE_PURE(on_new_best_h_value, h_value); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
                        uint64_t num_axioms) override
     {
-        NB_OVERRIDE_PURE(on_end_search,
-                         num_reached_fluent_atoms,
-                         num_reached_derived_atoms,
-                         num_bytes_for_problem,
-                         num_bytes_for_nodes,
-                         num_states,
-                         num_nodes,
-                         num_actions,
-                         num_axioms);
+        NB_OVERRIDE_PURE(on_end_search, num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
     }
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
@@ -391,14 +344,17 @@ void bind_module_definitions(nb::module_& m)
         .def("get_generalized_problem", &GeneralizedSearchContextImpl::get_generalized_problem)
         .def("get_search_contexts", &GeneralizedSearchContextImpl::get_search_contexts);
 
+    /* PackedState */
+    nb::class_<PackedState>(m, "PackedState");
+
     /* State */
-    nb::class_<StateImpl>(m, "State")  //
-        .def("__str__", [](const StateImpl& self) { return to_string(&self); })
-        .def("__hash__", [](const StateImpl& self) { return std::hash<State> {}(&self); })
-        .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return &lhs == &rhs; })
+    nb::class_<State>(m, "State")  //
+        .def("__str__", [](const State& self) { return to_string(self); })
+        .def("__hash__", [](const State& self) { return loki::Hash<State> {}(self); })
+        .def("__eq__", [](const State& lhs, const State& rhs) { return loki::EqualTo<State> {}(lhs, rhs); })
         .def(
             "get_fluent_atoms",
-            [](const StateImpl& self)
+            [](const State& self)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over fluent state atom indices.",
@@ -408,7 +364,7 @@ void bind_module_definitions(nb::module_& m)
             nb::keep_alive<0, 1>())
         .def(
             "get_derived_atoms",
-            [](const StateImpl& self)
+            [](const State& self)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over derived state atom indices.",
@@ -417,12 +373,12 @@ void bind_module_definitions(nb::module_& m)
             },
             nb::keep_alive<0, 1>())
         .def("get_numeric_variables",
-             [](const StateImpl& self) { return std::vector<double>(self.get_numeric_variables().begin(), self.get_numeric_variables().end()); })
-        .def("literal_holds", &StateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a)
-        .def("literal_holds", &StateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a)
-        .def("literal_holds", &StateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a)
-        .def("literal_holds", &StateImpl::literals_hold<DerivedTag>, nb::rv_policy::copy, "literals"_a)
-        .def("get_index", &StateImpl::get_index);
+             [](const State& self) { return std::vector<double>(self.get_numeric_variables().begin(), self.get_numeric_variables().end()); })
+        .def("literal_holds", &State::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a)
+        .def("literal_holds", &State::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a)
+        .def("literal_holds", &State::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a)
+        .def("literal_holds", &State::literals_hold<DerivedTag>, nb::rv_policy::copy, "literals"_a)
+        .def("get_index", &State::get_index);
     nb::bind_vector<StateList>(m, "StateList");
 
     /* Plan */
@@ -448,7 +404,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<ConjunctiveCondition, Problem>(), "conjunctive_condition"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
-            [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+            [](ConjunctiveConditionSatisficingBindingGenerator& self, const State& state, size_t max_num_groundings)
             {
                 auto result = std::vector<
                     std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
@@ -472,7 +428,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<Action, Problem>(), "action"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
-            [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+            [](ConjunctiveConditionSatisficingBindingGenerator& self, const State& state, size_t max_num_groundings)
             {
                 auto result = std::vector<
                     std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
@@ -496,7 +452,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<Axiom, Problem>(), "axiom"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
-            [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+            [](ConjunctiveConditionSatisficingBindingGenerator& self, const State& state, size_t max_num_groundings)
             {
                 auto result = std::vector<
                     std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
@@ -517,17 +473,13 @@ void bind_module_definitions(nb::module_& m)
             "max_num_groundings"_a);
 
     /* ApplicableActionGenerators */
-    m.def("is_applicable",
-          nb::overload_cast<formalism::GroundAction, const formalism::ProblemImpl&, State>(&search::is_applicable),
-          "action"_a,
-          "problem"_a,
-          "state"_a);
+    m.def("is_applicable", nb::overload_cast<formalism::GroundAction, const State&>(&search::is_applicable), "action"_a, "state"_a);
 
     nb::class_<IApplicableActionGenerator>(m, "IApplicableActionGenerator")
         .def("get_problem", &IApplicableActionGenerator::get_problem)
         .def(
             "generate_applicable_actions",
-            [](IApplicableActionGenerator& self, State state)
+            [](IApplicableActionGenerator& self, const State& state)
             {
                 auto actions = GroundActionList();
                 for (const auto& action : self.create_applicable_action_generator(state))
@@ -596,24 +548,24 @@ void bind_module_definitions(nb::module_& m)
         ;
 
     /* StateRepositoryImpl */
-    m.def("compute_state_metric_value", &compute_state_metric_value, "state"_a, "problem"_a);
+    m.def("compute_state_metric_value", &compute_state_metric_value, "state"_a);
 
     nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
         .def(nb::init<AxiomEvaluator>(), "axiom_evaluator"_a)
-        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, nb::rv_policy::reference_internal)
+        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state)
         .def(
             "get_or_create_state",
             [](StateRepositoryImpl& self, const GroundAtomList<FluentTag>& fluent_atoms, const ContinuousCostList& numeric_variables)
             { return self.get_or_create_state(fluent_atoms, FlatDoubleList(numeric_variables.begin(), numeric_variables.end())); },
             "fluent_atoms"_a,
             "numeric_variables"_a,
-            nb::rv_policy::reference_internal)
+            nb::rv_policy::copy)
         .def("get_or_create_successor_state",
-             nb::overload_cast<State, GroundAction, ContinuousCost>(&StateRepositoryImpl::get_or_create_successor_state),
+             nb::overload_cast<const State&, GroundAction, ContinuousCost>(&StateRepositoryImpl::get_or_create_successor_state),
              "state"_a,
              "action"_a,
              "state_metric_value"_a,
-             nb::rv_policy::reference_internal)
+             nb::rv_policy::copy)
         .def("get_state_count", &StateRepositoryImpl::get_state_count, nb::rv_policy::copy)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);
@@ -976,7 +928,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<size_t, size_t>(), "arity"_a, "num_atoms"_a)
         .def(
             "compute_novel_tuples",
-            [](iw::DynamicNoveltyTable& self, State state)
+            [](iw::DynamicNoveltyTable& self, const State& state)
             {
                 std::vector<iw::AtomIndexList> out;
                 self.compute_novel_tuples(state, out);
@@ -984,9 +936,9 @@ void bind_module_definitions(nb::module_& m)
             },
             "state"_a)
         .def("insert_tuples", &iw::DynamicNoveltyTable::insert_tuples, "tuples"_a)
-        .def("test_novelty_and_update_table", nb::overload_cast<State>(&iw::DynamicNoveltyTable::test_novelty_and_update_table), "state"_a)
+        .def("test_novelty_and_update_table", nb::overload_cast<const State&>(&iw::DynamicNoveltyTable::test_novelty_and_update_table), "state"_a)
         .def("test_novelty_and_update_table",
-             nb::overload_cast<State, State>(&iw::DynamicNoveltyTable::test_novelty_and_update_table),
+             nb::overload_cast<const State&, const State&>(&iw::DynamicNoveltyTable::test_novelty_and_update_table),
              "state"_a,
              "succ_state"_a)
         .def("reset", &iw::DynamicNoveltyTable::reset)
@@ -996,7 +948,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<const iw::TupleIndexMapper*>(), "tuple_index_mapper"_a)
         .def(
             "__iter__",
-            [](iw::StateTupleIndexGenerator& self, State state)
+            [](iw::StateTupleIndexGenerator& self, const State& state)
             {
                 return nb::make_iterator(nb::type<iw::StateTupleIndexGenerator>(),
                                          "Iterator over atom tuples of size at most the arity as specified in the tuple index mapper.",
@@ -1009,7 +961,7 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<const iw::TupleIndexMapper*>(), "tuple_index_mapper"_a)
         .def(
             "__iter__",
-            [](iw::StatePairTupleIndexGenerator& self, State state, State succ_state)
+            [](iw::StatePairTupleIndexGenerator& self, const State& state, const State& succ_state)
             {
                 return nb::make_iterator(nb::type<iw::StatePairTupleIndexGenerator>(),
                                          "Iterator over atom tuples of size at most the arity as specified in the tuple index mapper.",

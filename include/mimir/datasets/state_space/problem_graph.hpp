@@ -54,7 +54,7 @@ inline const search::StateRepository& get_state_repository(const ProblemVertex& 
 /// @brief Get the `State` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
-inline search::State get_state(const ProblemVertex& vertex) { return get_state_repository(vertex)->get_state(*vertex.get_property<0>()); }
+inline search::State get_state(const ProblemVertex& vertex) { return get_state_repository(vertex)->get_state(*get_packed_state(vertex)); }
 
 /// @brief Get the `formalism::Problem` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.

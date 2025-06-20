@@ -298,7 +298,7 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
 
             if (!src_entry.has_compatible_edge && !graphs::is_goal(src_v))
             {
-                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
+                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << src_state);
 
                 return SolvabilityStatus::UNSOLVABLE;
             }
@@ -323,8 +323,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
                 if (stack_v_idxs.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible cyclic edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                          << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                          << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                          << src_state << "\n"
+                                                          << "  -> " << dst_state);
 
                     return SolvabilityStatus::CYCLIC;
                 }
@@ -334,8 +334,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
                 if (!ref_visited_vertices.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                   << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                   << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                   << src_state << "\n"
+                                                   << "  -> " << dst_state);
 
                     stack.push(Entry { dst_v_idx,
                                        graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
@@ -348,8 +348,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
             else
             {
                 DEBUG_LOG("\nIncompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                 << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                 << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                 << src_state << "\n"
+                                                 << "  -> " << dst_state);
             }
         }
     }
@@ -411,7 +411,7 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
 
             if (!src_entry.has_compatible_edge && !graphs::is_goal(src_problem_v))
             {
-                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
+                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << src_state);
 
                 return SolvabilityStatus::UNSOLVABLE;
             }
@@ -437,8 +437,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
                 if (stack_v_idxs.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible cyclic edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                          << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                          << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                          << src_state << "\n"
+                                                          << "  -> " << dst_state);
 
                     return SolvabilityStatus::CYCLIC;
                 }
@@ -448,8 +448,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
                 if (!ref_visited_vertices.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                   << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                   << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                   << src_state << "\n"
+                                                   << "  -> " << dst_state);
 
                     stack.push(Entry { dst_v_idx,
                                        class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
@@ -462,8 +462,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
             else
             {
                 DEBUG_LOG("\nIncompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                 << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                 << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                 << src_state << "\n"
+                                                 << "  -> " << dst_state);
             }
         }
     }

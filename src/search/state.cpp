@@ -30,43 +30,6 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-/* PackedState */
-
-PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
-    m_fluent_atoms_index(valla::first(fluent_atoms)),
-    m_fluent_atoms_size(valla::second(fluent_atoms)),
-    m_derived_atoms_index(valla::first(derived_atoms)),
-    m_derived_atoms_size(valla::second(derived_atoms)),
-    m_numeric_variables(numeric_variables)
-{
-}
-
-template<formalism::IsFluentOrDerivedTag P>
-v::RootSlotType PackedStateImpl::get_atoms() const
-{
-    if constexpr (std::is_same_v<P, formalism::FluentTag>)
-    {
-        return valla::make_slot(m_fluent_atoms_index, m_fluent_atoms_size);
-    }
-    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-    {
-        return valla::make_slot(m_derived_atoms_index, m_derived_atoms_size);
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-    }
-}
-
-template v::RootSlotType PackedStateImpl::get_atoms<FluentTag>() const;
-template v::RootSlotType PackedStateImpl::get_atoms<DerivedTag>() const;
-
-Index PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
-
-/**
- * State
- */
-
 State::State(Index index, PackedState packed, UnpackedState unpacked) : m_packed(packed), m_unpacked(std::move(unpacked)), m_index(index)
 {
     assert(m_packed && m_unpacked);
@@ -84,7 +47,7 @@ PackedState State::get_packed_state() const { return m_packed; }
 
 const UnpackedStateImpl& State::get_unpacked_state() const { return *m_unpacked; }
 
-const formalism::ProblemImpl& State::get_problem() const { return m_unpacked->get_problem(); }
+const ProblemImpl& State::get_problem() const { return m_unpacked->get_problem(); }
 
 template<IsFluentOrDerivedTag P>
 bool State::literal_holds(GroundLiteral<P> literal) const
@@ -116,7 +79,7 @@ bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_
                        [this, &static_numeric_variables](auto&& arg) { return this->numeric_constraint_holds(arg, static_numeric_variables); });
 }
 
-template<formalism::IsFluentOrDerivedTag P>
+template<IsFluentOrDerivedTag P>
 const FlatBitset& State::get_atoms() const
 {
     return m_unpacked->get_atoms<P>();
@@ -160,4 +123,18 @@ std::ostream& operator<<(std::ostream& os, const search::State& state)
 
     return os;
 }
+}
+
+namespace loki
+{
+size_t Hash<mimir::search::State>::operator()(const mimir::search::State& el) const
+{
+    return hash_combine(Hash<mimir::search::PackedStateImpl> {}(*el.get_packed_state()), &el.get_problem());
+}
+
+bool EqualTo<mimir::search::State>::operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
+{
+    return EqualTo<mimir::search::PackedStateImpl> {}(*lhs.get_packed_state(), *rhs.get_packed_state()) && &lhs.get_problem() == &rhs.get_problem();
+}
+
 }

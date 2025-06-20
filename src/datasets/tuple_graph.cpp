@@ -91,7 +91,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
             out << "states=[";
             for (size_t i = 0; i < get_problem_vertices(vertex).size(); ++i)
             {
-                const auto& state = graphs::get_state(problem_graph.get_vertex(get_problem_vertices(vertex).at(i)));
+                const auto state = graphs::get_state(problem_graph.get_vertex(get_problem_vertices(vertex).at(i)));
                 if (i != 0)
                 {
                     out << "<BR/>";

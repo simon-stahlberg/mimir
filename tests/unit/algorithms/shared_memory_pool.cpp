@@ -90,4 +90,22 @@ TEST(MimirTests, AlgorithmsSharedMemoryPoolTest)
     EXPECT_EQ(object_1->back(), 42);
 }
 
+TEST(MimirTests, AlgorithmsSharedMemoryPoolVectorTest)
+{
+    SharedMemoryPool<std::vector<int>> pool;
+
+    auto vec = std::vector<SharedMemoryPoolPtr<std::vector<int>>> {};
+
+    vec.push_back(pool.get_or_allocate());
+    vec.emplace_back(pool.get_or_allocate());
+    auto object_0 = pool.get_or_allocate();
+    vec.push_back(object_0);
+    auto object_1 = pool.get_or_allocate();
+    vec.emplace_back(object_1);
+    auto object_2 = pool.get_or_allocate();
+    vec.push_back(std::move(object_2));
+    auto object_3 = pool.get_or_allocate();
+    vec.emplace_back(std::move(object_3));
+}
+
 }

@@ -18,6 +18,7 @@ from pymimir.pymimir.advanced.search import (
     Plan,
     PartiallyOrderedPlan,
     SearchResult,
+    PackedState,
     State,
     StateList,
     StateRepository,

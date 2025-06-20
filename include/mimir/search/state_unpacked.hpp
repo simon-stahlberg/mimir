@@ -39,43 +39,15 @@ private:
     const formalism::ProblemImpl& problem;
 
 public:
-    UnpackedStateImpl(const formalism::ProblemImpl& problem) : fluent_atoms(), derived_atoms(), numeric_variables(), problem(problem) {}
+    UnpackedStateImpl(const formalism::ProblemImpl& problem);
 
     template<formalism::IsFluentOrDerivedTag P>
-    FlatBitset& get_atoms()
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            return fluent_atoms;
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            return derived_atoms;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
+    FlatBitset& get_atoms();
     template<formalism::IsFluentOrDerivedTag P>
-    const FlatBitset& get_atoms() const
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            return fluent_atoms;
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            return derived_atoms;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
-    FlatDoubleList& get_numeric_variables() { return numeric_variables; }
-    const FlatDoubleList& get_numeric_variables() const { return numeric_variables; }
-    const formalism::ProblemImpl& get_problem() const { return problem; }
+    const FlatBitset& get_atoms() const;
+    FlatDoubleList& get_numeric_variables();
+    const FlatDoubleList& get_numeric_variables() const;
+    const formalism::ProblemImpl& get_problem() const;
 };
 
 }

@@ -100,6 +100,8 @@ private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
+    datasets::GeneralizedStateSpace m_generalized_state_space;
+
     DenotationRepositories& m_denotation_repositories;
 
     DenotationListSets m_denotations_repositories;
