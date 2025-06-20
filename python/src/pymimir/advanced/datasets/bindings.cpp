@@ -14,12 +14,7 @@ void bind_module_definitions(nb::module_& m)
 {
     /* ProblemGraph */
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
-    m.def(
-        "get_state",
-        [](const graphs::ProblemVertex& self) -> search::State { return graphs::get_state(self); },
-        "vertex"_a,
-        nb::rv_policy::copy,
-        nb::keep_alive<0, 1>());  ///< keep vertex alive to be able to return UnpackedState to the StateRepository.
+    m.def("get_state", [](const graphs::ProblemVertex& self) -> search::State { return graphs::get_state(self); }, "vertex"_a, nb::rv_policy::copy);
     m.def(
         "get_state_repository",
         [](const graphs::ProblemVertex& self) -> const search::StateRepository& { return graphs::get_state_repository(self); },

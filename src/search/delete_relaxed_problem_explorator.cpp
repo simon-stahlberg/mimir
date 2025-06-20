@@ -53,7 +53,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
 
     auto delete_free_applicable_action_generator = LiftedApplicableActionGeneratorImpl(m_delete_free_problem);
     auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluatorImpl>(m_delete_free_problem);
-    auto delete_free_state_repository = StateRepositoryImpl(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
+    auto delete_free_state_repository = std::make_shared<StateRepositoryImpl>(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
 
     auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};
     for (const auto& object : m_problem->get_problem_and_domain_objects())
@@ -65,7 +65,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
         m_delete_free_object_to_unrelaxed_object.emplace(object, unrelaxed_objects_by_name.at(object->get_name()));
     }
 
-    auto [initial_state, initial_metric_value] = delete_free_state_repository.get_or_create_initial_state();
+    auto [initial_state, initial_metric_value] = delete_free_state_repository->get_or_create_initial_state();
 
     auto state = initial_state;
 
@@ -76,7 +76,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_before = delete_free_state_repository->get_reached_fluent_ground_atoms_bitset().count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -84,12 +84,12 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
         {
             // Note that get_or_create_successor_state already modifies unpacked_state to be the successor state.
             // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
-            auto [successor_state, metric_value] = delete_free_state_repository.get_or_create_successor_state(state, action, 0);
+            auto [successor_state, metric_value] = delete_free_state_repository->get_or_create_successor_state(state, action, 0);
             state = successor_state;
         }
 
         // Note: checking fluent atoms suffices because derived are implied by those.
-        auto num_atoms_after = delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_after = delete_free_state_repository->get_reached_fluent_ground_atoms_bitset().count();
 
         if (num_atoms_before != num_atoms_after)
         {

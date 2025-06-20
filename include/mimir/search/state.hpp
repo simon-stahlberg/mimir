@@ -39,13 +39,14 @@ namespace v = valla::plain;
 class State
 {
 private:
+    StateRepository m_parent;
     PackedState m_packed;
     UnpackedState m_unpacked;
     Index m_index;
 
-    State(Index index, PackedState packed, UnpackedState unpacked);
+    State(Index index, PackedState packed, UnpackedState unpacked, StateRepository parent);
 
-    friend class StateRepositoryImpl;
+    friend class StateRepositoryImpl;  ///< Delegates construction from PackedState.
 
 public:
     State(const State&) = default;
@@ -62,6 +63,7 @@ public:
      */
 
     Index get_index() const;
+    const StateRepository& get_state_repository() const;
     PackedState get_packed_state() const;
     const UnpackedStateImpl& get_unpacked_state() const;
     const formalism::ProblemImpl& get_problem() const;

@@ -61,8 +61,6 @@ private:
         assert(m_object);
 
         ++m_object->first;
-
-        std::cout << "Inc ref count to " << m_object->first << " for " << this << std::endl;
     }
 
     void dec_ref_count()
@@ -71,8 +69,6 @@ private:
         assert(m_object->first > 0);
 
         --m_object->first;
-
-        std::cout << "Dec ref count to " << m_object->first << " for " << this << std::endl;
 
         if (m_object->first == 0)
         {
@@ -85,8 +81,6 @@ public:
 
     SharedMemoryPoolPtr(SharedMemoryPool<T>* pool, std::pair<size_t, T>* object) : m_pool(pool), m_object(object)
     {
-        std::cout << "Construct: " << this << " " << m_pool << " " << m_object << std::endl;
-
         if (m_pool && m_object)
             inc_ref_count();
     }
@@ -96,8 +90,6 @@ public:
     /// @param other
     SharedMemoryPoolPtr(const SharedMemoryPoolPtr& other) : SharedMemoryPoolPtr()
     {
-        std::cout << "COPY: from " << &other << " to " << this << std::endl;
-
         m_pool = other.m_pool;
         m_object = other.m_object;
 
@@ -111,8 +103,6 @@ public:
     /// @return
     SharedMemoryPoolPtr& operator=(const SharedMemoryPoolPtr& other)
     {
-        std::cout << "COPY ASSIGN: from " << &other << " to " << this << std::endl;
-
         if (this != &other)
         {
             if (m_pool && m_object)
@@ -130,16 +120,12 @@ public:
     // Movable
     SharedMemoryPoolPtr(SharedMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
     {
-        std::cout << "MOVE: from " << &other << " to " << this << std::endl;
-
         other.m_pool = nullptr;
         other.m_object = nullptr;
     }
 
     SharedMemoryPoolPtr& operator=(SharedMemoryPoolPtr&& other) noexcept
     {
-        std::cout << "MOVE ASSIGN: from " << &other << " to " << this << std::endl;
-
         if (this != &other)
         {
             if (m_pool && m_object)
@@ -156,8 +142,6 @@ public:
 
     ~SharedMemoryPoolPtr()
     {
-        std::cout << "DESTRUCT " << this << std::endl;
-
         if (m_pool && m_object)
             dec_ref_count();
     }

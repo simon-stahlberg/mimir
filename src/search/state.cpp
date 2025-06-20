@@ -30,7 +30,11 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-State::State(Index index, PackedState packed, UnpackedState unpacked) : m_packed(packed), m_unpacked(std::move(unpacked)), m_index(index)
+State::State(Index index, PackedState packed, UnpackedState unpacked, StateRepository parent) :
+    m_parent(std::move(parent)),
+    m_packed(packed),
+    m_unpacked(std::move(unpacked)),
+    m_index(index)
 {
     assert(m_packed && m_unpacked);
     assert(std::is_sorted(get_atoms<FluentTag>().begin(), get_atoms<FluentTag>().end()));
@@ -42,6 +46,8 @@ bool State::operator==(const State& other) const noexcept { return loki::EqualTo
 bool State::operator!=(const State& other) const noexcept { return !(*this == other); }
 
 Index State::get_index() const { return m_index; }
+
+const StateRepository& State::get_state_repository() const { return m_parent; }
 
 PackedState State::get_packed_state() const { return m_packed; }
 

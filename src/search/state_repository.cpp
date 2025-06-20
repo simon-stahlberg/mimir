@@ -121,7 +121,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(it->second, &it->first, std::move(unpacked_state));
+        auto state = State(it->second, &it->first, std::move(unpacked_state), shared_from_this());
         return { state, compute_state_metric_value(state) };
     }
 
@@ -140,7 +140,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     // Cache and return the extended state.
     auto result = m_states.emplace(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
-    auto state = State(result.first->second, &result.first->first, std::move(unpacked_state));
+    auto state = State(result.first->second, &result.first->first, std::move(unpacked_state), shared_from_this());
 
     return { state, compute_state_metric_value(state) };
 }
@@ -309,7 +309,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(it->second, &it->first, std::move(unpacked_state));
+        auto state = State(it->second, &it->first, std::move(unpacked_state), shared_from_this());
         return { state, successor_state_metric_value };
     }
 
@@ -329,7 +329,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
 
     // Cache and return the extended state.
     auto result = m_states.emplace(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
-    auto successor_state = State(result.first->second, &result.first->first, std::move(unpacked_state));
+    auto successor_state = State(result.first->second, &result.first->first, std::move(unpacked_state), shared_from_this());
 
     return { successor_state, successor_state_metric_value };
 }
@@ -358,7 +358,7 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     dense_fluent_numeric_variables.clear();
     dense_fluent_numeric_variables = *problem.get_double_list(state.get_numeric_variables());
 
-    return State(m_states.at(state), &state, std::move(unpacked_state));
+    return State(m_states.at(state), &state, std::move(unpacked_state), shared_from_this());
 }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
