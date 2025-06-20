@@ -2418,7 +2418,7 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
-    def ground(self, state: 'State', max_groundings: int = -1, blacklist: list[Predicate] = None) -> 'list[GroundConjunctiveCondition]':
+    def ground(self, state: 'State', max_groundings: int = -1, blacklist: 'list[Predicate]' = None) -> 'list[GroundConjunctiveCondition]':
         """
         Ground the conjunctive condition.
 
