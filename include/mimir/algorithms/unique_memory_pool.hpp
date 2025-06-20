@@ -117,7 +117,7 @@ public:
         return m_object;
     }
 
-    bool operator()() const { return m_object != nullptr; }
+    explicit operator bool() const noexcept { return m_object != nullptr; }
 };
 
 template<typename T>

@@ -118,6 +118,7 @@ public:
 class SymmetryReducedProblemGraphEventHandler : public brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>
 {
 private:
+    StateRepository m_state_repository;
     const StateSpaceImpl::Options& m_options;
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
@@ -163,7 +164,8 @@ private:
 
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
-            const auto target_v_idx = m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+            const auto target_v_idx =
+                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
 
             m_symm_data.certificate_maps.state_to_cert.emplace(successor_state, certificate);
             m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, target_v_idx);
@@ -181,7 +183,8 @@ private:
 
     void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx =
+            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
         const auto certificate = compute_canonical_graph(start_state);
@@ -205,13 +208,14 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit SymmetryReducedProblemGraphEventHandler(Problem problem,
+    explicit SymmetryReducedProblemGraphEventHandler(StateRepository state_repository,
                                                      const StateSpaceImpl::Options& options,
                                                      graphs::StaticProblemGraph& graph,
                                                      IndexSet& goal_vertices,
                                                      SymmetriesData& symm_data,
                                                      bool quiet = true) :
-        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(problem, quiet),
+        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(state_repository->get_problem(), quiet),
+        m_state_repository(state_repository),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices),
@@ -223,6 +227,7 @@ public:
 class ProblemGraphEventHandler : public brfs::EventHandlerBase<ProblemGraphEventHandler>
 {
 private:
+    StateRepository m_state_repository;
     const StateSpaceImpl::Options& m_options;
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
@@ -243,9 +248,10 @@ private:
     void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
-        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
-                                             m_state_to_vertex_index.at(successor_state) :
-                                             m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto target_vertex_index =
+            m_state_to_vertex_index.contains(successor_state) ?
+                m_state_to_vertex_index.at(successor_state) :
+                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
@@ -258,7 +264,8 @@ private:
 
     void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx =
+            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
     }
 
@@ -278,12 +285,13 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit ProblemGraphEventHandler(Problem problem,
+    explicit ProblemGraphEventHandler(StateRepository state_repository,
                                       const StateSpaceImpl::Options& options,
                                       graphs::StaticProblemGraph& graph,
                                       IndexSet& goal_vertices,
                                       bool quiet = true) :
-        brfs::EventHandlerBase<ProblemGraphEventHandler>(problem, quiet),
+        brfs::EventHandlerBase<ProblemGraphEventHandler>(state_repository->get_problem(), quiet),
+        m_state_repository(state_repository),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices)
@@ -346,8 +354,14 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         const auto is_unsolvable = unsolvable_vertices.contains(problem_v_idx);
         const auto is_alive = (!(is_goal || is_unsolvable));
 
-        final_graph
-            .add_vertex(graphs::get_state(v), graphs::get_problem(v), unit_goal_distance, action_goal_distance, is_initial, is_goal, is_unsolvable, is_alive);
+        final_graph.add_vertex(graphs::get_packed_state(v),
+                               graphs::get_state_repository(v),
+                               unit_goal_distance,
+                               action_goal_distance,
+                               is_initial,
+                               is_goal,
+                               is_unsolvable,
+                               is_alive);
     }
     for (const auto& e : bidir_graph.get_edges())
     {
@@ -371,7 +385,7 @@ static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_gra
     auto symm_data = SymmetriesData();
 
     const auto event_handler =
-        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
+        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_state_repository(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
@@ -406,7 +420,7 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
 
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
-    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
+    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_state_repository(), options, graph, goal_vertices, false);
     const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
     auto brfs_options = brfs::Options();

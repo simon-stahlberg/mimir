@@ -135,7 +135,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, unpacked_state, *m_problem));
+                    assert(is_applicable(ground_axiom, unpacked_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

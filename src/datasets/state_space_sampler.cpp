@@ -15,9 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/datasets/state_space_sampler.hpp"
+
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/state_space/problem_graph.hpp"
-#include "mimir/datasets/state_space_sampler.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/search/state.hpp"
 
@@ -36,7 +37,7 @@ StateSpaceSamplerImpl::StateSpaceSamplerImpl(StateSpace state_space) :
     {
         auto state = mimir::graphs::get_state(vertex);
         auto dead_end = mimir::graphs::is_unsolvable(vertex);
-        m_vertex_index_map[state->get_index()] = vertex.get_index();
+        m_vertex_index_map[state.get_index()] = vertex.get_index();
 
         if (dead_end)
         {
@@ -59,10 +60,7 @@ StateSpaceSamplerImpl::StateSpaceSamplerImpl(StateSpace state_space) :
     }
 }
 
-const StateSpace& StateSpaceSamplerImpl::get_state_space() const
-{
-    return m_state_space;
-}
+const StateSpace& StateSpaceSamplerImpl::get_state_space() const { return m_state_space; }
 
 mimir::search::State StateSpaceSamplerImpl::sample_state()
 {
@@ -116,29 +114,17 @@ mimir::search::State StateSpaceSamplerImpl::sample_dead_end_state()
     return mimir::graphs::get_state(random_vertex);
 }
 
-size_t StateSpaceSamplerImpl::get_num_states() const
-{
-    return m_vertex_index_map.size();
-}
+size_t StateSpaceSamplerImpl::get_num_states() const { return m_vertex_index_map.size(); }
 
-size_t StateSpaceSamplerImpl::get_num_dead_end_states() const
-{
-    return m_dead_end_vertices.size();
-}
+size_t StateSpaceSamplerImpl::get_num_dead_end_states() const { return m_dead_end_vertices.size(); }
 
-size_t StateSpaceSamplerImpl::get_num_alive_states() const
-{
-    return get_num_states() - get_num_dead_end_states();
-}
+size_t StateSpaceSamplerImpl::get_num_alive_states() const { return get_num_states() - get_num_dead_end_states(); }
 
-size_t StateSpaceSamplerImpl::get_max_steps_to_goal() const
-{
-    return m_max_steps_to_goal;
-}
+size_t StateSpaceSamplerImpl::get_max_steps_to_goal() const { return m_max_steps_to_goal; }
 
 bool StateSpaceSamplerImpl::is_dead_end_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -150,7 +136,7 @@ bool StateSpaceSamplerImpl::is_dead_end_state(const mimir::search::State& state)
 
 bool StateSpaceSamplerImpl::is_goal_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -162,7 +148,7 @@ bool StateSpaceSamplerImpl::is_goal_state(const mimir::search::State& state) con
 
 bool StateSpaceSamplerImpl::is_initial_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -174,7 +160,7 @@ bool StateSpaceSamplerImpl::is_initial_state(const mimir::search::State& state) 
 
 DiscreteCost StateSpaceSamplerImpl::get_steps_to_goal(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -186,7 +172,7 @@ DiscreteCost StateSpaceSamplerImpl::get_steps_to_goal(const mimir::search::State
 
 ContinuousCost StateSpaceSamplerImpl::get_cost_to_goal(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -196,10 +182,11 @@ ContinuousCost StateSpaceSamplerImpl::get_cost_to_goal(const mimir::search::Stat
     throw std::runtime_error("State not found in the state space.");
 }
 
-std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>> StateSpaceSamplerImpl::get_forward_transitions(const mimir::search::State& state) const
+std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
+StateSpaceSamplerImpl::get_forward_transitions(const mimir::search::State& state) const
 {
     auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();
@@ -218,10 +205,11 @@ std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>> Sta
     throw std::runtime_error("State not found in the state space.");
 }
 
-std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>> StateSpaceSamplerImpl::get_backward_transitions(const mimir::search::State& state) const
+std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
+StateSpaceSamplerImpl::get_backward_transitions(const mimir::search::State& state) const
 {
     auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
-    auto it = m_vertex_index_map.find(state->get_index());
+    auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
         auto& graph = m_state_space->get_graph();

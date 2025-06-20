@@ -101,7 +101,6 @@ public:
 
         ItemType result;
         visit_at(m_queues, m_pos, [&result](auto&& queue) { result = queue.get().top(); });
-        assert(result);
         return result;
     }
 

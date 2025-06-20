@@ -28,7 +28,7 @@
 namespace mimir::search
 {
 
-class StateRepositoryImpl
+class StateRepositoryImpl : public std::enable_shared_from_this<StateRepositoryImpl>
 {
 private:
     AxiomEvaluator m_axiom_evaluator;  ///< The axiom evaluator.
