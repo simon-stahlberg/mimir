@@ -45,8 +45,8 @@ public:
                                              const graphs::ClassGraph& class_graph,
                                              dl::DenotationRepositories& ref_denotation_repositories);
 
-    GeneralPoliciesRefinementPruningFunction(search::StateProblemList states,
-                                             search::StateProblemPairList transitions,
+    GeneralPoliciesRefinementPruningFunction(search::StateList states,
+                                             search::StatePairList transitions,
                                              dl::DenotationRepositories& ref_denotation_repositories);
 
     /// @brief Tests whether a concept should be pruned.
@@ -73,7 +73,7 @@ public:
      * Getters
      */
 
-    const search::StateProblemPairList& get_transitions() const;
+    const search::StatePairList& get_transitions() const;
 
 private:
     template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
@@ -81,7 +81,7 @@ private:
 
     dl::StateListRefinementPruningFunction m_state_list_pruning_function;
 
-    search::StateProblemPairList m_transitions;
+    search::StatePairList m_transitions;
 
     dl::DenotationRepositories& m_denotation_repositories;
 

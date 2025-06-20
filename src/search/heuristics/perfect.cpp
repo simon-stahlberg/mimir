@@ -26,22 +26,22 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-PerfectHeuristicImpl::PerfectHeuristicImpl(const SearchContext& context) : m_estimates()
+PerfectHeuristicImpl::PerfectHeuristicImpl(SearchContext context) : m_context(std::move(context)), m_estimates()
 {
     // We simply create a state space and copy the estimates
     auto state_space_options = datasets::StateSpaceImpl::Options();
     state_space_options.remove_if_unsolvable = false;
 
-    auto state_space = datasets::StateSpaceImpl::create(context, state_space_options);
+    auto state_space = datasets::StateSpaceImpl::create(m_context, state_space_options);
     assert(state_space);
 
     for (const auto& v : state_space->first->get_graph().get_vertices())
     {
-        m_estimates.emplace(graphs::get_state(v), graphs::get_action_goal_distance(v));
+        m_estimates.emplace(graphs::get_state(v).get_index(), graphs::get_action_goal_distance(v));
     }
 }
 
-PerfectHeuristic PerfectHeuristicImpl::create(const SearchContext& context) { return std::make_shared<PerfectHeuristicImpl>(context); }
+PerfectHeuristic PerfectHeuristicImpl::create(SearchContext context) { return std::make_shared<PerfectHeuristicImpl>(std::move(context)); }
 
-ContinuousCost PerfectHeuristicImpl::compute_heuristic(const State& state, bool is_goal_state) { return m_estimates.at(state); }
+ContinuousCost PerfectHeuristicImpl::compute_heuristic(const State& state, bool is_goal_state) { return m_estimates.at(state.get_index()); }
 }

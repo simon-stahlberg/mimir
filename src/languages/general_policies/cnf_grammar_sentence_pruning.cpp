@@ -31,20 +31,15 @@ bool GeneralPoliciesRefinementPruningFunction::should_prune_impl<dl::BooleanTag>
 {
     auto denotations = AbstractFeatureList {};
 
-    auto src_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
-    auto dst_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
+    auto src_eval_context = dl::EvaluationContext(std::nullopt, m_denotation_repositories);
+    auto dst_eval_context = dl::EvaluationContext(std::nullopt, m_denotation_repositories);
 
-    for (const auto& [src, dst] : m_transitions)
+    for (const auto& [src_state, dst_state] : m_transitions)
     {
-        const auto& [src_state, src_problem] = src;
-        const auto& [dst_state, dst_problem] = dst;
-
         src_eval_context.set_state(src_state);
-        src_eval_context.set_problem(src_problem);
         const auto src_eval = constructor->evaluate(src_eval_context)->get_data();
 
         dst_eval_context.set_state(dst_state);
-        dst_eval_context.set_problem(dst_problem);
         const auto dst_eval = constructor->evaluate(dst_eval_context)->get_data();
 
         // Handle condition
@@ -86,20 +81,15 @@ bool GeneralPoliciesRefinementPruningFunction::should_prune_impl<dl::NumericalTa
 {
     auto denotations = AbstractFeatureList {};
 
-    auto src_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
-    auto dst_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
+    auto src_eval_context = dl::EvaluationContext(std::nullopt, m_denotation_repositories);
+    auto dst_eval_context = dl::EvaluationContext(std::nullopt, m_denotation_repositories);
 
-    for (const auto& [src, dst] : m_transitions)
+    for (const auto& [src_state, dst_state] : m_transitions)
     {
-        const auto& [src_state, src_problem] = src;
-        const auto& [dst_state, dst_problem] = dst;
-
         src_eval_context.set_state(src_state);
-        src_eval_context.set_problem(src_problem);
         const auto src_eval = constructor->evaluate(src_eval_context)->get_data();
 
         dst_eval_context.set_state(dst_state);
-        dst_eval_context.set_problem(dst_problem);
         const auto dst_eval = constructor->evaluate(dst_eval_context)->get_data();
 
         // Handle condition
@@ -163,29 +153,19 @@ GeneralPoliciesRefinementPruningFunction::GeneralPoliciesRefinementPruningFuncti
         const auto& src_problem_v = generalized_state_space->get_problem_vertex(generalized_state_space->get_graph().get_vertex(edge.get_source()));
         const auto& dst_problem_v = generalized_state_space->get_problem_vertex(generalized_state_space->get_graph().get_vertex(edge.get_target()));
         auto src_state = graphs::get_state(src_problem_v);
-        auto src_problem = graphs::get_problem(src_problem_v);
         auto dst_state = graphs::get_state(dst_problem_v);
-        auto dst_problem = graphs::get_problem(dst_problem_v);
 
-        m_transitions.emplace_back(std::make_pair(std::move(src_state), std::move(src_problem)), std::make_pair(std::move(dst_state), std::move(dst_problem)));
+        m_transitions.emplace_back(std::make_pair(std::move(src_state), std::move(dst_state)));
     }
-    // Sort to decrease allocations/deallocations during sequential evaluation.
-    std::sort(m_transitions.begin(),
-              m_transitions.end(),
-              [](auto&& lhs, auto&& rhs) { return lhs.first.second->get_objects().size() > rhs.first.second->get_objects().size(); });
 }
 
-GeneralPoliciesRefinementPruningFunction::GeneralPoliciesRefinementPruningFunction(search::StateProblemList states,
-                                                                                   search::StateProblemPairList transitions,
+GeneralPoliciesRefinementPruningFunction::GeneralPoliciesRefinementPruningFunction(search::StateList states,
+                                                                                   search::StatePairList transitions,
                                                                                    dl::DenotationRepositories& ref_denotation_repositories) :
     m_state_list_pruning_function(dl::StateListRefinementPruningFunction(std::move(states), ref_denotation_repositories)),
     m_transitions(std::move(transitions)),
     m_denotation_repositories(ref_denotation_repositories)
 {
-    // Sort to decrease allocations/deallocations during sequential evaluation.
-    std::sort(m_transitions.begin(),
-              m_transitions.end(),
-              [](auto&& lhs, auto&& rhs) { return lhs.first.second->get_objects().size() > rhs.first.second->get_objects().size(); });
 }
 
 bool GeneralPoliciesRefinementPruningFunction::should_prune(dl::Constructor<dl::ConceptTag> concept_) { return should_prune_impl(concept_); }
@@ -196,6 +176,6 @@ bool GeneralPoliciesRefinementPruningFunction::should_prune(dl::Constructor<dl::
 
 bool GeneralPoliciesRefinementPruningFunction::should_prune(dl::Constructor<dl::NumericalTag> numerical) { return should_prune_impl(numerical); }
 
-const search::StateProblemPairList& GeneralPoliciesRefinementPruningFunction::get_transitions() const { return m_transitions; }
+const search::StatePairList& GeneralPoliciesRefinementPruningFunction::get_transitions() const { return m_transitions; }
 
 }

@@ -32,14 +32,16 @@ class PerfectHeuristicImpl : public IHeuristic
 public:
     static constexpr const std::string_view name = "perfect";
 
-    explicit PerfectHeuristicImpl(const SearchContext& context);
+    explicit PerfectHeuristicImpl(SearchContext context);
 
-    static PerfectHeuristic create(const SearchContext& context);
+    static PerfectHeuristic create(SearchContext context);
 
     ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override;
 
 private:
-    StateMap<ContinuousCost> m_estimates;
+    SearchContext m_context;
+
+    IndexMap<ContinuousCost> m_estimates;
 };
 
 }

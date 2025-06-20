@@ -44,6 +44,8 @@ using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 // PackedState
 class PackedStateImpl;
 using PackedState = const PackedStateImpl*;
+template<typename T>
+using PackedStateMap = UnorderedMap<PackedState, T>;
 
 // UnpackedStateImpl
 class UnpackedStateImpl;

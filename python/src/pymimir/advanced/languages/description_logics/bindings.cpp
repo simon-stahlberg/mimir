@@ -257,7 +257,7 @@ void bind_module_definitions(nb::module_& m)
         .def("clear", [](DenotationRepositories& self) { clear(self); });
 
     nb::class_<EvaluationContext>(m, "EvaluationContext")  //
-        .def(nb::init<search::State, formalism::Problem, DenotationRepositories&>(), "state"_a, "problem"_a, "denotation_repositories"_a);
+        .def(nb::init<search::State, DenotationRepositories&>(), "state"_a, "denotation_repositories"_a);
 
     /**
      * CNFGrammar
@@ -597,7 +597,7 @@ void bind_module_definitions(nb::module_& m)
              "generalized_state_space"_a,
              "class_graph"_a,
              "ref_denotation_repositories"_a)
-        .def(nb::init<mimir::search::StateProblemList, DenotationRepositories&>(), "states"_a, "ref_denotation_repositories"_a);
+        .def(nb::init<mimir::search::StateList, DenotationRepositories&>(), "states"_a, "ref_denotation_repositories"_a);
 
     nb::class_<cnf_grammar::GeneratedSentencesContainer>(m, "GeneratedSentencesContainer")  //
         .def(nb::init<>())

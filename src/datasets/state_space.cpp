@@ -91,7 +91,7 @@ namespace mimir::datasets
 struct SymmetriesData
 {
     CertificateMaps certificate_maps;
-    StateSet prunable_states;
+    IndexSet prunable_states;
     UnorderedSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
     SymmetriesData() : certificate_maps(), prunable_states() {}
@@ -109,7 +109,7 @@ public:
     bool test_prune_initial_state(const State& state) override { return false; }
     bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override
     {
-        return !is_new_succ || m_symm_data.prunable_states.contains(succ_state);
+        return !is_new_succ || m_symm_data.prunable_states.contains(succ_state.get_index());
     }
 };
 
@@ -122,7 +122,7 @@ private:
     IndexSet& m_goal_vertices;
     SymmetriesData& m_symm_data;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    IndexMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
@@ -131,11 +131,11 @@ private:
 
     void on_expand_state_impl(const State& state) {}
 
-    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state.get_index())); }
 
     void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
-        const auto source_v_idx = m_state_to_vertex_index.at(state);
+        const auto source_v_idx = m_state_to_vertex_index.at(state.get_index());
 
         auto certificate = compute_canonical_graph(successor_state);
         auto it = m_symm_data.certificate_maps.cert_to_v_idx.find(certificate);
@@ -154,7 +154,7 @@ private:
             }
 
             /* Always mark symmetric states as prunable. */
-            m_symm_data.prunable_states.insert(successor_state);
+            m_symm_data.prunable_states.insert(successor_state.get_index());
         }
         else
         {
@@ -168,7 +168,7 @@ private:
             m_symm_data.certificate_maps.state_to_cert.emplace(successor_state, certificate);
             m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, target_v_idx);
 
-            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
+            m_state_to_vertex_index.emplace(successor_state.get_index(), target_v_idx);
             m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
         }
     }
@@ -183,7 +183,7 @@ private:
     {
         const auto v_idx =
             m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(start_state, v_idx);
+        m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
 
         const auto certificate = compute_canonical_graph(start_state);
         m_symm_data.certificate_maps.state_to_cert.emplace(start_state, certificate);
@@ -230,7 +230,7 @@ private:
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    IndexMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class EventHandlerBase<ProblemGraphEventHandler>;
@@ -241,16 +241,16 @@ private:
         //     m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state, nullptr));
     }
 
-    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state.get_index())); }
 
     void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
-        const auto source_vertex_index = m_state_to_vertex_index.at(state);
+        const auto source_vertex_index = m_state_to_vertex_index.at(state.get_index());
         const auto target_vertex_index =
-            m_state_to_vertex_index.contains(successor_state) ?
-                m_state_to_vertex_index.at(successor_state) :
+            m_state_to_vertex_index.contains(successor_state.get_index()) ?
+                m_state_to_vertex_index.at(successor_state.get_index()) :
                 m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
+        m_state_to_vertex_index.emplace(successor_state.get_index(), target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
 
@@ -264,7 +264,7 @@ private:
     {
         const auto v_idx =
             m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(start_state, v_idx);
+        m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
     }
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,

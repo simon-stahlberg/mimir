@@ -37,21 +37,18 @@ class EvaluationContext
 private:
     /* Memory */
     std::optional<search::State> m_state;
-    formalism::Problem m_problem;
     Denotations m_builders;
     Denotations m_scratch_builders;
     DenotationRepositories& m_repositories;
 
 public:
-    EvaluationContext(std::optional<search::State> state, formalism::Problem problem, DenotationRepositories& ref_repositories);
+    EvaluationContext(std::optional<search::State> state, DenotationRepositories& ref_repositories);
 
     /**
      * Setters
      */
 
     void set_state(const search::State& state);
-
-    void set_problem(formalism::Problem problem);
 
     /**
      * Getters

@@ -140,12 +140,8 @@ using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Has
 
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;
-template<typename T>
-using StateMap = UnorderedMap<State, T>;
-using StateProblem = std::pair<State, formalism::Problem>;
-using StateProblemPair = std::pair<StateProblem, StateProblem>;
-using StateProblemList = std::vector<StateProblem>;
-using StateProblemPairList = std::vector<StateProblemPair>;
+using StatePair = std::pair<State, State>;
+using StatePairList = std::vector<StatePair>;
 }
 
 #endif
