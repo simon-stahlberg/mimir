@@ -181,11 +181,11 @@ $(function() {
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keyword"></span>{</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">auto</span> result = size_t(0);</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    boost::hana::for_each(get_hana_compressed_precondition&lt;Ps...&gt;(),</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                          [<span class="keyword">this</span>, &amp;result](<span class="keyword">auto</span>&amp;&amp; pair)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                          [&amp;result](<span class="keyword">auto</span>&amp;&amp; pair)</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                          {</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                              <span class="keyword">const</span> <span class="keyword">auto</span>&amp; second = boost::hana::second(pair);</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                              boost::hana::for_each(second,</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                                    [<span class="keyword">this</span>, &amp;result](<span class="keyword">auto</span>&amp;&amp; pair2)</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                                    [&amp;result](<span class="keyword">auto</span>&amp;&amp; pair2)</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                                    {</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                                        <span class="keyword">const</span> <span class="keyword">auto</span> second2 = boost::hana::second(pair2);</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                                        result += second2-&gt;size();</div>
