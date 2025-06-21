@@ -38,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     using FormalismEntity = void;
@@ -82,7 +82,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     using FormalismEntity = void;
@@ -124,7 +124,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     using FormalismEntity = void;

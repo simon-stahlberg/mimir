@@ -25,7 +25,7 @@ void bind_module_definitions(nb::module_& m)
              "generalized_state_space"_a,
              "class_graph"_a,
              "ref_denotation_repositories"_a)
-        .def(nb::init<mimir::search::StateProblemList, mimir::search::StateProblemPairList, dl::DenotationRepositories&>(),
+        .def(nb::init<mimir::search::StateList, mimir::search::StatePairList, dl::DenotationRepositories&>(),
              "states"_a,
              "transitions"_a,
              "ref_denotation_repositories"_a);

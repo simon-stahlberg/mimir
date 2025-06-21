@@ -30,7 +30,7 @@
 
 namespace mimir::languages::general_policies
 {
-template<std::ranges::forward_range VertexIndices>
+template<std::ranges::input_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
 SolvabilityStatus
 GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexIndices& vertices, dl::DenotationRepositories& denotation_repositories) const
@@ -50,7 +50,7 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
     return SolvabilityStatus::SOLVED;
 }
 
-template<std::ranges::forward_range VertexIndices>
+template<std::ranges::input_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
 SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                                             const VertexIndices& vertices,

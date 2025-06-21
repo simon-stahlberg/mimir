@@ -32,7 +32,7 @@ private:
     RuleImpl(Index index, ConditionList conditions, EffectList effects);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;

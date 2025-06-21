@@ -25,9 +25,9 @@ using namespace mimir::formalism;
 
 namespace mimir::search::iw
 {
-void DefaultEventHandlerImpl::on_start_search_impl(State initial_state) const {}
+void DefaultEventHandlerImpl::on_start_search_impl(const State& initial_state) const {}
 
-void DefaultEventHandlerImpl::on_start_arity_search_impl(State initial_state, size_t arity) const
+void DefaultEventHandlerImpl::on_start_arity_search_impl(const State& initial_state, size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }

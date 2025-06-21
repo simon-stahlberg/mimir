@@ -18,8 +18,6 @@
 #ifndef MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 #define MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 
-#include "mimir/buffering/unordered_set.h"
-#include "mimir/buffering/vector.h"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -46,7 +44,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -81,7 +79,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -124,7 +122,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable

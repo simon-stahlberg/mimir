@@ -17,6 +17,9 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 
+#include "mimir/algorithms/unique_memory_pool.hpp"
+#include "mimir/common/collections.hpp"
+
 #include <functional>
 #include <iostream>
 #include <limits>
@@ -25,84 +28,48 @@
 namespace mimir
 {
 
-KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<uint32_t>>& partitions) :
-    partition_bits(partitions.size()),
-    partial_solution(),
-    k_compatible_vertices(partitions.size(), std::vector<boost::dynamic_bitset<>>(partitions.size()))
-{
-    const auto k = partitions.size();
+/**
+ * Heap-managed coroutine variables.
+ */
 
-    for (uint32_t k1 = 0; k1 < k; ++k1)
-    {
-        for (uint32_t k2 = 0; k2 < k; ++k2)
-        {
-            k_compatible_vertices[k1][k2].resize(partitions[k2].size());
-        }
-    }
+static thread_local UniqueMemoryPool<std::vector<uint32_t>> s_solution_pool;
+using SolutionPtr = UniqueMemoryPoolPtr<std::vector<uint32_t>>;
 
-    initialize_memory(partitions);
-}
+static thread_local UniqueMemoryPool<boost::dynamic_bitset<>> s_bitset_pool;
+using BitsetUniquePtr = UniqueMemoryPoolPtr<boost::dynamic_bitset<>>;
 
-void KPKCWorkspace::initialize_memory(const std::vector<std::vector<uint32_t>>& partitions)
-{
-    verify_memory_layout(partitions);
+static thread_local UniqueMemoryPool<std::vector<BitsetUniquePtr>> s_bitset_list_pool;
+using BitsetListUniquePtr = UniqueMemoryPoolPtr<std::vector<BitsetUniquePtr>>;
 
-    const auto k = partitions.size();
+static thread_local UniqueMemoryPool<std::vector<BitsetListUniquePtr>> s_bitset_list_list_pool;
+using BitsetMatrixUniquePtr = UniqueMemoryPoolPtr<std::vector<BitsetListUniquePtr>>;
 
-    for (std::uint32_t index = 0; index < k; ++index)
-    {
-        k_compatible_vertices.front()[index].set();
-    }
-    partition_bits.reset();
-    partial_solution.clear();
-}
-
-void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<uint32_t>>& partitions)
-{
-    const auto k = partitions.size();
-
-    if (partition_bits.size() != k)
-    {
-        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected partition_bits of size " + std::to_string(k));
-    }
-
-    if (k_compatible_vertices.size() != k)
-    {
-        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have first dimension of size " + std::to_string(k));
-    }
-
-    if (!std::all_of(k_compatible_vertices.begin(), k_compatible_vertices.end(), [k](const auto& element) { return element.size() == k; }))
-    {
-        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have second dimension of size " + std::to_string(k));
-    }
-
-    for (uint32_t k1 = 0; k1 < k; ++k1)
-    {
-        for (uint32_t k2 = 0; k2 < k; ++k2)
-        {
-            if (k_compatible_vertices[k1][k2].size() != partitions[k2].size())
-            {
-                throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected bitsets to match partition sizes.");
-            }
-        }
-    }
-}
+/**
+ * Recursive call
+ */
 
 mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                                                             const std::vector<std::vector<uint32_t>>& partitions,
-                                                                                            KPKCWorkspace& memory,
+                                                                                            SolutionPtr& partial_solution,
+                                                                                            BitsetUniquePtr& partition_bits,
+                                                                                            BitsetMatrixUniquePtr& k_compatible_vertices,
                                                                                             uint32_t depth)
 {
+    assert(depth < partitions.size());
+
     uint32_t k = partitions.size();
     uint32_t best_set_bits = std::numeric_limits<uint32_t>::max();
     uint32_t best_partition = std::numeric_limits<uint32_t>::max();
-    auto& compatible_vertices = memory.k_compatible_vertices[depth];  // fetch current compatible vertices
+
+    assert(is_within_bounds(*k_compatible_vertices, depth));
+    auto& compatible_vertices = (*k_compatible_vertices)[depth];
 
     // Find the best partition to work with
     for (uint32_t partition = 0; partition < k; ++partition)
     {
-        auto num_set_bits = compatible_vertices[partition].count();
-        if (!memory.partition_bits[partition] && (num_set_bits < best_set_bits))
+        assert(is_within_bounds(*compatible_vertices, partition));
+        auto num_set_bits = (*compatible_vertices)[partition]->count();
+        if (!(*partition_bits)[partition] && (num_set_bits < best_set_bits))
         {
             best_set_bits = num_set_bits;
             best_partition = partition;
@@ -110,83 +77,154 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
     }
 
     // Iterate through compatible vertices in the best partition
-    uint32_t adjacent_index = compatible_vertices[best_partition].find_first();
-    while (adjacent_index < compatible_vertices[best_partition].size())
+    assert(is_within_bounds(*compatible_vertices, best_partition));
+    uint32_t adjacent_index = (*compatible_vertices)[best_partition]->find_first();
+    while (adjacent_index < (*compatible_vertices)[best_partition]->size())
     {
+        assert(is_within_bounds(partitions, best_partition) && is_within_bounds(partitions[best_partition], adjacent_index));
         uint32_t vertex = partitions[best_partition][adjacent_index];
-        compatible_vertices[best_partition][adjacent_index] = 0;
-        memory.partial_solution.push_back(vertex);
+        assert(is_within_bounds(*compatible_vertices, best_partition) && is_within_bounds(*(*compatible_vertices)[best_partition], adjacent_index));
+        (*(*compatible_vertices)[best_partition])[adjacent_index] = 0;
 
-        if (memory.partial_solution.size() == k)
+        partial_solution->push_back(vertex);
+
+        if (partial_solution->size() == k)
         {
-            co_yield memory.partial_solution;
+            co_yield *partial_solution;
         }
         else
         {
+            assert(partial_solution->size() - 1 == depth);
+
             // Update compatible vertices for the next recursion
-            auto& compatible_vertices_next = memory.k_compatible_vertices[depth + 1];  // fetch next compatible vertices
-            // Important to set next to cur, before the update.
-            // The following line does not allocate/deallocate because the sizes are exactly the same.
-            compatible_vertices_next = compatible_vertices;
+            assert(is_within_bounds(*k_compatible_vertices, depth + 1));
+            auto& compatible_vertices_next = (*k_compatible_vertices)[depth + 1];
+            for (uint32_t partition = 0; partition < k; ++partition)
+            {
+                assert(is_within_bounds(*compatible_vertices_next, partition));
+                assert(is_within_bounds(*compatible_vertices, partition));
+                assert((*compatible_vertices_next)[partition]->size() == (*compatible_vertices)[partition]->size());
+                *(*compatible_vertices_next)[partition] = *(*compatible_vertices)[partition];  // copy bitsets from current to next iteration
+            }
+
             uint32_t offset = 0;
             for (uint32_t partition = 0; partition < k; ++partition)
             {
-                auto partition_size = compatible_vertices_next[partition].size();
-                if (!memory.partition_bits[partition])
+                assert(is_within_bounds(*compatible_vertices_next, partition));
+                auto partition_size = (*compatible_vertices_next)[partition]->size();
+                if (!(*partition_bits)[partition])
                 {
                     for (uint32_t index = 0; index < partition_size; ++index)
                     {
-                        compatible_vertices_next[partition][index] &= adjacency_matrix[vertex][index + offset];
+                        assert(is_within_bounds(*compatible_vertices_next, partition));
+                        (*(*compatible_vertices_next)[partition])[index] &= adjacency_matrix[vertex][index + offset];
                     }
                 }
                 offset += partition_size;
             }
 
-            memory.partition_bits[best_partition] = 1;
+            (*partition_bits)[best_partition] = 1;
 
             uint32_t possible_additions = 0;
             for (uint32_t partition = 0; partition < k; ++partition)
             {
-                if (!memory.partition_bits[partition] && compatible_vertices[partition].any())
+                assert(is_within_bounds(*compatible_vertices, partition));
+                if (!(*partition_bits)[partition] && (*compatible_vertices)[partition]->any())
                 {
                     ++possible_additions;
                 }
             }
 
-            if ((memory.partial_solution.size() + possible_additions) == k)
+            if ((partial_solution->size() + possible_additions) == k)
             {
-                for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, memory, depth + 1))
+                for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
+                                                                                       partitions,
+                                                                                       partial_solution,
+                                                                                       partition_bits,
+                                                                                       k_compatible_vertices,
+                                                                                       depth + 1))
                 {
                     co_yield result;
                 }
             }
 
-            memory.partition_bits[best_partition] = 0;
+            (*partition_bits)[best_partition] = 0;
         }
 
-        memory.partial_solution.pop_back();
-        adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
+        partial_solution->pop_back();
+
+        assert(is_within_bounds(*compatible_vertices, best_partition));
+        adjacent_index = (*compatible_vertices)[best_partition]->find_next(adjacent_index);
     }
 }
 
-mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                            const std::vector<std::vector<uint32_t>>& partitions,
-                                                                                            KPKCWorkspace* memory)
+bool verify_input_dimensions(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix, const std::vector<std::vector<uint32_t>>& partitions)
 {
-    /* Get and verify or create memory layout. */
-    auto managed_memory = std::unique_ptr<KPKCWorkspace> {};
-    if (!memory)
+    size_t total_vertices = 0;
+    for (const auto& partition : partitions)
+        total_vertices += partition.size();
+
+    if (adjacency_matrix.size() != total_vertices)
+        return false;
+
+    for (const auto& row : adjacency_matrix)
     {
-        // If no external data is provided, manage data internally
-        managed_memory = std::make_unique<KPKCWorkspace>(partitions);
-        memory = managed_memory.get();
+        if (row.size() != total_vertices)
+            return false;
     }
 
-    /* Initialize the memory. */
-    memory->initialize_memory(partitions);
+    return true;
+}
 
-    /* Compute k-cliques. */
-    for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, *memory, 0))
+mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                            const std::vector<std::vector<uint32_t>>& partitions)
+{
+    assert(verify_input_dimensions(adjacency_matrix, partitions));
+
+    const auto k = partitions.size();
+
+    /* Allocate and initialize solution */
+    auto solution = s_solution_pool.get_or_allocate();
+    solution->clear();
+
+    /* Allocate and initialize partition bits */
+    auto partition_bits = s_bitset_pool.get_or_allocate();
+    partition_bits->resize(k);
+    partition_bits->reset();
+
+    /* Allocate and initialize k_compatible_vertices */
+    auto k_compatible_vertices = s_bitset_list_list_pool.get_or_allocate();
+
+    k_compatible_vertices->clear();
+    k_compatible_vertices->resize(k);
+
+    for (uint32_t k1 = 0; k1 < k; ++k1)
+    {
+        auto biset_vec = s_bitset_list_pool.get_or_allocate();
+
+        biset_vec->clear();
+        biset_vec->resize(k);
+
+        (*k_compatible_vertices)[k1] = std::move(biset_vec);
+
+        for (uint32_t k2 = 0; k2 < k; ++k2)
+        {
+            auto bitset = s_bitset_pool.get_or_allocate();
+
+            bitset->resize(partitions[k2].size());
+            bitset->reset();
+
+            (*(*k_compatible_vertices)[k1])[k2] = std::move(bitset);
+        }
+    }
+
+    for (uint32_t k1 = 0; k1 < k; ++k1)
+    {
+        (*k_compatible_vertices->front())[k1]->set();
+    }
+
+    /* Enumerate all k-cliques. */
+    for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, solution, partition_bits, k_compatible_vertices, 0))
     {
         co_yield result;
     }

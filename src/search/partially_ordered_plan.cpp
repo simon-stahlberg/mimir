@@ -33,7 +33,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& problem, State state, GroundAction action)
+static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& problem, const State& state, GroundAction action)
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
@@ -41,7 +41,7 @@ static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& probl
     insert_into_bitset(action->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
     for (const auto& cond_effect : action->get_conditional_effects())
     {
-        if (is_applicable(cond_effect, problem, state))
+        if (is_applicable(cond_effect, state))
         {
             insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<PositiveTag, FluentTag>(), positive);
             insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
@@ -50,13 +50,13 @@ static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& probl
     return std::make_pair(std::move(positive), std::move(negative));
 }
 
-static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem, State state, GroundAction action)
+static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem, const State& state, GroundAction action)
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
     for (const auto& cond_effect : action->get_conditional_effects())
     {
-        if (is_applicable(cond_effect, problem, state))
+        if (is_applicable(cond_effect, state))
         {
             insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>(), positive);
             insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<NegativeTag>(), negative);
@@ -65,13 +65,13 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
     return std::make_pair(std::move(positive), std::move(negative));
 }
 
-static bool must_precede(const ProblemImpl& problem, State lhs_state, GroundAction lhs_action, State rhs_state, GroundAction rhs_action)
+static bool must_precede(const ProblemImpl& problem, const State& lhs_state, GroundAction lhs_action, const State& rhs_state, GroundAction rhs_action)
 {
-    if (!lhs_state->get_atoms<DerivedTag>().empty() || !rhs_state->get_atoms<DerivedTag>().empty())
+    if (!lhs_state.get_atoms<DerivedTag>().count() || !rhs_state.get_atoms<DerivedTag>().count())
     {
         throw std::runtime_error("must_precede(problem, lhs_state, lhs_action, rhs_state, rhs_action): Derived atoms not supported yet.");
     }
-    if (!lhs_state->get_numeric_variables().empty() || !rhs_state->get_numeric_variables().empty())
+    if (!lhs_state.get_numeric_variables().empty() || !rhs_state.get_numeric_variables().empty())
     {
         throw std::runtime_error("must_precede(problem, lhs_state, lhs_action, rhs_state, rhs_action): Numerical variables not supported yet.");
     }
@@ -148,7 +148,7 @@ std::pair<Plan, IndexList> PartiallyOrderedPlan::compute_t_o_plan_with_maximal_m
     auto actions = GroundActionList {};
 
     auto cur_state = m_t_o_plan.get_states().front();
-    auto cur_state_metric_value = compute_state_metric_value(cur_state, *m_t_o_plan.get_search_context()->get_problem());
+    auto cur_state_metric_value = compute_state_metric_value(cur_state);
     for (const auto& i : top_sort)
     {
         const auto action = m_t_o_plan.get_actions().at(i);

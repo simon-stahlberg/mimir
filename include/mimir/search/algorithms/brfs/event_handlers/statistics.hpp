@@ -46,9 +46,6 @@ private:
     uint64_t m_num_reached_fluent_atoms;
     uint64_t m_num_reached_derived_atoms;
 
-    uint64_t m_num_bytes_for_problem;
-    uint64_t m_num_bytes_for_nodes;
-
     uint64_t m_num_states;
     uint64_t m_num_nodes;
     uint64_t m_num_actions;
@@ -66,8 +63,6 @@ public:
         m_num_pruned_until_g_value(),
         m_num_reached_fluent_atoms(0),
         m_num_reached_derived_atoms(0),
-        m_num_bytes_for_problem(0),
-        m_num_bytes_for_nodes(0),
         m_num_states(0),
         m_num_nodes(0),
         m_num_actions(0),
@@ -98,8 +93,6 @@ public:
     void set_num_reached_fluent_atoms(uint64_t num_reached_fluent_atoms) { m_num_reached_fluent_atoms = num_reached_fluent_atoms; }
     void set_num_reached_derived_atoms(uint64_t num_reached_derived_atoms) { m_num_reached_derived_atoms = num_reached_derived_atoms; }
 
-    void set_num_bytes_for_problem(uint64_t num_bytes_for_problem) { m_num_bytes_for_problem = num_bytes_for_problem; }
-    void set_num_bytes_for_nodes(uint64_t num_bytes_for_nodes) { m_num_bytes_for_nodes = num_bytes_for_nodes; }
     void set_num_states(uint64_t num_states) { m_num_states = num_states; }
     void set_num_nodes(uint64_t num_nodes) { m_num_nodes = num_nodes; }
     void set_num_actions(uint64_t num_actions) { m_num_actions = num_actions; }
@@ -126,8 +119,6 @@ public:
 
     uint64_t get_num_reached_fluent_atoms() const { return m_num_reached_fluent_atoms; }
     uint64_t get_num_reached_derived_atoms() const { return m_num_reached_derived_atoms; }
-    uint64_t get_num_bytes_for_problem() const { return m_num_bytes_for_problem; }
-    uint64_t get_num_bytes_for_nodes() const { return m_num_bytes_for_nodes; }
     uint64_t get_num_states() const { return m_num_states; }
     uint64_t get_num_nodes() const { return m_num_nodes; }
     uint64_t get_num_actions() const { return m_num_actions; }
@@ -163,11 +154,7 @@ inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
        << (statistics.get_num_pruned_until_g_value().empty() ? 0 : statistics.get_num_pruned_until_g_value().back()) << "\n"
        << "[BrFS] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
        << "[BrFS] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
-       << "[BrFS] Number of nodes: " << statistics.get_num_nodes() << "\n"
-       << "[BrFS] Number of bytes for nodes: " << statistics.get_num_bytes_for_nodes() << "\n"
-       << "[BrFS] Number of bytes per node: " << divide_or_zero(statistics.get_num_bytes_for_nodes(), statistics.get_num_nodes()) << "\n"
-       << "[BrFS] Number of bytes for problem: " << statistics.get_num_bytes_for_problem() << "\n"
-       << "[BrFS] Total number of bytes used: " << (statistics.get_num_bytes_for_problem() + statistics.get_num_bytes_for_nodes());
+       << "[BrFS] Number of nodes: " << statistics.get_num_nodes();
 
     return os;
 }

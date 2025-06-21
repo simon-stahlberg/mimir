@@ -17,26 +17,25 @@
 
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 
+#include "mimir/search/state_repository.hpp"
+
 using namespace mimir::formalism;
 
 namespace mimir::languages::dl
 {
-EvaluationContext::EvaluationContext(search::State state, Problem problem, DenotationRepositories& ref_repositories) :
+EvaluationContext::EvaluationContext(std::optional<search::State> state, DenotationRepositories& ref_repositories) :
     m_state(state),
-    m_problem(problem),
     m_builders(),
     m_scratch_builders(),
     m_repositories(ref_repositories)
 {
 }
 
-void EvaluationContext::set_state(search::State state) { m_state = state; }
+void EvaluationContext::set_state(const search::State& state) { m_state = state; }
 
-void EvaluationContext::set_problem(formalism::Problem problem) { m_problem = problem; }
+const search::State& EvaluationContext::get_state() const { return m_state.value(); }
 
-search::State EvaluationContext::get_state() const { return m_state; }
-
-const Problem& EvaluationContext::get_problem() const { return m_problem; }
+const Problem& EvaluationContext::get_problem() const { return m_state.value().get_state_repository()->get_problem(); }
 
 Denotations& EvaluationContext::get_builders() { return m_builders; }
 

@@ -45,17 +45,9 @@ public:
     using DefaultEventHandlerImpl = applicable_action_generator::lifted::DefaultEventHandlerImpl;
     using DefaultEventHandler = applicable_action_generator::lifted::DefaultEventHandler;
 
-    /// @brief Simplest construction
-    LiftedApplicableActionGeneratorImpl(formalism::Problem problem);
+    LiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    /// @brief Complete construction
-    LiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler);
-
-    /// @brief Simplest construction
-    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem);
-
-    /// @brief Complete construction
-    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler);
+    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler = nullptr);
 
     // Uncopyable
     LiftedApplicableActionGeneratorImpl(const LiftedApplicableActionGeneratorImpl& other) = delete;
@@ -64,8 +56,7 @@ public:
     LiftedApplicableActionGeneratorImpl(LiftedApplicableActionGeneratorImpl&& other) = delete;
     LiftedApplicableActionGeneratorImpl& operator=(LiftedApplicableActionGeneratorImpl&& other) = delete;
 
-    mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
-    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const State& state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;
@@ -83,7 +74,6 @@ private:
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
 
     /* Memory for reuse */
-    DenseState m_dense_state;
     formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
     formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
     formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;

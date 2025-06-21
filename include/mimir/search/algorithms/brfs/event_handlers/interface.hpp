@@ -38,31 +38,31 @@ public:
     virtual ~IEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
-    virtual void on_expand_state(State state) = 0;
+    virtual void on_expand_state(const State& state) = 0;
 
     /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
-    virtual void on_expand_goal_state(State state) = 0;
+    virtual void on_expand_goal_state(const State& state) = 0;
 
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void
+    on_generate_state_in_search_tree(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void
+    on_generate_state_not_in_search_tree(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer(DiscreteCost g_value) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state) = 0;
+    virtual void on_start_search(const State& start_state) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
                                uint64_t num_reached_derived_atoms,
-                               uint64_t num_bytes_for_problem,
-                               uint64_t num_bytes_for_nodes,
                                uint64_t num_states,
                                uint64_t num_nodes,
                                uint64_t num_actions,
@@ -104,7 +104,7 @@ private:
 public:
     explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_expand_state(State state) override
+    void on_expand_state(const State& state) override
     {
         m_statistics.increment_num_expanded();
 
@@ -114,7 +114,7 @@ public:
         }
     }
 
-    void on_expand_goal_state(State state) override
+    void on_expand_goal_state(const State& state) override
     {
         if (!m_quiet)
         {
@@ -122,7 +122,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         m_statistics.increment_num_generated();
 
@@ -132,7 +132,7 @@ public:
         }
     }
 
-    void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_in_search_tree(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         if (!m_quiet)
         {
@@ -140,7 +140,8 @@ public:
         }
     }
 
-    void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void
+    on_generate_state_not_in_search_tree(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         if (!m_quiet)
         {
@@ -159,7 +160,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state) override
+    void on_start_search(const State& start_state) override
     {
         m_statistics = Statistics();
 
@@ -173,8 +174,6 @@ public:
 
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
@@ -183,8 +182,6 @@ public:
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
         m_statistics.set_num_reached_fluent_atoms(num_reached_fluent_atoms);
         m_statistics.set_num_reached_derived_atoms(num_reached_derived_atoms);
-        m_statistics.set_num_bytes_for_problem(num_bytes_for_problem);
-        m_statistics.set_num_bytes_for_nodes(num_bytes_for_nodes);
         m_statistics.set_num_states(num_states);
         m_statistics.set_num_nodes(num_nodes);
         m_statistics.set_num_actions(num_actions);
@@ -192,14 +189,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_end_search_impl(num_reached_fluent_atoms,
-                                      num_reached_derived_atoms,
-                                      num_bytes_for_problem,
-                                      num_bytes_for_nodes,
-                                      num_states,
-                                      num_nodes,
-                                      num_actions,
-                                      num_axioms);
+            self().on_end_search_impl(num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
         }
     }
 

@@ -48,7 +48,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -85,7 +85,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -123,7 +123,7 @@ protected:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     using Category = D;
@@ -161,7 +161,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -191,7 +191,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -223,7 +223,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -257,7 +257,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -293,7 +293,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -329,7 +329,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -362,7 +362,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -397,7 +397,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -433,7 +433,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -469,7 +469,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -505,7 +505,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -538,7 +538,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -573,7 +573,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -605,7 +605,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -639,7 +639,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -675,7 +675,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -709,7 +709,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -742,7 +742,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -774,7 +774,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -807,7 +807,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -840,7 +840,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -872,7 +872,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -905,7 +905,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -938,7 +938,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -975,7 +975,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -1008,7 +1008,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -1045,7 +1045,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable
@@ -1082,7 +1082,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
 public:
     // moveable but not copyable

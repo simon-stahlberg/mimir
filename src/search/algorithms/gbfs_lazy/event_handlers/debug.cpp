@@ -26,36 +26,32 @@ using namespace mimir::formalism;
 
 namespace mimir::search::gbfs_lazy
 {
-void DebugEventHandlerImpl::on_expand_state_impl(State state) const
+void DebugEventHandlerImpl::on_expand_state_impl(const State& state) const
 {
     std::cout << "[GBFS] ----------------------------------------\n"
-              << "[GBFS] State: ";
-    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
-    std::cout << std::endl << std::endl;
+              << "[GBFS] State: " << state << "\n"
+              << std::endl;
 }
 
-void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const
 {
     std::cout << "[GBFS] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
-              << "[GBFS] Successor: ";
-    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
-    std::cout << "\n" << std::endl;
+              << "[GBFS] Successor: " << successor_state << "\n"
+              << std::endl;
 }
 
-void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DebugEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[GBFS] Search started.\n"
               << "[GBFS] Initial g_value: " << g_value << "\n"
               << "[GBFS] Initial h_value: " << h_value << "\n"
-              << "[GBFS] Initial state: ";
-    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
-    std::cout << std::endl;
+              << "[GBFS] Initial state: " << start_state << std::endl;
 }
 
 void DebugEventHandlerImpl::on_new_best_h_value_impl(ContinuousCost h_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
@@ -66,8 +62,6 @@ void DebugEventHandlerImpl::on_new_best_h_value_impl(ContinuousCost h_value, uin
 
 void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                uint64_t num_reached_derived_atoms,
-                                               uint64_t num_bytes_for_problem,
-                                               uint64_t num_bytes_for_nodes,
                                                uint64_t num_states,
                                                uint64_t num_nodes,
                                                uint64_t num_actions,

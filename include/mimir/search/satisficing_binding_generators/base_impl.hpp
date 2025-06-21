@@ -113,29 +113,29 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formal
 
 template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_binding(formalism::ConjunctiveCondition condition,
-                                                             const DenseState& dense_state,
+                                                             const UnpackedStateImpl& unpacked_state,
                                                              const formalism::ObjectList& binding)
 {
     return is_valid_static_binding(condition->get_literals<formalism::StaticTag>(), binding)
-           && is_valid_dynamic_binding(condition->get_literals<formalism::FluentTag>(), dense_state.get_atoms<formalism::FluentTag>(), binding)
-           && is_valid_dynamic_binding(condition->get_literals<formalism::DerivedTag>(), dense_state.get_atoms<formalism::DerivedTag>(), binding)
-           && is_valid_binding(condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
+           && is_valid_dynamic_binding(condition->get_literals<formalism::FluentTag>(), unpacked_state.get_atoms<formalism::FluentTag>(), binding)
+           && is_valid_dynamic_binding(condition->get_literals<formalism::DerivedTag>(), unpacked_state.get_atoms<formalism::DerivedTag>(), binding)
+           && is_valid_binding(condition->get_numeric_constraints(), unpacked_state.get_numeric_variables(), binding);
 }
 
 template<typename Derived_>
-bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const DenseState& dense_state, const formalism::ObjectList& binding)
+bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding)
 {
-    return is_valid_binding(m_conjunctive_condition, dense_state, binding)  ///< Check applicability of our conjunctive condition.
-           && self().is_valid_binding_impl(dense_state, binding);           ///< Check applicability in Derived.
+    return is_valid_binding(m_conjunctive_condition, unpacked_state, binding)  ///< Check applicability of our conjunctive condition.
+           && self().is_valid_binding_impl(unpacked_state, binding);           ///< Check applicability in Derived.
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case(const DenseState& dense_state)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case(const UnpackedStateImpl& unpacked_state)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = formalism::ObjectList {};
 
-    if (is_valid_binding(dense_state, binding))
+    if (is_valid_binding(unpacked_state, binding))
     {
         co_yield std::move(binding);
     }
@@ -147,7 +147,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
+SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state,
                                                   const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
                                                   const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
                                                   const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
@@ -164,7 +164,7 @@ SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
         {
             auto binding = formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) };
 
-            if (is_valid_binding(dense_state, binding))
+            if (is_valid_binding(unpacked_state, binding))
             {
                 co_yield std::move(binding);
             }
@@ -178,7 +178,7 @@ SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_state,
+SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state,
                                                     const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
                                                     const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
                                                     const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
@@ -233,7 +233,7 @@ SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_stat
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_workspace))
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions))
     {
         auto binding = formalism::ObjectList(clique.size());
 
@@ -245,7 +245,7 @@ SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_stat
             binding[parameter_index] = problem.get_problem_and_domain_objects()[object_index];
         }
 
-        if (is_valid_binding(dense_state, binding))
+        if (is_valid_binding(unpacked_state, binding))
         {
             co_yield std::move(binding);
         }
@@ -264,7 +264,6 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_problem(std::move(problem)),
     m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandlerImpl>()),
     m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::StaticTag>()),
-    m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
@@ -272,27 +271,28 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
-    m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
-    m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
+    m_consistent_vertices(m_static_consistency_graph.get_vertices().size())
 {
 }
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state,
                                                                 const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
                                                                 const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
                                                                 const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
                                                                 const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
-    DenseState::translate(state, m_dense_state);
-
-    return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
+    return create_binding_generator(state.get_unpacked_state(),
+                                    fluent_assignment_set,
+                                    derived_assignment_set,
+                                    static_numeric_assignment_set,
+                                    fluent_numeric_assignment_set);
 }
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState& dense_state,
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedStateImpl& unpacked_state,
                                                                 const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
                                                                 const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
                                                                 const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
@@ -301,19 +301,19 @@ SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
        To avoid accidental errors, we ensure that we checked whether all nullary conditions are satisfied. */
-    assert(nullary_conditions_hold(m_conjunctive_condition, *m_problem, dense_state));
+    assert(nullary_conditions_hold(m_conjunctive_condition, unpacked_state));
 
     if (m_conjunctive_condition->get_arity() == 0)
     {
-        return nullary_case(dense_state);
+        return nullary_case(unpacked_state);
     }
     else if (m_conjunctive_condition->get_arity() == 1)
     {
-        return unary_case(dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
+        return unary_case(unpacked_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
     }
     else
     {
-        return general_case(dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
+        return general_case(unpacked_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
     }
 }
 
@@ -322,11 +322,9 @@ mimir::generator<std::pair<formalism::ObjectList,
                            std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                       formalism::GroundLiteralList<formalism::FluentTag>,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
-SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(State state)
+SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const State& state)
 {
-    DenseState::translate(state, m_dense_state);
-
-    return create_ground_conjunction_generator(m_dense_state);
+    return create_ground_conjunction_generator(state.get_unpacked_state());
 }
 
 template<typename Derived_>
@@ -334,17 +332,17 @@ mimir::generator<std::pair<formalism::ObjectList,
                            std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                       formalism::GroundLiteralList<formalism::FluentTag>,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
-SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const DenseState& dense_state)
+SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const UnpackedStateImpl& unpacked_state)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<formalism::FluentTag>();
-    auto& dense_derived_atoms = dense_state.get_atoms<formalism::DerivedTag>();
-    auto& dense_numeric_variables = dense_state.get_numeric_variables();
+    auto& dense_fluent_atoms = unpacked_state.get_atoms<formalism::FluentTag>();
+    auto& dense_derived_atoms = unpacked_state.get_atoms<formalism::DerivedTag>();
+    auto& dense_numeric_variables = unpacked_state.get_numeric_variables();
 
     auto& problem = *m_problem;
     const auto& pddl_repositories = problem.get_repositories();
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
-    if (!nullary_conditions_hold(m_conjunctive_condition, problem, dense_state))
+    if (!nullary_conditions_hold(m_conjunctive_condition, unpacked_state))
     {
         co_return;
     }
@@ -364,7 +362,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
 
     for (const auto& binding :
-         create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set, static_numeric_assignment_set, m_numeric_assignment_set))
+         create_binding_generator(unpacked_state, m_fluent_assignment_set, m_derived_assignment_set, static_numeric_assignment_set, m_numeric_assignment_set))
     {
         formalism::GroundLiteralList<formalism::StaticTag> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::StaticTag>())

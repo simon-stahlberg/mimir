@@ -30,7 +30,7 @@ class CustomBrFSEventHandler(search.IBrFSEventHandler):
         pass
 
     def on_generate_state_in_search_tree(self, state : search.State, action : formalism.GroundAction, action_cost: float, successor_state: search.State):
-        print("Generated state:", successor_state.to_string(self.problem))
+        print("Generated state:", successor_state)
 
     def on_generate_state_not_in_search_tree(self, state : search.State, action : formalism.GroundAction, action_cost: float, successor_state: search.State):
         pass
@@ -41,7 +41,7 @@ class CustomBrFSEventHandler(search.IBrFSEventHandler):
     def on_start_search(self, start_state : search.State):
         pass
 
-    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_problem: int, num_bytes_for_nodes: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
+    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
     def on_solved(self, plan: search.Plan):

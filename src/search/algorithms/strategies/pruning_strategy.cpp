@@ -23,16 +23,16 @@ namespace mimir::search
 {
 
 /* NoPruningStrategyImpl */
-bool NoPruningStrategyImpl::test_prune_initial_state(const State state) { return false; }
+bool NoPruningStrategyImpl::test_prune_initial_state(const State& state) { return false; }
 
-bool NoPruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return false; }
+bool NoPruningStrategyImpl::test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) { return false; }
 
 NoPruningStrategy NoPruningStrategyImpl::create() { return std::make_shared<NoPruningStrategyImpl>(); }
 
 /* DuplicatePruningStrategyImpl */
-bool DuplicatePruningStrategyImpl::test_prune_initial_state(const State state) { return false; };
+bool DuplicatePruningStrategyImpl::test_prune_initial_state(const State& state) { return false; };
 
-bool DuplicatePruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return !is_new_succ; }
+bool DuplicatePruningStrategyImpl::test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) { return !is_new_succ; }
 
 DuplicatePruningStrategy DuplicatePruningStrategyImpl::create() { return std::make_shared<DuplicatePruningStrategyImpl>(); }
 }

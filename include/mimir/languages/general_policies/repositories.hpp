@@ -33,7 +33,7 @@ namespace mimir::languages::general_policies
 {
 
 template<typename T>
-using SegmentedPDDLRepository = loki::SegmentedRepository<T>;
+using SegmentedPDDLRepository = loki::IndexedHashSet<T>;
 
 template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NamedFeatureRepository = SegmentedPDDLRepository<NamedFeatureImpl<D>>;

@@ -58,9 +58,7 @@ namespace mimir::graphs
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
 {
     out << "problem_v_idx=" << vertex.get_index() << "\n"  //
-        << " state=";
-    mimir::operator<<(out, std::make_tuple(get_state(vertex), std::cref(*get_problem(vertex))));
-    out << "\n"
+        << " state=" << get_state(vertex) << "\n"
         << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
         << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
         << " is_initial=" << is_initial(vertex) << "\n"                      //
@@ -93,7 +91,7 @@ namespace mimir::datasets
 struct SymmetriesData
 {
     CertificateMaps certificate_maps;
-    StateSet prunable_states;
+    IndexSet prunable_states;
     UnorderedSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
     SymmetriesData() : certificate_maps(), prunable_states() {}
@@ -108,35 +106,36 @@ private:
 public:
     explicit SymmetryStatePruning(SymmetriesData& symm_data) : m_symm_data(symm_data) {}
 
-    bool test_prune_initial_state(State state) override { return false; }
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    bool test_prune_initial_state(const State& state) override { return false; }
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override
     {
-        return !is_new_succ || m_symm_data.prunable_states.contains(succ_state);
+        return !is_new_succ || m_symm_data.prunable_states.contains(succ_state.get_index());
     }
 };
 
 class SymmetryReducedProblemGraphEventHandler : public brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>
 {
 private:
+    StateRepository m_state_repository;
     const StateSpaceImpl::Options& m_options;
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
     SymmetriesData& m_symm_data;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    IndexMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    auto compute_canonical_graph(State state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
+    auto compute_canonical_graph(const State& state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
 
-    void on_expand_state_impl(State state) {}
+    void on_expand_state_impl(const State& state) {}
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state.get_index())); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
-        const auto source_v_idx = m_state_to_vertex_index.at(state);
+        const auto source_v_idx = m_state_to_vertex_index.at(state.get_index());
 
         auto certificate = compute_canonical_graph(successor_state);
         auto it = m_symm_data.certificate_maps.cert_to_v_idx.find(certificate);
@@ -155,7 +154,7 @@ private:
             }
 
             /* Always mark symmetric states as prunable. */
-            m_symm_data.prunable_states.insert(successor_state);
+            m_symm_data.prunable_states.insert(successor_state.get_index());
         }
         else
         {
@@ -163,26 +162,28 @@ private:
 
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
-            const auto target_v_idx = m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+            const auto target_v_idx =
+                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
 
             m_symm_data.certificate_maps.state_to_cert.emplace(successor_state, certificate);
             m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, target_v_idx);
 
-            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
+            m_state_to_vertex_index.emplace(successor_state.get_index(), target_v_idx);
             m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
         }
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state)
+    void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(start_state, v_idx);
+        const auto v_idx =
+            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
 
         const auto certificate = compute_canonical_graph(start_state);
         m_symm_data.certificate_maps.state_to_cert.emplace(start_state, certificate);
@@ -191,8 +192,6 @@ private:
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
-                            uint64_t num_bytes_for_problem,
-                            uint64_t num_bytes_for_nodes,
                             uint64_t num_states,
                             uint64_t num_nodes,
                             uint64_t num_actions,
@@ -207,13 +206,14 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit SymmetryReducedProblemGraphEventHandler(Problem problem,
+    explicit SymmetryReducedProblemGraphEventHandler(StateRepository state_repository,
                                                      const StateSpaceImpl::Options& options,
                                                      graphs::StaticProblemGraph& graph,
                                                      IndexSet& goal_vertices,
                                                      SymmetriesData& symm_data,
                                                      bool quiet = true) :
-        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(problem, quiet),
+        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(state_repository->get_problem(), quiet),
+        m_state_repository(state_repository),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices),
@@ -225,49 +225,50 @@ public:
 class ProblemGraphEventHandler : public brfs::EventHandlerBase<ProblemGraphEventHandler>
 {
 private:
+    StateRepository m_state_repository;
     const StateSpaceImpl::Options& m_options;
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    IndexMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class EventHandlerBase<ProblemGraphEventHandler>;
 
-    void on_expand_state_impl(State state)
+    void on_expand_state_impl(const State& state)
     {
         // if (!m_state_to_vertex_index.contains(state))
         //     m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state, nullptr));
     }
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state.get_index())); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
-        const auto source_vertex_index = m_state_to_vertex_index.at(state);
-        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
-                                             m_state_to_vertex_index.at(successor_state) :
-                                             m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
+        const auto source_vertex_index = m_state_to_vertex_index.at(state.get_index());
+        const auto target_vertex_index =
+            m_state_to_vertex_index.contains(successor_state.get_index()) ?
+                m_state_to_vertex_index.at(successor_state.get_index()) :
+                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        m_state_to_vertex_index.emplace(successor_state.get_index(), target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state)
+    void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-        m_state_to_vertex_index.emplace(start_state, v_idx);
+        const auto v_idx =
+            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
     }
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
-                            uint64_t num_bytes_for_problem,
-                            uint64_t num_bytes_for_nodes,
                             uint64_t num_states,
                             uint64_t num_nodes,
                             uint64_t num_actions,
@@ -282,12 +283,13 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit ProblemGraphEventHandler(Problem problem,
+    explicit ProblemGraphEventHandler(StateRepository state_repository,
                                       const StateSpaceImpl::Options& options,
                                       graphs::StaticProblemGraph& graph,
                                       IndexSet& goal_vertices,
                                       bool quiet = true) :
-        brfs::EventHandlerBase<ProblemGraphEventHandler>(problem, quiet),
+        brfs::EventHandlerBase<ProblemGraphEventHandler>(state_repository->get_problem(), quiet),
+        m_state_repository(state_repository),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices)
@@ -350,8 +352,14 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         const auto is_unsolvable = unsolvable_vertices.contains(problem_v_idx);
         const auto is_alive = (!(is_goal || is_unsolvable));
 
-        final_graph
-            .add_vertex(graphs::get_state(v), graphs::get_problem(v), unit_goal_distance, action_goal_distance, is_initial, is_goal, is_unsolvable, is_alive);
+        final_graph.add_vertex(graphs::get_packed_state(v),
+                               graphs::get_state_repository(v),
+                               unit_goal_distance,
+                               action_goal_distance,
+                               is_initial,
+                               is_goal,
+                               is_unsolvable,
+                               is_alive);
     }
     for (const auto& e : bidir_graph.get_edges())
     {
@@ -375,7 +383,7 @@ static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_gra
     auto symm_data = SymmetriesData();
 
     const auto event_handler =
-        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
+        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_state_repository(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
@@ -410,7 +418,7 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
 
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
-    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
+    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_state_repository(), options, graph, goal_vertices, false);
     const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
     auto brfs_options = brfs::Options();

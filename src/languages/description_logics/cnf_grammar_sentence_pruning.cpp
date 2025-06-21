@@ -47,24 +47,16 @@ StateListRefinementPruningFunction::StateListRefinementPruningFunction(const dat
 {
     for (const auto& vertex : class_graph.get_vertices())
     {
-        const auto& problem = graphs::get_problem(generalized_state_space->get_problem_vertex(vertex));
-        const auto& state = graphs::get_state(generalized_state_space->get_problem_vertex(vertex));
-
-        m_states.emplace_back(state, problem);
+        m_states.emplace_back(graphs::get_state(generalized_state_space->get_problem_vertex(vertex)));
     }
-    // Sort to decrease allocations/deallocations during sequential evaluation.
-    std::sort(m_states.begin(), m_states.end(), [](auto&& lhs, auto&& rhs) { return lhs.second->get_objects().size() > rhs.second->get_objects().size(); });
 }
 
-StateListRefinementPruningFunction::StateListRefinementPruningFunction(search::StateProblemList state_partitioning,
-                                                                       DenotationRepositories& ref_denotation_repositories) :
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(search::StateList states, DenotationRepositories& ref_denotation_repositories) :
     IRefinementPruningFunction(),
     m_denotation_repositories(ref_denotation_repositories),
     m_denotations_repositories(),
-    m_states(state_partitioning)
+    m_states(states)
 {
-    // Sort to decrease allocations/deallocations during sequential evaluation.
-    std::sort(m_states.begin(), m_states.end(), [](auto&& lhs, auto&& rhs) { return lhs.second->get_objects().size() > rhs.second->get_objects().size(); });
 }
 
 bool StateListRefinementPruningFunction::should_prune(Constructor<ConceptTag> concept_) { return should_prune_impl(concept_); }
@@ -80,12 +72,12 @@ bool StateListRefinementPruningFunction::should_prune_impl(Constructor<D> constr
 {
     auto denotations = DenotationList<D>();
 
-    auto eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
+    auto eval_context = dl::EvaluationContext(std::nullopt, m_denotation_repositories);
 
-    for (const auto& [state, problem] : m_states)
+    for (const auto& state : m_states)
     {
         eval_context.set_state(state);
-        eval_context.set_problem(problem);
+
         const auto denotation = constructor->evaluate(eval_context);
 
         denotations.push_back(denotation);
@@ -101,6 +93,6 @@ template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<
 template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<BooleanTag> constructor);
 template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<NumericalTag> constructor);
 
-const search::StateProblemList& StateListRefinementPruningFunction::get_states() const { return m_states; }
+const search::StateList& StateListRefinementPruningFunction::get_states() const { return m_states; }
 
 }

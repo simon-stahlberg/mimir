@@ -289,7 +289,6 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
         auto& src_entry = stack.top();
         const auto src_v_idx = src_entry.v_idx;
         const auto& src_v = graph.get_vertex(src_v_idx);
-        const auto& src_problem = graphs::get_problem(src_v);
         const auto src_state = graphs::get_state(src_v);
 
         if (src_entry.it == src_entry.end)
@@ -298,7 +297,7 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
 
             if (!src_entry.has_compatible_edge && !graphs::is_goal(src_v))
             {
-                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
+                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << src_state);
 
                 return SolvabilityStatus::UNSOLVABLE;
             }
@@ -308,13 +307,13 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
         }
         else
         {
-            auto src_eval_context = dl::EvaluationContext(src_state, src_problem, denotation_repositories);
+            auto src_eval_context = dl::EvaluationContext(src_state, denotation_repositories);
 
             const auto dst_v_idx = *src_entry.it++;  ///< Fetch and additionally increment iterator for next iteration
             const auto& dst_v = graph.get_vertex(dst_v_idx);
-            const auto& dst_problem = graphs::get_problem(dst_v);
+
             const auto dst_state = graphs::get_state(dst_v);
-            auto dst_eval_context = dl::EvaluationContext(dst_state, dst_problem, denotation_repositories);
+            auto dst_eval_context = dl::EvaluationContext(dst_state, denotation_repositories);
 
             const bool is_compatible = evaluate(src_eval_context, dst_eval_context);
 
@@ -323,8 +322,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
                 if (stack_v_idxs.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible cyclic edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                          << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                          << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                          << src_state << "\n"
+                                                          << "  -> " << dst_state);
 
                     return SolvabilityStatus::CYCLIC;
                 }
@@ -334,8 +333,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
                 if (!ref_visited_vertices.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                   << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                   << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                   << src_state << "\n"
+                                                   << "  -> " << dst_state);
 
                     stack.push(Entry { dst_v_idx,
                                        graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
@@ -348,8 +347,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_sp
             else
             {
                 DEBUG_LOG("\nIncompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                 << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                 << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                 << src_state << "\n"
+                                                 << "  -> " << dst_state);
             }
         }
     }
@@ -402,7 +401,6 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
         const auto src_v_idx = src_entry.v_idx;
         const auto& src_v = class_graph.get_vertex(src_v_idx);
         const auto& src_problem_v = generalized_state_space->get_problem_vertex(src_v);
-        const auto& src_problem = graphs::get_problem(src_problem_v);
         const auto src_state = graphs::get_state(src_problem_v);
 
         if (src_entry.it == src_entry.end)
@@ -411,7 +409,7 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
 
             if (!src_entry.has_compatible_edge && !graphs::is_goal(src_problem_v))
             {
-                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
+                DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << src_state);
 
                 return SolvabilityStatus::UNSOLVABLE;
             }
@@ -421,14 +419,13 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
         }
         else
         {
-            auto src_eval_context = dl::EvaluationContext(src_state, src_problem, denotation_repositories);
+            auto src_eval_context = dl::EvaluationContext(src_state, denotation_repositories);
 
             const auto dst_v_idx = *src_entry.it++;  ///< Fetch and additionally increment iterator for next iteration
             const auto& dst_v = class_graph.get_vertex(dst_v_idx);
             const auto& dst_problem_v = generalized_state_space->get_problem_vertex(dst_v);
-            const auto& dst_problem = graphs::get_problem(dst_problem_v);
             const auto dst_state = graphs::get_state(dst_problem_v);
-            auto dst_eval_context = dl::EvaluationContext(dst_state, dst_problem, denotation_repositories);
+            auto dst_eval_context = dl::EvaluationContext(dst_state, denotation_repositories);
 
             const bool is_compatible = evaluate(src_eval_context, dst_eval_context);
 
@@ -437,8 +434,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
                 if (stack_v_idxs.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible cyclic edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                          << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                          << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                          << src_state << "\n"
+                                                          << "  -> " << dst_state);
 
                     return SolvabilityStatus::CYCLIC;
                 }
@@ -448,8 +445,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
                 if (!ref_visited_vertices.contains(dst_v_idx))
                 {
                     DEBUG_LOG("\nCompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                   << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                   << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                   << src_state << "\n"
+                                                   << "  -> " << dst_state);
 
                     stack.push(Entry { dst_v_idx,
                                        class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
@@ -462,8 +459,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
             else
             {
                 DEBUG_LOG("\nIncompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
-                                                 << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
-                                                 << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
+                                                 << src_state << "\n"
+                                                 << "  -> " << dst_state);
             }
         }
     }
@@ -510,8 +507,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const search::SearchContext& search_
         return SolvabilityStatus::UNSOLVABLE;
     }
 
-    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
-    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto src_context = dl::EvaluationContext(std::nullopt, denotation_repositories);
+    auto dst_context = dl::EvaluationContext(std::nullopt, denotation_repositories);
 
     struct Entry
     {
@@ -524,9 +521,6 @@ SolvabilityStatus GeneralPolicyImpl::solves(const search::SearchContext& search_
 
     auto stack = std::stack<Entry> {};
     stack.push(Entry { initial_state, initial_state_metric_value, std::move(initial_applicable_actions), 0, false });
-
-    auto states_on_stack = StateSet {};
-    states_on_stack.insert(initial_state);
 
     while (!stack.empty())
     {
@@ -559,7 +553,6 @@ SolvabilityStatus GeneralPolicyImpl::solves(const search::SearchContext& search_
                 }
 
                 stack.push(Entry { succ_state, succ_state_metric_value, std::move(succ_applicable_actions), 0, false });
-                states_on_stack.insert(succ_state);
             }
         }
         else
@@ -585,14 +578,14 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
 
     auto [cur_state, cur_state_metric_value] = state_repository.get_or_create_initial_state();
 
-    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
-    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto src_context = dl::EvaluationContext(std::nullopt, denotation_repositories);
+    auto dst_context = dl::EvaluationContext(std::nullopt, denotation_repositories);
 
     auto states = StateList { cur_state };
     auto actions = GroundActionList {};
     auto result = SearchResult {};
-    auto visited = StateSet {};
-    visited.insert(cur_state);
+    auto visited = IndexSet {};
+    visited.insert(cur_state.get_index());
 
     /* Greedily follow the policy until reaching a goal state, or failing by finding no compatible edge or detecting a cycle. */
     while (!goal_strategy->test_dynamic_goal(cur_state))
@@ -609,12 +602,12 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
 
             if (evaluate(src_context, dst_context))
             {
-                if (visited.contains(succ_state))
+                if (visited.contains(succ_state.get_index()))
                 {
                     result.status = SearchStatus::FAILED;
                     return result;
                 }
-                visited.insert(succ_state);
+                visited.insert(succ_state.get_index());
 
                 cur_state = succ_state;
                 cur_state_metric_value = succ_state_metric_value;

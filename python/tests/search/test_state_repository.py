@@ -12,10 +12,10 @@ def test_state_repository_ownership():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
-    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
-    state_repository = search.StateRepository(axiom_evaluator)
+    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    state_repository = search.StateRepository.create(axiom_evaluator)
     initial_state, initial_metric_value = state_repository.get_or_create_initial_state()
 
     del state_repository
 
-    assert initial_state.to_string(problem)
+    assert str(initial_state)

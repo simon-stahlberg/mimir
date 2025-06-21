@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -42,12 +42,11 @@ NumericConstraintSelectorNode_T<E>::NumericConstraintSelectorNode_T(Node<E>&& tr
 }
 
 template<formalism::HasConjunctiveCondition E>
-void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const DenseState& state,
-                                                                     const ProblemImpl& problem,
+void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                      std::vector<const E*>&) const
 {
-    if (evaluate(this->m_constraint, problem.get_initial_function_to_value<StaticTag>(), state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, state.get_problem().get_initial_function_to_value<StaticTag>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }
@@ -79,14 +78,13 @@ NumericConstraintSelectorNode_TX<E>::NumericConstraintSelectorNode_TX(Node<E>&& 
 }
 
 template<formalism::HasConjunctiveCondition E>
-void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const DenseState& state,
-                                                                      const ProblemImpl& problem,
+void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                                       std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                       std::vector<const E*>&) const
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
-    if (evaluate(this->m_constraint, problem.get_initial_function_to_value<StaticTag>(), state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, state.get_problem().get_initial_function_to_value<StaticTag>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }

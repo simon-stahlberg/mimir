@@ -26,9 +26,21 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchOpenListsPriorityQueueTest)
 {
-    auto priority_queue = PriorityQueue<double, int>();
-    priority_queue.insert(1.1, 0);
-    priority_queue.insert(2.2, 1);
+    struct QueueEntry
+    {
+        using KeyType = double;
+        using ItemType = int;
+
+        double k;
+        int v;
+
+        KeyType get_key() const { return k; }
+        ItemType get_item() const { return v; }
+    };
+
+    auto priority_queue = PriorityQueue<QueueEntry>();
+    priority_queue.insert(QueueEntry { 1.1, 0 });
+    priority_queue.insert(QueueEntry { 2.2, 1 });
     auto element = priority_queue.top();
     priority_queue.pop();
     EXPECT_EQ(element, 0);
@@ -39,11 +51,24 @@ TEST(MimirTests, SearchOpenListsPriorityQueueTest)
 
 TEST(MimirTests, SearchOpenListsPriorityQueue2Test)
 {
-    auto priority_queue = PriorityQueue<std::tuple<double, double>, int>();
-    priority_queue.insert(std::make_tuple(1.1, 5.1), 0);
-    priority_queue.insert(std::make_tuple(2.2, 3.1), 1);
-    priority_queue.insert(std::make_tuple(1.1, 4.1), 2);
-    priority_queue.insert(std::make_tuple(2.2, 2.1), 3);
+    struct QueueEntry
+    {
+        using KeyType = std::pair<double, double>;
+        using ItemType = int;
+
+        double k1;
+        double k2;
+        int v;
+
+        KeyType get_key() const { return std::make_pair(k1, k2); }
+        ItemType get_item() const { return v; }
+    };
+
+    auto priority_queue = PriorityQueue<QueueEntry>();
+    priority_queue.insert(QueueEntry { 1.1, 5.1, 0 });
+    priority_queue.insert(QueueEntry { 2.2, 3.1, 1 });
+    priority_queue.insert(QueueEntry { 1.1, 4.1, 2 });
+    priority_queue.insert(QueueEntry { 2.2, 2.1, 3 });
     auto element = priority_queue.top();
     priority_queue.pop();
     EXPECT_EQ(element, 2);

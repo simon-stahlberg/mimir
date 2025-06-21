@@ -26,33 +26,40 @@
 namespace mimir::search
 {
 
-template<std::totally_ordered Key, typename Item>
+template<typename T>
+concept IsPriorityQueueEntry = requires(const T a) {
+    typename T::KeyType;
+    typename T::ItemType;
+    { a.get_key() } -> std::totally_ordered;
+    { a.get_item() };
+};
+
+template<IsPriorityQueueEntry E>
 class PriorityQueue
 {
 private:
-    struct Entry
-    {
-        Key priority;
-        Item item;
-
-        Entry(Key priority, Item item) : priority(std::move(priority)), item(std::move(item)) {}
-    };
-
     struct EntryComparator
     {
-        bool operator()(const Entry& l, const Entry& r) { return l.priority > r.priority; }
+        bool operator()(const E& l, const E& r) { return l.get_key() > r.get_key(); }
     };
 
 public:
-    using KeyType = Key;
-    using ItemType = Item;
+    using EntryType = E;
+    using KeyType = typename E::KeyType;
+    using ItemType = typename E::ItemType;
 
-    void insert(Key priority, Item item) { m_priority_queue.emplace(std::move(priority), std::move(item)); }
+    void insert(E entry) { m_priority_queue.push(std::move(entry)); }
 
-    const Item& top() const
+    decltype(auto) top() const
     {
         assert(!empty());
-        return m_priority_queue.top().item;
+        return m_priority_queue.top().get_item();
+    }
+
+    const auto& top_entry() const
+    {
+        assert(!empty());
+        return m_priority_queue.top();
     }
 
     void pop()
@@ -63,7 +70,7 @@ public:
 
     void clear()
     {
-        auto tmp = std::priority_queue<Entry, std::vector<Entry>, EntryComparator> {};
+        auto tmp = std::priority_queue<E, std::vector<E>, EntryComparator> {};
         std::swap(m_priority_queue, tmp);
     }
 
@@ -72,10 +79,8 @@ public:
     std::size_t size() const { return m_priority_queue.size(); }
 
 private:
-    std::priority_queue<Entry, std::vector<Entry>, EntryComparator> m_priority_queue;
+    std::priority_queue<E, std::vector<E>, EntryComparator> m_priority_queue;
 };
-
-static_assert((IsOpenList<PriorityQueue<int, int>>) );
 
 }
 

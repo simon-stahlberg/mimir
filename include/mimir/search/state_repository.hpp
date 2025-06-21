@@ -18,37 +18,34 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
+#include "mimir/algorithms/shared_memory_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 namespace mimir::search
 {
 
-class StateRepositoryImpl
+class StateRepositoryImpl : public std::enable_shared_from_this<StateRepositoryImpl>
 {
 private:
-    AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
-    bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
+    AxiomEvaluator m_axiom_evaluator;  ///< The axiom evaluator.
 
-    StateImplSet m_states;  ///< Stores all created extended states.
+    PackedStateImplMap m_states;  ///< Stores all created extended states.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
     /* Memory for reuse */
-    DenseState m_dense_state_builder;
 
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
-    FlatIndexList m_state_fluent_atoms;
-    FlatIndexList m_state_derived_atoms;
+    SharedMemoryPool<UnpackedStateImpl> m_unpacked_state_pool;
 
-    FlatIndexList m_empty_index_list;
-    FlatDoubleList m_empty_double_list;
+    Index m_empty_double_list;
 
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
@@ -76,18 +73,19 @@ public:
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the state.
     /// @return the successor state and its associated metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(const State& state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
-    /// @brief Get or create the successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
-    /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
-    /// @param dense_state is the dense state.
-    /// @param action is the ground action.
-    /// @param state_metric_value is the metric value of the dense state.
-    /// @return the successor state and its associated metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
-                                                                   DenseState& dense_state,
-                                                                   formalism::GroundAction action,
-                                                                   ContinuousCost state_metric_value);
+    /// @brief Get the state with the given packed state.
+    /// This operation unpacks the state.
+    /// @param state is the packed state.
+    /// @return the state.
+    State get_state(const PackedStateImpl& state);
+
+    /// @brief Get the index of a given packed state.
+    /// This operation has constant time.
+    /// @param state is the packed state.
+    /// @return the index.
+    Index get_state_index(const PackedStateImpl& state);
 
     /**
      * Getters
@@ -98,6 +96,10 @@ public:
     /// @brief Return the number of created states.
     /// @return the number of created states.
     size_t get_state_count() const;
+
+    /// @brief Return the state map.
+    /// @return the states map.
+    const PackedStateImplMap& get_states() const;
 
     /// @brief Return the reached fluent ground atoms.
     /// @return a bitset that stores the reached fluent ground atom indices.
@@ -116,7 +118,7 @@ public:
  * Utils
  */
 
-extern ContinuousCost compute_state_metric_value(State state, const formalism::ProblemImpl& problem);
+extern ContinuousCost compute_state_metric_value(const State& state);
 
 }
 

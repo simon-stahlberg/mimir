@@ -22,9 +22,9 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 #include <variant>
 
@@ -71,8 +71,7 @@ public:
     /// @brief Create a grounded applicable action generator for the given state.
     /// @param state is the state.
     /// @return a generator to yield the applicable actions for the given state.
-    mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
-    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const State& state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;
@@ -88,9 +87,6 @@ private:
     match_tree::MatchTree<formalism::GroundActionImpl> m_match_tree;
 
     EventHandler m_event_handler;
-
-    /* Memory for reuse */
-    DenseState m_dense_state;
 };
 
 }

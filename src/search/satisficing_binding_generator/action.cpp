@@ -36,14 +36,14 @@ ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action acti
 
 const Action& ActionSatisficingBindingGenerator::get_action() const { return m_action; }
 
-bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
 {
-    m_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    m_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
     m_auxiliary_numeric_change = std::nullopt;
 
     return std::all_of(m_action->get_conditional_effects().begin(),
                        m_action->get_conditional_effects().end(),
-                       [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
+                       [&](auto&& arg) { return is_valid_binding_if_fires(arg, unpacked_state, binding); });
 }
 
 template<IsFluentOrAuxiliaryTag F>
@@ -123,18 +123,18 @@ template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericE
                                                                   const FlatDoubleList& fluent_numeric_variables,
                                                                   const ObjectList& binding);
 
-bool ActionSatisficingBindingGenerator::is_valid_binding(ConjunctiveEffect effect, const DenseState& dense_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(ConjunctiveEffect effect, const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
 {
-    return is_valid_binding(effect->get_fluent_numeric_effects(), dense_state.get_numeric_variables(), binding)
+    return is_valid_binding(effect->get_fluent_numeric_effects(), unpacked_state.get_numeric_variables(), binding)
            && (!effect->get_auxiliary_numeric_effect().has_value()
-               || is_valid_binding(effect->get_auxiliary_numeric_effect().value(), dense_state.get_numeric_variables(), binding));
+               || is_valid_binding(effect->get_auxiliary_numeric_effect().value(), unpacked_state.get_numeric_variables(), binding));
 }
 
-bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEffect effect, const DenseState& dense_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEffect effect, const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
 {
     // Same idea as in is_applicable_if_fires.
-    return !(!is_valid_binding(effect->get_conjunctive_effect(), dense_state, binding)  //
-             && SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding(effect->get_conjunctive_condition(), dense_state, binding));
+    return !(!is_valid_binding(effect->get_conjunctive_effect(), unpacked_state, binding)  //
+             && SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding(effect->get_conjunctive_condition(), unpacked_state, binding));
 }
 
 template class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;

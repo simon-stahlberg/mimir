@@ -15,7 +15,7 @@ def test_astar_search():
     search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
 
     delete_relaxation = search.DeleteRelaxedProblemExplorator(search_context.get_problem())
-    heuristic = search.MaxHeuristic(delete_relaxation)
+    heuristic = search.MaxHeuristic.create(delete_relaxation)
 
     astar_options = search.AStarEagerOptions()
 
@@ -26,6 +26,8 @@ def test_astar_search():
 
 
 def test_astar_search_2():
+    """
+    """
     domain_filepath = str(ROOT_DIR / "data" / "blocks_4" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "blocks_4" / "test_problem.pddl")
 
@@ -36,13 +38,13 @@ def test_astar_search_2():
     domain = translator.get_translated_domain()
     problem = translator.translate(problem)
 
-    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
-    state_repository = search.StateRepository(axiom_evaluator)
-    applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
+    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    state_repository = search.StateRepository.create(axiom_evaluator)
+    applicable_action_generator = search.LiftedApplicableActionGenerator.create(problem)
 
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 
-    heuristic = search.BlindHeuristic(problem)
+    heuristic = search.BlindHeuristic.create(problem)
 
     astar_options = search.AStarEagerOptions()
 

@@ -28,20 +28,23 @@ using namespace mimir::formalism;
 
 namespace mimir::search::brfs
 {
-void DefaultEventHandlerImpl::on_expand_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const {}
 
-void DefaultEventHandlerImpl::on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DefaultEventHandlerImpl::on_generate_state_in_search_tree_impl(const State& state,
+                                                                    GroundAction action,
+                                                                    ContinuousCost action_cost,
+                                                                    const State& successor_state) const
 {
 }
 
-void DefaultEventHandlerImpl::on_generate_state_not_in_search_tree_impl(State state,
+void DefaultEventHandlerImpl::on_generate_state_not_in_search_tree_impl(const State& state,
                                                                         GroundAction action,
                                                                         ContinuousCost action_cost,
-                                                                        State successor_state) const
+                                                                        const State& successor_state) const
 {
 }
 
@@ -51,15 +54,13 @@ void DefaultEventHandlerImpl::on_finish_g_layer_impl(uint32_t g_value, uint64_t 
               << " and num generated states " << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;
 }
 
-void DefaultEventHandlerImpl::on_start_search_impl(State start_state) const
+void DefaultEventHandlerImpl::on_start_search_impl(const State& start_state) const
 {  //
     std::cout << "[BrFS] Search started." << std::endl;
 }
 
 void DefaultEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                  uint64_t num_reached_derived_atoms,
-                                                 uint64_t num_bytes_for_problem,
-                                                 uint64_t num_bytes_for_nodes,
                                                  uint64_t num_states,
                                                  uint64_t num_nodes,
                                                  uint64_t num_actions,

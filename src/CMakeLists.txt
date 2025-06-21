@@ -14,15 +14,16 @@ foreach(subdir ${SUBDIRECTORIES})
     file(GLOB_RECURSE TMP_PRIVATE_HEADER_FILES "${subdir}/*.hpp" "${subdir}/**/*.hpp")
     list(APPEND MIMIR_PRIVATE_HEADER_FILES ${TMP_PRIVATE_HEADER_FILES})
 
-    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/mimir/${subdir}/*.hpp" "../include/mimir/${subdir}/**/*.hpp")
-    list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
-
-    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/cista/*.h" "../include/cista/**/*.h")
-    list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
-
-    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/nanobind/*.h" "../include/nanobind/**/*.h")
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES 
+        "../include/mimir/${subdir}/*.hpp" "../include/mimir/${subdir}/**/*.hpp")
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 endforeach()
+
+file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/cista/*.h" "../include/cista/**/*.h")
+list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
+
+file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/valla/*.hpp" "../include/valla/**/*.hpp")
+list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 
 list(APPEND MIMIR_PUBLIC_HEADER_FILES "../include/mimir/mimir.hpp")
 

@@ -22,6 +22,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 #include <memory>
 #include <optional>
@@ -31,7 +32,7 @@ namespace mimir::search::astar_eager
 {
 struct Options
 {
-    State start_state = nullptr;
+    std::optional<State> start_state = std::nullopt;
     EventHandler event_handler = nullptr;
     GoalStrategy goal_strategy = nullptr;
     PruningStrategy pruning_strategy = nullptr;

@@ -84,8 +84,14 @@ ProblemImpl::ProblemImpl(Index index,
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
     m_details(),
-    m_flat_index_list_set(),
-    m_flat_double_list_set()
+    m_flat_index_list_map(),
+    m_flat_index_lists(),
+    m_flat_double_list_map(),
+    m_flat_double_lists(),
+    m_tree_table(),
+    m_bitset_pool(),
+    m_index_list_pool(),
+    m_double_list_pool()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -239,12 +245,56 @@ const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_p
 
 size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
 {
-    return m_flat_index_list_set.get_estimated_memory_usage_in_bytes() + m_flat_double_list_set.get_estimated_memory_usage_in_bytes();
+    return m_flat_index_list_map.get_estimated_memory_usage_in_bytes() + m_flat_double_list_map.get_estimated_memory_usage_in_bytes();
 }
 
 /**
  * Additional members
  */
+
+valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
+const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
+
+std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
+{
+    auto result = m_flat_index_list_map.emplace(list, m_flat_index_list_map.size());
+    const auto pointer = result.first->first.get();
+    const auto index = result.first->second;
+
+    if (result.second)
+    {
+        m_flat_index_lists.push_back(pointer);
+    }
+
+    return { pointer, index };
+}
+const FlatIndexList* ProblemImpl::get_index_list(size_t pos) const
+{
+    assert(pos < m_flat_index_lists.size());
+    return m_flat_index_lists[pos];
+}
+std::pair<const FlatDoubleList*, Index> ProblemImpl::get_or_create_double_list(const FlatDoubleList& list)
+{
+    auto result = m_flat_double_list_map.emplace(list, m_flat_double_list_map.size());
+    const auto pointer = result.first->first.get();
+    const auto index = result.first->second;
+
+    if (result.second)
+    {
+        m_flat_double_lists.push_back(pointer);
+    }
+
+    return { pointer, index };
+}
+const FlatDoubleList* ProblemImpl::get_double_list(size_t pos) const
+{
+    assert(pos < m_flat_double_lists.size());
+    return m_flat_double_lists[pos];
+}
+
+SharedMemoryPool<FlatBitset>& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
+SharedMemoryPool<FlatIndexList>& ProblemImpl::get_index_list_pool() { return m_index_list_pool; }
+SharedMemoryPool<FlatDoubleList>& ProblemImpl::get_double_list_pool() { return m_double_list_pool; }
 
 /* Objects */
 const Object ProblemImpl::get_object(const std::string& name) const { return get_name_to_object().at(name); }
@@ -412,11 +462,6 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
     }
 }
 
-// Index and double lists
-const FlatIndexList* ProblemImpl::get_or_create_index_list(const FlatIndexList& list) { return m_flat_index_list_set.insert(list).first->get(); }
-
-const FlatDoubleList* ProblemImpl::get_or_create_double_list(const FlatDoubleList& list) { return m_flat_double_list_set.insert(list).first->get(); }
-
 // Atom
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -524,7 +569,7 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
         polarity_grounding_tables.resize(predicate_index + 1);
     }
 
-    auto& grounding_table = polarity_grounding_tables.at(predicate_index);
+    // auto& grounding_table = polarity_grounding_tables.at(predicate_index);
 
     /* 3. Check if grounding is cached */
 
@@ -532,11 +577,11 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     auto grounded_terms = ObjectList {};
     ground_terms(literal->get_atom()->get_terms(), binding, grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(grounded_terms);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the literal */
 
@@ -545,7 +590,7 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
+    // grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
 
     /* 6. Return the resulting ground literal */
 
@@ -571,7 +616,7 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
         grounding_tables.resize(function_skeleton_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(function_skeleton_index);
+    // auto& grounding_table = grounding_tables.at(function_skeleton_index);
 
     /* 3. Check if grounding is cached */
 
@@ -580,11 +625,11 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
     auto grounded_terms = ObjectList {};
     ground_terms(function->get_terms(), binding, grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(grounded_terms);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the function */
 
@@ -592,7 +637,7 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
+    // grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
 
     /* 6. Return the resulting ground literal */
 
@@ -619,15 +664,15 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
         grounding_tables.resize(fexpr_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(fexpr_index);
+    // auto& grounding_table = grounding_tables.at(fexpr_index);
 
     /* 3. Check if grounding is cached */
 
-    const auto it = grounding_table.find(binding);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(binding);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the function expression */
     const auto grounded_fexpr = std::visit(
@@ -715,7 +760,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
+    // grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
 
     /* 6. Return the resulting ground literal */
 
@@ -788,24 +833,24 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
@@ -833,8 +878,8 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
     ground_and_fill_vector(*this, conjunctive_effect->get_literals(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list).first;
 
     /* Conjunctive numerical effects */
     auto fluent_numerical_effects = GroundNumericEffectList<FluentTag> {};
@@ -1117,16 +1162,16 @@ GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_conditi
     };
 
     populate_index_lists(static_literals);
-    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     populate_index_lists(fluent_literals);
-    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     populate_index_lists(derived_literals);
-    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     return m_repositories.get_or_create_ground_conjunctive_condition(
         boost::hana::make_map(

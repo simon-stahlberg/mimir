@@ -67,7 +67,7 @@ void FFHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposition
 {
     auto& annotations = this->get_proposition_annotations()[proposition.get_index()];
     get_cost(annotations) = 0;
-    this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
+    this->m_queue.insert(QueueEntry { 0, proposition.get_index() });
 }
 
 void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
@@ -105,7 +105,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Action& action, const Prop
         auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
         get_achiever(ff_proposition_annotations) = action.get_index();
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
@@ -122,12 +122,12 @@ void FFHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propos
         auto& ff_axiom_annotations = get<Axiom>(get_ff_structures_annotations())[axiom.get_index()];
         get_achiever(ff_proposition_annotations) = get_achiever(ff_axiom_annotations);  // Forward the achiever action
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
 template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Action& action)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Action& action)
 {
     for (const auto& atom_index : action.template get_preconditions<R, P>()->compressed_range())
     {
@@ -140,18 +140,20 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 }
 
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(State state, const rpg::Action& action);
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(const State& state,
+                                                                                                                        const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(State state,
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(const State& state,
                                                                                                                          const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(State state, const rpg::Action& action);
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(const State& state,
+                                                                                                                        const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(State state,
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(const State& state,
                                                                                                                          const rpg::Action& action);
 
 template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Axiom& axiom)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Axiom& axiom)
 {
     for (const auto& atom_index : axiom.template get_preconditions<R, P>()->compressed_range())
     {
@@ -159,16 +161,16 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
     }
 }
 
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(const State& state,
                                                                                                                                       const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(const State& state,
                                                                                                                                        const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(const State& state,
                                                                                                                                       const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(const State& state,
                                                                                                                                        const rpg::Axiom& axiom);
 
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Proposition& proposition)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Proposition& proposition)
 {
     auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
 
@@ -188,13 +190,13 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 
     m_relaxed_plan.insert(action.get_unrelaxed_action());
 
-    if (is_applicable(action.get_unrelaxed_action(), this->get_problem(), state))
+    if (is_applicable(action.get_unrelaxed_action(), state))
     {
         this->m_preferred_actions.data.insert(action.get_unrelaxed_action());
     }
 }
 
-DiscreteCost FFHeuristicImpl::extract_impl(State state)
+DiscreteCost FFHeuristicImpl::extract_impl(const State& state)
 {
     // Ensure that this function is called only if the goal is satisfied in the relaxed exploration.
     assert(this->m_num_unsat_goals == 0);

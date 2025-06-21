@@ -455,9 +455,8 @@ def main():
                     problem = datasets.get_problem(vertex)
                     context = description_logics.EvaluationContext(state, problem, denotation_repositories)
                     value = constructor.evaluate(context).get_data()
-                    print("State:", state.to_string(problem))
+                    print("State:", str(state))
                     print("Value:", value)
-    
     
 
 if __name__ == "__main__":

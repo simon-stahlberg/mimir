@@ -18,10 +18,13 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
+#include "mimir/algorithms/shared_memory_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
+
+#include <valla/indexed_hash_set.hpp>
 
 namespace mimir::formalism
 {
@@ -51,8 +54,17 @@ private:
 
     problem::Details m_details;  ///< We hide the details in a struct.
 
-    FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
-    FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
+    FlatIndexListMap m_flat_index_list_map;  ///< Stores all created atom lists.
+    std::vector<const FlatIndexList*> m_flat_index_lists;
+
+    FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
+    std::vector<const FlatDoubleList*> m_flat_double_lists;
+
+    valla::IndexedHashSet m_tree_table;
+
+    SharedMemoryPool<FlatBitset> m_bitset_pool;
+    SharedMemoryPool<FlatIndexList> m_index_list_pool;
+    SharedMemoryPool<FlatDoubleList> m_double_list_pool;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -118,6 +130,18 @@ public:
      * Additional members
      */
 
+    valla::IndexedHashSet& get_tree_table();
+    const valla::IndexedHashSet& get_tree_table() const;
+
+    std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
+    const FlatIndexList* get_index_list(size_t pos) const;
+    std::pair<const FlatDoubleList*, Index> get_or_create_double_list(const FlatDoubleList& list);
+    const FlatDoubleList* get_double_list(size_t pos) const;
+
+    SharedMemoryPool<FlatBitset>& get_bitset_pool();
+    SharedMemoryPool<FlatIndexList>& get_index_list_pool();
+    SharedMemoryPool<FlatDoubleList>& get_double_list_pool();
+
     /* Objects */
     const Object get_object(const std::string& name) const;
     const Object get_problem_or_domain_object(const std::string& name) const;
@@ -166,9 +190,6 @@ public:
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
     /* Grounding */
-
-    const FlatIndexList* get_or_create_index_list(const FlatIndexList& list);
-    const FlatDoubleList* get_or_create_double_list(const FlatDoubleList& list);
 
     template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects);

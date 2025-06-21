@@ -39,10 +39,10 @@ public:
     virtual ~IEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State initial_state) = 0;
+    virtual void on_start_search(const State& initial_state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_subproblem_search(State initial_state) = 0;
+    virtual void on_start_subproblem_search(const State& initial_state) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_subproblem_search(const iw::Statistics& iw_statistics) = 0;
@@ -87,7 +87,7 @@ private:
 public:
     explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_start_search(State initial_state) override
+    void on_start_search(const State& initial_state) override
     {
         m_statistics = Statistics();
 
@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void on_start_subproblem_search(State initial_state) override
+    void on_start_subproblem_search(const State& initial_state) override
     {
         if (!m_quiet)
         {

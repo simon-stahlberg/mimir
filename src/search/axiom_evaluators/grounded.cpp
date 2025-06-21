@@ -25,7 +25,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/interface.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -57,9 +57,9 @@ GroundedAxiomEvaluatorImpl::create(Problem problem, match_tree::MatchTreeList<Gr
         new GroundedAxiomEvaluatorImpl(std::move(problem), std::move(match_tree_partitioning), std::move(event_handler)));
 }
 
-void GroundedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state)
+void GroundedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
 {
-    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
+    auto& dense_derived_atoms = unpacked_state.get_atoms<DerivedTag>();
 
     auto applicable_axioms = GroundAxiomList {};
 
@@ -75,13 +75,13 @@ void GroundedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_sta
 
             applicable_axioms.clear();
 
-            match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, applicable_axioms);
+            match_tree->generate_applicable_elements_iteratively(unpacked_state, applicable_axioms);
 
             /* Apply applicable axioms */
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(is_applicable(grounded_axiom, *m_problem, dense_state));
+                assert(is_applicable(grounded_axiom, unpacked_state));
 
                 assert(grounded_axiom->get_literal()->get_polarity());
 

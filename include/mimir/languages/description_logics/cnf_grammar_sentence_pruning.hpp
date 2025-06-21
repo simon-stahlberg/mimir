@@ -68,7 +68,7 @@ public:
                                        const graphs::ClassGraph& class_graph,
                                        DenotationRepositories& ref_denotation_repositories);
 
-    StateListRefinementPruningFunction(search::StateProblemList states, DenotationRepositories& ref_denotation_repositories);
+    StateListRefinementPruningFunction(search::StateList states, DenotationRepositories& ref_denotation_repositories);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -94,7 +94,7 @@ public:
      * Getters
      */
 
-    const search::StateProblemList& get_states() const;
+    const search::StateList& get_states() const;
 
 private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
@@ -104,7 +104,7 @@ private:
 
     DenotationListSets m_denotations_repositories;
 
-    search::StateProblemList m_states;
+    search::StateList m_states;
 };
 
 }

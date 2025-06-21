@@ -21,6 +21,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir::search
 {

@@ -43,7 +43,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -77,7 +77,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -113,7 +113,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -151,7 +151,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -189,7 +189,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -227,7 +227,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -264,7 +264,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -301,7 +301,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -339,7 +339,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -377,7 +377,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -415,7 +415,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -452,7 +452,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -491,7 +491,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -527,7 +527,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -565,7 +565,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -603,7 +603,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -641,7 +641,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -678,7 +678,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -714,7 +714,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -751,7 +751,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -788,7 +788,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -824,7 +824,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -861,7 +861,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -898,7 +898,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -939,7 +939,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -976,7 +976,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -1017,7 +1017,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -1055,7 +1055,7 @@ private:
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     void evaluate_impl(EvaluationContext& context) const;
 

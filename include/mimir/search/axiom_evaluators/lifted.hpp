@@ -41,13 +41,9 @@ public:
     using DefaultEventHandlerImpl = axiom_evaluator::lifted::DefaultEventHandlerImpl;
     using DefaultEventHandler = axiom_evaluator::lifted::DefaultEventHandler;
 
-    LiftedAxiomEvaluatorImpl(formalism::Problem problem);
+    LiftedAxiomEvaluatorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    LiftedAxiomEvaluatorImpl(formalism::Problem problem, EventHandler event_handler);
-
-    static LiftedAxiomEvaluator create(formalism::Problem problem);
-
-    static LiftedAxiomEvaluator create(formalism::Problem problem, EventHandler event_handler);
+    static LiftedAxiomEvaluator create(formalism::Problem problem, EventHandler event_handler = nullptr);
 
     // Uncopyable
     LiftedAxiomEvaluatorImpl(const LiftedAxiomEvaluatorImpl& other) = delete;
@@ -56,7 +52,7 @@ public:
     LiftedAxiomEvaluatorImpl(LiftedAxiomEvaluatorImpl&& other) = delete;
     LiftedAxiomEvaluatorImpl& operator=(LiftedAxiomEvaluatorImpl&& other) = delete;
 
-    void generate_and_apply_axioms(DenseState& dense_state) override;
+    void generate_and_apply_axioms(UnpackedStateImpl& unpacked_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

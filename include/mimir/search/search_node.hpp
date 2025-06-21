@@ -18,67 +18,27 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "mimir/buffering/vector.h"
+#include "mimir/common/segmented_vector.hpp"
 #include "mimir/common/types.hpp"
+
+#include <tuple>
 
 namespace mimir::search
 {
 
-enum SearchNodeStatus
+enum SearchNodeStatus : uint8_t
 {
-    NEW = 0,
-    OPEN = 1,
+    GOAL = 0,
+    DEAD_END = 1,
     CLOSED = 2,
-    DEAD_END = 3,
-    GOAL = 4,
+    OPEN = 3,
+    NEW = 4,
 };
 
-/// @brief `SearchNodeImpl` encapsulates per state information during search.
-/// @tparam ...SearchNodeProperties
-template<typename... SearchNodeProperties>
-struct SearchNodeImpl
-{
-    SearchNodeImpl() = default;
-    SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, SearchNodeProperties... properties) :
-        m_status(status),
-        m_parent_state_index(parent_state_index),
-        m_properties(cista::tuple<SearchNodeProperties...> { std::move(properties)... })
-    {
-    }
-
-    SearchNodeStatus& get_status() { return m_status; }
-    SearchNodeStatus get_status() const { return m_status; }
-
-    Index& get_parent_state() { return m_parent_state_index; }
-    Index get_parent_state() const { return m_parent_state_index; }
-
-    template<size_t I>
-    auto& get_property()
-    {
-        return cista::get<I>(m_properties);
-    }
-    template<size_t I>
-    const auto& get_property() const
-    {
-        return cista::get<I>(m_properties);
-    }
-
-    /// @brief Return all members to make them serializable by cista.
-    /// @return a tuple of references to all members.
-    auto cista_members() { return std::tie(m_status, m_parent_state_index, m_properties); }
-
-    SearchNodeStatus m_status = SearchNodeStatus::NEW;
-    Index m_parent_state_index = std::numeric_limits<Index>::max();
-    cista::tuple<SearchNodeProperties...> m_properties;
+template<typename T>
+concept IsSearchNode = requires(const T a) {
+    { a.parent_state } -> std::convertible_to<Index>;
 };
-
-template<typename... SearchNodeProperties>
-using SearchNode = SearchNodeImpl<SearchNodeProperties...>*;
-template<typename... SearchNodeProperties>
-using ConstSearchNode = const SearchNodeImpl<SearchNodeProperties...>*;
-
-template<typename... SearchNodeProperties>
-using SearchNodeImplVector = mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>;
 
 }
 

@@ -27,10 +27,8 @@ namespace mimir::search
 {
 
 template<typename T>
-concept IsOpenList = requires(T a, typename T::KeyType key, typename T::ItemType item) {
-    requires std::totally_ordered<typename T::KeyType>;
-
-    { a.insert(key, item) } -> std::same_as<void>;
+concept IsOpenList = requires(T a, typename T::EntryType entry, typename T::ItemType item) {
+    { a.insert(entry) } -> std::same_as<void>;
     { a.top() } -> std::convertible_to<typename T::ItemType>;
     { a.pop() } -> std::same_as<void>;
     { a.clear() } -> std::same_as<void>;

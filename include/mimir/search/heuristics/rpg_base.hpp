@@ -59,7 +59,7 @@ private:
     static constexpr Index DUMMY_PROPOSITION_INDEX = 0;
 
 public:
-    ContinuousCost compute_heuristic(State state, bool is_goal_state) override
+    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override
     {
         if (is_goal_state)
             return 0.;
@@ -151,7 +151,7 @@ private:
     }
 
     template<formalism::IsFluentOrDerivedTag P>
-    void initialize_or_annotations_and_queue_helper(State state)
+    void initialize_or_annotations_and_queue_helper(const State& state)
     {
         if constexpr (std::is_same_v<P, formalism::DerivedTag>)
         {
@@ -160,7 +160,7 @@ private:
             auto& positive_offsets = get<formalism::PositiveTag, P>(get_offsets());
             auto& negative_offsets = get<formalism::NegativeTag, P>(get_offsets());
 
-            for (const auto& atom_index : state->get_atoms<P>())
+            for (const auto& atom_index : state.get_atoms<P>())
             {
                 self().initialize_or_annotations_and_queue_impl(m_propositions[positive_offsets[atom_index]]);
             }
@@ -175,7 +175,7 @@ private:
             auto& positive_offsets = get<formalism::PositiveTag, P>(get_offsets());
             auto& negative_offsets = get<formalism::NegativeTag, P>(get_offsets());
             const auto& all_atoms = get<P>(get_atom_indices());
-            const auto& state_atoms = state->get_atoms<P>();
+            const auto& state_atoms = state.get_atoms<P>();
             auto it = state_atoms.begin();
             auto it2 = all_atoms.begin();
             const auto end = state_atoms.end();
@@ -213,7 +213,7 @@ private:
         }
     }
 
-    void initialize_or_annotations_and_queue(State state)
+    void initialize_or_annotations_and_queue(const State& state)
     {
         this->m_queue.clear();
 
@@ -256,7 +256,7 @@ private:
 
         while (!m_queue.empty())
         {
-            const auto entry = m_queue.top();
+            const auto entry = m_queue.top_entry();
             m_queue.pop();
 
             const auto& proposition = get_propositions()[entry.proposition_index];
@@ -337,11 +337,17 @@ private:
 
     struct QueueEntry
     {
-        Index proposition_index;
-        DiscreteCost cost;
+        using KeyType = DiscreteCost;
+        using ItemType = Index;
+
+        KeyType cost;
+        ItemType proposition_index;
+
+        KeyType get_key() const { return cost; }
+        ItemType get_item() const { return proposition_index; }
     };
 
-    PriorityQueue<DiscreteCost, QueueEntry> m_queue;
+    PriorityQueue<QueueEntry> m_queue;
 };
 
 }

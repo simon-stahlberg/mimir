@@ -20,7 +20,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/search/dense_state.hpp"
+#include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
 
@@ -46,8 +46,7 @@ AtomSelectorNode_TFX<E, P>::AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&&
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_TFX<E, P>::generate_applicable_actions(const DenseState& state,
-                                                             const ProblemImpl&,
+void AtomSelectorNode_TFX<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                              std::vector<const INode<E>*>& ref_applicable_nodes,
                                                              std::vector<const E*>&) const
 {
@@ -103,8 +102,7 @@ AtomSelectorNode_TF<E, P>::AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& f
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_TF<E, P>::generate_applicable_actions(const DenseState& state,
-                                                            const ProblemImpl&,
+void AtomSelectorNode_TF<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -152,8 +150,7 @@ AtomSelectorNode_TX<E, P>::AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& d
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_TX<E, P>::generate_applicable_actions(const DenseState& state,
-                                                            const ProblemImpl&,
+void AtomSelectorNode_TX<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -199,8 +196,7 @@ AtomSelectorNode_FX<E, P>::AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& 
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_FX<E, P>::generate_applicable_actions(const DenseState& state,
-                                                            const ProblemImpl&,
+void AtomSelectorNode_FX<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -244,8 +240,7 @@ AtomSelectorNode_T<E, P>::AtomSelectorNode_T(Node<E>&& true_child, GroundAtom<P>
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_T<E, P>::generate_applicable_actions(const DenseState& state,
-                                                           const ProblemImpl&,
+void AtomSelectorNode_T<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
                                                            std::vector<const E*>&) const
 {
@@ -281,8 +276,7 @@ AtomSelectorNode_F<E, P>::AtomSelectorNode_F(Node<E>&& false_child, GroundAtom<P
 }
 
 template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
-void AtomSelectorNode_F<E, P>::generate_applicable_actions(const DenseState& state,
-                                                           const ProblemImpl&,
+void AtomSelectorNode_F<E, P>::generate_applicable_actions(const UnpackedStateImpl& state,
                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
                                                            std::vector<const E*>&) const
 {

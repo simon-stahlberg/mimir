@@ -32,7 +32,7 @@ public:
 
     static BlindHeuristic create(formalism::Problem problem);
 
-    ContinuousCost compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
+    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
 
 private:
     /* If the lower bound on the action costs is non-zero we can use a nonzero heuristic estimate for non-goal states,

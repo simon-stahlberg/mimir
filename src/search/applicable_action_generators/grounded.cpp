@@ -39,8 +39,7 @@ GroundedApplicableActionGeneratorImpl::GroundedApplicableActionGeneratorImpl(Pro
                                                                              EventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
-    m_event_handler(std::move(event_handler)),
-    m_dense_state()
+    m_event_handler(std::move(event_handler))
 {
 }
 
@@ -57,21 +56,14 @@ GroundedApplicableActionGeneratorImpl::create(Problem problem, match_tree::Match
         new GroundedApplicableActionGeneratorImpl(std::move(problem), std::move(match_tree), std::move(event_handler)));
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(State state)
-{
-    DenseState::translate(state, m_dense_state);
-
-    return create_applicable_action_generator(m_dense_state);
-}
-
-mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(const DenseState& dense_state)
+mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
     auto ground_actions = GroundActionList {};
-    m_match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, ground_actions);
+    m_match_tree->generate_applicable_elements_iteratively(state.get_unpacked_state(), ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(is_applicable(ground_action, *m_problem, dense_state));
+        assert(is_applicable(ground_action, state));
         co_yield ground_action;
     }
 }

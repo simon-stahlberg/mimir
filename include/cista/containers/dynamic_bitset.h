@@ -143,9 +143,9 @@ struct basic_dynamic_bitset
 
     public:
         using difference_type = int;
-        using value_type = size_t;
-        using pointer = size_t*;
-        using reference = size_t&;
+        using value_type = uint32_t;
+        using pointer = uint32_t*;
+        using reference = uint32_t&;
         using iterator_category = std::forward_iterator_tag;
         using iterator_concept = std::forward_iterator_tag;
 
@@ -177,6 +177,20 @@ struct basic_dynamic_bitset
             const_iterator tmp = *this;
             ++(*this);
             return tmp;
+        }
+        constexpr const_iterator operator+(size_t n) const
+        {
+            const_iterator tmp = *this;
+            tmp += n;
+            return tmp;
+        }
+        constexpr const_iterator& operator+=(size_t n)
+        {
+            for (size_t i = 0; i < n; ++i)
+            {
+                advance();
+            }
+            return *this;
         }
         constexpr bool operator==(const const_iterator& other) const { return current_pos_ == other.current_pos_; }
         constexpr bool operator!=(const const_iterator& other) const { return !(*this == other); }

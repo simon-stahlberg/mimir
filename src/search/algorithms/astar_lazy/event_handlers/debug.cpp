@@ -26,31 +26,39 @@ using namespace mimir::formalism;
 
 namespace mimir::search::astar_lazy
 {
-void DebugEventHandlerImpl::on_expand_state_impl(State state) const
+void DebugEventHandlerImpl::on_expand_state_impl(const State& state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: ";
-    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
-    std::cout << std::endl << std::endl;
+              << "[AStar] State: " << state << "\n"
+              << std::endl;
 }
 
-void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const
 {
     std::cout << "[AStar] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
-              << "[AStar] Successor: ";
-    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
-    std::cout << "\n" << std::endl;
+              << "[AStar] Successor: " << successor_state << "\n"
+              << std::endl;
 }
 
-void DebugEventHandlerImpl::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_relaxed_impl(const State& state,
+                                                           GroundAction action,
+                                                           ContinuousCost action_cost,
+                                                           const State& successor_state) const
+{
+}
 
-void DebugEventHandlerImpl::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_not_relaxed_impl(const State& state,
+                                                               GroundAction action,
+                                                               ContinuousCost action_cost,
+                                                               const State& successor_state) const
+{
+}
 
-void DebugEventHandlerImpl::on_close_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_close_state_impl(const State& state) const {}
 
 void DebugEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -58,22 +66,18 @@ void DebugEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint6
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DebugEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial g_value: " << g_value << "\n"
               << "[AStar] Initial h_value: " << h_value << "\n"
-              << "[AStar] Initial state: ";
-    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
-    std::cout << std::endl;
+              << "[AStar] Initial state: " << start_state << std::endl;
 }
 
 void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                uint64_t num_reached_derived_atoms,
-                                               uint64_t num_bytes_for_problem,
-                                               uint64_t num_bytes_for_nodes,
                                                uint64_t num_states,
                                                uint64_t num_nodes,
                                                uint64_t num_actions,

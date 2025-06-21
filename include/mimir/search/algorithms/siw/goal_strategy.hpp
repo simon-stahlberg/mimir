@@ -30,13 +30,13 @@ private:
 
     int m_initial_num_unsatisfied_goals;
 
-    int count_unsatisfied_goals(State state) const;
+    int count_unsatisfied_goals(const State& state) const;
 
 public:
-    explicit ProblemGoalStrategyImplCounter(formalism::Problem problem, State state);
+    explicit ProblemGoalStrategyImplCounter(formalism::Problem problem, const State& state);
 
     bool test_static_goal() override;
-    bool test_dynamic_goal(State state) override;
+    bool test_dynamic_goal(const State& state) override;
 };
 }
 

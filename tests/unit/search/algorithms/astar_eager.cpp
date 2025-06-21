@@ -169,6 +169,10 @@ public:
     const GroundedAxiomEvaluatorImpl::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Classical planning
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Gripper
  */
@@ -239,6 +243,124 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     // Identical to the BrFs result because domain has unit cost 1.
     EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 24);
     EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 6);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Numeric planning
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fo-counters
+ */
+
+TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindFoCountersTest)
+{
+    auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "fo-counters/domain.pddl"),
+                                      fs::path(std::string(DATA_DIR) + "fo-counters/test_problem.pddl"),
+                                      HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 5);
+    EXPECT_EQ(result.plan.value().get_cost(), 5);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 1071);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 113);
+}
+
+TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindFoCountersTest)
+{
+    auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "fo-counters/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "fo-counters/test_problem.pddl"),
+                                    HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 5);
+    EXPECT_EQ(result.plan.value().get_cost(), 5);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 1071);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 113);
+}
+
+/**
+ * Tpp
+ */
+
+TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindTppNumericTest)
+{
+    auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "tpp/numeric/domain.pddl"),
+                                      fs::path(std::string(DATA_DIR) + "tpp/numeric/test_problem.pddl"),
+                                      HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 9);
+    EXPECT_EQ(result.plan.value().get_cost(), 1833);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 2155);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 369);
+}
+
+TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindTppNumericTest)
+{
+    auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "tpp/numeric/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "tpp/numeric/test_problem.pddl"),
+                                    HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 9);
+    EXPECT_EQ(result.plan.value().get_cost(), 1833);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 2155);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 369);
+}
+
+/**
+ * Sugar
+ */
+
+TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindZenotravelNumericTest)
+{
+    auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "zenotravel/numeric/domain.pddl"),
+                                      fs::path(std::string(DATA_DIR) + "zenotravel/numeric/test_problem.pddl"),
+                                      HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    // EXPECT_EQ(result.plan.value().get_actions().size(), 9);  // plan lengths differ
+    EXPECT_EQ(result.plan.value().get_cost(), 5952);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 1006);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 170);
+}
+
+TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindZenotravelNumericTest)
+{
+    auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "zenotravel/numeric/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "zenotravel/numeric/test_problem.pddl"),
+                                    HeuristicType::BLIND);
+    auto result = astar.find_solution();
+
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    // EXPECT_EQ(result.plan.value().get_actions().size(), 9);  // plan lengths differ
+    EXPECT_EQ(result.plan.value().get_cost(), 5952);
+
+    const auto& astar_statistics = astar.get_algorithm_statistics();
+
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 1006);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 170);
 }
 
 }

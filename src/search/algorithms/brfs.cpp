@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
+#include "mimir/common/segmented_vector.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
@@ -42,21 +43,19 @@ namespace mimir::search::brfs
  * BrFS search node
  */
 
-struct BrFSSearchNodeTag
+struct SearchNode
 {
+    DiscreteCost g_value;
+    Index parent_state;
+    SearchNodeStatus status;
 };
 
-using BrFSSearchNodeImpl = SearchNodeImpl<DiscreteCost>;
-using BrFSSearchNode = BrFSSearchNodeImpl*;
-using ConstBrFSSearchNode = const BrFSSearchNodeImpl*;
+using SearchNodeVector = SegmentedVector<SearchNode>;
 
-static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { node->get_property<0>() = g_value; }
-
-static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return node->get_property<0>(); }
-
-static BrFSSearchNode
-get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, mimir::buffering::Vector<BrFSSearchNodeImpl>& search_nodes)
+static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVector& search_nodes)
 {
+    static constexpr auto default_node = SearchNode { DiscreteCost(0), std::numeric_limits<Index>::max(), SearchNodeStatus::NEW };
+
     while (state_index >= search_nodes.size())
     {
         search_nodes.push_back(default_node);
@@ -75,20 +74,19 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
     auto& state_repository = *context->get_state_repository();
 
     const auto [start_state, start_g_value] = (options.start_state) ?
-                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  std::make_pair(options.start_state.value(), compute_state_metric_value(options.start_state.value())) :
                                                   state_repository.get_or_create_initial_state();
     const auto event_handler = (options.event_handler) ? options.event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (options.pruning_strategy) ? options.pruning_strategy : DuplicatePruningStrategyImpl::create();
 
     auto result = SearchResult();
-    auto default_search_node = BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), DiscreteCost(0) };
-    auto search_nodes = SearchNodeImplVector<DiscreteCost>();
-    auto queue = std::deque<State>();
+    auto search_nodes = SearchNodeVector();
+    auto queue = std::deque<PackedState>();
 
-    auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
-    start_search_node->get_status() = SearchNodeStatus::OPEN;
-    set_g_value(start_search_node, 0);
+    auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
+    start_search_node.status = SearchNodeStatus::OPEN;
+    start_search_node.g_value = 0;
 
     event_handler->on_start_search(start_state);
 
@@ -111,7 +109,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
         return result;
     }
 
-    queue.emplace_back(start_state);
+    queue.emplace_back(start_state.get_packed_state());
 
     auto g_value = DiscreteCost(0);
 
@@ -128,24 +126,24 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             return result;
         }
 
-        const auto state = queue.front();
+        const auto state = state_repository.get_state(*queue.front());
         queue.pop_front();
 
-        auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
+        auto& search_node = get_or_create_search_node(state.get_index(), search_nodes);
 
         /* Close state. */
 
-        if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
+        if (search_node.status == SearchNodeStatus::CLOSED || search_node.status == SearchNodeStatus::DEAD_END)
         {
             continue;
         }
 
-        if (get_g_value(search_node) > g_value)
+        if (search_node.g_value > g_value)
         {
             applicable_action_generator.on_finish_search_layer();
             state_repository.get_axiom_evaluator()->on_finish_search_layer();
             event_handler->on_finish_g_layer(g_value);
-            g_value = get_g_value(search_node);
+            g_value = search_node.g_value;
         }
 
         if (goal_strategy->test_dynamic_goal(state))
@@ -156,8 +154,6 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             {
                 event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                              state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                             problem.get_estimated_memory_usage_in_bytes(),
-                                             search_nodes.get_estimated_memory_usage_in_bytes(),
                                              state_repository.get_state_count(),
                                              search_nodes.size(),
                                              ground_action_repository.size(),
@@ -167,7 +163,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
                 state_repository.get_axiom_evaluator()->on_end_search();
 
                 result.goal_state = state;
-                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
+                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state.get_index(), search_nodes, context);
                 result.status = SearchStatus::SOLVED;
 
                 event_handler->on_solved(result.plan.value());
@@ -182,29 +178,28 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
 
         /* Ensure that the state is closed */
 
-        search_node->get_status() = SearchNodeStatus::CLOSED;
+        search_node.status = SearchNodeStatus::CLOSED;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
             /* Open state. */
-            const auto [successor_state, successor_state_metric_value] =
-                state_repository.get_or_create_successor_state(state, action, get_g_value(search_node));
-            auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
-            auto action_cost = successor_state_metric_value - get_g_value(search_node);
+            const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, search_node.g_value);
+            auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
+            auto action_cost = successor_state_metric_value - search_node.g_value;
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
-            if (pruning_strategy->test_prune_successor_state(state, successor_state, (successor_search_node->get_status() == SearchNodeStatus::NEW)))
+            if (pruning_strategy->test_prune_successor_state(state, successor_state, (successor_search_node.status == SearchNodeStatus::NEW)))
             {
                 event_handler->on_generate_state_not_in_search_tree(state, action, action_cost, successor_state);
                 continue;
             }
             event_handler->on_generate_state_in_search_tree(state, action, action_cost, successor_state);
 
-            successor_search_node->get_status() = SearchNodeStatus::OPEN;
-            successor_search_node->get_parent_state() = state->get_index();
-            set_g_value(successor_search_node, get_g_value(search_node) + 1);
+            successor_search_node.status = SearchNodeStatus::OPEN;
+            successor_search_node.parent_state = state.get_index();
+            successor_search_node.g_value = search_node.g_value + 1;
 
-            queue.emplace_back(successor_state);
+            queue.emplace_back(successor_state.get_packed_state());
 
             if (search_nodes.size() >= options.max_num_states)
             {
@@ -216,8 +211,6 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                  state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                 problem.get_estimated_memory_usage_in_bytes(),
-                                 search_nodes.get_estimated_memory_usage_in_bytes(),
                                  state_repository.get_state_count(),
                                  search_nodes.size(),
                                  ground_action_repository.size(),

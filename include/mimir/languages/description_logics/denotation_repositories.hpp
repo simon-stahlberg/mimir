@@ -18,10 +18,10 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
-#include "mimir/buffering/unordered_set.h"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -48,13 +48,13 @@ public:
     /// @param state is the state.
     /// @param denotation is the denotation.
     /// @return the unique denotation for the constructor and state.
-    Denotation<D> insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, const search::State& state, const DenotationImpl<D>& denotation);
 
     /// @brief Get the denotation for the constructor and state if it exists, and otherwise, return nullptr.
     /// @param constructor is the constructor.
     /// @param state is the state.
     /// @return the denotation if it exists, and otherwise, return nullptr.
-    Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
+    Denotation<D> get_if(Constructor<D> constructor, const search::State& state) const;
 
     /// @brief Clear the repository. Does not quarantee to free memory.
     void clear();

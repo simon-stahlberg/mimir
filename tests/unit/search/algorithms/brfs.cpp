@@ -126,6 +126,10 @@ public:
     const GroundedAxiomEvaluatorImpl::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Classical planning
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * agricola-opt18-strips
  *
@@ -890,6 +894,112 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedWoodworkingTest)
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 10);
     EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 3);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Numeric planning
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fo-counters
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedFoCountersTest)
+{
+    auto brfs =
+        GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "fo-counters/domain.pddl"), fs::path(std::string(DATA_DIR) + "fo-counters/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 5);
+    EXPECT_EQ(result.plan.value().get_cost(), 5);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 1071);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 113);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedFoCountersTest)
+{
+    auto brfs =
+        LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "fo-counters/domain.pddl"), fs::path(std::string(DATA_DIR) + "fo-counters/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 5);
+    EXPECT_EQ(result.plan.value().get_cost(), 5);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 1071);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 113);
+}
+
+/**
+ * Tpp
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedTppNumericTest)
+{
+    auto brfs =
+        GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "tpp/numeric/domain.pddl"), fs::path(std::string(DATA_DIR) + "tpp/numeric/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 7);
+    EXPECT_EQ(result.plan.value().get_cost(), 2012.93);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 2155);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 367);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedTppNumericTest)
+{
+    auto brfs =
+        LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "tpp/numeric/domain.pddl"), fs::path(std::string(DATA_DIR) + "tpp/numeric/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 7);
+    EXPECT_EQ(result.plan.value().get_cost(), 2012.93);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 2155);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 367);
+}
+
+/**
+ * Zenotravel
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedZenotravelNumericTest)
+{
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "zenotravel/numeric/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "zenotravel/numeric/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 9);
+    EXPECT_EQ(result.plan.value().get_cost(), 5952);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 5775);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 1084);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedZenotravelNumericTest)
+{
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "zenotravel/numeric/domain.pddl"),
+                                  fs::path(std::string(DATA_DIR) + "zenotravel/numeric/test_problem.pddl"));
+    const auto result = brfs.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 9);
+    EXPECT_EQ(result.plan.value().get_cost(), 5952);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 5775);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 1084);
 }
 
 }

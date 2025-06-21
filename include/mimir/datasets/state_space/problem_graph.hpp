@@ -26,6 +26,8 @@
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
+#include "mimir/search/state_repository.hpp"
 
 namespace mimir::graphs
 {
@@ -36,18 +38,28 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<search::State, formalism::Problem, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+using ProblemVertex = Vertex<search::PackedState, search::StateRepository, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ProblemVertexList = std::vector<ProblemVertex>;
+
+/// @brief Get the `PackedState` of the given `ProblemVertex`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the `PackedState` of the given `ProblemVertex` in the `ProblemGraph`.
+inline search::PackedState get_packed_state(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
+
+/// @brief Get the `StateRepository` of the given `ProblemVertex`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the `StateRepository` of the given `ProblemVertex` in the `ProblemGraph`.
+inline const search::StateRepository& get_state_repository(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
 /// @brief Get the `State` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
-inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
+inline search::State get_state(const ProblemVertex& vertex) { return get_state_repository(vertex)->get_state(*get_packed_state(vertex)); }
 
 /// @brief Get the `formalism::Problem` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `formalism::Problem` of the given `ProblemVertex` in the `ProblemGraph`.
-inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { return get_state_repository(vertex)->get_problem(); }
 
 /// @brief Get the unit goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.

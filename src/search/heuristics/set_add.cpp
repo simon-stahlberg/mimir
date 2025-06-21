@@ -67,7 +67,7 @@ void SetAddHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposi
 {
     auto& annotations = this->get_proposition_annotations()[proposition.get_index()];
     get_cost(annotations) = 0;
-    this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
+    this->m_queue.insert(QueueEntry { 0, proposition.get_index() });
 }
 
 void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
@@ -108,7 +108,7 @@ void SetAddHeuristicImpl::update_or_annotation_impl(const Action& action, const 
         get_achievers(setadd_proposition_annotations) = get_achievers(setadd_action_annotations);
         get_achievers(setadd_proposition_annotations).insert(action.get_index());
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
@@ -125,11 +125,11 @@ void SetAddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Pr
         auto& setadd_axiom_annotations = get_setadd_structure_annotations<Axiom>()[axiom.get_index()];
         get_achievers(setadd_proposition_annotations) = get_achievers(setadd_axiom_annotations);
 
-        this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
+        this->m_queue.insert(QueueEntry { get_cost(proposition_annotations), proposition.get_index() });
     }
 }
 
-DiscreteCost SetAddHeuristicImpl::extract_impl(State)
+DiscreteCost SetAddHeuristicImpl::extract_impl(const State&)
 {
     // Ensure that this function is called only if the goal is satisfied in the relaxed exploration.
     assert(this->m_num_unsat_goals == 0);

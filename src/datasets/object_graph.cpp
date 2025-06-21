@@ -29,7 +29,8 @@ using namespace mimir::search;
 namespace mimir::datasets
 {
 
-static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(State state, const ProblemImpl& problem, graphs::StaticVertexColoredGraph& out_digraph)
+static ObjectMap<graphs::VertexIndex>
+add_objects_graph_structures(const State& state, const ProblemImpl& problem, graphs::StaticVertexColoredGraph& out_digraph)
 {
     auto object_to_atom_color = ObjectMap<PredicateVariantList> {};
     auto object_to_literal_color = ObjectMap<std::vector<std::pair<PredicateVariant, bool>>> {};
@@ -45,11 +46,11 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(State state, 
     {
         initialize_object_colors_func(atom);
     }
-    for (const auto& atom_index : state->get_atoms<FluentTag>())
+    for (const auto& atom_index : state.get_atoms<FluentTag>())
     {
         initialize_object_colors_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
     }
-    for (const auto& atom_index : state->get_atoms<DerivedTag>())
+    for (const auto& atom_index : state.get_atoms<DerivedTag>())
     {
         initialize_object_colors_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
@@ -74,11 +75,11 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(State state, 
     {
         add_unary_atom_graph_structures_func(atom);
     }
-    for (const auto& atom_index : state->get_atoms<FluentTag>())
+    for (const auto& atom_index : state.get_atoms<FluentTag>())
     {
         add_unary_atom_graph_structures_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
     }
-    for (const auto& atom_index : state->get_atoms<DerivedTag>())
+    for (const auto& atom_index : state.get_atoms<DerivedTag>())
     {
         add_unary_atom_graph_structures_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
@@ -176,7 +177,7 @@ static void add_ground_atoms_graph_structures(const ProblemImpl& problem,
     }
 }
 
-static void add_ground_atoms_graph_structures(State state,
+static void add_ground_atoms_graph_structures(const State& state,
                                               const ProblemImpl& problem,
                                               const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
                                               graphs::StaticVertexColoredGraph& out_digraph)
@@ -185,12 +186,12 @@ static void add_ground_atoms_graph_structures(State state,
 
     add_ground_atoms_graph_structures(problem,
                                       object_to_vertex_index,
-                                      problem.get_repositories().get_ground_atoms_from_indices<FluentTag>(state->get_atoms<FluentTag>()),
+                                      problem.get_repositories().get_ground_atoms_from_indices<FluentTag>(state.get_atoms<FluentTag>()),
                                       out_digraph);
 
     add_ground_atoms_graph_structures(problem,
                                       object_to_vertex_index,
-                                      problem.get_repositories().get_ground_atoms_from_indices<DerivedTag>(state->get_atoms<DerivedTag>()),
+                                      problem.get_repositories().get_ground_atoms_from_indices<DerivedTag>(state.get_atoms<DerivedTag>()),
                                       out_digraph);
 }
 
@@ -258,7 +259,7 @@ static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem
     add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_condition<DerivedTag>(), out_digraph);
 }
 
-graphs::StaticVertexColoredGraph create_object_graph(State state, const ProblemImpl& problem)
+graphs::StaticVertexColoredGraph create_object_graph(const State& state, const ProblemImpl& problem)
 {
     if (!problem.get_derived_predicates().empty())
     {

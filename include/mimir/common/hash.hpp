@@ -28,19 +28,16 @@
 
 #include <loki/details/utils/hash.hpp>
 
+namespace mimir
+{
+inline uint64_t szudzik_pair(uint64_t a, uint64_t b) { return (a >= b) ? (a * a + b) : (b * b + a); }
+
+inline uint64_t cantor_pair(uint64_t a, uint64_t b) { return (((a + b) * (a + b + 1)) >> 1) + b; }
+}
+
 /**
  * We inject additional hash specializations into the loki::Hash.
  */
-
-/* ExternalPtr */
-
-template<typename T>
-struct loki::Hash<cista::basic_external_ptr<T>>
-{
-    using Type = cista::basic_external_ptr<T>;
-
-    size_t operator()(const Type& ptr) const { return loki::hash_combine(ptr.el_); }
-};
 
 /* DualDynamicBitset */
 

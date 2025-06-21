@@ -23,7 +23,8 @@
 #include "cista/containers/flexible_delta_index_vector.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
-#include "mimir/buffering/unordered_set.h"
+#include "mimir/buffering/cista_unordered_map.hpp"
+#include "mimir/buffering/cista_unordered_set.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
@@ -39,15 +40,10 @@ namespace mimir
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
 /* IndexList */
 using FlatIndexList = cista::offset::flexible_index_vector<Index>;
-using FlatIndexListSet = mimir::buffering::UnorderedSet<FlatIndexList>;
-/* ExternalPtr */
-template<typename T>
-using FlatExternalPtr = cista::offset::external_ptr<T>;
-template<typename T>
-using FlatExternalPtrList = cista::offset::vector<cista::offset::external_ptr<T>>;
+using FlatIndexListMap = mimir::buffering::CistaUnorderedMap<FlatIndexList, Index>;
 /* DoubleList */
 using FlatDoubleList = cista::offset::vector<double>;
-using FlatDoubleListSet = mimir::buffering::UnorderedSet<cista::offset::vector<double>>;
+using FlatDoubleListMap = mimir::buffering::CistaUnorderedMap<FlatDoubleList, Index>;
 
 /**
  * Forward Declarations
@@ -62,8 +58,6 @@ template<typename T,
          typename TemplateSizeType = std::uint32_t,
          class Allocator = cista::allocator<T, Ptr>>
 inline std::ostream& operator<<(std::ostream& os, const cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>& list);
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr);
 
 inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 {
@@ -126,20 +120,13 @@ inline std::ostream& operator<<(std::ostream& os, const cista::basic_vector<T, P
     return os;
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)
-{
-    os << *ptr;
-    return os;
-}
-
 /// @brief
 /// We use this to test applicability of sparse actions/axioms in dense intermediate states.
 /// We could get rid of this if we avoid translation to dense state representation.
 /// @param bitset
 /// @param range
 /// @return
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsRangeOver<Range, Index>
 inline bool are_disjoint(const FlatBitset& bitset, const Range& range)
 {
@@ -153,7 +140,7 @@ inline bool are_disjoint(const FlatBitset& bitset, const Range& range)
     return true;
 }
 
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline bool are_disjoint(const Range1& lhs, const Range2& rhs)
 {
@@ -190,7 +177,7 @@ inline bool are_disjoint(const Range1& lhs, const Range2& rhs)
 /// @param bitset
 /// @param range
 /// @return
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsRangeOver<Range, Index>
 inline bool is_supseteq(const FlatBitset& bitset, const Range& range)
 {
@@ -209,7 +196,7 @@ inline bool is_supseteq(const FlatBitset& bitset, const Range& range)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline bool is_supseteq(const Range1& lhs, const Range2& rhs)
 {
@@ -223,7 +210,7 @@ inline bool is_supseteq(const Range1& lhs, const Range2& rhs)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline size_t count_set_difference(const Range1& lhs, const Range2& rhs)
 {
@@ -264,7 +251,7 @@ inline size_t count_set_difference(const Range1& lhs, const Range2& rhs)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline size_t count_set_intersection(const Range1& lhs, const Range2& rhs)
 {
@@ -299,7 +286,7 @@ inline size_t count_set_intersection(const Range1& lhs, const Range2& rhs)
     return result;
 }
 
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsConvertibleRangeOver<Range, Index>
 void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
 {
@@ -309,7 +296,7 @@ void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
     }
 }
 
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsConvertibleRangeOver<Range, Index>
 void insert_into_vector(const Range& range, FlatIndexList& ref_vec)
 {

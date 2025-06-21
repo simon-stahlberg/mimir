@@ -29,7 +29,7 @@ private:
     PositiveBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -44,7 +44,7 @@ private:
     NegativeBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -59,7 +59,7 @@ private:
     UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -74,7 +74,7 @@ private:
     IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -89,7 +89,7 @@ private:
     DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -104,7 +104,7 @@ private:
     UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class loki::IndexedHashSet;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
