@@ -20,7 +20,7 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_IPC_OPTIMAL_STRIPS
+from utils import SUITE_IPC_SATISFICING_STRIPS, TEST_SUITE_IPC_SATISFICING_STRIPS
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -43,14 +43,11 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = SUITE_IPC_OPTIMAL_STRIPS
-    TIME_LIMIT = 5 * 60  # 5 minutes
+    SUITE = SUITE_IPC_SATISFICING_STRIPS
+    TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "gripper:prob01.pddl",
-        "gripper:prob10.pddl",
-    ]
+    SUITE = TEST_SUITE_IPC_SATISFICING_STRIPS
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

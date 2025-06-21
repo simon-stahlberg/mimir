@@ -189,8 +189,8 @@ mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_grap
 
     /* Allocate and initialize partition bits */
     auto partition_bits = s_bitset_pool.get_or_allocate();
-    partition_bits->resize(k);
     partition_bits->reset();
+    partition_bits->resize(k, false);
 
     /* Allocate and initialize k_compatible_vertices */
     auto k_compatible_vertices = s_bitset_list_list_pool.get_or_allocate();
@@ -211,8 +211,8 @@ mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_grap
         {
             auto bitset = s_bitset_pool.get_or_allocate();
 
-            bitset->resize(partitions[k2].size());
             bitset->reset();
+            bitset->resize(partitions[k2].size(), false);
 
             (*(*k_compatible_vertices)[k1])[k2] = std::move(bitset);
         }
