@@ -117,11 +117,11 @@ size_t GroundConjunctiveConditionImpl::get_num_preconditions() const
 {
     auto result = size_t(0);
     boost::hana::for_each(get_hana_compressed_precondition<Ps...>(),
-                          [this, &result](auto&& pair)
+                          [&result](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
                               boost::hana::for_each(second,
-                                                    [this, &result](auto&& pair2)
+                                                    [&result](auto&& pair2)
                                                     {
                                                         const auto second2 = boost::hana::second(pair2);
                                                         result += second2->size();
