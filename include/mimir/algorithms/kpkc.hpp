@@ -27,36 +27,13 @@
 namespace mimir
 {
 
-/// @brief `KPKCWorkspace` manages preallocated memory to be used with the KPKC algorithm.
-///
-/// The constructor initializes the correct memory layout.
-/// KPKC will verify the memory layout and throw an exception if incorrect.
-struct KPKCWorkspace
-{
-    explicit KPKCWorkspace(const std::vector<std::vector<uint32_t>>& partitions);
-
-    /// @brief Verifies the memory layout to catch accidental modifications.
-    /// @param partitions
-    void verify_memory_layout(const std::vector<std::vector<uint32_t>>& partitions);
-
-    /// @brief Initializes the memory.
-    /// @param partitions
-    void initialize_memory(const std::vector<std::vector<uint32_t>>& partitions);
-
-    boost::dynamic_bitset<> partition_bits;
-    std::vector<uint32_t> partial_solution;
-    std::vector<std::vector<boost::dynamic_bitset<>>> k_compatible_vertices;
-};
-
-/// @brief Find all cliques of size k in a k-partite graph.
+/// @brief Thread-safe k-clique in k-partite graph enumerator.
 /// @param adjacency_matrix is the adjacency matrix.
-/// @param partitions is the partitioning.
-/// @param memory preallocated memory, if not given, the algorithm will perform O(k^2) many allocations.
+/// @param partitions is the vertex partitioning.
 /// @return a generator to enumerate all k-cliques.
 mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                            const std::vector<std::vector<uint32_t>>& partitions,
-                                                                                            KPKCWorkspace* memory = nullptr);
+                                                                                            const std::vector<std::vector<uint32_t>>& partitions);
 
 }
 
-#endif  // MIMIR_ALGORITHMS_KPKC_HPP_
+#endif

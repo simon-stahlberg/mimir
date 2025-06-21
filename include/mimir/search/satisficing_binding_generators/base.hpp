@@ -98,7 +98,6 @@ protected:
     formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
     boost::dynamic_bitset<> m_consistent_vertices;
-    KPKCWorkspace m_kpkc_workspace;
 
     /// @brief Helper to cast to Derived_.
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }

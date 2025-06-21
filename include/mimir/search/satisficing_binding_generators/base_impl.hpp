@@ -233,7 +233,7 @@ SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unp
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_workspace))
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions))
     {
         auto binding = formalism::ObjectList(clique.size());
 
@@ -271,8 +271,7 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
-    m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
-    m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
+    m_consistent_vertices(m_static_consistency_graph.get_vertices().size())
 {
 }
 
