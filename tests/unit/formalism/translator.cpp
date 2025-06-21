@@ -81,7 +81,7 @@ TEST(MimirTests, MimirFormalismTranslatorTest)
         for (const auto& static_predicate :
              boost::hana::at_key(translated_problem->get_repositories().get_hana_repositories(), boost::hana::type<PredicateImpl<StaticTag>> {}))
         {
-            EXPECT_EQ(static_predicate, translated_domain->get_name_to_predicate<StaticTag>().at(static_predicate->get_name()));
+            EXPECT_EQ(&static_predicate, translated_domain->get_name_to_predicate<StaticTag>().at(static_predicate.get_name()));
         }
     }
     /*

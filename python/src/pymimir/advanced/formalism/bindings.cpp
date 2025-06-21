@@ -680,19 +680,34 @@ void bind_module_definitions(nb::module_& m)
         .def(
             "get_static_ground_atoms",
             [](const Repositories& self)
-            { return GroundAtomList<StaticTag>(self.get_ground_atoms<StaticTag>().begin(), self.get_ground_atoms<StaticTag>().end()); },
+            {
+                auto result = GroundAtomList<StaticTag> {};
+                for (const auto& atom : self.get_ground_atoms<StaticTag>())
+                    result.push_back(&atom);
+                return result;
+            },
             nb::rv_policy::copy)
         .def("get_static_ground_atom", &Repositories::get_ground_atom<StaticTag>, nb::rv_policy::reference_internal)
         .def(
             "get_fluent_ground_atoms",
             [](const Repositories& self)
-            { return GroundAtomList<FluentTag>(self.get_ground_atoms<FluentTag>().begin(), self.get_ground_atoms<FluentTag>().end()); },
+            {
+                auto result = GroundAtomList<FluentTag> {};
+                for (const auto& atom : self.get_ground_atoms<FluentTag>())
+                    result.push_back(&atom);
+                return result;
+            },
             nb::rv_policy::copy)
         .def("get_fluent_ground_atom", &Repositories::get_ground_atom<FluentTag>, nb::rv_policy::reference_internal)
         .def(
             "get_derived_ground_atoms",
             [](const Repositories& self)
-            { return GroundAtomList<DerivedTag>(self.get_ground_atoms<DerivedTag>().begin(), self.get_ground_atoms<DerivedTag>().end()); },
+            {
+                auto result = GroundAtomList<DerivedTag> {};
+                for (const auto& atom : self.get_ground_atoms<DerivedTag>())
+                    result.push_back(&atom);
+                return result;
+            },
             nb::rv_policy::copy)
         .def("get_derived_ground_atom", &Repositories::get_ground_atom<DerivedTag>, nb::rv_policy::reference_internal)
         .def("get_static_ground_atoms_from_indices",
@@ -969,16 +984,13 @@ void bind_module_definitions(nb::module_& m)
             "derived_literals"_a,
             "numeric_constraints"_a,
             nb::rv_policy::reference_internal)
-        .def("get_or_create_ground_conjunctive_condition",
+        .def(
+            "get_or_create_ground_conjunctive_condition",
             [](ProblemImpl& self,
                GroundLiteralList<StaticTag> static_literals,
                GroundLiteralList<FluentTag> fluent_literals,
                GroundLiteralList<DerivedTag> derived_literals)
-            {
-                return self.get_or_create_ground_conjunctive_condition(std::move(static_literals),
-                                                                       std::move(fluent_literals),
-                                                                       std::move(derived_literals));
-            },
+            { return self.get_or_create_ground_conjunctive_condition(std::move(static_literals), std::move(fluent_literals), std::move(derived_literals)); },
             "static_literals"_a,
             "fluent_literals"_a,
             "derived_literals"_a,

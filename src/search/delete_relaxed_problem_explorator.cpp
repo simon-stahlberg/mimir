@@ -147,9 +147,9 @@ GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<P>> {});
     for (const auto& delete_free_ground_atom : delete_free_atom_repository)
     {
-        const auto predicate = get_predicate<P>(*m_problem, delete_free_ground_atom->get_predicate()->get_name());
+        const auto predicate = get_predicate<P>(*m_problem, delete_free_ground_atom.get_predicate()->get_name());
 
-        auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom->get_objects(), m_delete_free_object_to_unrelaxed_object);
+        auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
         auto ground_atom = m_problem->get_or_create_ground_atom(predicate, binding);
 
@@ -170,9 +170,9 @@ GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
          boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {}))
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action->get_action()))
+        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action.get_action()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action->get_objects(), m_delete_free_object_to_unrelaxed_object);
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
             auto grounded_action = m_problem->ground(action, std::move(binding));
 
@@ -194,9 +194,9 @@ GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
          boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {}))
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom->get_axiom()))
+        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom.get_axiom()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom->get_objects(), m_delete_free_object_to_unrelaxed_object);
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
             auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 

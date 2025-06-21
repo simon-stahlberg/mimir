@@ -527,7 +527,10 @@ void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunct
 
     const auto& ground_functions = boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {});
 
-    out_ground_functions.insert(out_ground_functions.end(), ground_functions.begin(), ground_functions.begin() + num_ground_functions);
+    for (const auto& ground_function : ground_functions)
+    {
+        out_ground_functions.push_back(&ground_function);
+    }
 }
 
 template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<StaticTag>& out_ground_functions) const;
