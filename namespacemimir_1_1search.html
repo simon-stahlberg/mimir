@@ -76,6 +76,7 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -169,17 +170,18 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1SearchContextImpl.html">SearchContextImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html" title="SearchNodeImpl encapsulates per state information during search.">SearchNodeImpl</a></code> encapsulates per state information during search.  <a href="structmimir_1_1search_1_1SearchNodeImpl.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1SetAddHeuristicImpl.html">SetAddHeuristicImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html">StateImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1StateImpl.html" title="StateImpl encapsulates the fluent and derived atoms, and numeric variables of a planning state.">StateImpl</a></code> encapsulates the fluent and derived atoms, and numeric variables of a planning state.  <a href="classmimir_1_1search_1_1StateImpl.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1State.html">State</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1search_1_1IsSearchNode.html">IsSearchNode</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -198,23 +200,13 @@ Typedefs</h2></td></tr>
 <tr class="separator:a0341a48145ccab5bc210fc82b535a277"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1764a4d40a7177447fa124f8cb6c0387"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1764a4d40a7177447fa124f8cb6c0387">StateRepository</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &gt;</td></tr>
 <tr class="separator:a1764a4d40a7177447fa124f8cb6c0387"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e6c1063da386716070dfb0f09f5b777"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> = const <a class="el" href="classmimir_1_1search_1_1StateImpl.html">StateImpl</a> *</td></tr>
-<tr class="separator:a9e6c1063da386716070dfb0f09f5b777"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a260f651b403f4ec3b82fa32aeed516b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">StateList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> &gt;</td></tr>
-<tr class="separator:a260f651b403f4ec3b82fa32aeed516b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bbe27d70eb8f34c321a6bfde5a8ea5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a7bbe27d70eb8f34c321a6bfde5a8ea5b">StateSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> &gt;</td></tr>
-<tr class="separator:a7bbe27d70eb8f34c321a6bfde5a8ea5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec70abac117d5db7b44760206563df7f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aec70abac117d5db7b44760206563df7f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aec70abac117d5db7b44760206563df7f">StateMap</a> = std::unordered_map&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, T &gt;</td></tr>
-<tr class="separator:aec70abac117d5db7b44760206563df7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8aa185908e1d05f63876d5a3a033dc9f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a> = std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &gt;</td></tr>
-<tr class="separator:a8aa185908e1d05f63876d5a3a033dc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae485276b478af102370a1e84ae858f7a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ae485276b478af102370a1e84ae858f7a">StateProblemPair</a> = std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a>, <a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a> &gt;</td></tr>
-<tr class="separator:ae485276b478af102370a1e84ae858f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab23479ab4d0e3a613d6ac9f603326d0e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">StateProblemList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a> &gt;</td></tr>
-<tr class="separator:ab23479ab4d0e3a613d6ac9f603326d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ec32e73229ce8921620c520e20b4f73"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a3ec32e73229ce8921620c520e20b4f73">StateProblemPairList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1search.html#ae485276b478af102370a1e84ae858f7a">StateProblemPair</a> &gt;</td></tr>
-<tr class="separator:a3ec32e73229ce8921620c520e20b4f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e85eccb579ab233de1bb318a826a4f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">PackedState</a> = const PackedStateImpl *</td></tr>
+<tr class="separator:a2e85eccb579ab233de1bb318a826a4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aa7dfcb51b501f879359c93f74c12e0d1">PackedStateMap</a> = <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">PackedState</a>, T &gt;</td></tr>
+<tr class="separator:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178d76200662fc979ae716e3a310511d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a178d76200662fc979ae716e3a310511d">UnpackedState</a> = SharedMemoryPoolPtr&lt; UnpackedStateImpl &gt;</td></tr>
+<tr class="separator:a178d76200662fc979ae716e3a310511d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45ab3b24aff5294cbbb4f08f5d7f762b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a45ab3b24aff5294cbbb4f08f5d7f762b">ApplicableActionGenerator</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &gt;</td></tr>
 <tr class="separator:a45ab3b24aff5294cbbb4f08f5d7f762b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a612ffdff1842fb157d6e6f3f038cd286"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a612ffdff1842fb157d6e6f3f038cd286">GroundedApplicableActionGenerator</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1GroundedApplicableActionGeneratorImpl.html">GroundedApplicableActionGeneratorImpl</a> &gt;</td></tr>
@@ -253,17 +245,16 @@ Typedefs</h2></td></tr>
 <tr class="separator:a9a571b54d28ae5b13535deb3650feb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee5566af89cb1a262ac53ee968c93e7c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aee5566af89cb1a262ac53ee968c93e7c">ExplorationStategy</a> = std::shared_ptr&lt; IExplorationStrategy &gt;</td></tr>
 <tr class="separator:aee5566af89cb1a262ac53ee968c93e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1d1d1a8a38d9645816f01706de9dcb8a">SearchNode</a> = <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt; SearchNodeProperties... &gt; *</td></tr>
-<tr class="separator:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9aa90519a1840f525567db76b474a3e3"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:a9aa90519a1840f525567db76b474a3e3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a> = const <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt; SearchNodeProperties... &gt; *</td></tr>
-<tr class="separator:a9aa90519a1840f525567db76b474a3e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf1512d40175c86460c160ab1459e75b"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:aaf1512d40175c86460c160ab1459e75b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a> = mimir::buffering::Vector&lt; <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt; SearchNodeProperties... &gt; &gt;</td></tr>
-<tr class="separator:aaf1512d40175c86460c160ab1459e75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48351c6c32a78fc531edff046be2cca1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a48351c6c32a78fc531edff046be2cca1">StateImplSet</a> = loki::SegmentedRepository&lt; <a class="el" href="classmimir_1_1search_1_1StateImpl.html">StateImpl</a> &gt;</td></tr>
-<tr class="separator:a48351c6c32a78fc531edff046be2cca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f33908d860d100a1052785848906719"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a4f33908d860d100a1052785848906719">PackedStateImplMap</a> = absl::node_hash_map&lt; PackedStateImpl, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, loki::Hash&lt; PackedStateImpl &gt;, loki::EqualTo&lt; PackedStateImpl &gt; &gt;</td></tr>
+<tr class="separator:a4f33908d860d100a1052785848906719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a260f651b403f4ec3b82fa32aeed516b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">StateList</a> = std::vector&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &gt;</td></tr>
+<tr class="separator:a260f651b403f4ec3b82fa32aeed516b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a295b784af1db8c3eef918f91c9b7cac2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a295b784af1db8c3eef918f91c9b7cac2">StateSet</a> = <a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">UnorderedSet</a>&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &gt;</td></tr>
+<tr class="separator:a295b784af1db8c3eef918f91c9b7cac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1385788aa0f1780f6902295a672c3b6f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1385788aa0f1780f6902295a672c3b6f">StatePair</a> = std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &gt;</td></tr>
+<tr class="separator:a1385788aa0f1780f6902295a672c3b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a456429e3c99449b9968b4eb5f96e05d6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a456429e3c99449b9968b4eb5f96e05d6">StatePairList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1search.html#a1385788aa0f1780f6902295a672c3b6f">StatePair</a> &gt;</td></tr>
+<tr class="separator:a456429e3c99449b9968b4eb5f96e05d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -280,88 +271,90 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a79d5077b9be5c161f50658bf63e0fcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2097fb91f235e64558eedaf6b1aa165a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165a">SearchNodeStatus</a> { <br />
-&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aab4ed6e67f65ac928d2717ccb28705cd4">NEW</a> = 0
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aadf163a88b82d2b7aa0a68f02992ffda9">OPEN</a> = 1
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa9eaa9bcce4787b02906847bda11f4f70">CLOSED</a> = 2
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa649aee579aa2a69d986907571701bcce">DEAD_END</a> = 3
+<tr class="memitem:aee93020388e3debc46c5fa534b186913"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913">SearchNodeStatus</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a735a47b3a68e39a0c0df1c20fac0f76a">GOAL</a> = 0
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a649aee579aa2a69d986907571701bcce">DEAD_END</a> = 1
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a9eaa9bcce4787b02906847bda11f4f70">CLOSED</a> = 2
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913adf163a88b82d2b7aa0a68f02992ffda9">OPEN</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa735a47b3a68e39a0c0df1c20fac0f76a">GOAL</a> = 4
+&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913ab4ed6e67f65ac928d2717ccb28705cd4">NEW</a> = 4
 <br />
  }</td></tr>
-<tr class="separator:a2097fb91f235e64558eedaf6b1aa165a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:aee93020388e3debc46c5fa534b186913"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a177209d4a1eb160089963c2fb19ee162"><td class="memTemplParams" colspan="2">template&lt;rpg::IsStructure S&gt; </td></tr>
 <tr class="memitem:a177209d4a1eb160089963c2fb19ee162"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a177209d4a1eb160089963c2fb19ee162">get</a> (<a class="el" href="namespacemimir_1_1search.html#a933b880606843ede78abcf92930005e8">FFStructuresAnnotations</a> &amp;annotations)</td></tr>
 <tr class="separator:a177209d4a1eb160089963c2fb19ee162"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a015be262f3539bba08787ff8fcbadf4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a015be262f3539bba08787ff8fcbadf4c">nullary_conditions_hold</a> (<a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">formalism::ConjunctiveCondition</a> precondition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="memdesc:a015be262f3539bba08787ff8fcbadf4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff all nullary literals and constraints in the precondition hold, false otherwise.  <br /></td></tr>
-<tr class="separator:a015be262f3539bba08787ff8fcbadf4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe1ecca6b769664fedf1556a7059274b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#abe1ecca6b769664fedf1556a7059274b">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="separator:abe1ecca6b769664fedf1556a7059274b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf00dd1ed6d8f46f3d1ea223bf3f7d73"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aaf00dd1ed6d8f46f3d1ea223bf3f7d73">nullary_conditions_hold</a> (<a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">formalism::ConjunctiveCondition</a> precondition, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="memdesc:aaf00dd1ed6d8f46f3d1ea223bf3f7d73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff all nullary literals and constraints in the precondition hold, false otherwise.  <br /></td></tr>
+<tr class="separator:aaf00dd1ed6d8f46f3d1ea223bf3f7d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a095604a3036ecd056fd48ef48e3179e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a095604a3036ecd056fd48ef48e3179e1">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="separator:a095604a3036ecd056fd48ef48e3179e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd2aa1ef9942b0fc6d32f27a0b2d767"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#acdd2aa1ef9942b0fc6d32f27a0b2d767">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:acdd2aa1ef9942b0fc6d32f27a0b2d767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade0882516653fa323b7230ca0fe38730"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ade0882516653fa323b7230ca0fe38730">is_statically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const FlatBitset &amp;static_positive_atoms)</td></tr>
 <tr class="separator:ade0882516653fa323b7230ca0fe38730"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af98f6477028cc5424f6ef508e770a9a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#af98f6477028cc5424f6ef508e770a9a8">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="separator:af98f6477028cc5424f6ef508e770a9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa95bfaabffb94c65544d6c376d68ef54"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aa95bfaabffb94c65544d6c376d68ef54">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:aa95bfaabffb94c65544d6c376d68ef54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ccf2d6be6d12744e91cf95c6031c264"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a3ccf2d6be6d12744e91cf95c6031c264">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="memdesc:a3ccf2d6be6d12744e91cf95c6031c264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff all functions in numeric effects are well-defined in the state.  <br /></td></tr>
-<tr class="separator:a3ccf2d6be6d12744e91cf95c6031c264"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a035e5a5c36adeb31b56a2f2714dc183b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a035e5a5c36adeb31b56a2f2714dc183b">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="separator:a035e5a5c36adeb31b56a2f2714dc183b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81045079aed5a6d976edb6fe98742a99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a81045079aed5a6d976edb6fe98742a99">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="separator:a81045079aed5a6d976edb6fe98742a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4006207173a4091f0126c07bc89f2d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ae4006207173a4091f0126c07bc89f2d7">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:ae4006207173a4091f0126c07bc89f2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5e1c4d427362589917a62f9eab4a230"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ac5e1c4d427362589917a62f9eab4a230">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="memdesc:ac5e1c4d427362589917a62f9eab4a230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the conditional effect is applicable in the problem and state, i.e., the conjunctive condition and the conjunctive effect are applicable. More formally, consider conditional effect c = &lt;pre, eff&gt;. app(c) &lt;=&gt; app(pre) &amp;&amp; app(eff)  <br /></td></tr>
-<tr class="separator:ac5e1c4d427362589917a62f9eab4a230"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f11f09f524ffb28fe153c9b5cac84f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2f11f09f524ffb28fe153c9b5cac84f9">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="separator:a2f11f09f524ffb28fe153c9b5cac84f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a620dad42833fa4eb20da0a7c037dcb11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a620dad42833fa4eb20da0a7c037dcb11">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="separator:a620dad42833fa4eb20da0a7c037dcb11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac802fe6970cb9813a2757f0f6698bdba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ac802fe6970cb9813a2757f0f6698bdba">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:ac802fe6970cb9813a2757f0f6698bdba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac61357529362763702b869cae33e9d96"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ac61357529362763702b869cae33e9d96">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="memdesc:ac61357529362763702b869cae33e9d96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the conditional effect is applicable in the problem and state when it fires, i.e., when the conjunctive condition is applicable then the effect must also be applicable. More formally, consider conditional effect c = &lt;pre, eff&gt;. app(c) &lt;=&gt; app(pre) -&gt; app(eff) &lt;=&gt; !app(pre) || app(eff) &lt;=&gt; !(app(pre) &amp;&amp; !app(eff)) &lt;=&gt; !(!app(eff) &amp;&amp; app(pre)) Now we have a more efficient form that tests app(eff) before app(pre). If we use this, we should always assert via is_applicable.  <br /></td></tr>
-<tr class="separator:ac61357529362763702b869cae33e9d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e4c28bf5cdf7c4a9899d118777c0c4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a3e4c28bf5cdf7c4a9899d118777c0c4f">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
-<tr class="separator:a3e4c28bf5cdf7c4a9899d118777c0c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12f804dc39aaa13ccde838f975841795"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a12f804dc39aaa13ccde838f975841795">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="separator:a12f804dc39aaa13ccde838f975841795"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68ffc78f5c15f55b0a1a3f7d96397931"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a68ffc78f5c15f55b0a1a3f7d96397931">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:a68ffc78f5c15f55b0a1a3f7d96397931"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62a0343e3fc32669bbb66177c544ec4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a62a0343e3fc32669bbb66177c544ec4c">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="memdesc:a62a0343e3fc32669bbb66177c544ec4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground action is applicable in the state. If we use this, we should always assert via is_applicable.  <br /></td></tr>
-<tr class="separator:a62a0343e3fc32669bbb66177c544ec4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75d438c1f57d682445dd5be2a5daa1cf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a75d438c1f57d682445dd5be2a5daa1cf">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="memdesc:a75d438c1f57d682445dd5be2a5daa1cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground action is applicable in the problem and state.  <br /></td></tr>
-<tr class="separator:a75d438c1f57d682445dd5be2a5daa1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecb4be8199c7477835ac82f5951779eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aecb4be8199c7477835ac82f5951779eb">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
-<tr class="separator:aecb4be8199c7477835ac82f5951779eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a460fd7e5465b17f189995b6d51c56036"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a460fd7e5465b17f189995b6d51c56036">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="memdesc:a460fd7e5465b17f189995b6d51c56036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the state. If we use this, we should always assert via is_applicable.  <br /></td></tr>
-<tr class="separator:a460fd7e5465b17f189995b6d51c56036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad0c65a02d522a88cab41eba2358bf1aa">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
-<tr class="memdesc:ad0c65a02d522a88cab41eba2358bf1aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the problem and state.  <br /></td></tr>
-<tr class="separator:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ffdc022ba29f858e04023f9be893ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad1ffdc022ba29f858e04023f9be893ef">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="separator:ad1ffdc022ba29f858e04023f9be893ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81d9bba1ae4cd9c4287f224c5462e176"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a81d9bba1ae4cd9c4287f224c5462e176">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:a81d9bba1ae4cd9c4287f224c5462e176"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab833d73485668e665037fa26db300ca5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ab833d73485668e665037fa26db300ca5">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const UnpackedStateImpl &amp;unpacked_state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="memdesc:ab833d73485668e665037fa26db300ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff all functions in numeric effects are well-defined in the state.  <br /></td></tr>
+<tr class="separator:ab833d73485668e665037fa26db300ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6600ffff5a2e7b05e400eadd8cf9e9d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a6600ffff5a2e7b05e400eadd8cf9e9d8">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="separator:a6600ffff5a2e7b05e400eadd8cf9e9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bb047969a00660e37bdf85f8bde6420"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a0bb047969a00660e37bdf85f8bde6420">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="separator:a0bb047969a00660e37bdf85f8bde6420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1b9bd043b6d2d323c9ca20ae75b9500"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ac1b9bd043b6d2d323c9ca20ae75b9500">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:ac1b9bd043b6d2d323c9ca20ae75b9500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8231b838c8218a7032ca4f0f4e7fd7b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a8231b838c8218a7032ca4f0f4e7fd7b9">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const UnpackedStateImpl &amp;unpacked_state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="memdesc:a8231b838c8218a7032ca4f0f4e7fd7b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the conditional effect is applicable in the problem and state, i.e., the conjunctive condition and the conjunctive effect are applicable. More formally, consider conditional effect c = &lt;pre, eff&gt;. app(c) &lt;=&gt; app(pre) &amp;&amp; app(eff)  <br /></td></tr>
+<tr class="separator:a8231b838c8218a7032ca4f0f4e7fd7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8fcd70b9e1735e9e7d31cdecf1e181"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9b8fcd70b9e1735e9e7d31cdecf1e181">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="separator:a9b8fcd70b9e1735e9e7d31cdecf1e181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a909031c9e8f30132c284d815a8f10ce2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a909031c9e8f30132c284d815a8f10ce2">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="separator:a909031c9e8f30132c284d815a8f10ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0912dabb7d2fa4c8fcbbc9714fae4b7d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a0912dabb7d2fa4c8fcbbc9714fae4b7d">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:a0912dabb7d2fa4c8fcbbc9714fae4b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a110a0c4d58b947f2421374e8ece5bb1a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a110a0c4d58b947f2421374e8ece5bb1a">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const UnpackedStateImpl &amp;unpacked_state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="memdesc:a110a0c4d58b947f2421374e8ece5bb1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the conditional effect is applicable in the problem and state when it fires, i.e., when the conjunctive condition is applicable then the effect must also be applicable. More formally, consider conditional effect c = &lt;pre, eff&gt;. app(c) &lt;=&gt; app(pre) -&gt; app(eff) &lt;=&gt; !app(pre) || app(eff) &lt;=&gt; !(app(pre) &amp;&amp; !app(eff)) &lt;=&gt; !(!app(eff) &amp;&amp; app(pre)) Now we have a more efficient form that tests app(eff) before app(pre). If we use this, we should always assert via is_applicable.  <br /></td></tr>
+<tr class="separator:a110a0c4d58b947f2421374e8ece5bb1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a9493f4400445fca03e759acdaffd21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a5a9493f4400445fca03e759acdaffd21">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;s_fluent_numeric_changes, std::optional&lt; loki::AssignOperatorEnum &gt; &amp;s_auxiliary_numeric_change)</td></tr>
+<tr class="separator:a5a9493f4400445fca03e759acdaffd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afee304caf5c4369de6d9198555bbc61e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#afee304caf5c4369de6d9198555bbc61e">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="separator:afee304caf5c4369de6d9198555bbc61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8867622e3e524195630af125a9db1c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#af8867622e3e524195630af125a9db1c5">is_applicable_if_fires</a> (<a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a> conditional_effect, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:af8867622e3e524195630af125a9db1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a646a00a803a128005d7d975cd987f4c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a646a00a803a128005d7d975cd987f4c3">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="memdesc:a646a00a803a128005d7d975cd987f4c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground action is applicable in the state. If we use this, we should always assert via is_applicable.  <br /></td></tr>
+<tr class="separator:a646a00a803a128005d7d975cd987f4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9fc90128d64883d4902c61198aba59b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ae9fc90128d64883d4902c61198aba59b">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="memdesc:ae9fc90128d64883d4902c61198aba59b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground action is applicable in the problem and state.  <br /></td></tr>
+<tr class="separator:ae9fc90128d64883d4902c61198aba59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24d159e4917815aa4e01ec46c58621f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a24d159e4917815aa4e01ec46c58621f9">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:a24d159e4917815aa4e01ec46c58621f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedab4e669b80b26a73934fbe73c537f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aedab4e669b80b26a73934fbe73c537f4">is_dynamically_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="memdesc:aedab4e669b80b26a73934fbe73c537f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the state. If we use this, we should always assert via is_applicable.  <br /></td></tr>
+<tr class="separator:aedab4e669b80b26a73934fbe73c537f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d8606bae5c54317df748aeb4d14b21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad6d8606bae5c54317df748aeb4d14b21">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const UnpackedStateImpl &amp;unpacked_state)</td></tr>
+<tr class="memdesc:ad6d8606bae5c54317df748aeb4d14b21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the problem and state.  <br /></td></tr>
+<tr class="separator:ad6d8606bae5c54317df748aeb4d14b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1419bcbd506881cb7f60bff137c72545"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1419bcbd506881cb7f60bff137c72545">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1Plan.html">search::Plan</a> &amp;plan)</td></tr>
 <tr class="separator:a1419bcbd506881cb7f60bff137c72545"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada2ebec817c5954b4911474d6a5457f5"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:ada2ebec817c5954b4911474d6a5457f5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ada2ebec817c5954b4911474d6a5457f5">extract_state_trajectory</a> (const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;search_nodes, <a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt; final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index)</td></tr>
-<tr class="memdesc:ada2ebec817c5954b4911474d6a5457f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the state trajectory that ends in the the <code>final_state_index</code> associated with the <code>final_search_node</code>.  <br /></td></tr>
-<tr class="separator:ada2ebec817c5954b4911474d6a5457f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d4f14872c0605e3fff3c8904e6bd512"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:a2d4f14872c0605e3fff3c8904e6bd512"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2d4f14872c0605e3fff3c8904e6bd512">extract_total_ordered_plan</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> start_state_metric_value, <a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt; final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index, const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;search_nodes, const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context)</td></tr>
-<tr class="memdesc:a2d4f14872c0605e3fff3c8904e6bd512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.  <br /></td></tr>
-<tr class="separator:a2d4f14872c0605e3fff3c8904e6bd512"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af77e1621acc94d0d326892c37fa697b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#af77e1621acc94d0d326892c37fa697b3">compute_state_metric_value</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)</td></tr>
-<tr class="separator:af77e1621acc94d0d326892c37fa697b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add8aea5baaf4edfddcf4a779036aa8db"><td class="memTemplParams" colspan="2">template&lt;IsSearchNode SearchNode&gt; </td></tr>
+<tr class="memitem:add8aea5baaf4edfddcf4a779036aa8db"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#add8aea5baaf4edfddcf4a779036aa8db">extract_state_trajectory</a> (const SegmentedVector&lt; SearchNode &gt; &amp;search_nodes, const SearchNode &amp;final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index)</td></tr>
+<tr class="memdesc:add8aea5baaf4edfddcf4a779036aa8db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the state trajectory that ends in the the <code>final_state_index</code> associated with the <code>final_search_node</code>.  <br /></td></tr>
+<tr class="separator:add8aea5baaf4edfddcf4a779036aa8db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a9d5fc80d2ec6a0b297a2870d36565"><td class="memTemplParams" colspan="2">template&lt;IsSearchNode SearchNode&gt; </td></tr>
+<tr class="memitem:a14a9d5fc80d2ec6a0b297a2870d36565"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a14a9d5fc80d2ec6a0b297a2870d36565">extract_total_ordered_plan</a> (<a class="el" href="classmimir_1_1search_1_1State.html">State</a> start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> start_state_metric_value, const SearchNode &amp;final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index, const SegmentedVector&lt; SearchNode &gt; &amp;search_nodes, const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context)</td></tr>
+<tr class="memdesc:a14a9d5fc80d2ec6a0b297a2870d36565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.  <br /></td></tr>
+<tr class="separator:a14a9d5fc80d2ec6a0b297a2870d36565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d2e9ab6e93f922789704484d2cc831"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ac9d2e9ab6e93f922789704484d2cc831">compute_state_metric_value</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="separator:ac9d2e9ab6e93f922789704484d2cc831"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e42b2b268a53d9689c47729bd01120"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad5e42b2b268a53d9689c47729bd01120">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1State.html">search::State</a> &amp;state)</td></tr>
+<tr class="separator:ad5e42b2b268a53d9689c47729bd01120"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a9c6827a97589b886a675a579bf923d7f" name="a9c6827a97589b886a675a579bf923d7f"></a>
@@ -442,22 +435,6 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a40ca3b8a9ceee8ffd6067cc58ea7b826">mimir::search::BlindHeuristic</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1BlindHeuristicImpl.html">BlindHeuristicImpl</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9aa90519a1840f525567db76b474a3e3" name="a9aa90519a1840f525567db76b474a3e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9aa90519a1840f525567db76b474a3e3">&#9670;&#160;</a></span>ConstSearchNode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... SearchNodeProperties&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">mimir::search::ConstSearchNode</a> = typedef const <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt;SearchNodeProperties...&gt;*</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -646,6 +623,50 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 </div>
 </div>
+<a id="a2e85eccb579ab233de1bb318a826a4f5" name="a2e85eccb579ab233de1bb318a826a4f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e85eccb579ab233de1bb318a826a4f5">&#9670;&#160;</a></span>PackedState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">mimir::search::PackedState</a> = typedef const PackedStateImpl*</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f33908d860d100a1052785848906719" name="a4f33908d860d100a1052785848906719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f33908d860d100a1052785848906719">&#9670;&#160;</a></span>PackedStateImplMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a4f33908d860d100a1052785848906719">mimir::search::PackedStateImplMap</a> = typedef absl::node_hash_map&lt;PackedStateImpl, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, loki::Hash&lt;PackedStateImpl&gt;, loki::EqualTo&lt;PackedStateImpl&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa7dfcb51b501f879359c93f74c12e0d1" name="aa7dfcb51b501f879359c93f74c12e0d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7dfcb51b501f879359c93f74c12e0d1">&#9670;&#160;</a></span>PackedStateMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#aa7dfcb51b501f879359c93f74c12e0d1">mimir::search::PackedStateMap</a> = typedef <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt;<a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">PackedState</a>, T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ad2411f3900c74e698517dd5262b19855" name="ad2411f3900c74e698517dd5262b19855"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad2411f3900c74e698517dd5262b19855">&#9670;&#160;</a></span>PerfectHeuristic</h2>
 
@@ -716,38 +737,6 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 </div>
 </div>
-<a id="a1d1d1a8a38d9645816f01706de9dcb8a" name="a1d1d1a8a38d9645816f01706de9dcb8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d1d1a8a38d9645816f01706de9dcb8a">&#9670;&#160;</a></span>SearchNode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... SearchNodeProperties&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a1d1d1a8a38d9645816f01706de9dcb8a">mimir::search::SearchNode</a> = typedef <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt;SearchNodeProperties...&gt;*</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aaf1512d40175c86460c160ab1459e75b" name="aaf1512d40175c86460c160ab1459e75b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaf1512d40175c86460c160ab1459e75b">&#9670;&#160;</a></span>SearchNodeImplVector</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... SearchNodeProperties&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">mimir::search::SearchNodeImplVector</a> = typedef mimir::buffering::Vector&lt;<a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt;SearchNodeProperties...&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ab8a88b59d75d6cb2b98fd16583337d6a" name="ab8a88b59d75d6cb2b98fd16583337d6a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab8a88b59d75d6cb2b98fd16583337d6a">&#9670;&#160;</a></span>SetAddHeuristic</h2>
 
@@ -762,34 +751,6 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 </div>
 </div>
-<a id="a9e6c1063da386716070dfb0f09f5b777" name="a9e6c1063da386716070dfb0f09f5b777"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e6c1063da386716070dfb0f09f5b777">&#9670;&#160;</a></span>State</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">mimir::search::State</a> = typedef const <a class="el" href="classmimir_1_1search_1_1StateImpl.html">StateImpl</a>*</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a48351c6c32a78fc531edff046be2cca1" name="a48351c6c32a78fc531edff046be2cca1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48351c6c32a78fc531edff046be2cca1">&#9670;&#160;</a></span>StateImplSet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a48351c6c32a78fc531edff046be2cca1">mimir::search::StateImplSet</a> = typedef loki::SegmentedRepository&lt;<a class="el" href="classmimir_1_1search_1_1StateImpl.html">StateImpl</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a260f651b403f4ec3b82fa32aeed516b6" name="a260f651b403f4ec3b82fa32aeed516b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a260f651b403f4ec3b82fa32aeed516b6">&#9670;&#160;</a></span>StateList</h2>
 
@@ -797,79 +758,35 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">mimir::search::StateList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">mimir::search::StateList</a> = typedef std::vector&lt;<a class="el" href="classmimir_1_1search_1_1State.html">State</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aec70abac117d5db7b44760206563df7f" name="aec70abac117d5db7b44760206563df7f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec70abac117d5db7b44760206563df7f">&#9670;&#160;</a></span>StateMap</h2>
+<a id="a1385788aa0f1780f6902295a672c3b6f" name="a1385788aa0f1780f6902295a672c3b6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1385788aa0f1780f6902295a672c3b6f">&#9670;&#160;</a></span>StatePair</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#aec70abac117d5db7b44760206563df7f">mimir::search::StateMap</a> = typedef std::unordered_map&lt;<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, T&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a1385788aa0f1780f6902295a672c3b6f">mimir::search::StatePair</a> = typedef std::pair&lt;<a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="classmimir_1_1search_1_1State.html">State</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a8aa185908e1d05f63876d5a3a033dc9f" name="a8aa185908e1d05f63876d5a3a033dc9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8aa185908e1d05f63876d5a3a033dc9f">&#9670;&#160;</a></span>StateProblem</h2>
+<a id="a456429e3c99449b9968b4eb5f96e05d6" name="a456429e3c99449b9968b4eb5f96e05d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a456429e3c99449b9968b4eb5f96e05d6">&#9670;&#160;</a></span>StatePairList</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">mimir::search::StateProblem</a> = typedef std::pair&lt;<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab23479ab4d0e3a613d6ac9f603326d0e" name="ab23479ab4d0e3a613d6ac9f603326d0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab23479ab4d0e3a613d6ac9f603326d0e">&#9670;&#160;</a></span>StateProblemList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">mimir::search::StateProblemList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae485276b478af102370a1e84ae858f7a" name="ae485276b478af102370a1e84ae858f7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae485276b478af102370a1e84ae858f7a">&#9670;&#160;</a></span>StateProblemPair</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#ae485276b478af102370a1e84ae858f7a">mimir::search::StateProblemPair</a> = typedef std::pair&lt;<a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a>, <a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">StateProblem</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3ec32e73229ce8921620c520e20b4f73" name="a3ec32e73229ce8921620c520e20b4f73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ec32e73229ce8921620c520e20b4f73">&#9670;&#160;</a></span>StateProblemPairList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a3ec32e73229ce8921620c520e20b4f73">mimir::search::StateProblemPairList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1search.html#ae485276b478af102370a1e84ae858f7a">StateProblemPair</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a456429e3c99449b9968b4eb5f96e05d6">mimir::search::StatePairList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1search.html#a1385788aa0f1780f6902295a672c3b6f">StatePair</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -890,14 +807,28 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a7bbe27d70eb8f34c321a6bfde5a8ea5b" name="a7bbe27d70eb8f34c321a6bfde5a8ea5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7bbe27d70eb8f34c321a6bfde5a8ea5b">&#9670;&#160;</a></span>StateSet</h2>
+<a id="a295b784af1db8c3eef918f91c9b7cac2" name="a295b784af1db8c3eef918f91c9b7cac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a295b784af1db8c3eef918f91c9b7cac2">&#9670;&#160;</a></span>StateSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a7bbe27d70eb8f34c321a6bfde5a8ea5b">mimir::search::StateSet</a> = typedef std::unordered_set&lt;<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a295b784af1db8c3eef918f91c9b7cac2">mimir::search::StateSet</a> = typedef <a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">UnorderedSet</a>&lt;<a class="el" href="classmimir_1_1search_1_1State.html">State</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a178d76200662fc979ae716e3a310511d" name="a178d76200662fc979ae716e3a310511d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a178d76200662fc979ae716e3a310511d">&#9670;&#160;</a></span>UnpackedState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a178d76200662fc979ae716e3a310511d">mimir::search::UnpackedState</a> = typedef SharedMemoryPoolPtr&lt;UnpackedStateImpl&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -905,23 +836,23 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="a2097fb91f235e64558eedaf6b1aa165a" name="a2097fb91f235e64558eedaf6b1aa165a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2097fb91f235e64558eedaf6b1aa165a">&#9670;&#160;</a></span>SearchNodeStatus</h2>
+<a id="aee93020388e3debc46c5fa534b186913" name="aee93020388e3debc46c5fa534b186913"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee93020388e3debc46c5fa534b186913">&#9670;&#160;</a></span>SearchNodeStatus</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165a">mimir::search::SearchNodeStatus</a></td>
+          <td class="memname">enum <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913">mimir::search::SearchNodeStatus</a> : uint8_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a2097fb91f235e64558eedaf6b1aa165aab4ed6e67f65ac928d2717ccb28705cd4" name="a2097fb91f235e64558eedaf6b1aa165aab4ed6e67f65ac928d2717ccb28705cd4"></a>NEW&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a2097fb91f235e64558eedaf6b1aa165aadf163a88b82d2b7aa0a68f02992ffda9" name="a2097fb91f235e64558eedaf6b1aa165aadf163a88b82d2b7aa0a68f02992ffda9"></a>OPEN&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a2097fb91f235e64558eedaf6b1aa165aa9eaa9bcce4787b02906847bda11f4f70" name="a2097fb91f235e64558eedaf6b1aa165aa9eaa9bcce4787b02906847bda11f4f70"></a>CLOSED&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a2097fb91f235e64558eedaf6b1aa165aa649aee579aa2a69d986907571701bcce" name="a2097fb91f235e64558eedaf6b1aa165aa649aee579aa2a69d986907571701bcce"></a>DEAD_END&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a2097fb91f235e64558eedaf6b1aa165aa735a47b3a68e39a0c0df1c20fac0f76a" name="a2097fb91f235e64558eedaf6b1aa165aa735a47b3a68e39a0c0df1c20fac0f76a"></a>GOAL&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aee93020388e3debc46c5fa534b186913a735a47b3a68e39a0c0df1c20fac0f76a" name="aee93020388e3debc46c5fa534b186913a735a47b3a68e39a0c0df1c20fac0f76a"></a>GOAL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aee93020388e3debc46c5fa534b186913a649aee579aa2a69d986907571701bcce" name="aee93020388e3debc46c5fa534b186913a649aee579aa2a69d986907571701bcce"></a>DEAD_END&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aee93020388e3debc46c5fa534b186913a9eaa9bcce4787b02906847bda11f4f70" name="aee93020388e3debc46c5fa534b186913a9eaa9bcce4787b02906847bda11f4f70"></a>CLOSED&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aee93020388e3debc46c5fa534b186913adf163a88b82d2b7aa0a68f02992ffda9" name="aee93020388e3debc46c5fa534b186913adf163a88b82d2b7aa0a68f02992ffda9"></a>OPEN&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aee93020388e3debc46c5fa534b186913ab4ed6e67f65ac928d2717ccb28705cd4" name="aee93020388e3debc46c5fa534b186913ab4ed6e67f65ac928d2717ccb28705cd4"></a>NEW&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
@@ -959,8 +890,8 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="af77e1621acc94d0d326892c37fa697b3" name="af77e1621acc94d0d326892c37fa697b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af77e1621acc94d0d326892c37fa697b3">&#9670;&#160;</a></span>compute_state_metric_value()</h2>
+<a id="ac9d2e9ab6e93f922789704484d2cc831" name="ac9d2e9ab6e93f922789704484d2cc831"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d2e9ab6e93f922789704484d2cc831">&#9670;&#160;</a></span>compute_state_metric_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -968,19 +899,9 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> mimir::search::compute_state_metric_value </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -988,24 +909,24 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ada2ebec817c5954b4911474d6a5457f5" name="ada2ebec817c5954b4911474d6a5457f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada2ebec817c5954b4911474d6a5457f5">&#9670;&#160;</a></span>extract_state_trajectory()</h2>
+<a id="add8aea5baaf4edfddcf4a779036aa8db" name="add8aea5baaf4edfddcf4a779036aa8db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add8aea5baaf4edfddcf4a779036aa8db">&#9670;&#160;</a></span>extract_state_trajectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... SearchNodeProperties&gt; </div>
+template&lt;IsSearchNode SearchNode&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> mimir::search::extract_state_trajectory </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;&#160;</td>
+          <td class="paramtype">const SegmentedVector&lt; SearchNode &gt; &amp;&#160;</td>
           <td class="paramname"><em>search_nodes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt;&#160;</td>
+          <td class="paramtype">const SearchNode &amp;&#160;</td>
           <td class="paramname"><em>final_search_node</em>, </td>
         </tr>
         <tr>
@@ -1025,7 +946,7 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 <p>Compute the state trajectory that ends in the the <code>final_state_index</code> associated with the <code>final_search_node</code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">...SearchNodeProperties</td><td></td></tr>
+    <tr><td class="paramname">...SearchNode</td><td>is the search node type. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1041,13 +962,13 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 </div>
 </div>
-<a id="a2d4f14872c0605e3fff3c8904e6bd512" name="a2d4f14872c0605e3fff3c8904e6bd512"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d4f14872c0605e3fff3c8904e6bd512">&#9670;&#160;</a></span>extract_total_ordered_plan()</h2>
+<a id="a14a9d5fc80d2ec6a0b297a2870d36565" name="a14a9d5fc80d2ec6a0b297a2870d36565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14a9d5fc80d2ec6a0b297a2870d36565">&#9670;&#160;</a></span>extract_total_ordered_plan()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... SearchNodeProperties&gt; </div>
+template&lt;IsSearchNode SearchNode&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1055,7 +976,7 @@ template&lt;typename... SearchNodeProperties&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a> mimir::search::extract_total_ordered_plan </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1State.html">State</a>&#160;</td>
           <td class="paramname"><em>start_state</em>, </td>
         </tr>
         <tr>
@@ -1067,7 +988,7 @@ template&lt;typename... SearchNodeProperties&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt;&#160;</td>
+          <td class="paramtype">const SearchNode &amp;&#160;</td>
           <td class="paramname"><em>final_search_node</em>, </td>
         </tr>
         <tr>
@@ -1079,7 +1000,7 @@ template&lt;typename... SearchNodeProperties&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;&#160;</td>
+          <td class="paramtype">const SegmentedVector&lt; SearchNode &gt; &amp;&#160;</td>
           <td class="paramname"><em>search_nodes</em>, </td>
         </tr>
         <tr>
@@ -1102,6 +1023,12 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 </div><div class="memdoc">
 
 <p>Compute the sequence of ground actions that generates the state_trajectory starting from the start_state. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">...SearchNode</td><td>is the search node type. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">start_state</td><td>is the start state. </td></tr>
@@ -1144,8 +1071,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a75d438c1f57d682445dd5be2a5daa1cf" name="a75d438c1f57d682445dd5be2a5daa1cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75d438c1f57d682445dd5be2a5daa1cf">&#9670;&#160;</a></span>is_applicable() <span class="overload">[1/13]</span></h2>
+<a id="a24d159e4917815aa4e01ec46c58621f9" name="a24d159e4917815aa4e01ec46c58621f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24d159e4917815aa4e01ec46c58621f9">&#9670;&#160;</a></span>is_applicable() <span class="overload">[1/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1159,14 +1086,36 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9fc90128d64883d4902c61198aba59b" name="ae9fc90128d64883d4902c61198aba59b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9fc90128d64883d4902c61198aba59b">&#9670;&#160;</a></span>is_applicable() <span class="overload">[2/13]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
+          <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1180,42 +1129,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="aecb4be8199c7477835ac82f5951779eb" name="aecb4be8199c7477835ac82f5951779eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecb4be8199c7477835ac82f5951779eb">&#9670;&#160;</a></span>is_applicable() <span class="overload">[2/13]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_applicable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
-          <td class="paramname"><em>action</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad0c65a02d522a88cab41eba2358bf1aa" name="ad0c65a02d522a88cab41eba2358bf1aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0c65a02d522a88cab41eba2358bf1aa">&#9670;&#160;</a></span>is_applicable() <span class="overload">[3/13]</span></h2>
+<a id="ad6d8606bae5c54317df748aeb4d14b21" name="ad6d8606bae5c54317df748aeb4d14b21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d8606bae5c54317df748aeb4d14b21">&#9670;&#160;</a></span>is_applicable() <span class="overload">[3/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1229,14 +1144,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1250,8 +1159,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a620dad42833fa4eb20da0a7c037dcb11" name="a620dad42833fa4eb20da0a7c037dcb11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a620dad42833fa4eb20da0a7c037dcb11">&#9670;&#160;</a></span>is_applicable() <span class="overload">[4/13]</span></h2>
+<a id="a0912dabb7d2fa4c8fcbbc9714fae4b7d" name="a0912dabb7d2fa4c8fcbbc9714fae4b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0912dabb7d2fa4c8fcbbc9714fae4b7d">&#9670;&#160;</a></span>is_applicable() <span class="overload">[4/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1265,14 +1174,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1284,8 +1187,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="ac5e1c4d427362589917a62f9eab4a230" name="ac5e1c4d427362589917a62f9eab4a230"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5e1c4d427362589917a62f9eab4a230">&#9670;&#160;</a></span>is_applicable() <span class="overload">[5/13]</span></h2>
+<a id="a9b8fcd70b9e1735e9e7d31cdecf1e181" name="a9b8fcd70b9e1735e9e7d31cdecf1e181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8fcd70b9e1735e9e7d31cdecf1e181">&#9670;&#160;</a></span>is_applicable() <span class="overload">[5/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1299,14 +1202,82 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>, </td>
+          <td class="paramtype">std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>s_fluent_numeric_changes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; loki::AssignOperatorEnum &gt; &amp;&#160;</td>
+          <td class="paramname"><em>s_auxiliary_numeric_change</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a909031c9e8f30132c284d815a8f10ce2" name="a909031c9e8f30132c284d815a8f10ce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a909031c9e8f30132c284d815a8f10ce2">&#9670;&#160;</a></span>is_applicable() <span class="overload">[6/13]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
+          <td class="paramname"><em>conditional_effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8231b838c8218a7032ca4f0f4e7fd7b9" name="a8231b838c8218a7032ca4f0f4e7fd7b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8231b838c8218a7032ca4f0f4e7fd7b9">&#9670;&#160;</a></span>is_applicable() <span class="overload">[7/13]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
+          <td class="paramname"><em>conditional_effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1333,8 +1304,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="ac802fe6970cb9813a2757f0f6698bdba" name="ac802fe6970cb9813a2757f0f6698bdba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac802fe6970cb9813a2757f0f6698bdba">&#9670;&#160;</a></span>is_applicable() <span class="overload">[6/13]</span></h2>
+<a id="a81d9bba1ae4cd9c4287f224c5462e176" name="a81d9bba1ae4cd9c4287f224c5462e176"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d9bba1ae4cd9c4287f224c5462e176">&#9670;&#160;</a></span>is_applicable() <span class="overload">[8/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1342,19 +1313,13 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="memname">bool mimir::search::is_applicable </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
-          <td class="paramname"><em>conditional_effect</em>, </td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_condition</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
@@ -1367,8 +1332,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a2f11f09f524ffb28fe153c9b5cac84f9" name="a2f11f09f524ffb28fe153c9b5cac84f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f11f09f524ffb28fe153c9b5cac84f9">&#9670;&#160;</a></span>is_applicable() <span class="overload">[7/13]</span></h2>
+<a id="ad1ffdc022ba29f858e04023f9be893ef" name="ad1ffdc022ba29f858e04023f9be893ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1ffdc022ba29f858e04023f9be893ef">&#9670;&#160;</a></span>is_applicable() <span class="overload">[9/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1376,19 +1341,69 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="memname">bool mimir::search::is_applicable </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
-          <td class="paramname"><em>conditional_effect</em>, </td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_condition</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac1b9bd043b6d2d323c9ca20ae75b9500" name="ac1b9bd043b6d2d323c9ca20ae75b9500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1b9bd043b6d2d323c9ca20ae75b9500">&#9670;&#160;</a></span>is_applicable() <span class="overload">[10/13]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_effect</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6600ffff5a2e7b05e400eadd8cf9e9d8" name="a6600ffff5a2e7b05e400eadd8cf9e9d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6600ffff5a2e7b05e400eadd8cf9e9d8">&#9670;&#160;</a></span>is_applicable() <span class="overload">[11/13]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -1413,76 +1428,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="af98f6477028cc5424f6ef508e770a9a8" name="af98f6477028cc5424f6ef508e770a9a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af98f6477028cc5424f6ef508e770a9a8">&#9670;&#160;</a></span>is_applicable() <span class="overload">[8/13]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_applicable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
-          <td class="paramname"><em>conjunctive_condition</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aa95bfaabffb94c65544d6c376d68ef54" name="aa95bfaabffb94c65544d6c376d68ef54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa95bfaabffb94c65544d6c376d68ef54">&#9670;&#160;</a></span>is_applicable() <span class="overload">[9/13]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_applicable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
-          <td class="paramname"><em>conjunctive_condition</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a81045079aed5a6d976edb6fe98742a99" name="a81045079aed5a6d976edb6fe98742a99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81045079aed5a6d976edb6fe98742a99">&#9670;&#160;</a></span>is_applicable() <span class="overload">[10/13]</span></h2>
+<a id="a0bb047969a00660e37bdf85f8bde6420" name="a0bb047969a00660e37bdf85f8bde6420"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bb047969a00660e37bdf85f8bde6420">&#9670;&#160;</a></span>is_applicable() <span class="overload">[12/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1496,14 +1443,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1515,8 +1456,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a3ccf2d6be6d12744e91cf95c6031c264" name="a3ccf2d6be6d12744e91cf95c6031c264"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ccf2d6be6d12744e91cf95c6031c264">&#9670;&#160;</a></span>is_applicable() <span class="overload">[11/13]</span></h2>
+<a id="ab833d73485668e665037fa26db300ca5" name="ab833d73485668e665037fa26db300ca5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab833d73485668e665037fa26db300ca5">&#9670;&#160;</a></span>is_applicable() <span class="overload">[13/13]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1530,14 +1471,14 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1564,28 +1505,22 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="ae4006207173a4091f0126c07bc89f2d7" name="ae4006207173a4091f0126c07bc89f2d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4006207173a4091f0126c07bc89f2d7">&#9670;&#160;</a></span>is_applicable() <span class="overload">[12/13]</span></h2>
+<a id="af8867622e3e524195630af125a9db1c5" name="af8867622e3e524195630af125a9db1c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8867622e3e524195630af125a9db1c5">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::is_applicable </td>
+          <td class="memname">bool mimir::search::is_applicable_if_fires </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>&#160;</td>
-          <td class="paramname"><em>conjunctive_effect</em>, </td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
+          <td class="paramname"><em>conditional_effect</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
@@ -1598,28 +1533,22 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a035e5a5c36adeb31b56a2f2714dc183b" name="a035e5a5c36adeb31b56a2f2714dc183b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a035e5a5c36adeb31b56a2f2714dc183b">&#9670;&#160;</a></span>is_applicable() <span class="overload">[13/13]</span></h2>
+<a id="a5a9493f4400445fca03e759acdaffd21" name="a5a9493f4400445fca03e759acdaffd21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a9493f4400445fca03e759acdaffd21">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::is_applicable </td>
+          <td class="memname">bool mimir::search::is_applicable_if_fires </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>&#160;</td>
-          <td class="paramname"><em>conjunctive_effect</em>, </td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
+          <td class="paramname"><em>conditional_effect</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -1644,8 +1573,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a12f804dc39aaa13ccde838f975841795" name="a12f804dc39aaa13ccde838f975841795"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12f804dc39aaa13ccde838f975841795">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[1/4]</span></h2>
+<a id="afee304caf5c4369de6d9198555bbc61e" name="afee304caf5c4369de6d9198555bbc61e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afee304caf5c4369de6d9198555bbc61e">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1659,14 +1588,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1678,8 +1601,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="ac61357529362763702b869cae33e9d96" name="ac61357529362763702b869cae33e9d96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac61357529362763702b869cae33e9d96">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[2/4]</span></h2>
+<a id="a110a0c4d58b947f2421374e8ece5bb1a" name="a110a0c4d58b947f2421374e8ece5bb1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a110a0c4d58b947f2421374e8ece5bb1a">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1693,14 +1616,14 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
+          <td class="paramname"><em>problem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1726,88 +1649,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a68ffc78f5c15f55b0a1a3f7d96397931" name="a68ffc78f5c15f55b0a1a3f7d96397931"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68ffc78f5c15f55b0a1a3f7d96397931">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_applicable_if_fires </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
-          <td class="paramname"><em>conditional_effect</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3e4c28bf5cdf7c4a9899d118777c0c4f" name="a3e4c28bf5cdf7c4a9899d118777c0c4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e4c28bf5cdf7c4a9899d118777c0c4f">&#9670;&#160;</a></span>is_applicable_if_fires() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_applicable_if_fires </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>&#160;</td>
-          <td class="paramname"><em>conditional_effect</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::optional&lt; loki::AssignOperatorEnum &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>s_fluent_numeric_changes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::optional&lt; loki::AssignOperatorEnum &gt; &amp;&#160;</td>
-          <td class="paramname"><em>s_auxiliary_numeric_change</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a62a0343e3fc32669bbb66177c544ec4c" name="a62a0343e3fc32669bbb66177c544ec4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62a0343e3fc32669bbb66177c544ec4c">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[1/4]</span></h2>
+<a id="a646a00a803a128005d7d975cd987f4c3" name="a646a00a803a128005d7d975cd987f4c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a646a00a803a128005d7d975cd987f4c3">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1821,14 +1664,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1843,8 +1680,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a460fd7e5465b17f189995b6d51c56036" name="a460fd7e5465b17f189995b6d51c56036"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a460fd7e5465b17f189995b6d51c56036">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[2/4]</span></h2>
+<a id="aedab4e669b80b26a73934fbe73c537f4" name="aedab4e669b80b26a73934fbe73c537f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedab4e669b80b26a73934fbe73c537f4">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1858,14 +1695,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1880,8 +1711,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="abe1ecca6b769664fedf1556a7059274b" name="abe1ecca6b769664fedf1556a7059274b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe1ecca6b769664fedf1556a7059274b">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[3/4]</span></h2>
+<a id="acdd2aa1ef9942b0fc6d32f27a0b2d767" name="acdd2aa1ef9942b0fc6d32f27a0b2d767"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd2aa1ef9942b0fc6d32f27a0b2d767">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1895,48 +1726,7 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>GroundConjunctiveCondition </p>
-
-</div>
-</div>
-<a id="aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf" name="aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8aa2acaa10e7c9b0cd4fcc0d1c3f0cf">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::search::is_dynamically_applicable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
-          <td class="paramname"><em>conjunctive_condition</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
@@ -1946,6 +1736,35 @@ template&lt;rpg::IsStructure S&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a095604a3036ecd056fd48ef48e3179e1" name="a095604a3036ecd056fd48ef48e3179e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a095604a3036ecd056fd48ef48e3179e1">&#9670;&#160;</a></span>is_dynamically_applicable() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::is_dynamically_applicable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_condition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>GroundConjunctiveCondition </p>
 
 </div>
 </div>
@@ -1977,8 +1796,8 @@ template&lt;rpg::IsStructure S&gt; </div>
 
 </div>
 </div>
-<a id="a015be262f3539bba08787ff8fcbadf4c" name="a015be262f3539bba08787ff8fcbadf4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a015be262f3539bba08787ff8fcbadf4c">&#9670;&#160;</a></span>nullary_conditions_hold()</h2>
+<a id="aaf00dd1ed6d8f46f3d1ea223bf3f7d73" name="aaf00dd1ed6d8f46f3d1ea223bf3f7d73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf00dd1ed6d8f46f3d1ea223bf3f7d73">&#9670;&#160;</a></span>nullary_conditions_hold()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1992,14 +1811,8 @@ template&lt;rpg::IsStructure S&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>&#160;</td>
+          <td class="paramtype">const UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2015,7 +1828,7 @@ template&lt;rpg::IsStructure S&gt; </div>
 </div>
 </div>
 <a id="a1419bcbd506881cb7f60bff137c72545" name="a1419bcbd506881cb7f60bff137c72545"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1419bcbd506881cb7f60bff137c72545">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1419bcbd506881cb7f60bff137c72545">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2039,6 +1852,35 @@ template&lt;rpg::IsStructure S&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad5e42b2b268a53d9689c47729bd01120" name="ad5e42b2b268a53d9689c47729bd01120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5e42b2b268a53d9689c47729bd01120">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; mimir::search::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">search::State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Pretty printing </p>
 
 </div>
 </div>

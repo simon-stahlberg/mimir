@@ -82,6 +82,12 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="state__repository_8hpp_source.html">state_repository.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for mimir::search::StateRepositoryImpl:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classmimir_1_1search_1_1StateRepositoryImpl.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -95,23 +101,29 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a760e7fd520a1f6ec9ae8c257ba13cc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9e8d6153388085cab8880ff5d84a94e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ae9e8d6153388085cab8880ff5d84a94e">operator=</a> (<a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&amp;other)=delete</td></tr>
 <tr class="separator:ae9e8d6153388085cab8880ff5d84a94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac213d0afabb6399a65a57282c4541775"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ac213d0afabb6399a65a57282c4541775">get_or_create_initial_state</a> ()</td></tr>
+<tr class="memitem:ac213d0afabb6399a65a57282c4541775"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ac213d0afabb6399a65a57282c4541775">get_or_create_initial_state</a> ()</td></tr>
 <tr class="memdesc:ac213d0afabb6399a65a57282c4541775"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the initial state of the underlying problem.  <br /></td></tr>
 <tr class="separator:ac213d0afabb6399a65a57282c4541775"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2a2184091009f7b54611128f49a2aee"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa2a2184091009f7b54611128f49a2aee">get_or_create_state</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">formalism::GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">formalism::FluentTag</a> &gt; &amp;atoms, const FlatDoubleList &amp;fluent_numeric_variables)</td></tr>
+<tr class="memitem:aa2a2184091009f7b54611128f49a2aee"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa2a2184091009f7b54611128f49a2aee">get_or_create_state</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">formalism::GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">formalism::FluentTag</a> &gt; &amp;atoms, const FlatDoubleList &amp;fluent_numeric_variables)</td></tr>
 <tr class="memdesc:aa2a2184091009f7b54611128f49a2aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the state for a given set of ground <code>atoms</code>.  <br /></td></tr>
 <tr class="separator:aa2a2184091009f7b54611128f49a2aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4efa9bda828d012b10e7ee9323cf746"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa4efa9bda828d012b10e7ee9323cf746">get_or_create_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> state_metric_value)</td></tr>
-<tr class="memdesc:aa4efa9bda828d012b10e7ee9323cf746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
-<tr class="separator:aa4efa9bda828d012b10e7ee9323cf746"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ee249d0363faffb994fcd8885d8ec49"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a9ee249d0363faffb994fcd8885d8ec49">get_or_create_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, DenseState &amp;dense_state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> state_metric_value)</td></tr>
-<tr class="memdesc:a9ee249d0363faffb994fcd8885d8ec49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account.  <br /></td></tr>
-<tr class="separator:a9ee249d0363faffb994fcd8885d8ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330734659b2d92528ac2160c36ee572c"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a330734659b2d92528ac2160c36ee572c">get_or_create_successor_state</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> state_metric_value)</td></tr>
+<tr class="memdesc:a330734659b2d92528ac2160c36ee572c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
+<tr class="separator:a330734659b2d92528ac2160c36ee572c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30f3931f43383914fa561558740f81b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1State.html">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ad30f3931f43383914fa561558740f81b">get_state</a> (const PackedStateImpl &amp;state)</td></tr>
+<tr class="memdesc:ad30f3931f43383914fa561558740f81b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the state with the given packed state. This operation unpacks the state.  <br /></td></tr>
+<tr class="separator:ad30f3931f43383914fa561558740f81b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9eb357068b65b733d664cef07bbea69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ac9eb357068b65b733d664cef07bbea69">get_state_index</a> (const PackedStateImpl &amp;state)</td></tr>
+<tr class="memdesc:ac9eb357068b65b733d664cef07bbea69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a given packed state. This operation has constant time.  <br /></td></tr>
+<tr class="separator:ac9eb357068b65b733d664cef07bbea69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ab7e9934a0856bfeea2ab50256b03e61d">get_problem</a> () const</td></tr>
 <tr class="separator:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f47798a4ff86a2654274d3a368895f0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a2f47798a4ff86a2654274d3a368895f0">get_state_count</a> () const</td></tr>
 <tr class="memdesc:a2f47798a4ff86a2654274d3a368895f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of created states.  <br /></td></tr>
 <tr class="separator:a2f47798a4ff86a2654274d3a368895f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4e0f866cf52b09de1954d2047ee6ee"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1search.html#a4f33908d860d100a1052785848906719">PackedStateImplMap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a3c4e0f866cf52b09de1954d2047ee6ee">get_states</a> () const</td></tr>
+<tr class="memdesc:a3c4e0f866cf52b09de1954d2047ee6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the state map.  <br /></td></tr>
+<tr class="separator:a3c4e0f866cf52b09de1954d2047ee6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1877e168f3e5fd795d22af014773170"><td class="memItemLeft" align="right" valign="top">const FlatBitset &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ab1877e168f3e5fd795d22af014773170">get_reached_fluent_ground_atoms_bitset</a> () const</td></tr>
 <tr class="memdesc:ab1877e168f3e5fd795d22af014773170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reached fluent ground atoms.  <br /></td></tr>
 <tr class="separator:ab1877e168f3e5fd795d22af014773170"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,7 +272,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_initial_state </td>
+          <td class="memname">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_initial_state </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -280,7 +292,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_state </td>
+          <td class="memname">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_state </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">formalism::GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">formalism::FluentTag</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>atoms</em>, </td>
@@ -311,73 +323,16 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9ee249d0363faffb994fcd8885d8ec49" name="a9ee249d0363faffb994fcd8885d8ec49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ee249d0363faffb994fcd8885d8ec49">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[1/2]</span></h2>
+<a id="a330734659b2d92528ac2160c36ee572c" name="a330734659b2d92528ac2160c36ee572c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330734659b2d92528ac2160c36ee572c">&#9670;&#160;</a></span>get_or_create_successor_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_successor_state </td>
+          <td class="memname">std::pair&lt; <a class="el" href="classmimir_1_1search_1_1State.html">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_successor_state </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
-          <td class="paramname"><em>action</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
-          <td class="paramname"><em>state_metric_value</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get or create the successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dense_state</td><td>is the dense state. </td></tr>
-    <tr><td class="paramname">action</td><td>is the ground action. </td></tr>
-    <tr><td class="paramname">state_metric_value</td><td>is the metric value of the dense state. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the successor state and its associated metric value. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">state</td><td>for parallel application of numeric effects </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="aa4efa9bda828d012b10e7ee9323cf746" name="aa4efa9bda828d012b10e7ee9323cf746"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa4efa9bda828d012b10e7ee9323cf746">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::search::StateRepositoryImpl::get_or_create_successor_state </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -471,6 +426,33 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ad30f3931f43383914fa561558740f81b" name="ad30f3931f43383914fa561558740f81b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30f3931f43383914fa561558740f81b">&#9670;&#160;</a></span>get_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1search_1_1State.html">State</a> mimir::search::StateRepositoryImpl::get_state </td>
+          <td>(</td>
+          <td class="paramtype">const PackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the state with the given packed state. This operation unpacks the state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>is the packed state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the state. </dd></dl>
+
+</div>
+</div>
 <a id="a2f47798a4ff86a2654274d3a368895f0" name="a2f47798a4ff86a2654274d3a368895f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f47798a4ff86a2654274d3a368895f0">&#9670;&#160;</a></span>get_state_count()</h2>
 
@@ -488,6 +470,53 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Return the number of created states. </p>
 <dl class="section return"><dt>Returns</dt><dd>the number of created states. </dd></dl>
+
+</div>
+</div>
+<a id="ac9eb357068b65b733d664cef07bbea69" name="ac9eb357068b65b733d664cef07bbea69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9eb357068b65b733d664cef07bbea69">&#9670;&#160;</a></span>get_state_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::search::StateRepositoryImpl::get_state_index </td>
+          <td>(</td>
+          <td class="paramtype">const PackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the index of a given packed state. This operation has constant time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>is the packed state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the index. </dd></dl>
+
+</div>
+</div>
+<a id="a3c4e0f866cf52b09de1954d2047ee6ee" name="a3c4e0f866cf52b09de1954d2047ee6ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c4e0f866cf52b09de1954d2047ee6ee">&#9670;&#160;</a></span>get_states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1search.html#a4f33908d860d100a1052785848906719">PackedStateImplMap</a> &amp; mimir::search::StateRepositoryImpl::get_states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the state map. </p>
+<dl class="section return"><dt>Returns</dt><dd>the states map. </dd></dl>
 
 </div>
 </div>

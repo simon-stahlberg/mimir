@@ -2,7 +2,7 @@ var searchData=
 [
   ['term_0',['Term',['../namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65',1,'mimir::formalism']]],
   ['termlist_1',['TermList',['../namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd',1,'mimir::formalism']]],
-  ['termrepository_2',['TermRepository',['../namespacemimir_1_1formalism.html#a95dd6d52854f4099e2fa789227eb5d52',1,'mimir::formalism']]],
+  ['termrepository_2',['TermRepository',['../namespacemimir_1_1formalism.html#ae326f9f08031f13bcf4af4e4929ce689',1,'mimir::formalism']]],
   ['tocertificatemap_3',['ToCertificateMap',['../namespacemimir_1_1datasets.html#a95e73b94865ec7ae59a389008ee1161a',1,'mimir::datasets']]],
   ['toindexmap_4',['ToIndexMap',['../namespacemimir.html#ae3df802892bf968ae4746210b05b3f34',1,'mimir']]],
   ['tonamedfeaturemap_5',['ToNamedFeatureMap',['../namespacemimir_1_1languages_1_1general__policies.html#a92109f62695385b0f61eb5c6ee7f9885',1,'mimir::languages::general_policies']]],

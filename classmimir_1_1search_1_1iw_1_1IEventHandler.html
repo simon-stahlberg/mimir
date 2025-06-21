@@ -96,12 +96,12 @@ Inheritance diagram for mimir::search::iw::IEventHandler:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab7775c270ead69d3091af93a910b0813"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#ab7775c270ead69d3091af93a910b0813">~IEventHandler</a> ()=default</td></tr>
 <tr class="separator:ab7775c270ead69d3091af93a910b0813"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe216be6b988cf9948b7abbdcc982580"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#abe216be6b988cf9948b7abbdcc982580">on_start_search</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> initial_state)=0</td></tr>
-<tr class="memdesc:abe216be6b988cf9948b7abbdcc982580"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
-<tr class="separator:abe216be6b988cf9948b7abbdcc982580"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ee5a64574afdb21e1a54cb7845e9d1c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#a6ee5a64574afdb21e1a54cb7845e9d1c">on_start_arity_search</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> initial_state, size_t arity)=0</td></tr>
-<tr class="memdesc:a6ee5a64574afdb21e1a54cb7845e9d1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
-<tr class="separator:a6ee5a64574afdb21e1a54cb7845e9d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b7fa832f7bf7267ad3f2b3fb7b9710"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#ad2b7fa832f7bf7267ad3f2b3fb7b9710">on_start_search</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;initial_state)=0</td></tr>
+<tr class="memdesc:ad2b7fa832f7bf7267ad3f2b3fb7b9710"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
+<tr class="separator:ad2b7fa832f7bf7267ad3f2b3fb7b9710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2934c85536635cb6ba1ad228bbc4cfca"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#a2934c85536635cb6ba1ad228bbc4cfca">on_start_arity_search</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;initial_state, size_t arity)=0</td></tr>
+<tr class="memdesc:a2934c85536635cb6ba1ad228bbc4cfca"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
+<tr class="separator:a2934c85536635cb6ba1ad228bbc4cfca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac1575cedbc78deba06044233f6cbe4b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html#aac1575cedbc78deba06044233f6cbe4b">on_end_arity_search</a> (const <a class="el" href="classmimir_1_1search_1_1brfs_1_1Statistics.html">brfs::Statistics</a> &amp;brfs_statistics)=0</td></tr>
 <tr class="memdesc:aac1575cedbc78deba06044233f6cbe4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
 <tr class="separator:aac1575cedbc78deba06044233f6cbe4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -323,8 +323,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6ee5a64574afdb21e1a54cb7845e9d1c" name="a6ee5a64574afdb21e1a54cb7845e9d1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ee5a64574afdb21e1a54cb7845e9d1c">&#9670;&#160;</a></span>on_start_arity_search()</h2>
+<a id="a2934c85536635cb6ba1ad228bbc4cfca" name="a2934c85536635cb6ba1ad228bbc4cfca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2934c85536635cb6ba1ad228bbc4cfca">&#9670;&#160;</a></span>on_start_arity_search()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -335,7 +335,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::iw::IEventHandler::on_start_arity_search </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>initial_state</em>, </td>
         </tr>
         <tr>
@@ -359,12 +359,12 @@ Public Member Functions</h2></td></tr>
 
 <p>React on starting a search. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#aa8aa0be2184d2dac8a353973b0cc8773">mimir::search::iw::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#a36c0d8ad3d17efd37225ed06b3b8b440">mimir::search::iw::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
 
 </div>
 </div>
-<a id="abe216be6b988cf9948b7abbdcc982580" name="abe216be6b988cf9948b7abbdcc982580"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe216be6b988cf9948b7abbdcc982580">&#9670;&#160;</a></span>on_start_search()</h2>
+<a id="ad2b7fa832f7bf7267ad3f2b3fb7b9710" name="ad2b7fa832f7bf7267ad3f2b3fb7b9710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b7fa832f7bf7267ad3f2b3fb7b9710">&#9670;&#160;</a></span>on_start_search()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -375,7 +375,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::iw::IEventHandler::on_start_search </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>initial_state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -389,7 +389,7 @@ Public Member Functions</h2></td></tr>
 
 <p>React on starting a search. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#a52cec5ed645cf5a3d6dc98b0004a0f36">mimir::search::iw::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#a138bbda5dc60879b1c419d9cab11a799">mimir::search::iw::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
 
 </div>
 </div>

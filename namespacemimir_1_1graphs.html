@@ -182,7 +182,7 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">ClassGraph</a> = <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; <a class="el" href="namespacemimir_1_1graphs.html#a3142bbab4fd2cd2d164fe5301c5db9b0">StaticClassGraph</a> &gt;</td></tr>
 <tr class="memdesc:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassGraph</code> implements a directed graph representing the state space of a class of problems.  <br /></td></tr>
 <tr class="separator:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>, <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a>, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>, bool, bool, bool, bool &gt;</td></tr>
+<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">search::PackedState</a>, <a class="el" href="namespacemimir_1_1search.html#a1764a4d40a7177447fa124f8cb6c0387">search::StateRepository</a>, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>, bool, bool, bool, bool &gt;</td></tr>
 <tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">ProblemVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &gt;</td></tr>
@@ -273,7 +273,13 @@ Functions</h2></td></tr>
 <tr class="memitem:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a54f7dd0bb476adb636fc0a2384a6b399">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a54f7dd0bb476adb636fc0a2384a6b399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ClassEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
 <tr class="separator:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">get_state</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:a5a33f3b45f495d9636e5838847d66691"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">search::PackedState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a5a33f3b45f495d9636e5838847d66691">get_packed_state</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memdesc:a5a33f3b45f495d9636e5838847d66691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>PackedState</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
+<tr class="separator:a5a33f3b45f495d9636e5838847d66691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0524cf411add5f0262a68e91a8835661"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1search.html#a1764a4d40a7177447fa124f8cb6c0387">search::StateRepository</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0524cf411add5f0262a68e91a8835661">get_state_repository</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memdesc:a0524cf411add5f0262a68e91a8835661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>StateRepository</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
+<tr class="separator:a0524cf411add5f0262a68e91a8835661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1State.html">search::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">get_state</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a851219d315d92f035d53daa1113a11a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>State</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a851219d315d92f035d53daa1113a11a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1545cc0e6f705073e363e66a8173fd4a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
@@ -1298,6 +1304,41 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
 
 </div>
 </div>
+<a id="a5a33f3b45f495d9636e5838847d66691" name="a5a33f3b45f495d9636e5838847d66691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a33f3b45f495d9636e5838847d66691">&#9670;&#160;</a></span>get_packed_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">search::PackedState</a> mimir::graphs::get_packed_state </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
+          <td class="paramname"><em>vertex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the <code>PackedState</code> of the given <code>ProblemVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is a <code>ProblemVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the <code>PackedState</code> of the given <code>ProblemVertex</code> in the <code>ProblemGraph</code>. </dd></dl>
+
+</div>
+</div>
 <a id="a1546e3bf926b018cf0ee06ec6fc62d23" name="a1546e3bf926b018cf0ee06ec6fc62d23"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1546e3bf926b018cf0ee06ec6fc62d23">&#9670;&#160;</a></span>get_problem() <span class="overload">[1/2]</span></h2>
 
@@ -1544,7 +1585,7 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> mimir::graphs::get_state </td>
+          <td class="memname"><a class="el" href="classmimir_1_1search_1_1State.html">search::State</a> mimir::graphs::get_state </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1566,6 +1607,41 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the <code>State</code> of the given <code>ProblemVertex</code> in the <code>ProblemGraph</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a0524cf411add5f0262a68e91a8835661" name="a0524cf411add5f0262a68e91a8835661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0524cf411add5f0262a68e91a8835661">&#9670;&#160;</a></span>get_state_repository()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1search.html#a1764a4d40a7177447fa124f8cb6c0387">search::StateRepository</a> &amp; mimir::graphs::get_state_repository </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
+          <td class="paramname"><em>vertex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the <code>StateRepository</code> of the given <code>ProblemVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is a <code>ProblemVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the <code>StateRepository</code> of the given <code>ProblemVertex</code> in the <code>ProblemGraph</code>. </dd></dl>
 
 </div>
 </div>

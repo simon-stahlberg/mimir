@@ -79,7 +79,8 @@ $(function() {
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/algorithms/shared_memory_pool.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;mimir/formalism/concepts.hpp&quot;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
@@ -132,23 +133,13 @@ Typedefs</h2></td></tr>
 <tr class="separator:a0341a48145ccab5bc210fc82b535a277"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1764a4d40a7177447fa124f8cb6c0387"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1764a4d40a7177447fa124f8cb6c0387">mimir::search::StateRepository</a> = std::shared_ptr&lt; StateRepositoryImpl &gt;</td></tr>
 <tr class="separator:a1764a4d40a7177447fa124f8cb6c0387"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e6c1063da386716070dfb0f09f5b777"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">mimir::search::State</a> = const StateImpl *</td></tr>
-<tr class="separator:a9e6c1063da386716070dfb0f09f5b777"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a260f651b403f4ec3b82fa32aeed516b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">mimir::search::StateList</a> = std::vector&lt; State &gt;</td></tr>
-<tr class="separator:a260f651b403f4ec3b82fa32aeed516b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bbe27d70eb8f34c321a6bfde5a8ea5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a7bbe27d70eb8f34c321a6bfde5a8ea5b">mimir::search::StateSet</a> = std::unordered_set&lt; State &gt;</td></tr>
-<tr class="separator:a7bbe27d70eb8f34c321a6bfde5a8ea5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec70abac117d5db7b44760206563df7f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aec70abac117d5db7b44760206563df7f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aec70abac117d5db7b44760206563df7f">mimir::search::StateMap</a> = std::unordered_map&lt; State, T &gt;</td></tr>
-<tr class="separator:aec70abac117d5db7b44760206563df7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8aa185908e1d05f63876d5a3a033dc9f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a8aa185908e1d05f63876d5a3a033dc9f">mimir::search::StateProblem</a> = std::pair&lt; State, formalism::Problem &gt;</td></tr>
-<tr class="separator:a8aa185908e1d05f63876d5a3a033dc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae485276b478af102370a1e84ae858f7a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ae485276b478af102370a1e84ae858f7a">mimir::search::StateProblemPair</a> = std::pair&lt; StateProblem, StateProblem &gt;</td></tr>
-<tr class="separator:ae485276b478af102370a1e84ae858f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab23479ab4d0e3a613d6ac9f603326d0e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">mimir::search::StateProblemList</a> = std::vector&lt; StateProblem &gt;</td></tr>
-<tr class="separator:ab23479ab4d0e3a613d6ac9f603326d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ec32e73229ce8921620c520e20b4f73"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a3ec32e73229ce8921620c520e20b4f73">mimir::search::StateProblemPairList</a> = std::vector&lt; StateProblemPair &gt;</td></tr>
-<tr class="separator:a3ec32e73229ce8921620c520e20b4f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e85eccb579ab233de1bb318a826a4f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2e85eccb579ab233de1bb318a826a4f5">mimir::search::PackedState</a> = const PackedStateImpl *</td></tr>
+<tr class="separator:a2e85eccb579ab233de1bb318a826a4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aa7dfcb51b501f879359c93f74c12e0d1">mimir::search::PackedStateMap</a> = UnorderedMap&lt; PackedState, T &gt;</td></tr>
+<tr class="separator:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178d76200662fc979ae716e3a310511d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a178d76200662fc979ae716e3a310511d">mimir::search::UnpackedState</a> = SharedMemoryPoolPtr&lt; UnpackedStateImpl &gt;</td></tr>
+<tr class="separator:a178d76200662fc979ae716e3a310511d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a892930994d768a169a4bb644a8b7b697"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1satisficing__binding__generator.html#a892930994d768a169a4bb644a8b7b697">mimir::search::satisficing_binding_generator::EventHandler</a> = std::shared_ptr&lt; IEventHandler &gt;</td></tr>
 <tr class="separator:a892930994d768a169a4bb644a8b7b697"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdcbabb0c3308e29372d17b8263bb592"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1satisficing__binding__generator.html#abdcbabb0c3308e29372d17b8263bb592">mimir::search::satisficing_binding_generator::DefaultEventHandler</a> = std::shared_ptr&lt; DefaultEventHandlerImpl &gt;</td></tr>

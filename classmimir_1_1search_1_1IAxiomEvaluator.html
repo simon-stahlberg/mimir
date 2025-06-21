@@ -96,9 +96,9 @@ Inheritance diagram for mimir::search::IAxiomEvaluator:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a51cb2da9a7b2df472863527bd615f458"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAxiomEvaluator.html#a51cb2da9a7b2df472863527bd615f458">~IAxiomEvaluator</a> ()=default</td></tr>
 <tr class="separator:a51cb2da9a7b2df472863527bd615f458"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af890c14aaf0a218c26cee4a6807525f1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAxiomEvaluator.html#af890c14aaf0a218c26cee4a6807525f1">generate_and_apply_axioms</a> (DenseState &amp;dense_state)=0</td></tr>
-<tr class="memdesc:af890c14aaf0a218c26cee4a6807525f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate all applicable axioms for a given set of ground atoms by running fixed point computation.  <br /></td></tr>
-<tr class="separator:af890c14aaf0a218c26cee4a6807525f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01f5ac91e479affa9ebdc14c0f7d1550"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAxiomEvaluator.html#a01f5ac91e479affa9ebdc14c0f7d1550">generate_and_apply_axioms</a> (UnpackedStateImpl &amp;unpacked_state)=0</td></tr>
+<tr class="memdesc:a01f5ac91e479affa9ebdc14c0f7d1550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate all applicable axioms for a given set of ground atoms by running fixed point computation.  <br /></td></tr>
+<tr class="separator:a01f5ac91e479affa9ebdc14c0f7d1550"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5e45f9a9e1b1e6f0f2641d6a58fa4fe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAxiomEvaluator.html#ae5e45f9a9e1b1e6f0f2641d6a58fa4fe">on_finish_search_layer</a> ()=0</td></tr>
 <tr class="memdesc:ae5e45f9a9e1b1e6f0f2641d6a58fa4fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate event handler statistics during search.  <br /></td></tr>
 <tr class="separator:ae5e45f9a9e1b1e6f0f2641d6a58fa4fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,8 +136,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af890c14aaf0a218c26cee4a6807525f1" name="af890c14aaf0a218c26cee4a6807525f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af890c14aaf0a218c26cee4a6807525f1">&#9670;&#160;</a></span>generate_and_apply_axioms()</h2>
+<a id="a01f5ac91e479affa9ebdc14c0f7d1550" name="a01f5ac91e479affa9ebdc14c0f7d1550"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01f5ac91e479affa9ebdc14c0f7d1550">&#9670;&#160;</a></span>generate_and_apply_axioms()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -148,8 +148,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IAxiomEvaluator::generate_and_apply_axioms </td>
           <td>(</td>
-          <td class="paramtype">DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em></td><td>)</td>
+          <td class="paramtype">UnpackedStateImpl &amp;&#160;</td>
+          <td class="paramname"><em>unpacked_state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -162,7 +162,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Generate all applicable axioms for a given set of ground atoms by running fixed point computation. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1GroundedAxiomEvaluatorImpl.html#ab3554b23fb906de7d333164235f9a7d6">mimir::search::GroundedAxiomEvaluatorImpl</a>, and <a class="el" href="classmimir_1_1search_1_1LiftedAxiomEvaluatorImpl.html#a8863336735c6db5b1d5fc458ef2db883">mimir::search::LiftedAxiomEvaluatorImpl</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1GroundedAxiomEvaluatorImpl.html#a5f7226318dd2f11aa0cab5739a4f931f">mimir::search::GroundedAxiomEvaluatorImpl</a>, and <a class="el" href="classmimir_1_1search_1_1LiftedAxiomEvaluatorImpl.html#a0297a806205ba0094e972ae2b348c1ad">mimir::search::LiftedAxiomEvaluatorImpl</a>.</p>
 
 </div>
 </div>

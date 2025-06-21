@@ -100,7 +100,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa549657516ebb5401cdbf98ee10268bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a95ee7da82de8f0176ca509a0d11819e2">SolvabilityStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#aa549657516ebb5401cdbf98ee10268bc">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;state_space, const graphs::VertexIndexList &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:aa549657516ebb5401cdbf98ee10268bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71" title="ProblemVertex encapsulates information about a vertex in a ProblemGraph">graphs::ProblemVertex</a></code> identified by the given <code>graphs::VertexIndexList</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589" title="ProblemGraph implements a directed graph representing the state space of a single problem.">graphs::ProblemGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a></code>.  <br /></td></tr>
 <tr class="separator:aa549657516ebb5401cdbf98ee10268bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a5eea7f4ecf928f1c0761843fa9eaeb"><td class="memTemplParams" colspan="2">template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+<tr class="memitem:a3a5eea7f4ecf928f1c0761843fa9eaeb"><td class="memTemplParams" colspan="2">template&lt;std::ranges::input_range VertexIndices&gt; <br />
 requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs::VertexIndex&gt;</td></tr>
 <tr class="memitem:a3a5eea7f4ecf928f1c0761843fa9eaeb"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a95ee7da82de8f0176ca509a0d11819e2">SolvabilityStatus</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a3a5eea7f4ecf928f1c0761843fa9eaeb">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;state_space, const VertexIndices &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:a3a5eea7f4ecf928f1c0761843fa9eaeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71" title="ProblemVertex encapsulates information about a vertex in a ProblemGraph">graphs::ProblemVertex</a></code> identified by the given <code>VertexIndices</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589" title="ProblemGraph implements a directed graph representing the state space of a single problem.">graphs::ProblemGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a></code>.  <br /></td></tr>
@@ -111,7 +111,7 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 <tr class="memitem:a42aff6c9c7e300ac3bd53a3b8b2947bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a95ee7da82de8f0176ca509a0d11819e2">SolvabilityStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a42aff6c9c7e300ac3bd53a3b8b2947bd">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const graphs::VertexIndexList &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:a42aff6c9c7e300ac3bd53a3b8b2947bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> identified by the given <code>graphs::VertexIndexList</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
 <tr class="separator:a42aff6c9c7e300ac3bd53a3b8b2947bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea2df7ae7ab0939b03ede33d6f333325"><td class="memTemplParams" colspan="2">template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+<tr class="memitem:aea2df7ae7ab0939b03ede33d6f333325"><td class="memTemplParams" colspan="2">template&lt;std::ranges::input_range VertexIndices&gt; <br />
 requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs::VertexIndex&gt;</td></tr>
 <tr class="memitem:aea2df7ae7ab0939b03ede33d6f333325"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a95ee7da82de8f0176ca509a0d11819e2">SolvabilityStatus</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#aea2df7ae7ab0939b03ede33d6f333325">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const VertexIndices &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:aea2df7ae7ab0939b03ede33d6f333325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> identified by the given <code>VertexIndices</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
@@ -139,9 +139,9 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a9fe84bd09146359e041c5cdba10d6757"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Hash , typename EqualTo &gt; </td></tr>
-<tr class="memitem:a9fe84bd09146359e041c5cdba10d6757"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a9fe84bd09146359e041c5cdba10d6757">loki::SegmentedRepository</a></td></tr>
-<tr class="separator:a9fe84bd09146359e041c5cdba10d6757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a288f0260104fccb63f0e2f775147525b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Hash , typename EqualTo &gt; </td></tr>
+<tr class="memitem:a288f0260104fccb63f0e2f775147525b"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a288f0260104fccb63f0e2f775147525b">loki::IndexedHashSet</a></td></tr>
+<tr class="separator:a288f0260104fccb63f0e2f775147525b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="ad369bb7c9ed61748d34a8750df173c2b" name="ad369bb7c9ed61748d34a8750df173c2b"></a>
@@ -429,7 +429,7 @@ template&lt;dl::IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+template&lt;std::ranges::input_range VertexIndices&gt; <br />
 requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs::VertexIndex&gt;</div>
       <table class="memname">
         <tr>
@@ -461,7 +461,7 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 <p>Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> identified by the given <code>VertexIndices</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VertexIndices</td><td>is the type of the <code>std::ranges::forward_range</code> over <code>graphs::VertexIndex</code>. </td></tr>
+    <tr><td class="paramname">VertexIndices</td><td>is the type of the <code>std::ranges::input_range</code> over <code>graphs::VertexIndex</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -566,7 +566,7 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+template&lt;std::ranges::input_range VertexIndices&gt; <br />
 requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs::VertexIndex&gt;</div>
       <table class="memname">
         <tr>
@@ -598,7 +598,7 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 <p>Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all <code><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71" title="ProblemVertex encapsulates information about a vertex in a ProblemGraph">graphs::ProblemVertex</a></code> identified by the given <code>VertexIndices</code> in the <code><a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589" title="ProblemGraph implements a directed graph representing the state space of a single problem.">graphs::ProblemGraph</a></code> of the given <code><a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a></code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VertexIndices</td><td>is the type of the <code>std::ranges::forward_range</code> over <code>graphs::VertexIndex</code>. </td></tr>
+    <tr><td class="paramname">VertexIndices</td><td>is the type of the <code>std::ranges::input_range</code> over <code>graphs::VertexIndex</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -682,8 +682,8 @@ requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, graphs
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="a9fe84bd09146359e041c5cdba10d6757" name="a9fe84bd09146359e041c5cdba10d6757"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9fe84bd09146359e041c5cdba10d6757">&#9670;&#160;</a></span>loki::SegmentedRepository</h2>
+<a id="a288f0260104fccb63f0e2f775147525b" name="a288f0260104fccb63f0e2f775147525b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a288f0260104fccb63f0e2f775147525b">&#9670;&#160;</a></span>loki::IndexedHashSet</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -694,7 +694,7 @@ template&lt;typename T , typename Hash , typename EqualTo &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">friend class loki::SegmentedRepository</td>
+          <td class="memname">friend class loki::IndexedHashSet</td>
         </tr>
       </table>
   </td>

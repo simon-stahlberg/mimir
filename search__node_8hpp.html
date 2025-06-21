@@ -74,24 +74,18 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">search_node.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/buffering/vector.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/segmented_vector.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
 </div>
 <p><a href="search__node_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">mimir::search::SearchNodeImpl&lt; SearchNodeProperties &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html" title="SearchNodeImpl encapsulates per state information during search.">SearchNodeImpl</a></code> encapsulates per state information during search.  <a href="structmimir_1_1search_1_1SearchNodeImpl.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
@@ -99,30 +93,23 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1search"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html">mimir::search</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1d1d1a8a38d9645816f01706de9dcb8a">mimir::search::SearchNode</a> = SearchNodeImpl&lt; SearchNodeProperties... &gt; *</td></tr>
-<tr class="separator:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9aa90519a1840f525567db76b474a3e3"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:a9aa90519a1840f525567db76b474a3e3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">mimir::search::ConstSearchNode</a> = const SearchNodeImpl&lt; SearchNodeProperties... &gt; *</td></tr>
-<tr class="separator:a9aa90519a1840f525567db76b474a3e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf1512d40175c86460c160ab1459e75b"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
-<tr class="memitem:aaf1512d40175c86460c160ab1459e75b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">mimir::search::SearchNodeImplVector</a> = mimir::buffering::Vector&lt; SearchNodeImpl&lt; SearchNodeProperties... &gt; &gt;</td></tr>
-<tr class="separator:aaf1512d40175c86460c160ab1459e75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1search_1_1IsSearchNode.html">mimir::search::IsSearchNode</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a2097fb91f235e64558eedaf6b1aa165a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165a">mimir::search::SearchNodeStatus</a> { <br />
-&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aab4ed6e67f65ac928d2717ccb28705cd4">mimir::search::NEW</a> = 0
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aadf163a88b82d2b7aa0a68f02992ffda9">mimir::search::OPEN</a> = 1
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa9eaa9bcce4787b02906847bda11f4f70">mimir::search::CLOSED</a> = 2
-, <a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa649aee579aa2a69d986907571701bcce">mimir::search::DEAD_END</a> = 3
+<tr class="memitem:aee93020388e3debc46c5fa534b186913"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913">mimir::search::SearchNodeStatus</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a735a47b3a68e39a0c0df1c20fac0f76a">mimir::search::GOAL</a> = 0
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a649aee579aa2a69d986907571701bcce">mimir::search::DEAD_END</a> = 1
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a9eaa9bcce4787b02906847bda11f4f70">mimir::search::CLOSED</a> = 2
+, <a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913adf163a88b82d2b7aa0a68f02992ffda9">mimir::search::OPEN</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165aa735a47b3a68e39a0c0df1c20fac0f76a">mimir::search::GOAL</a> = 4
+&#160;&#160;<a class="el" href="namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913ab4ed6e67f65ac928d2717ccb28705cd4">mimir::search::NEW</a> = 4
 <br />
  }</td></tr>
-<tr class="separator:a2097fb91f235e64558eedaf6b1aa165a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:aee93020388e3debc46c5fa534b186913"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

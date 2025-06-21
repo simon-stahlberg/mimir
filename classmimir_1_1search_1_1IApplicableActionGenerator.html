@@ -96,12 +96,9 @@ Inheritance diagram for mimir::search::IApplicableActionGenerator:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1b28be2fb9f38be58c88e94e149d1514"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html#a1b28be2fb9f38be58c88e94e149d1514">~IApplicableActionGenerator</a> ()=default</td></tr>
 <tr class="separator:a1b28be2fb9f38be58c88e94e149d1514"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a662cc4075cf2cf4957103846b0b5150b"><td class="memItemLeft" align="right" valign="top">virtual mimir::generator&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html#a662cc4075cf2cf4957103846b0b5150b">create_applicable_action_generator</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)=0</td></tr>
-<tr class="memdesc:a662cc4075cf2cf4957103846b0b5150b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate all applicable actions for a given state.  <br /></td></tr>
-<tr class="separator:a662cc4075cf2cf4957103846b0b5150b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2ba8c920674151888f10a001a54de97"><td class="memItemLeft" align="right" valign="top">virtual mimir::generator&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html#ab2ba8c920674151888f10a001a54de97">create_applicable_action_generator</a> (const DenseState &amp;dense_state)=0</td></tr>
-<tr class="memdesc:ab2ba8c920674151888f10a001a54de97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate all applicable actions for a bitset representation of a state.  <br /></td></tr>
-<tr class="separator:ab2ba8c920674151888f10a001a54de97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9940e682ebf25a1b0f14afaef494c2e1"><td class="memItemLeft" align="right" valign="top">virtual mimir::generator&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html#a9940e682ebf25a1b0f14afaef494c2e1">create_applicable_action_generator</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)=0</td></tr>
+<tr class="memdesc:a9940e682ebf25a1b0f14afaef494c2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate all applicable actions for a given state.  <br /></td></tr>
+<tr class="separator:a9940e682ebf25a1b0f14afaef494c2e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab691c8e5596cea94ac9160657782ac20"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html#ab691c8e5596cea94ac9160657782ac20">on_finish_search_layer</a> ()=0</td></tr>
 <tr class="memdesc:ab691c8e5596cea94ac9160657782ac20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate event handler statistics during search.  <br /></td></tr>
 <tr class="separator:ab691c8e5596cea94ac9160657782ac20"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,8 +136,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab2ba8c920674151888f10a001a54de97" name="ab2ba8c920674151888f10a001a54de97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2ba8c920674151888f10a001a54de97">&#9670;&#160;</a></span>create_applicable_action_generator() <span class="overload">[1/2]</span></h2>
+<a id="a9940e682ebf25a1b0f14afaef494c2e1" name="a9940e682ebf25a1b0f14afaef494c2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9940e682ebf25a1b0f14afaef494c2e1">&#9670;&#160;</a></span>create_applicable_action_generator()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,37 +148,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual mimir::generator&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> &gt; mimir::search::IApplicableActionGenerator::create_applicable_action_generator </td>
           <td>(</td>
-          <td class="paramtype">const DenseState &amp;&#160;</td>
-          <td class="paramname"><em>dense_state</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Generate all applicable actions for a bitset representation of a state. </p>
-
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1GroundedApplicableActionGeneratorImpl.html#a34e9339da59669d3592265f02a289632">mimir::search::GroundedApplicableActionGeneratorImpl</a>, and <a class="el" href="classmimir_1_1search_1_1LiftedApplicableActionGeneratorImpl.html#acce4bea7b08e9965a5459873a741038b">mimir::search::LiftedApplicableActionGeneratorImpl</a>.</p>
-
-</div>
-</div>
-<a id="a662cc4075cf2cf4957103846b0b5150b" name="a662cc4075cf2cf4957103846b0b5150b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a662cc4075cf2cf4957103846b0b5150b">&#9670;&#160;</a></span>create_applicable_action_generator() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual mimir::generator&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> &gt; mimir::search::IApplicableActionGenerator::create_applicable_action_generator </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -195,7 +162,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Generate all applicable actions for a given state. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1GroundedApplicableActionGeneratorImpl.html#ad66418425f15adbaa3dc0b997c536c9e">mimir::search::GroundedApplicableActionGeneratorImpl</a>, and <a class="el" href="classmimir_1_1search_1_1LiftedApplicableActionGeneratorImpl.html#ac8dea2b333eec9d738c4248e0afe763b">mimir::search::LiftedApplicableActionGeneratorImpl</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1GroundedApplicableActionGeneratorImpl.html#a3c570b780b6c8daf18597a9da02f7455">mimir::search::GroundedApplicableActionGeneratorImpl</a>, and <a class="el" href="classmimir_1_1search_1_1LiftedApplicableActionGeneratorImpl.html#adb4cbfd7330ef960fd32e571181b03a2">mimir::search::LiftedApplicableActionGeneratorImpl</a>.</p>
 
 </div>
 </div>

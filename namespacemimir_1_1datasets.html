@@ -136,9 +136,9 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ac98f6cb9161d7e632fa88ebade965a13"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ac98f6cb9161d7e632fa88ebade965a13">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1datasets_1_1TupleGraphImpl.html">TupleGraphImpl</a> &amp;tuple_graph)</td></tr>
 <tr class="separator:ac98f6cb9161d7e632fa88ebade965a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff6743b4ae81b8302a135143d2cff30e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#aa255ca9313d5355722194f089e9b6115">graphs::StaticVertexColoredGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#aff6743b4ae81b8302a135143d2cff30e">create_object_graph</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)</td></tr>
-<tr class="memdesc:aff6743b4ae81b8302a135143d2cff30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <code>ObjectGraph</code> for a given <code><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>.  <br /></td></tr>
-<tr class="separator:aff6743b4ae81b8302a135143d2cff30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e56ec2bb841791937593cb46cd0dba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#aa255ca9313d5355722194f089e9b6115">graphs::StaticVertexColoredGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ad9e56ec2bb841791937593cb46cd0dba">create_object_graph</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">search::State</a> &amp;state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)</td></tr>
+<tr class="memdesc:ad9e56ec2bb841791937593cb46cd0dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <code>ObjectGraph</code> for a given <code><a class="el" href="classmimir_1_1search_1_1State.html">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>.  <br /></td></tr>
+<tr class="separator:ad9e56ec2bb841791937593cb46cd0dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012) Source: <a href="https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf">https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf</a> </p>
@@ -288,8 +288,8 @@ template&lt;typename Key &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aff6743b4ae81b8302a135143d2cff30e" name="aff6743b4ae81b8302a135143d2cff30e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff6743b4ae81b8302a135143d2cff30e">&#9670;&#160;</a></span>create_object_graph()</h2>
+<a id="ad9e56ec2bb841791937593cb46cd0dba" name="ad9e56ec2bb841791937593cb46cd0dba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9e56ec2bb841791937593cb46cd0dba">&#9670;&#160;</a></span>create_object_graph()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -297,7 +297,7 @@ template&lt;typename Key &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#aa255ca9313d5355722194f089e9b6115">graphs::StaticVertexColoredGraph</a> mimir::datasets::create_object_graph </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">search::State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -314,7 +314,7 @@ template&lt;typename Key &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create an <code>ObjectGraph</code> for a given <code><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. </p>
+<p>Create an <code>ObjectGraph</code> for a given <code><a class="el" href="classmimir_1_1search_1_1State.html">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>is the state. </td></tr>

@@ -124,7 +124,7 @@ $(function() {
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> DUMMY_PROPOSITION_INDEX = 0;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#af045ff6f7d338d248702833f39e15fcf">   62</a></span>    <a class="code hl_typedef" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> <a class="code hl_function" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#af045ff6f7d338d248702833f39e15fcf">compute_heuristic</a>(<a class="code hl_class" href="classmimir_1_1search_1_1StateImpl.html">State</a> state, <span class="keywordtype">bool</span> is_goal_state)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#a4e2e252980db5ef910d0e8c8587dd42c">   62</a></span>    <a class="code hl_typedef" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> <a class="code hl_function" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#a4e2e252980db5ef910d0e8c8587dd42c">compute_heuristic</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmimir_1_1search_1_1State.html">State</a>&amp; state, <span class="keywordtype">bool</span> is_goal_state)<span class="keyword"> override</span></div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">if</span> (is_goal_state)</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">return</span> 0.;</div>
@@ -196,7 +196,7 @@ $(function() {
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    }</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">template</span>&lt;formalism::IsFluentOrDerivedTag P&gt;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> initialize_or_annotations_and_queue_helper(<a class="code hl_typedef" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> initialize_or_annotations_and_queue_helper(<span class="keyword">const</span> State&amp; state)</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    {</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;P, formalism::DerivedTag&gt;)</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        {</div>
@@ -205,7 +205,7 @@ $(function() {
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keyword">auto</span>&amp; positive_offsets = get&lt;formalism::PositiveTag, P&gt;(get_offsets());</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            <span class="keyword">auto</span>&amp; negative_offsets = get&lt;formalism::NegativeTag, P&gt;(get_offsets());</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; atom_index : state-&gt;get_atoms&lt;P&gt;())</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; atom_index : state.get_atoms&lt;P&gt;())</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            {</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                self().initialize_or_annotations_and_queue_impl(m_propositions[positive_offsets[atom_index]]);</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            }</div>
@@ -220,7 +220,7 @@ $(function() {
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <span class="keyword">auto</span>&amp; positive_offsets = get&lt;formalism::PositiveTag, P&gt;(get_offsets());</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <span class="keyword">auto</span>&amp; negative_offsets = get&lt;formalism::NegativeTag, P&gt;(get_offsets());</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; all_atoms = get&lt;P&gt;(get_atom_indices());</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; state_atoms = state-&gt;get_atoms&lt;P&gt;();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; state_atoms = state.get_atoms&lt;P&gt;();</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keyword">auto</span> it = state_atoms.begin();</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            <span class="keyword">auto</span> it2 = all_atoms.begin();</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keyword">const</span> <span class="keyword">auto</span> end = state_atoms.end();</div>
@@ -258,7 +258,7 @@ $(function() {
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        }</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    }</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">void</span> initialize_or_annotations_and_queue(<a class="code hl_typedef" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">void</span> initialize_or_annotations_and_queue(<span class="keyword">const</span> State&amp; state)</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    {</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        this-&gt;m_queue.clear();</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
@@ -301,7 +301,7 @@ $(function() {
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordflow">while</span> (!m_queue.empty())</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <span class="keyword">const</span> <span class="keyword">auto</span> entry = m_queue.top();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <span class="keyword">const</span> <span class="keyword">auto</span> entry = m_queue.top_entry();</div>
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            m_queue.pop();</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; proposition = get_propositions()[entry.proposition_index];</div>
@@ -382,31 +382,36 @@ $(function() {
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keyword">struct </span>QueueEntry</div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    {</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        <a class="code hl_typedef" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> proposition_index;</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <a class="code hl_typedef" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a> cost;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    };</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    PriorityQueue&lt;DiscreteCost, QueueEntry&gt; m_queue;</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>};</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>}</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        <span class="keyword">using </span>KeyType = <a class="code hl_typedef" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keyword">using </span>ItemType = <a class="code hl_typedef" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        KeyType cost;</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        ItemType proposition_index;</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        KeyType get_key()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cost; }</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        ItemType get_item()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> proposition_index; }</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    };</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    PriorityQueue&lt;QueueEntry&gt; m_queue;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>};</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>}</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1DeleteRelaxedProblemExplorator_html"><div class="ttname"><a href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html">mimir::search::DeleteRelaxedProblemExplorator</a></div><div class="ttdef"><b>Definition:</b> delete_relaxed_problem_explorator.hpp:36</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1DeleteRelaxedProblemExplorator_html_a541b8429912737da443af2c9c61dd253"><div class="ttname"><a href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html#a541b8429912737da443af2c9c61dd253">mimir::search::DeleteRelaxedProblemExplorator::get_problem</a></div><div class="ttdeci">const formalism::Problem &amp; get_problem() const</div><div class="ttdoc">Get the input problem.</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1IHeuristic_html"><div class="ttname"><a href="classmimir_1_1search_1_1IHeuristic.html">mimir::search::IHeuristic</a></div><div class="ttdoc">IHeuristic is the interface of a search heuristic.</div><div class="ttdef"><b>Definition:</b> interface.hpp:37</div></div>
-<div class="ttc" id="aclassmimir_1_1search_1_1StateImpl_html"><div class="ttname"><a href="classmimir_1_1search_1_1StateImpl.html">mimir::search::StateImpl</a></div><div class="ttdoc">StateImpl encapsulates the fluent and derived atoms, and numeric variables of a planning state.</div><div class="ttdef"><b>Definition:</b> state.hpp:35</div></div>
+<div class="ttc" id="aclassmimir_1_1search_1_1State_html"><div class="ttname"><a href="classmimir_1_1search_1_1State.html">mimir::search::State</a></div><div class="ttdef"><b>Definition:</b> state.hpp:40</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph_html"><div class="ttname"><a href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html">mimir::search::rpg::RelaxedPlanningGraph</a></div><div class="ttdoc">RelaxedPlanningGraph implements a common base class for heuristics based on the relaxed planning grap...</div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:51</div></div>
-<div class="ttc" id="aclassmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph_html_af045ff6f7d338d248702833f39e15fcf"><div class="ttname"><a href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#af045ff6f7d338d248702833f39e15fcf">mimir::search::rpg::RelaxedPlanningGraph::compute_heuristic</a></div><div class="ttdeci">ContinuousCost compute_heuristic(State state, bool is_goal_state) override</div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:62</div></div>
+<div class="ttc" id="aclassmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph_html_a4e2e252980db5ef910d0e8c8587dd42c"><div class="ttname"><a href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#a4e2e252980db5ef910d0e8c8587dd42c">mimir::search::rpg::RelaxedPlanningGraph::compute_heuristic</a></div><div class="ttdeci">ContinuousCost compute_heuristic(const State &amp;state, bool is_goal_state) override</div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:62</div></div>
 <div class="ttc" id="acommon_2types_8hpp_html"><div class="ttname"><a href="common_2types_8hpp.html">types.hpp</a></div></div>
 <div class="ttc" id="adelete__relaxed__problem__explorator_8hpp_html"><div class="ttname"><a href="delete__relaxed__problem__explorator_8hpp.html">delete_relaxed_problem_explorator.hpp</a></div></div>
 <div class="ttc" id="aformalism_2declarations_8hpp_html"><div class="ttname"><a href="formalism_2declarations_8hpp.html">declarations.hpp</a></div></div>
 <div class="ttc" id="aground__action_8hpp_html"><div class="ttname"><a href="ground__action_8hpp.html">ground_action.hpp</a></div></div>
 <div class="ttc" id="aheuristics_2interface_8hpp_html"><div class="ttname"><a href="heuristics_2interface_8hpp.html">interface.hpp</a></div></div>
 <div class="ttc" id="anamespacemimir_1_1formalism_html_a18a62fffd7784a50a9304da9b0a2a7d1"><div class="ttname"><a href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">mimir::formalism::Problem</a></div><div class="ttdeci">std::shared_ptr&lt; ProblemImpl &gt; Problem</div><div class="ttdef"><b>Definition:</b> declarations.hpp:261</div></div>
-<div class="ttc" id="anamespacemimir_1_1graphs_html_a1545cc0e6f705073e363e66a8173fd4a"><div class="ttname"><a href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">mimir::graphs::get_problem</a></div><div class="ttdeci">const formalism::Problem &amp; get_problem(const ProblemVertex &amp;vertex)</div><div class="ttdoc">Get the formalism::Problem of the given ProblemVertex.</div><div class="ttdef"><b>Definition:</b> problem_graph.hpp:50</div></div>
+<div class="ttc" id="anamespacemimir_1_1graphs_html_a1545cc0e6f705073e363e66a8173fd4a"><div class="ttname"><a href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">mimir::graphs::get_problem</a></div><div class="ttdeci">const formalism::Problem &amp; get_problem(const ProblemVertex &amp;vertex)</div><div class="ttdoc">Get the formalism::Problem of the given ProblemVertex.</div><div class="ttdef"><b>Definition:</b> problem_graph.hpp:62</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_1_1rpg_html"><div class="ttname"><a href="namespacemimir_1_1search_1_1rpg.html">mimir::search::rpg</a></div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:35</div></div>
-<div class="ttc" id="anamespacemimir_1_1search_html_a9e6c1063da386716070dfb0f09f5b777"><div class="ttname"><a href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">mimir::search::State</a></div><div class="ttdeci">const StateImpl * State</div><div class="ttdef"><b>Definition:</b> declarations.hpp:45</div></div>
 <div class="ttc" id="anamespacemimir_html_a434766af663adf7a52331374b790b6dc"><div class="ttname"><a href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">mimir::IndexList</a></div><div class="ttdeci">std::vector&lt; Index &gt; IndexList</div><div class="ttdef"><b>Definition:</b> types.hpp:40</div></div>
 <div class="ttc" id="anamespacemimir_html_a93a14d8288fcdd5f70bbdb166dcf9359"><div class="ttname"><a href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">mimir::ContinuousCost</a></div><div class="ttdeci">double ContinuousCost</div><div class="ttdef"><b>Definition:</b> types.hpp:55</div></div>
 <div class="ttc" id="anamespacemimir_html_a9a5965ca488a8a8f0d8bda41ceaf3385"><div class="ttname"><a href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">mimir::DiscreteCost</a></div><div class="ttdeci">int32_t DiscreteCost</div><div class="ttdef"><b>Definition:</b> types.hpp:67</div></div>

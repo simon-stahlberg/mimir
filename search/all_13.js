@@ -5,7 +5,7 @@ var searchData=
   ['variable_2ehpp_2',['variable.hpp',['../variable_8hpp.html',1,'']]],
   ['variableimpl_3',['VariableImpl',['../classmimir_1_1formalism_1_1VariableImpl.html',1,'mimir::formalism::VariableImpl'],['../classmimir_1_1formalism_1_1VariableImpl.html#ac4b4449309cc5a6a5e7a988212875cce',1,'mimir::formalism::VariableImpl::VariableImpl(const VariableImpl &amp;other)=delete'],['../classmimir_1_1formalism_1_1VariableImpl.html#af13ffc08d949a7ca81def8bf3f21cc7d',1,'mimir::formalism::VariableImpl::VariableImpl(VariableImpl &amp;&amp;other)=default']]],
   ['variablelist_4',['VariableList',['../namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b',1,'mimir::formalism']]],
-  ['variablerepository_5',['VariableRepository',['../namespacemimir_1_1formalism.html#a53f86e071d5a274a6495385bf9656b87',1,'mimir::formalism']]],
+  ['variablerepository_5',['VariableRepository',['../namespacemimir_1_1formalism.html#a5016f35f230c7bf785304f92265b0b1f',1,'mimir::formalism']]],
   ['variableset_6',['VariableSet',['../namespacemimir_1_1formalism.html#a61c7a4b90d3d6edd89afff708d66a892',1,'mimir::formalism']]],
   ['variadiccolor_7',['VariadicColor',['../classmimir_1_1graphs_1_1VariadicColor.html',1,'mimir::graphs::VariadicColor&lt; Ts &gt;'],['../classmimir_1_1graphs_1_1VariadicColor.html#a6af561d3b4182a1ee939aec8ef37c25e',1,'mimir::graphs::VariadicColor::VariadicColor()']]],
   ['vectorbasicmatrix_8',['VectorBasicMatrix',['../classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html',1,'mimir::graphs::bgl::VectorBasicMatrix&lt; I, V &gt;'],['../classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html#a753ce42b252bd4d5cf31bc5d9fd6c25d',1,'mimir::graphs::bgl::VectorBasicMatrix::VectorBasicMatrix()']]],
