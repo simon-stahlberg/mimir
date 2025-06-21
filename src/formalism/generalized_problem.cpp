@@ -19,7 +19,6 @@
 
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/translator.hpp"
 
 namespace mimir::formalism
 {
@@ -35,16 +34,14 @@ GeneralizedProblemImpl::GeneralizedProblemImpl(Domain domain, ProblemList proble
 GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
 {
     auto parser = Parser(domain_filepath, options);
-    auto translator = Translator(parser.get_domain());
-    auto domain = translator.get_translated_domain();
+
     auto problems = ProblemList {};
     for (const auto& problem_filepath : problem_filepaths)
     {
-        auto problem = parser.parse_problem(problem_filepath, options);
-        problems.push_back(translator.translate(problem));
+        problems.push_back(parser.parse_problem(problem_filepath, options));
     }
 
-    return create(std::move(domain), std::move(problems));
+    return create(parser.get_domain(), std::move(problems));
 }
 
 GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)

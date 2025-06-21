@@ -32,11 +32,8 @@ def test_astar_search_2():
     problem_filepath = str(ROOT_DIR / "data" / "blocks_4" / "test_problem.pddl")
 
     parser = formalism.Parser(domain_filepath, formalism.ParserOptions())
+    domain = parser.get_domain()
     problem = parser.parse_problem(problem_filepath, formalism.ParserOptions())
-
-    translator = formalism.Translator(parser.get_domain())
-    domain = translator.get_translated_domain()
-    problem = translator.translate(problem)
 
     axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
     state_repository = search.StateRepository.create(axiom_evaluator)

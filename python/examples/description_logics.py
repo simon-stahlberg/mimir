@@ -452,8 +452,7 @@ def main():
             for state_space in knowledge_base.get_state_spaces():
                 for vertex in state_space.get_graph().get_vertices():
                     state = datasets.get_state(vertex)
-                    problem = datasets.get_problem(vertex)
-                    context = description_logics.EvaluationContext(state, problem, denotation_repositories)
+                    context = description_logics.EvaluationContext(state, denotation_repositories)
                     value = constructor.evaluate(context).get_data()
                     print("State:", str(state))
                     print("Value:", value)

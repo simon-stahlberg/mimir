@@ -1030,16 +1030,6 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<const fs::path&, const loki::Options&>(), "domain_filepath"_a, "options"_a)
         .def("parse_problem", &Parser::parse_problem, "problem_filepath"_a, "options"_a)
         .def("get_domain", &Parser::get_domain);
-
-    /**
-     * Translator
-     */
-
-    nb::class_<Translator>(m, "Translator")
-        .def(nb::init<const Domain&>(), "domain"_a)
-        .def("translate", &Translator::translate, "problem"_a)
-        .def("get_original_domain", &Translator::get_original_domain, nb::rv_policy::reference_internal)
-        .def("get_translated_domain", &Translator::get_translated_domain, nb::rv_policy::reference_internal);
 }
 
 }

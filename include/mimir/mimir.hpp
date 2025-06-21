@@ -55,7 +55,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
-#include "mimir/formalism/translator.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 

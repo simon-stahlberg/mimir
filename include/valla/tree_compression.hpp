@@ -166,7 +166,8 @@ struct Entry
 {
     Index m_index;
     Index m_size;
-    Index m_bit;
+
+    Entry(Index index, Index size) : m_index(index), m_size(size) {}
 };
 
 static thread_local UniqueMemoryPool<std::vector<Entry>> s_stack_pool = UniqueMemoryPool<std::vector<Entry>> {};

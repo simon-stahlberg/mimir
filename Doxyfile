@@ -45,7 +45,6 @@ INPUT                 = \
     "include/mimir/formalism/requirements.hpp" \
     "include/mimir/formalism/tags.hpp" \
     "include/mimir/formalism/term.hpp" \
-    "include/mimir/formalism/translator.hpp" \
     "include/mimir/formalism/utils.hpp" \
     "include/mimir/formalism/variable.hpp" \
     "include/mimir/datasets/generalized_state_space/class_graph.hpp" \

@@ -39,7 +39,7 @@ private:
     loki::Parser m_loki_parser;
     loki::DomainTranslationResult m_loki_domain_translation_result;
 
-    Domain m_domain;  ///< The parsed domain.
+    Domain m_domain;  ///< The parsed and translated domain.
 };
 
 }

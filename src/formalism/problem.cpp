@@ -37,7 +37,6 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
-#include "mimir/formalism/translator.hpp"
 #include "mimir/formalism/utils.hpp"
 
 #include <cassert>
@@ -171,12 +170,7 @@ ProblemImpl::ProblemImpl(Index index,
 
 Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
 {
-    /* Parse */
-    auto parser = Parser(domain_filepath, options);
-    auto problem = parser.parse_problem(problem_filepath, options);
-    /* Translate */
-    auto translator = Translator(problem->get_domain());
-    return translator.translate(problem);
+    return Parser(domain_filepath, options).parse_problem(problem_filepath, options);
 }
 
 Index ProblemImpl::get_index() const { return m_index; }

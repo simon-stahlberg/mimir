@@ -41,7 +41,6 @@ from pymimir.advanced.formalism import StaticLiteralList as AdvancedStaticLitera
 from pymimir.advanced.formalism import StaticPredicate as AdvancedStaticPredicate
 from pymimir.advanced.formalism import Term as AdvancedTerm
 from pymimir.advanced.formalism import TermList as AdvancedTermList
-from pymimir.advanced.formalism import Translator as AdvancedTranslator
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
@@ -1466,9 +1465,7 @@ class Domain:
         """
         assert isinstance(domain_path, (Path, str)), "Invalid domain path type."
         self._advanced_parser = AdvancedParser(domain_path, AdvancedParserOptions())
-        original_domain = self._advanced_parser.get_domain()
-        self._advanced_translator = AdvancedTranslator(original_domain)
-        self._advanced_domain = self._advanced_translator.get_translated_domain()
+        self._advanced_domain = self._advanced_parser.get_domain()
         self._repositories = self._advanced_domain.get_repositories()
 
     def get_name(self) -> 'str':
@@ -1647,8 +1644,7 @@ class Problem:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
         search_mode = SearchMode.LIFTED if mode == 'lifted' else SearchMode.GROUNDED
         self._domain = domain
-        original_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
-        self._advanced_problem = domain._advanced_translator.translate(original_problem)
+        self._advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
         self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }
 

@@ -19,7 +19,8 @@
 
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem_builder.hpp"
-#include "mimir/formalism/translator.hpp"
+#include "mimir/formalism/translator/encode_numeric_constraint_terms_in_functions.hpp"
+#include "mimir/formalism/translator/encode_parameter_index_in_variables.hpp"
 #include "to_mimir_structures.hpp"
 
 #include <memory>
@@ -37,6 +38,14 @@ Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
     auto to_mimir_structures_translator = ToMimirStructures();
     auto builder = DomainBuilder();
     m_domain = to_mimir_structures_translator.translate(loki_translated_domain, builder);
+
+    auto encode_parameter_index_in_variables_translator = EncodeParameterIndexInVariables();
+    builder = DomainBuilder();
+    m_domain = encode_parameter_index_in_variables_translator.translate_level_0(m_domain, builder);
+
+    auto encode_numeric_constraint_terms_in_function = EncodeNumericConstraintTermsInFunctions();
+    builder = DomainBuilder();
+    m_domain = encode_numeric_constraint_terms_in_function.translate_level_0(m_domain, builder);
 }
 
 Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Options& options)
@@ -46,8 +55,17 @@ Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Opti
 
     auto to_mimir_structures_translator = ToMimirStructures();
     auto builder = ProblemBuilder(m_domain);
+    auto problem = to_mimir_structures_translator.translate(loki_translated_problem, builder);
 
-    return to_mimir_structures_translator.translate(loki_translated_problem, builder);
+    auto encode_parameter_index_in_variables_translator = EncodeNumericConstraintTermsInFunctions();
+    builder = ProblemBuilder(m_domain);
+    problem = encode_parameter_index_in_variables_translator.translate_level_0(problem, builder);
+
+    auto encode_numeric_constraint_terms_in_function = EncodeParameterIndexInVariables();
+    builder = ProblemBuilder(m_domain);
+    problem = encode_numeric_constraint_terms_in_function.translate_level_0(problem, builder);
+
+    return problem;
 }
 
 const Domain& Parser::get_domain() const { return m_domain; }

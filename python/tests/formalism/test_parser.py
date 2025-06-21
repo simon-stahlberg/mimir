@@ -13,14 +13,6 @@ def test_pddl_parser():
     parser = formalism.Parser(domain_filepath, formalism.ParserOptions())
 
     domain = parser.get_domain()
-
     problem = parser.parse_problem(problem_filepath, formalism.ParserOptions())
 
     assert(domain == problem.get_domain())
-
-    translator = formalism.Translator(domain)
-    translated_domain = translator.get_translated_domain()
-
-    translated_problem = translator.translate(problem)
-
-    assert(translated_domain == translated_problem.get_domain())

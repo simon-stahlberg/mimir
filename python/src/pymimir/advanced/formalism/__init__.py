@@ -134,7 +134,6 @@ from pymimir.pymimir.advanced.formalism import (
     Requirements,
     Term,
     TermList,
-    Translator,
     Variable,
     VariableList,
 )
