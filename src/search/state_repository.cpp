@@ -344,15 +344,15 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
 
     dense_fluent_atoms.unset_all();
-    for (auto it = valla::plain::begin(state.get_atoms<FluentTag>(), problem.get_tree_table()); it != valla::plain::end(); ++it)
+    for (const auto index : state.get_atoms<FluentTag>(problem))
     {
-        dense_fluent_atoms.set(*it);
+        dense_fluent_atoms.set(index);
     }
 
     dense_derived_atoms.unset_all();
-    for (auto it = valla::plain::begin(state.get_atoms<DerivedTag>(), problem.get_tree_table()); it != valla::plain::end(); ++it)
+    for (const auto index : state.get_atoms<DerivedTag>(problem))
     {
-        dense_derived_atoms.set(*it);
+        dense_derived_atoms.set(index);
     }
 
     dense_fluent_numeric_variables.clear();
