@@ -27,11 +27,9 @@
 namespace valla
 {
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPool;
 
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPoolPtr
 {
 private:
@@ -81,6 +79,7 @@ public:
 
             m_pool = other.m_pool;
             m_object = other.m_object;
+
             other.m_pool = nullptr;
             other.m_object = nullptr;
         }
@@ -119,20 +118,20 @@ public:
         return m_object;
     }
 
-    bool operator()() const { return m_object != nullptr; }
+    explicit operator bool() const noexcept { return m_object != nullptr; }
 };
 
 template<typename T>
-    requires std::default_initializable<T>
 class UniqueMemoryPool
 {
 private:
     std::vector<std::unique_ptr<T>> m_storage;
     std::stack<T*> m_stack;
 
-    void allocate()
+    template<typename... Args>
+    void allocate(Args&&... args)
     {
-        m_storage.push_back(std::make_unique<T>(T()));
+        m_storage.push_back(std::make_unique<T>(T(std::forward<Args>(args)...)));
         m_stack.push(m_storage.back().get());
     }
 
@@ -148,11 +147,14 @@ public:
     UniqueMemoryPool(UniqueMemoryPool&& other) = delete;
     UniqueMemoryPool& operator=(UniqueMemoryPool&& other) = delete;
 
-    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate()
+    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
+
+    template<typename... Args>
+    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate(Args&&... args)
     {
         if (m_stack.empty())
         {
-            allocate();
+            allocate(std::forward<Args>(args)...);
         }
         T* element = m_stack.top();
         m_stack.pop();

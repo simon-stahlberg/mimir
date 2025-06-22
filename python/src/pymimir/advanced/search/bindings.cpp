@@ -307,9 +307,9 @@ void bind_module_definitions(nb::module_& m)
             "domain_filepath"_a,
             "problem_filepath"_a,
             "options"_a)
-        .def_static("create", nb::overload_cast<formalism::Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create), "problem"_a, "options"_a)
+        .def_static("create", nb::overload_cast<Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create), "problem"_a, "options"_a)
         .def_static("create",
-                    nb::overload_cast<formalism::Problem, ApplicableActionGenerator, StateRepository>(&SearchContextImpl::create),
+                    nb::overload_cast<Problem, ApplicableActionGenerator, StateRepository>(&SearchContextImpl::create),
                     "problem"_a,
                     "applicable_action_generator"_a,
                     "state_repository"_a)
@@ -334,18 +334,50 @@ void bind_module_definitions(nb::module_& m)
             "problems_directory"_a,
             "options"_a)
         .def_static("create",
-                    nb::overload_cast<formalism::GeneralizedProblem, const SearchContextImpl::Options&>(&GeneralizedSearchContextImpl::create),
+                    nb::overload_cast<GeneralizedProblem, const SearchContextImpl::Options&>(&GeneralizedSearchContextImpl::create),
                     "generalized_problem"_a,
                     "options"_a)
         .def_static("create",
-                    nb::overload_cast<formalism::GeneralizedProblem, SearchContextList>(&GeneralizedSearchContextImpl::create),
+                    nb::overload_cast<GeneralizedProblem, SearchContextList>(&GeneralizedSearchContextImpl::create),
                     "generalized_problem"_a,
                     "search_contexts"_a)
         .def("get_generalized_problem", &GeneralizedSearchContextImpl::get_generalized_problem)
         .def("get_search_contexts", &GeneralizedSearchContextImpl::get_search_contexts);
 
     /* PackedState */
-    nb::class_<PackedState>(m, "PackedState");
+    nb::class_<PackedStateImpl>(m, "PackedState")
+        .def("__hash__", [](const PackedStateImpl& self) { return loki::Hash<PackedStateImpl> {}(self); })
+        .def("__eq__", [](const PackedStateImpl& lhs, const PackedStateImpl& rhs) { return loki::EqualTo<PackedStateImpl> {}(lhs, rhs); })
+        .def(
+            "get_fluent_atoms",
+            [](const PackedStateImpl& self, const ProblemImpl& problem)
+            {
+                auto range = self.get_atoms<FluentTag>(problem);
+                return nb::make_iterator(nb::type<nb::iterator>(), "Iterator over fluent state atom indices.", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "problem"_a)
+        .def(
+            "get_derived_atoms",
+            [](const PackedStateImpl& self, const ProblemImpl& problem)
+            {
+                auto range = self.get_atoms<DerivedTag>(problem);
+                return nb::make_iterator(nb::type<nb::iterator>(), "Iterator over derived state atom indices.", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "problem"_a)
+        .def(
+            "get_numeric_variables",
+            [](const PackedStateImpl& self, const ProblemImpl& problem)
+            {
+                const auto& list = self.get_numeric_variables(problem);
+                return std::vector<double>(list.begin(), list.end());
+            },
+            "problem"_a)
+        .def("literal_holds", &PackedStateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a, "problem"_a)
+        .def("literal_holds", &PackedStateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a, "problem"_a)
+        .def("literal_holds", &PackedStateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a, "problem"_a)
+        .def("literal_holds", &PackedStateImpl::literals_hold<DerivedTag>, nb::rv_policy::copy, "literals"_a, "problem"_a);
 
     /* State */
     nb::class_<State>(m, "State")  //
@@ -473,7 +505,7 @@ void bind_module_definitions(nb::module_& m)
             "max_num_groundings"_a);
 
     /* ApplicableActionGenerators */
-    m.def("is_applicable", nb::overload_cast<formalism::GroundAction, const State&>(&search::is_applicable), "action"_a, "state"_a);
+    m.def("is_applicable", nb::overload_cast<GroundAction, const State&>(&search::is_applicable), "action"_a, "state"_a);
 
     nb::class_<IApplicableActionGenerator>(m, "IApplicableActionGenerator")
         .def("get_problem", &IApplicableActionGenerator::get_problem)
