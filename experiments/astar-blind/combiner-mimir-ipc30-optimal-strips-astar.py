@@ -32,19 +32,13 @@ ATTRIBUTES = [
     "num_reachable_fluent_atoms",
     "num_reachable_derived_atoms",
 
-    "memory_in_bytes_for_unextended_state_portions",
-    "memory_in_bytes_per_unextended_state_portion",
-    "memory_in_bytes_for_extended_state_portions",
-    "memory_in_bytes_per_extended_state_portion",
-    "memory_in_bytes_for_states",
-    "memory_in_bytes_per_state",
     "memory_in_bytes_for_nodes",
     "memory_in_bytes_per_node",
-    "memory_in_bytes_for_actions",
-    "memory_in_bytes_per_action",
-    "memory_in_bytes_for_axioms",
-    "memory_in_bytes_per_axiom",
+    "memory_in_bytes_for_problem",
     "total_memory_in_bytes",
+    "peak_memory_usage_in_bytes",
+
+    "score_peak_memory_usage_in_bytes",
 
     "num_of_states",
     "num_of_nodes",
@@ -65,21 +59,43 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("combined_mimir-ipc30-optimal-strips-astar-blind")
+exp = Experiment("combined-ipc30-optimal-strips-astar-blind")
 
-def rename_algorithm(properties):
+def rename_algorithm_lhs(properties):
     """Rename algorithm dynamically during fetching."""
-    if properties["algorithm"] == "mimir-grounded-astar-blind":
-        properties["algorithm"] = "old-mimir-grounded-astar-blind"
-        properties["id"][0] = "old-mimir-grounded-astar-blind"
-    if properties["algorithm"] == "mimir-lifted-astar-blind":
-        properties["algorithm"] = "old-mimir-lifted-astar-blind"
-        properties["id"][0] = "old-mimir-lifted-astar-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
+        properties["algorithm"] = "list-grounded-astar-eager-blind"
+        properties["id"][0] = "list-grounded-astar-eager-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
+        properties["algorithm"] = "list-grounded-astar-lazy-blind"
+        properties["id"][0] = "list-grounded-astar-lazy-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
+        properties["algorithm"] = "list-lifted-astar-eager-blind"
+        properties["id"][0] = "list-lifted-astar-eager-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
+        properties["algorithm"] = "list-lifted-astar-lazy-blind"
+        properties["id"][0] = "list-lifted-astar-lazy-blind"
     return properties
 
-exp.add_fetcher("old-mimir-ipc30-optimal-strips-astar-blind-eval", filter=rename_algorithm)
-exp.add_fetcher("new-mimir-ipc30-optimal-strips-astar-blind-eval")
+def rename_algorithm_rhs(properties):
+    """Rename algorithm dynamically during fetching."""
+    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
+        properties["algorithm"] = "tree-grounded-astar-eager-blind"
+        properties["id"][0] = "tree-grounded-astar-eager-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
+        properties["algorithm"] = "tree-grounded-astar-lazy-blind"
+        properties["id"][0] = "tree-grounded-astar-lazy-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
+        properties["algorithm"] = "tree-lifted-astar-eager-blind"
+        properties["id"][0] = "tree-lifted-astar-eager-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
+        properties["algorithm"] = "tree-lifted-astar-lazy-blind"
+        properties["id"][0] = "tree-lifted-astar-lazy-blind"
+    return properties
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["old-mimir-grounded-astar-blind", "mimir-grounded-astar-blind", "old-mimir-lifted-astar-blind", "mimir-lifted-astar-blind"]))
+exp.add_fetcher("baseline/2025-05-06-astar30-ipc-optimal-strips-eval", name="list-fetch", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-ipc-optimal-strips-eval", name="tree-fetch", filter=rename_algorithm_rhs)
+
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"]))
 
 exp.run_steps()
