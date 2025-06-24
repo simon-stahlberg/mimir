@@ -328,6 +328,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
+        dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before inserting the derived atoms of the successor state.
         for (const auto index : it->first.get_atoms<DerivedTag>(problem))
         {
             dense_derived_atoms.set(index);
