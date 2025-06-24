@@ -84,27 +84,12 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
-
-    size_t seed = 0;
-    size_t hash[2] = { 0, 0 };
-
-    loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el), sizeof(mimir::search::PackedStateImpl), seed, hash);
-
-    loki::hash_combine(seed, hash[0]);
-    loki::hash_combine(seed, hash[1]);
-
-    return seed;
+    return valla::cantor_pair(valla::SlotHash {}(el.get_atoms<FluentTag>()), el.get_numeric_variables());
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
 {
-    static_assert(std::is_standard_layout_v<mimir::search::PackedStateImpl>, "PackedStateImpl must be standard layout");
-
-    const auto lhs_begin = reinterpret_cast<const uint8_t*>(&lhs);
-    const auto rhs_begin = reinterpret_cast<const uint8_t*>(&rhs);
-
-    return std::equal(lhs_begin, lhs_begin + sizeof(mimir::search::PackedStateImpl), rhs_begin);
+    return lhs.get_atoms<FluentTag>() == rhs.get_atoms<FluentTag>() && lhs.get_numeric_variables() == rhs.get_numeric_variables();
 }
 
 }

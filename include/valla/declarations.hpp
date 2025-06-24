@@ -104,19 +104,10 @@ inline uint64_t fmix64(uint64_t k)
     return k;
 }
 
-template<typename S>
 struct SlotHash
-{
-    size_t operator()(S el) const { return el; }
-};
-
-template<>
-struct SlotHash<Slot>
 {
     size_t operator()(Slot el) const { return cantor_pair(first(el), second(el)); }
 };
-
-constexpr Slot SlotSentinel = std::numeric_limits<Slot>::max();
 
 }
 
