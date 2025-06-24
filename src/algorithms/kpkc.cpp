@@ -50,9 +50,9 @@ using BitsetMatrixUniquePtr = UniqueObjectPoolPtr<std::vector<BitsetListUniquePt
 
 mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                                                             const std::vector<std::vector<uint32_t>>& partitions,
-                                                                                            SolutionPtr& partial_solution,
-                                                                                            BitsetUniquePtr& partition_bits,
-                                                                                            BitsetMatrixUniquePtr& k_compatible_vertices,
+                                                                                            std::vector<uint32_t>& partial_solution,
+                                                                                            boost::dynamic_bitset<>& partition_bits,
+                                                                                            std::vector<BitsetListUniquePtr>& k_compatible_vertices,
                                                                                             uint32_t depth)
 {
     assert(depth < partitions.size());
@@ -61,15 +61,15 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
     uint32_t best_set_bits = std::numeric_limits<uint32_t>::max();
     uint32_t best_partition = std::numeric_limits<uint32_t>::max();
 
-    assert(is_within_bounds(*k_compatible_vertices, depth));
-    auto& compatible_vertices = (*k_compatible_vertices)[depth];
+    assert(is_within_bounds(k_compatible_vertices, depth));
+    auto& compatible_vertices = *k_compatible_vertices[depth];
 
     // Find the best partition to work with
     for (uint32_t partition = 0; partition < k; ++partition)
     {
-        assert(is_within_bounds(*compatible_vertices, partition));
-        auto num_set_bits = (*compatible_vertices)[partition]->count();
-        if (!(*partition_bits)[partition] && (num_set_bits < best_set_bits))
+        assert(is_within_bounds(compatible_vertices, partition));
+        auto num_set_bits = compatible_vertices[partition]->count();
+        if (!partition_bits[partition] && (num_set_bits < best_set_bits))
         {
             best_set_bits = num_set_bits;
             best_partition = partition;
@@ -77,65 +77,70 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
     }
 
     // Iterate through compatible vertices in the best partition
-    assert(is_within_bounds(*compatible_vertices, best_partition));
-    uint32_t adjacent_index = (*compatible_vertices)[best_partition]->find_first();
-    while (adjacent_index < (*compatible_vertices)[best_partition]->size())
+    assert(is_within_bounds(compatible_vertices, best_partition));
+    auto& best_partition_compatible_vertices = *compatible_vertices[best_partition];
+    uint32_t adjacent_index = best_partition_compatible_vertices.find_first();
+    while (adjacent_index < best_partition_compatible_vertices.size())
     {
         assert(is_within_bounds(partitions, best_partition) && is_within_bounds(partitions[best_partition], adjacent_index));
         uint32_t vertex = partitions[best_partition][adjacent_index];
-        assert(is_within_bounds(*compatible_vertices, best_partition) && is_within_bounds(*(*compatible_vertices)[best_partition], adjacent_index));
-        (*(*compatible_vertices)[best_partition])[adjacent_index] = 0;
+        assert(is_within_bounds(compatible_vertices, best_partition) && is_within_bounds(best_partition_compatible_vertices, adjacent_index));
+        best_partition_compatible_vertices[adjacent_index] = 0;
 
-        partial_solution->push_back(vertex);
+        partial_solution.push_back(vertex);
 
-        if (partial_solution->size() == k)
+        if (partial_solution.size() == k)
         {
-            co_yield *partial_solution;
+            co_yield partial_solution;
         }
         else
         {
             assert(partial_solution->size() - 1 == depth);
 
             // Update compatible vertices for the next recursion
-            assert(is_within_bounds(*k_compatible_vertices, depth + 1));
-            auto& compatible_vertices_next = (*k_compatible_vertices)[depth + 1];
+            assert(is_within_bounds(k_compatible_vertices, depth + 1));
+            auto& compatible_vertices_next = *k_compatible_vertices[depth + 1];
             for (uint32_t partition = 0; partition < k; ++partition)
             {
-                assert(is_within_bounds(*compatible_vertices_next, partition));
-                assert(is_within_bounds(*compatible_vertices, partition));
-                assert((*compatible_vertices_next)[partition]->size() == (*compatible_vertices)[partition]->size());
-                *(*compatible_vertices_next)[partition] = *(*compatible_vertices)[partition];  // copy bitsets from current to next iteration
+                assert(is_within_bounds(compatible_vertices_next, partition));
+                assert(is_within_bounds(compatible_vertices, partition));
+                auto& partition_compatible_vertices_next = *compatible_vertices_next[partition];
+                auto& partition_compatible_vertices = *compatible_vertices[partition];
+                assert(partition_compatible_vertices_next == partition_compatible_vertices.size());
+                partition_compatible_vertices_next = partition_compatible_vertices;  // copy bitsets from current to next iteration
             }
 
             uint32_t offset = 0;
             for (uint32_t partition = 0; partition < k; ++partition)
             {
-                assert(is_within_bounds(*compatible_vertices_next, partition));
-                auto partition_size = (*compatible_vertices_next)[partition]->size();
-                if (!(*partition_bits)[partition])
+                assert(is_within_bounds(compatible_vertices_next, partition));
+                auto& partition_compatible_vertices_next = *compatible_vertices_next[partition];
+                auto partition_size = partition_compatible_vertices_next.size();
+                if (!partition_bits[partition])
                 {
                     for (uint32_t index = 0; index < partition_size; ++index)
                     {
                         assert(is_within_bounds(*compatible_vertices_next, partition));
-                        (*(*compatible_vertices_next)[partition])[index] &= adjacency_matrix[vertex][index + offset];
+                        partition_compatible_vertices_next[index] &= adjacency_matrix[vertex][index + offset];
                     }
                 }
                 offset += partition_size;
             }
 
-            (*partition_bits)[best_partition] = 1;
+            partition_bits[best_partition] = 1;
 
             uint32_t possible_additions = 0;
             for (uint32_t partition = 0; partition < k; ++partition)
             {
-                assert(is_within_bounds(*compatible_vertices, partition));
-                if (!(*partition_bits)[partition] && (*compatible_vertices)[partition]->any())
+                assert(is_within_bounds(compatible_vertices, partition));
+                auto& partition_compatible_vertices = *compatible_vertices[partition];
+                if (!partition_bits[partition] && partition_compatible_vertices.any())
                 {
                     ++possible_additions;
                 }
             }
 
-            if ((partial_solution->size() + possible_additions) == k)
+            if ((partial_solution.size() + possible_additions) == k)
             {
                 for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
                                                                                        partitions,
@@ -148,13 +153,12 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
                 }
             }
 
-            (*partition_bits)[best_partition] = 0;
+            partition_bits[best_partition] = 0;
         }
 
-        partial_solution->pop_back();
+        partial_solution.pop_back();
 
-        assert(is_within_bounds(*compatible_vertices, best_partition));
-        adjacent_index = (*compatible_vertices)[best_partition]->find_next(adjacent_index);
+        adjacent_index = best_partition_compatible_vertices.find_next(adjacent_index);
     }
 }
 
@@ -224,7 +228,7 @@ mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_grap
     }
 
     /* Enumerate all k-cliques. */
-    for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, solution, partition_bits, k_compatible_vertices, 0))
+    for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, *solution, *partition_bits, *k_compatible_vertices, 0))
     {
         co_yield result;
     }
