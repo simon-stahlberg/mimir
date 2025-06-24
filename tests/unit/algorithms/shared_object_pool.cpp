@@ -16,9 +16,9 @@
  */
 
 // Include the copy before the pool.
-#include "shared_memory_pool.hpp"
+#include "shared_object_pool.hpp"
 //
-#include "mimir/algorithms/shared_memory_pool.hpp"
+#include "mimir/algorithms/shared_object_pool.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
@@ -27,9 +27,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, AlgorithmsSharedMemoryPoolTest)
+TEST(MimirTests, AlgorithmsSharedObjectPoolTest)
 {
-    SharedMemoryPool<std::vector<int>> pool;
+    SharedObjectPool<std::vector<int>> pool;
     EXPECT_EQ(pool.get_size(), 0);
     auto object_0 = pool.get_or_allocate();
     EXPECT_EQ(pool.get_size(), 1);
@@ -42,7 +42,7 @@ TEST(MimirTests, AlgorithmsSharedMemoryPoolTest)
         auto object_0_1 = object_0;
         EXPECT_EQ(object_0_1.ref_count(), 2);
 
-        auto object_0_2 = SharedMemoryPoolPtr<std::vector<int>>();
+        auto object_0_2 = SharedObjectPoolPtr<std::vector<int>>();
         EXPECT_EQ(object_0.ref_count(), 2);
         EXPECT_EQ(object_0_1.ref_count(), 2);
 
@@ -52,13 +52,13 @@ TEST(MimirTests, AlgorithmsSharedMemoryPoolTest)
         EXPECT_EQ(object_0_2.ref_count(), 2);
 
         // Test copy constructor
-        auto object_0_3 = SharedMemoryPoolPtr<std::vector<int>>(object_0);
+        auto object_0_3 = SharedObjectPoolPtr<std::vector<int>>(object_0);
         EXPECT_EQ(object_0.ref_count(), 3);
         EXPECT_EQ(object_0_3.ref_count(), 3);
 
         // Test move constructor
         auto object_0_4 = object_0;
-        auto object_0_5 = SharedMemoryPoolPtr<std::vector<int>>(std::move(object_0_4));
+        auto object_0_5 = SharedObjectPoolPtr<std::vector<int>>(std::move(object_0_4));
         EXPECT_EQ(object_0.ref_count(), 4);
         EXPECT_EQ(object_0_5.ref_count(), 4);
     }
@@ -90,11 +90,11 @@ TEST(MimirTests, AlgorithmsSharedMemoryPoolTest)
     EXPECT_EQ(object_1->back(), 42);
 }
 
-TEST(MimirTests, AlgorithmsSharedMemoryPoolVectorTest)
+TEST(MimirTests, AlgorithmsSharedObjectPoolVectorTest)
 {
-    SharedMemoryPool<std::vector<int>> pool;
+    SharedObjectPool<std::vector<int>> pool;
 
-    auto vec = std::vector<SharedMemoryPoolPtr<std::vector<int>>> {};
+    auto vec = std::vector<SharedObjectPoolPtr<std::vector<int>>> {};
 
     vec.push_back(pool.get_or_allocate());
     vec.emplace_back(pool.get_or_allocate());

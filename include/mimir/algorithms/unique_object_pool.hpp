@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_DETAILS_UNIQUE_MEMORY_POOL_HPP_
-#define VALLA_INCLUDE_DETAILS_UNIQUE_MEMORY_POOL_HPP_
+#ifndef MIMIR_INCLUDE_ALGORITHMS_UNIQUE_OBJECT_POOL_HPP_
+#define MIMIR_INCLUDE_ALGORITHMS_UNIQUE_OBJECT_POOL_HPP_
 
 #include <cassert>
 #include <concepts>
@@ -24,16 +24,16 @@
 #include <stack>
 #include <vector>
 
-namespace valla
+namespace mimir
 {
 template<typename T>
-class UniqueMemoryPool;
+class UniqueObjectPool;
 
 template<typename T>
-class UniqueMemoryPoolPtr
+class UniqueObjectPoolPtr
 {
 private:
-    UniqueMemoryPool<T>* m_pool;
+    UniqueObjectPool<T>* m_pool;
     T* m_object;
 
 private:
@@ -55,22 +55,22 @@ private:
     }
 
 public:
-    UniqueMemoryPoolPtr() : UniqueMemoryPoolPtr(nullptr, nullptr) {}
+    UniqueObjectPoolPtr() : UniqueObjectPoolPtr(nullptr, nullptr) {}
 
-    UniqueMemoryPoolPtr(UniqueMemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) {}
+    UniqueObjectPoolPtr(UniqueObjectPool<T>* pool, T* object) : m_pool(pool), m_object(object) {}
 
-    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) = delete;
+    UniqueObjectPoolPtr(const UniqueObjectPoolPtr& other) = delete;
 
-    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other) = delete;
+    UniqueObjectPoolPtr& operator=(const UniqueObjectPoolPtr& other) = delete;
 
     // Movable
-    UniqueMemoryPoolPtr(UniqueMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
+    UniqueObjectPoolPtr(UniqueObjectPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
     {
         other.m_pool = nullptr;
         other.m_object = nullptr;
     }
 
-    UniqueMemoryPoolPtr& operator=(UniqueMemoryPoolPtr&& other) noexcept
+    UniqueObjectPoolPtr& operator=(UniqueObjectPoolPtr&& other) noexcept
     {
         if (this != &other)
         {
@@ -86,21 +86,21 @@ public:
         return *this;
     }
 
-    UniqueMemoryPoolPtr clone() const
+    UniqueObjectPoolPtr clone() const
     {
         if (m_pool && m_object)
         {
-            UniqueMemoryPoolPtr pointer = m_pool->get_or_allocate();
+            UniqueObjectPoolPtr pointer = m_pool->get_or_allocate();
             copy(this->operator*(), *pointer);
             return pointer;
         }
         else
         {
-            return UniqueMemoryPoolPtr();
+            return UniqueObjectPoolPtr();
         }
     }
 
-    ~UniqueMemoryPoolPtr()
+    ~UniqueObjectPoolPtr()
     {
         if (m_pool && m_object)
             deallocate();
@@ -122,7 +122,7 @@ public:
 };
 
 template<typename T>
-class UniqueMemoryPool
+class UniqueObjectPool
 {
 private:
     std::vector<std::unique_ptr<T>> m_storage;
@@ -137,20 +137,20 @@ private:
 
     void free(T* element) { m_stack.push(element); }
 
-    friend class UniqueMemoryPoolPtr<T>;
+    friend class UniqueObjectPoolPtr<T>;
 
 public:
     // Non-copyable to prevent dangling memory pool pointers.
-    UniqueMemoryPool() = default;
-    UniqueMemoryPool(const UniqueMemoryPool& other) = delete;
-    UniqueMemoryPool& operator=(const UniqueMemoryPool& other) = delete;
-    UniqueMemoryPool(UniqueMemoryPool&& other) = delete;
-    UniqueMemoryPool& operator=(UniqueMemoryPool&& other) = delete;
+    UniqueObjectPool() = default;
+    UniqueObjectPool(const UniqueObjectPool& other) = delete;
+    UniqueObjectPool& operator=(const UniqueObjectPool& other) = delete;
+    UniqueObjectPool(UniqueObjectPool&& other) = delete;
+    UniqueObjectPool& operator=(UniqueObjectPool&& other) = delete;
 
-    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
+    [[nodiscard]] UniqueObjectPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
 
     template<typename... Args>
-    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate(Args&&... args)
+    [[nodiscard]] UniqueObjectPoolPtr<T> get_or_allocate(Args&&... args)
     {
         if (m_stack.empty())
         {
@@ -158,7 +158,7 @@ public:
         }
         T* element = m_stack.top();
         m_stack.pop();
-        return UniqueMemoryPoolPtr<T>(this, element);
+        return UniqueObjectPoolPtr<T>(this, element);
     }
 
     [[nodiscard]] size_t get_size() const { return m_storage.size(); }

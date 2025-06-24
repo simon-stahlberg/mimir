@@ -7,6 +7,10 @@ EXTRACT_ALL           = YES
 EXTRACT_FUNCTIONS     = YES
 INLINE_FUNCTIONS      = YES
 INPUT                 = \
+    "include/mimir/algorithms/kpkc.hpp" \
+    "include/mimir/algorithms/generator.hpp" \
+    "include/mimir/algorithms/shared_object_pool.hpp" \
+    "include/mimir/algorithms/unique_object_pool.hpp" \
     "include/mimir/common/types.hpp" \
     "include/mimir/formalism/action.hpp" \
     "include/mimir/formalism/assignment_set.hpp" \
@@ -136,16 +140,31 @@ INPUT                 = \
     "include/mimir/languages/general_policies/visitor_null.hpp" \
     "include/mimir/languages/policy_sketches/declarations.hpp" \
     "include/mimir/languages/policy_sketches/policy_sketch.hpp" \
-    "include/mimir/search/algorithms/astar.hpp" \
-    "include/mimir/search/algorithms/astar/event_handlers/interface.hpp" \
-    "include/mimir/search/algorithms/astar/event_handlers/default.hpp" \
-    "include/mimir/search/algorithms/astar/event_handlers/debug.hpp" \
-    "include/mimir/search/algorithms/astar/event_handlers/statistics.hpp" \
+    "include/mimir/search/algorithms/astar_lazy.hpp" \
+    "include/mimir/search/algorithms/astar_lazy/event_handlers/interface.hpp" \
+    "include/mimir/search/algorithms/astar_lazy/event_handlers/default.hpp" \
+    "include/mimir/search/algorithms/astar_lazy/event_handlers/debug.hpp" \
+    "include/mimir/search/algorithms/astar_lazy/event_handlers/statistics.hpp" \
+    "include/mimir/search/algorithms/astar_eager.hpp" \
+    "include/mimir/search/algorithms/astar_eager/event_handlers/interface.hpp" \
+    "include/mimir/search/algorithms/astar_eager/event_handlers/default.hpp" \
+    "include/mimir/search/algorithms/astar_eager/event_handlers/debug.hpp" \
+    "include/mimir/search/algorithms/astar_eager/event_handlers/statistics.hpp" \
     "include/mimir/search/algorithms/brfs.hpp" \
     "include/mimir/search/algorithms/brfs/event_handlers/interface.hpp" \
     "include/mimir/search/algorithms/brfs/event_handlers/default.hpp" \
     "include/mimir/search/algorithms/brfs/event_handlers/debug.hpp" \
     "include/mimir/search/algorithms/brfs/event_handlers/statistics.hpp" \
+    "include/mimir/search/algorithms/gbfs_lazy.hpp" \
+    "include/mimir/search/algorithms/gbfs_lazy/event_handlers/interface.hpp" \
+    "include/mimir/search/algorithms/gbfs_lazy/event_handlers/default.hpp" \
+    "include/mimir/search/algorithms/gbfs_lazy/event_handlers/debug.hpp" \
+    "include/mimir/search/algorithms/gbfs_lazy/event_handlers/statistics.hpp" \
+    "include/mimir/search/algorithms/gbfs_eager.hpp" \
+    "include/mimir/search/algorithms/gbfs_eager/event_handlers/interface.hpp" \
+    "include/mimir/search/algorithms/gbfs_eager/event_handlers/default.hpp" \
+    "include/mimir/search/algorithms/gbfs_eager/event_handlers/debug.hpp" \
+    "include/mimir/search/algorithms/gbfs_eager/event_handlers/statistics.hpp" \
     "include/mimir/search/algorithms/iw.hpp" \
     "include/mimir/search/algorithms/iw/event_handlers/interface.hpp" \
     "include/mimir/search/algorithms/iw/event_handlers/default.hpp" \
@@ -206,8 +225,11 @@ INPUT                 = \
     "include/mimir/search/delete_relaxed_problem_explorator.hpp" \
     "include/mimir/search/generalized_search_context.hpp" \
     "include/mimir/search/plan.hpp" \
+    "include/mimir/search/partially_ordered_plan.hpp"
     "include/mimir/search/search_context.hpp" \
     "include/mimir/search/search_node.hpp" \
     "include/mimir/search/search_space.hpp" \
     "include/mimir/search/state_repository.hpp" \
+    "include/mimir/search/state_packed.hpp" \
+    "include/mimir/search/state_unpacked.hpp" \
     "include/mimir/search/state.hpp"

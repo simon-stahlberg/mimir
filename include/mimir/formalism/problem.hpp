@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
-#include "mimir/algorithms/shared_memory_pool.hpp"
+#include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
@@ -62,9 +62,9 @@ private:
 
     valla::IndexedHashSet m_tree_table;
 
-    SharedMemoryPool<FlatBitset> m_bitset_pool;
-    SharedMemoryPool<FlatIndexList> m_index_list_pool;
-    SharedMemoryPool<FlatDoubleList> m_double_list_pool;
+    SharedObjectPool<FlatBitset> m_bitset_pool;
+    SharedObjectPool<FlatIndexList> m_index_list_pool;
+    SharedObjectPool<FlatDoubleList> m_double_list_pool;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -138,9 +138,9 @@ public:
     std::pair<const FlatDoubleList*, Index> get_or_create_double_list(const FlatDoubleList& list);
     const FlatDoubleList* get_double_list(size_t pos) const;
 
-    SharedMemoryPool<FlatBitset>& get_bitset_pool();
-    SharedMemoryPool<FlatIndexList>& get_index_list_pool();
-    SharedMemoryPool<FlatDoubleList>& get_double_list_pool();
+    SharedObjectPool<FlatBitset>& get_bitset_pool();
+    SharedObjectPool<FlatIndexList>& get_index_list_pool();
+    SharedObjectPool<FlatDoubleList>& get_double_list_pool();
 
     /* Objects */
     const Object get_object(const std::string& name) const;

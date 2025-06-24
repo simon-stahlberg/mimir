@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
-#include "mimir/algorithms/shared_memory_pool.hpp"
+#include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
@@ -43,7 +43,7 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
-    SharedMemoryPool<UnpackedStateImpl> m_unpacked_state_pool;
+    SharedObjectPool<UnpackedStateImpl> m_unpacked_state_pool;
 
     Index m_empty_double_list;
 
