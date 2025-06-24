@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['plan_0',['plan',['../structmimir_1_1search_1_1SearchResult.html#ad81d2706f5870a1fd4e27b5651953f4c',1,'mimir::search::SearchResult']]],
-  ['positive_5fboolean_5fcondition_1',['positive_boolean_condition',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a1cf56291b2290a80b1accaf28e71c937',1,'mimir::languages::general_policies::keywords']]],
-  ['positive_5fboolean_5feffect_2',['positive_boolean_effect',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a62257b336a34f7ea1217f714b45a1d5d',1,'mimir::languages::general_policies::keywords']]],
-  ['pruning_5fstrategy_3',['pruning_strategy',['../structmimir_1_1search_1_1brfs_1_1Options.html#ad2b1b4291e0ddb134a113d4265fbb8f5',1,'mimir::search::brfs::Options']]]
+  ['openlist_5fweights_0',['openlist_weights',['../structmimir_1_1search_1_1astar__lazy_1_1Options.html#a317edf6995c17ff22cb8fd743526456e',1,'mimir::search::astar_lazy::Options::openlist_weights()'],['../structmimir_1_1search_1_1gbfs__lazy_1_1Options.html#a546674f3250d8d2d19ef8a2334aa2cd4',1,'mimir::search::gbfs_lazy::Options::openlist_weights()']]],
+  ['optimization_5fdirection_1',['optimization_direction',['../structmimir_1_1search_1_1match__tree_1_1Options.html#ace70aedf0d97f4e3a63c61dd61d8f5d8',1,'mimir::search::match_tree::Options']]],
+  ['output_5fdot_5ffile_2',['output_dot_file',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a31509aa1b133ec8de7cb842fb77f849e',1,'mimir::search::match_tree::Options']]]
 ];

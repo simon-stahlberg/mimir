@@ -1,16 +1,18 @@
 var searchData=
 [
-  ['ffheuristicimpl_0',['FFHeuristicImpl',['../classmimir_1_1search_1_1FFHeuristicImpl.html',1,'mimir::search']]],
-  ['fluenttag_1',['FluentTag',['../structmimir_1_1formalism_1_1FluentTag.html',1,'mimir::formalism']]],
-  ['formattervisitor_2',['FormatterVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1FormatterVisitor.html',1,'mimir::languages::dl::cnf_grammar::FormatterVisitor'],['../classmimir_1_1languages_1_1dl_1_1FormatterVisitor.html',1,'mimir::languages::dl::FormatterVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1FormatterVisitor.html',1,'mimir::languages::dl::grammar::FormatterVisitor'],['../classmimir_1_1languages_1_1general__policies_1_1FormatterVisitor.html',1,'mimir::languages::general_policies::FormatterVisitor']]],
-  ['forwardtag_3',['ForwardTag',['../structmimir_1_1graphs_1_1ForwardTag.html',1,'mimir::graphs']]],
-  ['fullformattertag_4',['FullFormatterTag',['../structmimir_1_1formalism_1_1GroundActionImpl_1_1FullFormatterTag.html',1,'mimir::formalism::GroundActionImpl']]],
-  ['functionexpressionbinaryoperatorimpl_5',['FunctionExpressionBinaryOperatorImpl',['../classmimir_1_1formalism_1_1FunctionExpressionBinaryOperatorImpl.html',1,'mimir::formalism']]],
-  ['functionexpressionfunctionimpl_6',['FunctionExpressionFunctionImpl',['../classmimir_1_1formalism_1_1FunctionExpressionFunctionImpl.html',1,'mimir::formalism']]],
-  ['functionexpressionimpl_7',['FunctionExpressionImpl',['../classmimir_1_1formalism_1_1FunctionExpressionImpl.html',1,'mimir::formalism']]],
-  ['functionexpressionminusimpl_8',['FunctionExpressionMinusImpl',['../classmimir_1_1formalism_1_1FunctionExpressionMinusImpl.html',1,'mimir::formalism']]],
-  ['functionexpressionmultioperatorimpl_9',['FunctionExpressionMultiOperatorImpl',['../classmimir_1_1formalism_1_1FunctionExpressionMultiOperatorImpl.html',1,'mimir::formalism']]],
-  ['functionexpressionnumberimpl_10',['FunctionExpressionNumberImpl',['../classmimir_1_1formalism_1_1FunctionExpressionNumberImpl.html',1,'mimir::formalism']]],
-  ['functionimpl_11',['FunctionImpl',['../classmimir_1_1formalism_1_1FunctionImpl.html',1,'mimir::formalism']]],
-  ['functionskeletonimpl_12',['FunctionSkeletonImpl',['../classmimir_1_1formalism_1_1FunctionSkeletonImpl.html',1,'mimir::formalism']]]
+  ['edge_0',['Edge',['../classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html',1,'mimir::formalism::StaticConsistencyGraph::Edge'],['../classmimir_1_1graphs_1_1Edge.html',1,'mimir::graphs::Edge&lt; EdgeProperties &gt;']]],
+  ['edgeindexconstiterator_1',['EdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicGraph_1_1EdgeIndexConstIterator.html',1,'mimir::graphs::DynamicGraph']]],
+  ['effectbase_2',['EffectBase',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20decreasenumericaleffectimpl_2c_20dl_3a_3anumericaltag_20_3e_3',['EffectBase&lt; DecreaseNumericalEffectImpl, dl::NumericalTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20increasenumericaleffectimpl_2c_20dl_3a_3anumericaltag_20_3e_4',['EffectBase&lt; IncreaseNumericalEffectImpl, dl::NumericalTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20negativebooleaneffectimpl_2c_20dl_3a_3abooleantag_20_3e_5',['EffectBase&lt; NegativeBooleanEffectImpl, dl::BooleanTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20positivebooleaneffectimpl_2c_20dl_3a_3abooleantag_20_3e_6',['EffectBase&lt; PositiveBooleanEffectImpl, dl::BooleanTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20unchangedbooleaneffectimpl_2c_20dl_3a_3abooleantag_20_3e_7',['EffectBase&lt; UnchangedBooleanEffectImpl, dl::BooleanTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['effectbase_3c_20unchangednumericaleffectimpl_2c_20dl_3a_3anumericaltag_20_3e_8',['EffectBase&lt; UnchangedNumericalEffectImpl, dl::NumericalTag &gt;',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],
+  ['elements_5fof_9',['elements_of',['../structmimir_1_1ranges_1_1elements__of.html',1,'mimir::ranges']]],
+  ['equalnumericalconditionimpl_10',['EqualNumericalConditionImpl',['../classmimir_1_1languages_1_1general__policies_1_1EqualNumericalConditionImpl.html',1,'mimir::languages::general_policies']]],
+  ['evaluationcontext_11',['EvaluationContext',['../classmimir_1_1languages_1_1dl_1_1EvaluationContext.html',1,'mimir::languages::dl']]],
+  ['eventhandlerbase_12',['EventHandlerBase',['../classmimir_1_1search_1_1astar__eager_1_1EventHandlerBase.html',1,'mimir::search::astar_eager::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1astar__lazy_1_1EventHandlerBase.html',1,'mimir::search::astar_lazy::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1brfs_1_1EventHandlerBase.html',1,'mimir::search::brfs::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1gbfs__eager_1_1EventHandlerBase.html',1,'mimir::search::gbfs_eager::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html',1,'mimir::search::gbfs_lazy::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1iw_1_1EventHandlerBase.html',1,'mimir::search::iw::EventHandlerBase&lt; Derived_ &gt;'],['../classmimir_1_1search_1_1siw_1_1EventHandlerBase.html',1,'mimir::search::siw::EventHandlerBase&lt; Derived_ &gt;']]],
+  ['eventhandlerbase_3c_20debugeventhandlerimpl_20_3e_13',['EventHandlerBase&lt; DebugEventHandlerImpl &gt;',['../classmimir_1_1search_1_1astar__eager_1_1EventHandlerBase.html',1,'mimir::search::astar_eager']]],
+  ['eventhandlerbase_3c_20defaulteventhandlerimpl_20_3e_14',['EventHandlerBase&lt; DefaultEventHandlerImpl &gt;',['../classmimir_1_1search_1_1astar__eager_1_1EventHandlerBase.html',1,'mimir::search::astar_eager']]]
 ];

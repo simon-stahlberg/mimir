@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['goal_0',['GOAL',['../namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a735a47b3a68e39a0c0df1c20fac0f76a',1,'mimir::search']]],
-  ['grounded_1',['GROUNDED',['../classmimir_1_1search_1_1SearchContextImpl.html#a543b2cec3cfa113b8db4204e092cb77bad2cecc546e3a75787d037760f75b3399',1,'mimir::search::SearchContextImpl']]]
+  ['out_5fof_5fmemory_0',['OUT_OF_MEMORY',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8ac56ddb8056b120c9d5fee05981f219c6',1,'mimir::search']]],
+  ['out_5fof_5fstates_1',['OUT_OF_STATES',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8aebf1775a88fa60af9d6024946a43179c',1,'mimir::search']]],
+  ['out_5fof_5ftime_2',['OUT_OF_TIME',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8a7573e4840f2a7f8b1308ccd3d302e396',1,'mimir::search']]]
 ];

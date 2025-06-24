@@ -91,13 +91,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a70a5a2b934dcc6c411a9809b708dc2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ce0a970a7b71aa8ad17d9bb83196152"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a0ce0a970a7b71aa8ad17d9bb83196152">DynamicNoveltyTable</a> (size_t arity, size_t num_atoms)</td></tr>
 <tr class="separator:a0ce0a970a7b71aa8ad17d9bb83196152"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a431357dff04b59d2d90154a7b3f205fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a431357dff04b59d2d90154a7b3f205fb">compute_novel_tuples</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, std::vector&lt; <a class="el" href="namespacemimir_1_1search_1_1iw.html#a9fcc54c6fd413c59b11d99105279654e">AtomIndexList</a> &gt; &amp;out_novel_tuples)</td></tr>
+<tr class="memitem:a431357dff04b59d2d90154a7b3f205fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a431357dff04b59d2d90154a7b3f205fb">compute_novel_tuples</a> (const State &amp;state, std::vector&lt; <a class="el" href="namespacemimir_1_1search_1_1iw.html#a9fcc54c6fd413c59b11d99105279654e">AtomIndexList</a> &gt; &amp;out_novel_tuples)</td></tr>
 <tr class="separator:a431357dff04b59d2d90154a7b3f205fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae181934ca78ed46fbc0fa7a124f45df5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#ae181934ca78ed46fbc0fa7a124f45df5">insert_tuples</a> (const std::vector&lt; <a class="el" href="namespacemimir_1_1search_1_1iw.html#a9fcc54c6fd413c59b11d99105279654e">AtomIndexList</a> &gt; &amp;tuples)</td></tr>
 <tr class="separator:ae181934ca78ed46fbc0fa7a124f45df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada4b07c1f5eac345f872f34fca016712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#ada4b07c1f5eac345f872f34fca016712">test_novelty_and_update_table</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state)</td></tr>
+<tr class="memitem:ada4b07c1f5eac345f872f34fca016712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#ada4b07c1f5eac345f872f34fca016712">test_novelty_and_update_table</a> (const State &amp;state)</td></tr>
 <tr class="separator:ada4b07c1f5eac345f872f34fca016712"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a1e0f34ea191072511a46a2685a0dbf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a0a1e0f34ea191072511a46a2685a0dbf">test_novelty_and_update_table</a> (const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;state, const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;succ_state)</td></tr>
+<tr class="memitem:a0a1e0f34ea191072511a46a2685a0dbf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a0a1e0f34ea191072511a46a2685a0dbf">test_novelty_and_update_table</a> (const State &amp;state, const State &amp;succ_state)</td></tr>
 <tr class="separator:a0a1e0f34ea191072511a46a2685a0dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a803bedba0cd7884f5b72ad9f69f533fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#a803bedba0cd7884f5b72ad9f69f533fa">reset</a> ()</td></tr>
 <tr class="separator:a803bedba0cd7884f5b72ad9f69f533fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,7 +171,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void mimir::search::iw::DynamicNoveltyTable::compute_novel_tuples </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramtype">const State &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -251,7 +251,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool mimir::search::iw::DynamicNoveltyTable::test_novelty_and_update_table </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramtype">const State &amp;&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -269,13 +269,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool mimir::search::iw::DynamicNoveltyTable::test_novelty_and_update_table </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramtype">const State &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramtype">const State &amp;&#160;</td>
           <td class="paramname"><em>succ_state</em>&#160;</td>
         </tr>
         <tr>

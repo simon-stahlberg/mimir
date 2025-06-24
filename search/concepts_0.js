@@ -15,12 +15,11 @@ var searchData=
   ['isfluentorderivedtag_12',['IsFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsFluentOrDerivedTag.html',1,'mimir::formalism']]],
   ['isincidencegraph_13',['IsIncidenceGraph',['../conceptmimir_1_1graphs_1_1IsIncidenceGraph.html',1,'mimir::graphs']]],
   ['ispolarity_14',['IsPolarity',['../conceptmimir_1_1formalism_1_1IsPolarity.html',1,'mimir::formalism']]],
-  ['issearchnode_15',['IsSearchNode',['../conceptmimir_1_1search_1_1IsSearchNode.html',1,'mimir::search']]],
-  ['isstaticgraph_16',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
-  ['isstaticorfluentorauxiliarytag_17',['IsStaticOrFluentOrAuxiliaryTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrAuxiliaryTag.html',1,'mimir::formalism']]],
-  ['isstaticorfluentorderivedtag_18',['IsStaticOrFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrDerivedTag.html',1,'mimir::formalism']]],
-  ['isstaticorfluenttag_19',['IsStaticOrFluentTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentTag.html',1,'mimir::formalism']]],
-  ['isvertex_20',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
-  ['isvertexcoloredgraph_21',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
-  ['isvertexlistgraph_22',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]]
+  ['isstaticgraph_15',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
+  ['isstaticorfluentorauxiliarytag_16',['IsStaticOrFluentOrAuxiliaryTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrAuxiliaryTag.html',1,'mimir::formalism']]],
+  ['isstaticorfluentorderivedtag_17',['IsStaticOrFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrDerivedTag.html',1,'mimir::formalism']]],
+  ['isstaticorfluenttag_18',['IsStaticOrFluentTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentTag.html',1,'mimir::formalism']]],
+  ['isvertex_19',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
+  ['isvertexcoloredgraph_20',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
+  ['isvertexlistgraph_21',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dead_5fend_0',['DEAD_END',['../namespacemimir_1_1search.html#aee93020388e3debc46c5fa534b186913a649aee579aa2a69d986907571701bcce',1,'mimir::search']]]
+  ['exhausted_0',['EXHAUSTED',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8ac30a2ebffd3127f9dc4bb1cff2e29cea',1,'mimir::search']]]
 ];

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['relaxedplanninggraph_3c_20addheuristicimpl_20_3e_0',['RelaxedPlanningGraph&lt; AddHeuristicImpl &gt;',['../classmimir_1_1search_1_1AddHeuristicImpl.html#a7249f9bd34c68487dc185cd7b1e61bcc',1,'mimir::search::AddHeuristicImpl']]],
-  ['relaxedplanninggraph_3c_20ffheuristicimpl_20_3e_1',['RelaxedPlanningGraph&lt; FFHeuristicImpl &gt;',['../classmimir_1_1search_1_1FFHeuristicImpl.html#a2f975ed37626e108093d0184f38a71f5',1,'mimir::search::FFHeuristicImpl']]],
-  ['relaxedplanninggraph_3c_20maxheuristicimpl_20_3e_2',['RelaxedPlanningGraph&lt; MaxHeuristicImpl &gt;',['../classmimir_1_1search_1_1MaxHeuristicImpl.html#abe1f329be325c424cf5da70497f3f8b1',1,'mimir::search::MaxHeuristicImpl']]],
-  ['relaxedplanninggraph_3c_20setaddheuristicimpl_20_3e_3',['RelaxedPlanningGraph&lt; SetAddHeuristicImpl &gt;',['../classmimir_1_1search_1_1SetAddHeuristicImpl.html#aa3489e9d6977cc79cab86b0df0c5892d',1,'mimir::search::SetAddHeuristicImpl']]]
+  ['operator_3c_3c_0',['operator&lt;&lt;',['../classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a3a74dbd72599f661693c7c58844bd464',1,'mimir::graphs::nauty::SparseGraph']]],
+  ['operator_3d_3d_1',['operator==',['../classmimir_1_1generator_1_1iterator.html#a46409e3a5cbb7957989594994d98409c',1,'mimir::generator::iterator::operator==()'],['../classmimir_1_1generator_3_01__Ref_00_01__Value_00_01use__allocator__arg_01_4_1_1iterator.html#a46409e3a5cbb7957989594994d98409c',1,'mimir::generator&lt; _Ref, _Value, use_allocator_arg &gt;::iterator::operator==()']]]
 ];
