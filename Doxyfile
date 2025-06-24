@@ -8,7 +8,6 @@ EXTRACT_FUNCTIONS     = YES
 INLINE_FUNCTIONS      = YES
 INPUT                 = \
     "include/mimir/algorithms/kpkc.hpp" \
-    "include/mimir/algorithms/generator.hpp" \
     "include/mimir/algorithms/shared_object_pool.hpp" \
     "include/mimir/algorithms/unique_object_pool.hpp" \
     "include/mimir/common/types.hpp" \

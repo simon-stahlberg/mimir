@@ -121,12 +121,14 @@ std::ostream& operator<<(std::ostream& os, const search::State& state);
 
 namespace loki
 {
+/// @private
 template<>
 struct Hash<mimir::search::State>
 {
     size_t operator()(const mimir::search::State& el) const;
 };
 
+/// @private
 template<>
 struct EqualTo<mimir::search::State>
 {

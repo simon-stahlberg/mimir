@@ -113,12 +113,13 @@ bool PackedStateImpl::literals_hold(const Range1& positive_atoms, const Range2& 
 
 namespace loki
 {
+/// @private
 template<>
 struct Hash<mimir::search::PackedStateImpl>
 {
     size_t operator()(const mimir::search::PackedStateImpl& el) const;
 };
-
+/// @private
 template<>
 struct EqualTo<mimir::search::PackedStateImpl>
 {
