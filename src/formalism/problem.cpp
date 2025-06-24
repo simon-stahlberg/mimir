@@ -286,9 +286,9 @@ const FlatDoubleList* ProblemImpl::get_double_list(size_t pos) const
     return m_flat_double_lists[pos];
 }
 
-SharedMemoryPool<FlatBitset>& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
-SharedMemoryPool<FlatIndexList>& ProblemImpl::get_index_list_pool() { return m_index_list_pool; }
-SharedMemoryPool<FlatDoubleList>& ProblemImpl::get_double_list_pool() { return m_double_list_pool; }
+SharedObjectPool<FlatBitset>& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
+SharedObjectPool<FlatIndexList>& ProblemImpl::get_index_list_pool() { return m_index_list_pool; }
+SharedObjectPool<FlatDoubleList>& ProblemImpl::get_double_list_pool() { return m_double_list_pool; }
 
 /* Objects */
 const Object ProblemImpl::get_object(const std::string& name) const { return get_name_to_object().at(name); }

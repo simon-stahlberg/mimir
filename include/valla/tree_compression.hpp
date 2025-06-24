@@ -19,8 +19,8 @@
 #define VALLA_INCLUDE_TREE_COMPRESSION_HPP_
 
 #include "valla/declarations.hpp"
-#include "valla/details/shared_memory_pool.hpp"
-#include "valla/details/unique_memory_pool.hpp"
+#include "valla/details/shared_object_pool.hpp"
+#include "valla/details/unique_object_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 
 #include <algorithm>
@@ -170,7 +170,7 @@ struct Entry
     Entry(Index index, Index size) : m_index(index), m_size(size) {}
 };
 
-static thread_local UniqueMemoryPool<std::vector<Entry>> s_stack_pool = UniqueMemoryPool<std::vector<Entry>> {};
+static thread_local UniqueObjectPool<std::vector<Entry>> s_stack_pool = UniqueObjectPool<std::vector<Entry>> {};
 
 inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
 {
@@ -182,7 +182,7 @@ class const_iterator
 {
 private:
     const IndexedHashSet* m_tree_table;
-    UniqueMemoryPoolPtr<std::vector<Entry>> m_stack;
+    UniqueObjectPoolPtr<std::vector<Entry>> m_stack;
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);

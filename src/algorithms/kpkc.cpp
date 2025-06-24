@@ -17,7 +17,7 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 
-#include "mimir/algorithms/unique_memory_pool.hpp"
+#include "mimir/algorithms/unique_object_pool.hpp"
 #include "mimir/common/collections.hpp"
 
 #include <functional>
@@ -32,17 +32,17 @@ namespace mimir
  * Heap-managed coroutine variables.
  */
 
-static thread_local UniqueMemoryPool<std::vector<uint32_t>> s_solution_pool;
-using SolutionPtr = UniqueMemoryPoolPtr<std::vector<uint32_t>>;
+static thread_local UniqueObjectPool<std::vector<uint32_t>> s_solution_pool;
+using SolutionPtr = UniqueObjectPoolPtr<std::vector<uint32_t>>;
 
-static thread_local UniqueMemoryPool<boost::dynamic_bitset<>> s_bitset_pool;
-using BitsetUniquePtr = UniqueMemoryPoolPtr<boost::dynamic_bitset<>>;
+static thread_local UniqueObjectPool<boost::dynamic_bitset<>> s_bitset_pool;
+using BitsetUniquePtr = UniqueObjectPoolPtr<boost::dynamic_bitset<>>;
 
-static thread_local UniqueMemoryPool<std::vector<BitsetUniquePtr>> s_bitset_list_pool;
-using BitsetListUniquePtr = UniqueMemoryPoolPtr<std::vector<BitsetUniquePtr>>;
+static thread_local UniqueObjectPool<std::vector<BitsetUniquePtr>> s_bitset_list_pool;
+using BitsetListUniquePtr = UniqueObjectPoolPtr<std::vector<BitsetUniquePtr>>;
 
-static thread_local UniqueMemoryPool<std::vector<BitsetListUniquePtr>> s_bitset_list_list_pool;
-using BitsetMatrixUniquePtr = UniqueMemoryPoolPtr<std::vector<BitsetListUniquePtr>>;
+static thread_local UniqueObjectPool<std::vector<BitsetListUniquePtr>> s_bitset_list_list_pool;
+using BitsetMatrixUniquePtr = UniqueObjectPoolPtr<std::vector<BitsetListUniquePtr>>;
 
 /**
  * Recursive call

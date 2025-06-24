@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_INCLUDE_ALGORITHMS_SHARED_MEMORY_POOL_HPP_
-#define MIMIR_INCLUDE_ALGORITHMS_SHARED_MEMORY_POOL_HPP_
+#ifndef MIMIR_INCLUDE_ALGORITHMS_SHARED_OBJECT_POOL_HPP_
+#define MIMIR_INCLUDE_ALGORITHMS_SHARED_OBJECT_POOL_HPP_
 
 #include <cassert>
 #include <concepts>
@@ -29,13 +29,13 @@
 namespace mimir
 {
 template<typename T>
-class SharedMemoryPool;
+class SharedObjectPool;
 
 template<typename T>
-class SharedMemoryPoolPtr
+class SharedObjectPoolPtr
 {
 private:
-    SharedMemoryPool<T>* m_pool;
+    SharedObjectPool<T>* m_pool;
     std::pair<size_t, T>* m_object;
 
 private:
@@ -77,9 +77,9 @@ private:
     }
 
 public:
-    SharedMemoryPoolPtr() : SharedMemoryPoolPtr(nullptr, nullptr) {}
+    SharedObjectPoolPtr() : SharedObjectPoolPtr(nullptr, nullptr) {}
 
-    SharedMemoryPoolPtr(SharedMemoryPool<T>* pool, std::pair<size_t, T>* object) : m_pool(pool), m_object(object)
+    SharedObjectPoolPtr(SharedObjectPool<T>* pool, std::pair<size_t, T>* object) : m_pool(pool), m_object(object)
     {
         if (m_pool && m_object)
             inc_ref_count();
@@ -88,7 +88,7 @@ public:
     /// @brief Copy other into this through an additional allocation from the pool.
     /// Requires a user define copy operation of the data.
     /// @param other
-    SharedMemoryPoolPtr(const SharedMemoryPoolPtr& other) : SharedMemoryPoolPtr()
+    SharedObjectPoolPtr(const SharedObjectPoolPtr& other) : SharedObjectPoolPtr()
     {
         m_pool = other.m_pool;
         m_object = other.m_object;
@@ -101,7 +101,7 @@ public:
     /// Requires a user define copy operation of the data.
     /// @param other
     /// @return
-    SharedMemoryPoolPtr& operator=(const SharedMemoryPoolPtr& other)
+    SharedObjectPoolPtr& operator=(const SharedObjectPoolPtr& other)
     {
         if (this != &other)
         {
@@ -118,13 +118,13 @@ public:
     }
 
     // Movable
-    SharedMemoryPoolPtr(SharedMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
+    SharedObjectPoolPtr(SharedObjectPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
     {
         other.m_pool = nullptr;
         other.m_object = nullptr;
     }
 
-    SharedMemoryPoolPtr& operator=(SharedMemoryPoolPtr&& other) noexcept
+    SharedObjectPoolPtr& operator=(SharedObjectPoolPtr&& other) noexcept
     {
         if (this != &other)
         {
@@ -140,23 +140,23 @@ public:
         return *this;
     }
 
-    ~SharedMemoryPoolPtr()
+    ~SharedObjectPoolPtr()
     {
         if (m_pool && m_object)
             dec_ref_count();
     }
 
-    SharedMemoryPoolPtr clone() const
+    SharedObjectPoolPtr clone() const
     {
         if (m_pool && m_object)
         {
-            SharedMemoryPoolPtr pointer = m_pool->get_or_allocate();
+            SharedObjectPoolPtr pointer = m_pool->get_or_allocate();
             copy(this->operator*(), *pointer);
             return pointer;
         }
         else
         {
-            return SharedMemoryPoolPtr();
+            return SharedObjectPoolPtr();
         }
     }
 
@@ -182,7 +182,7 @@ public:
 };
 
 template<typename T>
-class SharedMemoryPool
+class SharedObjectPool
 {
 private:
     using Entry = std::pair<size_t, T>;
@@ -199,20 +199,20 @@ private:
 
     void free(Entry* element) { m_stack.push(element); }
 
-    friend class SharedMemoryPoolPtr<T>;
+    friend class SharedObjectPoolPtr<T>;
 
 public:
     // Non-copyable to prevent dangling memory pool pointers.
-    SharedMemoryPool() = default;
-    SharedMemoryPool(const SharedMemoryPool& other) = delete;
-    SharedMemoryPool& operator=(const SharedMemoryPool& other) = delete;
-    SharedMemoryPool(SharedMemoryPool&& other) = delete;
-    SharedMemoryPool& operator=(SharedMemoryPool&& other) = delete;
+    SharedObjectPool() = default;
+    SharedObjectPool(const SharedObjectPool& other) = delete;
+    SharedObjectPool& operator=(const SharedObjectPool& other) = delete;
+    SharedObjectPool(SharedObjectPool&& other) = delete;
+    SharedObjectPool& operator=(SharedObjectPool&& other) = delete;
 
-    [[nodiscard]] SharedMemoryPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
+    [[nodiscard]] SharedObjectPoolPtr<T> get_or_allocate() { return get_or_allocate<>(); }
 
     template<typename... Args>
-    [[nodiscard]] SharedMemoryPoolPtr<T> get_or_allocate(Args&&... args)
+    [[nodiscard]] SharedObjectPoolPtr<T> get_or_allocate(Args&&... args)
     {
         if (m_stack.empty())
         {
@@ -220,7 +220,7 @@ public:
         }
         Entry* element = m_stack.top();
         m_stack.pop();
-        return SharedMemoryPoolPtr<T>(this, element);
+        return SharedObjectPoolPtr<T>(this, element);
     }
 
     [[nodiscard]] size_t get_size() const { return m_storage.size(); }
