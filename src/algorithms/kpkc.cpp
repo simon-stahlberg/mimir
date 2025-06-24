@@ -95,7 +95,7 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
         }
         else
         {
-            assert(partial_solution->size() - 1 == depth);
+            assert(partial_solution.size() - 1 == depth);
 
             // Update compatible vertices for the next recursion
             assert(is_within_bounds(k_compatible_vertices, depth + 1));
@@ -106,7 +106,7 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
                 assert(is_within_bounds(compatible_vertices, partition));
                 auto& partition_compatible_vertices_next = *compatible_vertices_next[partition];
                 auto& partition_compatible_vertices = *compatible_vertices[partition];
-                assert(partition_compatible_vertices_next == partition_compatible_vertices.size());
+                assert(partition_compatible_vertices_next.size() == partition_compatible_vertices.size());
                 partition_compatible_vertices_next = partition_compatible_vertices;  // copy bitsets from current to next iteration
             }
 
@@ -120,7 +120,7 @@ mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_g
                 {
                     for (uint32_t index = 0; index < partition_size; ++index)
                     {
-                        assert(is_within_bounds(*compatible_vertices_next, partition));
+                        assert(is_within_bounds(compatible_vertices_next, partition));
                         partition_compatible_vertices_next[index] &= adjacency_matrix[vertex][index + offset];
                     }
                 }
