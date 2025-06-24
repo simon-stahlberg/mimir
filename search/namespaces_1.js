@@ -28,11 +28,10 @@ var searchData=
   ['mimir_25',['mimir',['../namespacemimir.html',1,'']]],
   ['nauty_26',['nauty',['../namespacemimir_1_1graphs_1_1nauty.html',1,'mimir::graphs']]],
   ['policy_5fsketches_27',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
-  ['ranges_28',['ranges',['../namespacemimir_1_1ranges.html',1,'mimir']]],
-  ['rpg_29',['rpg',['../namespacemimir_1_1search_1_1rpg.html',1,'mimir::search']]],
-  ['satisficing_5fbinding_5fgenerator_30',['satisficing_binding_generator',['../namespacemimir_1_1search_1_1satisficing__binding__generator.html',1,'mimir::search']]],
-  ['search_31',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
-  ['siw_32',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]],
-  ['state_5fspace_33',['state_space',['../namespacemimir_1_1datasets_1_1state__space.html',1,'mimir::datasets']]],
-  ['tuple_5fgraph_34',['tuple_graph',['../namespacemimir_1_1datasets_1_1tuple__graph.html',1,'mimir::datasets']]]
+  ['rpg_28',['rpg',['../namespacemimir_1_1search_1_1rpg.html',1,'mimir::search']]],
+  ['satisficing_5fbinding_5fgenerator_29',['satisficing_binding_generator',['../namespacemimir_1_1search_1_1satisficing__binding__generator.html',1,'mimir::search']]],
+  ['search_30',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
+  ['siw_31',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]],
+  ['state_5fspace_32',['state_space',['../namespacemimir_1_1datasets_1_1state__space.html',1,'mimir::datasets']]],
+  ['tuple_5fgraph_33',['tuple_graph',['../namespacemimir_1_1datasets_1_1tuple__graph.html',1,'mimir::datasets']]]
 ];

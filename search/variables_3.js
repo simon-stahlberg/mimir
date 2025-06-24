@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['data_0',['data',['../structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html#ac18308cb0eec8d0554ef7eaeb00ac83a',1,'mimir::graphs::kfwl::IsomorphismTypeCompressionFunction::data()'],['../structmimir_1_1search_1_1PreferredActions.html#ae20d77aa363cfbf3a6f2df05005e7689',1,'mimir::search::PreferredActions::data()']]],
-  ['decrease_5fnumerical_5feffect_1',['decrease_numerical_effect',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a50bf2f7ebf6f524b325b5966e526ccf4',1,'mimir::languages::general_policies::keywords']]]
+  ['enable_5fdominance_5fpruning_0',['enable_dominance_pruning',['../structmimir_1_1datasets_1_1tuple__graph_1_1Options.html#a6c75bd9a180ccbeb649754d9e9f84318',1,'mimir::datasets::tuple_graph::Options']]],
+  ['enable_5fdump_5fdot_5ffile_1',['enable_dump_dot_file',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a0ab05bce8b6f1f738911a493ea70ec40',1,'mimir::search::match_tree::Options']]],
+  ['equal_5fnumerical_5fcondition_2',['equal_numerical_condition',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a9ae671f063502b4feebb72f85655f7be',1,'mimir::languages::general_policies::keywords']]],
+  ['event_5fhandler_3',['event_handler',['../structmimir_1_1search_1_1astar__lazy_1_1Options.html#abc396200ad15c3209c582c9f1ecad098',1,'mimir::search::astar_lazy::Options::event_handler()'],['../structmimir_1_1search_1_1astar__eager_1_1Options.html#af926dc34fc28f49fcbeb589bb2d4afb2',1,'mimir::search::astar_eager::Options::event_handler()'],['../structmimir_1_1search_1_1brfs_1_1Options.html#a53330da9314cce0860446690056492ec',1,'mimir::search::brfs::Options::event_handler()'],['../structmimir_1_1search_1_1gbfs__lazy_1_1Options.html#acae438654539af4d61b51c0e5e558ecd',1,'mimir::search::gbfs_lazy::Options::event_handler()'],['../structmimir_1_1search_1_1gbfs__eager_1_1Options.html#aef7f9813b7b8c034ef49ed10f9453a05',1,'mimir::search::gbfs_eager::Options::event_handler()']]],
+  ['exploration_5fstrategy_4',['exploration_strategy',['../structmimir_1_1search_1_1gbfs__lazy_1_1Options.html#a71afb50520e8e273236d7a6b83a324bd',1,'mimir::search::gbfs_lazy::Options']]]
 ];
