@@ -1,0 +1,130 @@
+#! /usr/bin/env python
+
+from lab.experiment import Experiment
+from downward.reports.absolute import AbsoluteReport
+from downward.reports.scatter import ScatterPlotReport
+
+# Create custom report class with suitable info and error attributes.
+class BaseReport(AbsoluteReport):
+    INFO_ATTRIBUTES = ["time_limit", "memory_limit"]
+    ERROR_ATTRIBUTES = [
+        "domain",
+        "problem",
+        "algorithm",
+        "unexplained_errors",
+        "error",
+        "node",
+    ]
+
+ATTRIBUTES = [
+    "run_dir",
+    "coverage",
+    "unsolvable",
+    "out_of_memory",
+    "out_of_time",
+    "search_time",
+    "total_time",
+    "num_generated",
+    "num_expanded",
+    "num_expanded_until_last_f_layer",
+    "num_generated_until_last_f_layer",
+    "num_pruned_until_last_f_layer",
+
+    "num_reachable_fluent_atoms",
+    "num_reachable_derived_atoms",
+
+    "memory_in_bytes_for_nodes",
+    "memory_in_bytes_per_node",
+    "memory_in_bytes_for_problem",
+    "total_memory_in_bytes",
+    "peak_memory_usage_in_bytes",
+
+    "score_peak_memory_usage_in_bytes",
+
+    "num_of_states",
+    "num_of_nodes",
+    "num_of_actions",
+    "num_of_axioms",
+
+    "num_slots",
+    "average_num_fluent_state_atoms",
+    "average_num_derived_state_atoms",
+    "average_num_state_atoms",
+    "average_num_slots_per_state",
+
+    "initial_h_value",
+
+    "cost",
+    "length",
+    "invalid_plan_reported",
+]
+
+
+exp = Experiment("combined-astar-blind-30")
+
+def rename_algorithm_lhs(properties):
+    """Rename algorithm dynamically during fetching."""
+    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
+        properties["algorithm"] = "list-grounded-astar-eager-blind"
+        properties["id"][0] = "list-grounded-astar-eager-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
+        properties["algorithm"] = "list-grounded-astar-lazy-blind"
+        properties["id"][0] = "list-grounded-astar-lazy-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
+        properties["algorithm"] = "list-lifted-astar-eager-blind"
+        properties["id"][0] = "list-lifted-astar-eager-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
+        properties["algorithm"] = "list-lifted-astar-lazy-blind"
+        properties["id"][0] = "list-lifted-astar-lazy-blind"
+    return properties
+
+def rename_algorithm_rhs(properties):
+    """Rename algorithm dynamically during fetching."""
+    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
+        properties["algorithm"] = "tree-grounded-astar-eager-blind"
+        properties["id"][0] = "tree-grounded-astar-eager-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
+        properties["algorithm"] = "tree-grounded-astar-lazy-blind"
+        properties["id"][0] = "tree-grounded-astar-lazy-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
+        properties["algorithm"] = "tree-lifted-astar-eager-blind"
+        properties["id"][0] = "tree-lifted-astar-eager-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
+        properties["algorithm"] = "tree-lifted-astar-lazy-blind"
+        properties["id"][0] = "tree-lifted-astar-lazy-blind"
+    return properties
+
+exp.add_fetcher("baseline/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="list-fetch-beluga-scalability-deterministic", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="tree-fetch-beluga-scalability-deterministic", filter=rename_algorithm_rhs)
+exp.add_fetcher("baseline/2025-05-06-astar30-pushworld-eval", name="list-fetch-pushworld", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-pushworld-eval", name="tree-fetch-pushworld", filter=rename_algorithm_rhs)
+exp.add_fetcher("baseline/2025-05-06-astar30-minepddl-eval", name="list-fetch-minepddl", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-minepddl-eval", name="tree-fetch-minepddl", filter=rename_algorithm_rhs)
+exp.add_fetcher("baseline/2025-05-06-astar30-ipc-optimal-strips-eval", name="list-fetch-ipc-optimal-strips", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-ipc-optimal-strips-eval", name="tree-fetch-ipc-optimal-strips", filter=rename_algorithm_rhs)
+exp.add_fetcher("baseline/2025-05-06-astar30-ipc-optimal-adl-eval", name="list-fetch-ipc-optimal-adl", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-ipc-optimal-adl-eval", name="tree-fetch-ipc-optimal-adl", filter=rename_algorithm_rhs)
+exp.add_fetcher("baseline/2025-05-06-astar30-htg-eval", name="list-fetch-htg", filter=rename_algorithm_lhs)
+exp.add_fetcher("tree-compression/2025-05-06-astar30-htg-eval", name="tree-fetch-htg", filter=rename_algorithm_rhs)
+
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"]))
+
+exp.add_report(
+    ScatterPlotReport(
+        attributes=["peak_memory_usage_in_bytes"],
+        filter_algorithm=["list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"],
+        format="png",  # Use "tex" for pgfplots output.
+    ),
+    name="scatterplot-peak-memory-usage-in-bytes",
+)
+
+exp.add_report(
+    ScatterPlotReport(
+        attributes=["total_time"],
+        filter_algorithm=["list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"],
+        format="png",  # Use "tex" for pgfplots output.
+    ),
+    name="scatterplot-total-time",
+)
+
+exp.run_steps()
