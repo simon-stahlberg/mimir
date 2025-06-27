@@ -40,7 +40,7 @@ namespace valla::delta
 
 using RootSlotType = Slot;
 
-inline Slot get_empty_root_slot() { return Slot(0); }
+constexpr inline Slot get_empty_root_slot() { return EMPTY_ROOT_SLOT; }
 
 /**
  * Insert recursively
@@ -71,7 +71,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
         Index left_delta = i1 - prev;
         Index right_delta = i2 - i1;
         prev = i2;
-        return tree_table.insert(make_slot(left_delta, right_delta)).first->second;
+        return tree_table.insert(Slot(left_delta, right_delta)).first->second;
     }
 
     /* Divide */
@@ -82,7 +82,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
     const auto i1 = insert_recursively(it, mid_it, mid, tree_table, prev);
     const auto i2 = insert_recursively(mid_it, end, size - mid, tree_table, prev);
 
-    return tree_table.insert(make_slot(i1, i2)).first->second;
+    return tree_table.insert(Slot(i1, i2)).first->second;
 }
 
 /// @brief Inserts the elements from the given `state` into the `tree_table`.
@@ -97,13 +97,13 @@ auto insert(const Range& state, IndexedHashSet& tree_table)
     assert(std::is_sorted(state.begin(), state.end()));
 
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
-    const auto size = static_cast<size_t>(std::distance(state.begin(), state.end()));
+    const auto size = static_cast<Index>(std::distance(state.begin(), state.end()));
 
     if (size == 0)                     ///< Special case for empty state.
         return get_empty_root_slot();  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
     auto prev = Index(0);
-    return make_slot(insert_recursively(state.begin(), state.end(), size, tree_table, prev), size);
+    return Slot(insert_recursively(state.begin(), state.end(), size, tree_table, prev), size);
 }
 
 /**
@@ -124,13 +124,13 @@ inline void read_state_recursively(Index index, size_t size, const IndexedHashSe
         return;
     }
 
-    const auto [i1, i2] = read_slot(tree_table[index]);
+    const auto slot = tree_table[index];
 
     /* Base case */
     if (size == 2)
     {
-        ref_state.push_back(prev += i1);
-        ref_state.push_back(prev += i2);
+        ref_state.push_back(prev += slot.i1);
+        ref_state.push_back(prev += slot.i2);
         return;
     }
 
@@ -138,8 +138,8 @@ inline void read_state_recursively(Index index, size_t size, const IndexedHashSe
     const auto mid = std::bit_floor(size - 1);
 
     /* Conquer */
-    read_state_recursively(i1, mid, tree_table, ref_state, prev);
-    read_state_recursively(i2, size - mid, tree_table, ref_state, prev);
+    read_state_recursively(slot.i1, mid, tree_table, ref_state, prev);
+    read_state_recursively(slot.i2, size - mid, tree_table, ref_state, prev);
 }
 
 /// @brief Read the `out_state` from the given `tree_index` from the `tree_table`.
@@ -166,9 +166,7 @@ inline void read_state(Index tree_index, size_t size, const IndexedHashSet& tree
 inline void read_state(Slot root_slot, const IndexedHashSet& tree_table, IndexList& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
-    const auto [tree_index, size] = read_slot(root_slot);
-
-    read_state(tree_index, size, tree_table, out_state);
+    read_state(root_slot.i1, root_slot.i2, tree_table, out_state);
 }
 
 /**
@@ -219,13 +217,13 @@ private:
                 return;
             }
 
-            const auto [i1, i2] = read_slot(tree_table()[entry.m_index]);
+            const auto slot = tree_table()[entry.m_index];
 
             Index mid = std::bit_floor(entry.m_size - 1);
 
             // Emplace i2 first to ensure i1 is visited first in dfs.
-            m_stack->emplace_back(i2, entry.m_size - mid);
-            m_stack->emplace_back(i1, mid);
+            m_stack->emplace_back(slot.i2, entry.m_size - mid);
+            m_stack->emplace_back(slot.i1, mid);
         }
 
         m_value = END_POS;
@@ -260,11 +258,10 @@ public:
             m_stack = s_stack_pool.get_or_allocate();
             m_stack->clear();
 
-            const auto [tree_idx, size] = read_slot(root);
-            if (size > 0)  ///< Push to stack only if there leafs
+            if (root.i2 > 0)  ///< Push to stack only if there leafs
             {
                 m_value = Index(0);
-                m_stack->emplace_back(tree_idx, size);
+                m_stack->emplace_back(root.i1, root.i2);
                 advance();
             }
         }

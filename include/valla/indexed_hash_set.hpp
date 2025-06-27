@@ -57,8 +57,10 @@ public:
     size_t size() const { return m_index_to_slot.size(); }
 
 private:
-    absl::flat_hash_map<Slot, Index> m_slot_to_index;
+    absl::flat_hash_map<Slot, Index, SlotHash> m_slot_to_index;
     std::vector<Slot> m_index_to_slot;
+
+    static_assert(sizeof(absl::flat_hash_map<Slot, Index, SlotHash>::value_type) == 12);
 };
 
 }

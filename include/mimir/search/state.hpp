@@ -138,6 +138,8 @@ namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
 
+static_assert(sizeof(PackedStateImplMap::value_type) == 16);
+
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;
 using StatePair = std::pair<State, State>;
