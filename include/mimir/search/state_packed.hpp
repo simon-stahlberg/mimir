@@ -39,10 +39,8 @@ namespace v = valla::plain;
 class PackedStateImpl
 {
 private:
-    Index m_fluent_atoms_index;
-    Index m_fluent_atoms_size;
-    Index m_derived_atoms_index;
-    Index m_derived_atoms_size;
+    v::RootSlotType m_fluent_atoms;
+    v::RootSlotType m_derived_atoms;
     Index m_numeric_variables;
 
     PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
@@ -131,6 +129,8 @@ struct EqualTo<mimir::search::PackedStateImpl>
 namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
+
+static_assert(sizeof(PackedStateImplMap::value_type) == 24);
 }
 
 #endif

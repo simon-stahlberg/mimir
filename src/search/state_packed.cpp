@@ -23,10 +23,8 @@ namespace mimir::search
 {
 
 PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
-    m_fluent_atoms_index(valla::first(fluent_atoms)),
-    m_fluent_atoms_size(valla::second(fluent_atoms)),
-    m_derived_atoms_index(valla::first(derived_atoms)),
-    m_derived_atoms_size(valla::second(derived_atoms)),
+    m_fluent_atoms(fluent_atoms),
+    m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
 {
 }
@@ -36,11 +34,11 @@ v::RootSlotType PackedStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, FluentTag>)
     {
-        return valla::make_slot(m_fluent_atoms_index, m_fluent_atoms_size);
+        return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        return valla::make_slot(m_derived_atoms_index, m_derived_atoms_size);
+        return m_derived_atoms;
     }
     else
     {
