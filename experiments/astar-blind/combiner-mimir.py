@@ -109,22 +109,4 @@ exp.add_fetcher("tree-compression/2025-05-06-astar30-htg-eval", name="tree-fetch
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"]))
 
-exp.add_report(
-    ScatterPlotReport(
-        attributes=["peak_memory_usage_in_bytes"],
-        filter_algorithm=["list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"],
-        format="png",  # Use "tex" for pgfplots output.
-    ),
-    name="scatterplot-peak-memory-usage-in-bytes",
-)
-
-exp.add_report(
-    ScatterPlotReport(
-        attributes=["total_time"],
-        filter_algorithm=["list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"],
-        format="png",  # Use "tex" for pgfplots output.
-    ),
-    name="scatterplot-total-time",
-)
-
 exp.run_steps()

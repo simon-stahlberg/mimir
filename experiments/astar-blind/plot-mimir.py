@@ -4,7 +4,7 @@ from lab.experiment import Experiment
 from downward.reports.scatter import ScatterPlotReport
 
 
-exp = Experiment("filtered-astar-blind-30")
+exp = Experiment("plot-astar-blind-30")
 
 exp.add_fetcher("filtered-astar-blind-30-eval", name="fetch")
 

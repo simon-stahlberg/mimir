@@ -25,15 +25,13 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
+#include <absl/container/node_hash_map.h>
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
-namespace v = valla::plain;
 
 /// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
 class PackedStateImpl
