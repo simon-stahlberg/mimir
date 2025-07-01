@@ -35,6 +35,28 @@
 namespace valla
 {
 
+/**
+ * Hashing
+ */
+
+/* Source: https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp */
+inline uint64_t fmix64(uint64_t k)
+{
+    k ^= k >> 33;
+    k *= 0xff51afd7ed558ccd;
+    k ^= k >> 33;
+    k *= 0xc4ceb9fe1a85ec53;
+    k ^= k >> 33;
+
+    return k;
+}
+
+template<typename Container>
+inline bool is_within_bounds(const Container& container, size_t index)
+{
+    return index < container.size();
+}
+
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
 
 /**
@@ -46,9 +68,16 @@ struct Slot
     Index i1;
     Index i2;
 
+    constexpr Slot() : i1(0), i2(0) {}
     constexpr Slot(Index i1, Index i2) : i1(i1), i2(i2) {}
 
     constexpr friend bool operator==(const Slot& lhs, const Slot& rhs) { return lhs.i1 == rhs.i1 && lhs.i2 == rhs.i2; }
+
+    template<typename H>
+    friend H AbslHashValue(H h, const Slot& s)
+    {
+        return H::combine(std::move(h), s.i1, s.i2);
+    }
 };
 
 static_assert(alignof(Slot) == 4);
@@ -71,22 +100,6 @@ inline std::ostream& operator<<(std::ostream& out, const IndexList& state)
     out << "]";
 
     return out;
-}
-
-/**
- * Hashing
- */
-
-/* Source: https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp */
-inline uint64_t fmix64(uint64_t k)
-{
-    k ^= k >> 33;
-    k *= 0xff51afd7ed558ccd;
-    k ^= k >> 33;
-    k *= 0xc4ceb9fe1a85ec53;
-    k ^= k >> 33;
-
-    return k;
 }
 
 struct SlotHash

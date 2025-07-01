@@ -87,7 +87,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_index_lists(),
     m_flat_double_list_map(),
     m_flat_double_lists(),
-    m_tree_table(),
+    m_tree_database(),
     m_bitset_pool(),
     m_index_list_pool(),
     m_double_list_pool()
@@ -166,6 +166,9 @@ ProblemImpl::ProblemImpl(Index index,
      */
 
     m_details = problem::Details(*this);
+
+    auto empty_list = IndexList {};
+    m_empty_slot = m_tree_database.insert(empty_list);
 }
 
 Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
@@ -246,8 +249,9 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
  * Additional members
  */
 
-valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
-const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
+TreeDatabase& ProblemImpl::get_tree_database() { return m_tree_database; }
+const TreeDatabase& ProblemImpl::get_tree_database() const { return m_tree_database; }
+Index ProblemImpl::get_empty_slot() const { return m_empty_slot; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {

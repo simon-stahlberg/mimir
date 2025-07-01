@@ -86,7 +86,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
                                                                           const FlatDoubleList& fluent_numeric_variables)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
-    auto& tree_table = problem.get_tree_table();
+    auto& tree_database = problem.get_tree_database();
 
     /* Dense state */
     auto unpacked_state = m_unpacked_state_pool.get_or_allocate(problem);
@@ -96,8 +96,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_derived_atoms.unset_all();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_fluent_atoms_slot = problem.get_empty_slot();
+    auto state_derived_atoms_slot = problem.get_empty_slot();
     auto state_numeric_variables = m_empty_double_list;
 
     /* 2. Construct non-extended state */
@@ -113,7 +113,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = tree_database.insert(dense_fluent_atoms);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -136,7 +136,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = valla::plain::insert(dense_derived_atoms, tree_table);
+            state_derived_atoms_slot = tree_database.insert(dense_derived_atoms);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -271,7 +271,7 @@ static void apply_action_effects(GroundAction action,
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(const State& state, GroundAction action, ContinuousCost state_metric_value)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
-    auto& tree_table = problem.get_tree_table();
+    auto& tree_database = problem.get_tree_database();
 
     /* Dense state*/
     auto unpacked_state = m_unpacked_state_pool.get_or_allocate(problem);
@@ -285,8 +285,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
+    auto state_fluent_atoms_slot = problem.get_empty_slot();
+    auto state_derived_atoms_slot = problem.get_empty_slot();
     auto state_numeric_variables = m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
@@ -303,7 +303,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = tree_database.insert(dense_fluent_atoms);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -330,7 +330,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table);
+            state_derived_atoms_slot = tree_database.insert(dense_derived_atoms);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }

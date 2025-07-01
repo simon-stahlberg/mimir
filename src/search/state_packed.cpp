@@ -22,7 +22,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
+PackedStateImpl::PackedStateImpl(Index fluent_atoms, Index derived_atoms, Index numeric_variables) :
     m_fluent_atoms(fluent_atoms),
     m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
@@ -30,7 +30,7 @@ PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType d
 }
 
 template<IsFluentOrDerivedTag P>
-v::RootSlotType PackedStateImpl::get_atoms() const
+Index PackedStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, FluentTag>)
     {
@@ -46,8 +46,8 @@ v::RootSlotType PackedStateImpl::get_atoms() const
     }
 }
 
-template v::RootSlotType PackedStateImpl::get_atoms<FluentTag>() const;
-template v::RootSlotType PackedStateImpl::get_atoms<DerivedTag>() const;
+template Index PackedStateImpl::get_atoms<FluentTag>() const;
+template Index PackedStateImpl::get_atoms<DerivedTag>() const;
 
 Index PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
@@ -82,7 +82,7 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::SlotHash {}(el.get_atoms<FluentTag>()), el.get_numeric_variables());
+    return loki::hash_combine(el.get_atoms<FluentTag>(), el.get_numeric_variables());
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
