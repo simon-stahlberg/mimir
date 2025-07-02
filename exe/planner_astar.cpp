@@ -200,6 +200,7 @@ int main(int argc, char** argv)
 
     std::cout << "Average number of slots per state: " << static_cast<double>(problem->get_tree_database().size()) / state_repository->get_state_count()
               << std::endl;
+    std::cout << "Final load factor: " << problem->get_tree_database().load_factor() << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {
