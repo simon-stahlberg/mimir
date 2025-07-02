@@ -80,15 +80,6 @@ static_assert(alignof(Slot) == 4);
 
 static constexpr const Slot EMPTY_ROOT_SLOT = Slot(Index(0), Index(0));  ///< represents the empty state.
 
-using RawSlot = uint64_t;
-
-/// @brief Pack two uint32_t into a uint64_t.
-inline RawSlot make_slot(Index lhs, Index rhs) { return RawSlot(lhs) << 32 | rhs; }
-
-inline Index first(RawSlot slot) { return Index(slot >> 32); }
-
-inline Index second(RawSlot slot) { return Index(slot) & (Index(-1)); }
-
 using IndexList = std::vector<Index>;
 
 /**
@@ -139,11 +130,6 @@ inline uint64_t fmix64(uint64_t k)
 struct SlotHash
 {
     size_t operator()(Slot el) const { return fmix64((uint64_t(el.i1) << 32) | el.i2); }
-};
-
-struct RawSlotHash
-{
-    size_t operator()(RawSlot el) const { return fmix64(el); }
 };
 
 }
