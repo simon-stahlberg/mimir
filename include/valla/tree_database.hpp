@@ -25,6 +25,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <immintrin.h>  // for SSE2, AVX2, etc.
 #include <vector>
 
 namespace valla::tdb
@@ -85,22 +86,27 @@ static thread_local UniqueObjectPool<std::vector<Entry>> s_stack_pool = UniqueOb
  * So the stored quotient fits in 49 bits. This is a ~24% reduction from 64 bits,
  * and storage shrinks further as m increases (i.e., as the table grows).
  */
-template<typename Hash = std::hash<Slot>, typename EqualTo = std::equal_to<Slot>, size_t BucketSize = 8>
+template<typename Hash = std::hash<Slot>, typename EqualTo = std::equal_to<Slot>, size_t InitialCapacity = 1024>
 class TreeDatabase
 {
 private:
-    static_assert(BucketSize != 0 && (BucketSize & (BucketSize - 1)) == 0 && "BucketSize must be a power of two.");
-    static_assert(BucketSize <= 128 && "Bucket size must fit into uint8_t");
+    static_assert(InitialCapacity % 16 == 0, "InitialCapacity must be a multiple of 16.");
 
     static constexpr Index INDEX_SENTINEL = std::numeric_limits<Index>::max();  ///< used to indicate insertion failure to trigger a rehash.
 
-    static constexpr double MAX_LOAD_FACTOR = 0.7;
+    static constexpr double MAX_LOAD_FACTOR = static_cast<double>(7) / 8;
+
+    enum class ctrl_t : int8_t
+    {
+        kEmpty = -128,   // 0b10000000
+        kDeleted = -2,   // 0b11111110
+        kSentinel = -1,  // 0b11111111
+    };
 
     IndexedHashSet m_roots;
 
-    std::vector<Slot> m_bucket_data;
-    std::vector<uint8_t> m_bucket_sizes;
-    size_t m_num_buckets;
+    std::vector<Slot> m_slots;
+    std::vector<ctrl_t> m_controls;
     size_t m_size;
     size_t m_capacity;
 
@@ -112,71 +118,69 @@ private:
         size_t m_num_rehashes = 0;
         size_t m_max_num_subsequent_rehashes = 1;
         std::chrono::milliseconds m_total_rehash_time = std::chrono::milliseconds::zero();
+        size_t m_num_probes = 0;
+        size_t m_sum_probe_lengths = 0;
     };
 
     Statistics m_statistics;
 
     struct RehashData
     {
-        size_t num_buckets;
         size_t capacity;
         IndexedHashSet roots;
-        std::vector<Slot> bucket_data;
-        std::vector<uint8_t> bucket_sizes;
+        std::vector<Slot> slots;
+        std::vector<ctrl_t> controls;
 
-        RehashData(size_t num_buckets, size_t capacity) :
-            num_buckets(num_buckets),
-            capacity(capacity),
-            roots(),
-            bucket_data(capacity),
-            bucket_sizes(num_buckets, 0)
-        {
-        }
+        explicit RehashData(size_t capacity) : capacity(capacity), roots(), slots(capacity), controls(capacity, ctrl_t::kEmpty) {}
     };
+
+    alignas(16) inline static const __m128i kEmptyPattern = _mm_set1_epi8(static_cast<int8_t>(ctrl_t::kEmpty));
 
     Index insert(Slot slot, RehashData& tmp)
     {
-        // The Power of Two Choices in Randomized Load Balancing:
-        // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
         size_t h = m_hash(slot);
-        size_t h1 = h % tmp.num_buckets;
-        size_t h2 = std::rotl(h, 23) % tmp.num_buckets;
-        size_t offset1 = BucketSize * h1;
-        size_t offset2 = BucketSize * h2;
+        size_t mask = (tmp.capacity - 1);
+        size_t i = h & mask;
+        ctrl_t ctrl = static_cast<ctrl_t>(h >> 57);
 
-        for (size_t i = 0; i < tmp.bucket_sizes[h1]; ++i)
+        while (true)
         {
-            Index unstable_index = offset1 + i;
+            // Load 16 control bytes
+            __m128i ctrl_block = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&tmp.controls[i]));
 
-            if (m_equal_to(tmp.bucket_data[unstable_index], slot))
-                return unstable_index;
+            // Compare with kEmpty
+            __m128i cmp = _mm_cmpeq_epi8(ctrl_block, kEmptyPattern);
+
+            // Create bitmask from comparison
+            int mask16 = _mm_movemask_epi8(cmp);
+
+            // First: check all 16 for equality
+            for (int offset = 0; offset < 16; ++offset)
+            {
+                size_t idx = (i + offset) & mask;
+                if (m_equal_to(tmp.slots[idx], slot))
+                {
+                    m_statistics.m_sum_probe_lengths += offset;
+                    return idx;
+                }
+            }
+
+            // Second: insert into first empty slot if found
+            if (mask16 != 0)
+            {
+                int offset = __builtin_ctz(mask16);
+                size_t idx = (i + offset) & mask;
+                tmp.slots[idx] = slot;
+                tmp.controls[idx] = ctrl;
+                ++m_statistics.m_num_probes;
+                m_statistics.m_sum_probe_lengths += offset;
+                return idx;
+            }
+
+            // Else probe further
+            i = (i + 16) & mask;
+            m_statistics.m_sum_probe_lengths += 16;
         }
-
-        for (size_t i = 0; i < tmp.bucket_sizes[h2]; ++i)
-        {
-            Index unstable_index = offset2 + i;
-
-            if (m_equal_to(tmp.bucket_data[unstable_index], slot))
-                return unstable_index;
-        }
-
-        if (tmp.bucket_sizes[h1] > tmp.bucket_sizes[h2])
-        {
-            std::swap(h1, h2);
-            std::swap(offset1, offset2);
-        }
-
-        if (tmp.bucket_sizes[h1] == BucketSize)
-        {
-            assert(tmp.bucket_sizes[h2] == BucketSize);
-            return INDEX_SENTINEL;
-        }
-
-        Index unstable_index = offset1 + tmp.bucket_sizes[h1]++;
-
-        tmp.bucket_data[unstable_index] = slot;
-
-        return unstable_index;
     }
 
     Index rehash_recursively(Index unstable_index, size_t size, RehashData& tmp)
@@ -187,7 +191,7 @@ private:
 
         /* Note: caching relocation is expensive to cache because the tree structure depends on size. */
 
-        const auto& slot = m_bucket_data[unstable_index];
+        const auto& slot = m_slots[unstable_index];
 
         /* Base case 3: rellocate slot */
         if (size == 2)
@@ -223,11 +227,10 @@ private:
             ++num_subsequent_rehashes;
             ++m_statistics.m_num_rehashes;
 
-            std::cout << "Start rehash with load factor: " << load_factor() << std::endl;
-            size_t new_num_buckets = factor * m_num_buckets;
+            // std::cout << "Start rehash with load factor: " << load_factor() << std::endl;
             size_t new_capacity = factor * m_capacity;
 
-            auto tmp = RehashData(new_num_buckets, new_capacity);
+            auto tmp = RehashData(new_capacity);
 
             bool rehash_success = true;
 
@@ -257,65 +260,66 @@ private:
             }
             m_statistics.m_max_num_subsequent_rehashes = std::max(m_statistics.m_max_num_subsequent_rehashes, num_subsequent_rehashes);
 
-            m_num_buckets = new_num_buckets;
             m_capacity = new_capacity;
             std::swap(m_roots, tmp.roots);
-            std::swap(m_bucket_data, tmp.bucket_data);
-            std::swap(m_bucket_sizes, tmp.bucket_sizes);
+            std::swap(m_slots, tmp.slots);
+            std::swap(m_controls, tmp.controls);
             auto end = clock::now();
             m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            std::cout << "Finish rehash with load factor: " << load_factor() << std::endl;
+            // std::cout << "Finish rehash with load factor: " << load_factor() << std::endl;
             return;
         }
     }
 
     Index insert(Slot slot)
     {
-        // if (load_factor() >= MAX_LOAD_FACTOR)
-        //     return INDEX_SENTINEL;
-
-        // The Power of Two Choices in Randomized Load Balancing:
-        // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
-        size_t h = m_hash(slot);
-        size_t h1 = h % m_num_buckets;
-        size_t h2 = std::rotl(h, 23) % m_num_buckets;
-        size_t offset1 = BucketSize * h1;
-        size_t offset2 = BucketSize * h2;
-
-        for (size_t i = 0; i < m_bucket_sizes[h1]; ++i)
-        {
-            Index unstable_index = offset1 + i;
-
-            if (m_equal_to(m_bucket_data[unstable_index], slot))
-                return unstable_index;
-        }
-
-        for (size_t i = 0; i < m_bucket_sizes[h2]; ++i)
-        {
-            Index unstable_index = offset2 + i;
-
-            if (m_equal_to(m_bucket_data[unstable_index], slot))
-                return unstable_index;
-        }
-
-        if (m_bucket_sizes[h1] > m_bucket_sizes[h2])
-        {
-            std::swap(h1, h2);
-            std::swap(offset1, offset2);
-        }
-
-        if (m_bucket_sizes[h1] == BucketSize)
-        {
-            assert(m_bucket_sizes[h2] == BucketSize);
+        if (load_factor() >= MAX_LOAD_FACTOR)
             return INDEX_SENTINEL;
+
+        size_t h = m_hash(slot);
+        size_t mask = (m_capacity - 1);
+        size_t i = h & mask;
+        ctrl_t ctrl = static_cast<ctrl_t>(h >> 57);
+
+        while (true)
+        {
+            // Load 16 control bytes
+            __m128i ctrl_block = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&m_controls[i]));
+
+            // Compare with kEmpty
+            __m128i cmp = _mm_cmpeq_epi8(ctrl_block, kEmptyPattern);
+
+            // Create bitmask from comparison
+            int mask16 = _mm_movemask_epi8(cmp);
+
+            // First: check all 16 for equality
+            for (int offset = 0; offset < 16; ++offset)
+            {
+                size_t idx = (i + offset) & mask;
+                if (m_equal_to(m_slots[idx], slot))
+                {
+                    m_statistics.m_sum_probe_lengths += offset;
+                    return idx;
+                }
+            }
+
+            // Second: insert into first empty slot if found
+            if (mask16 != 0)
+            {
+                int offset = __builtin_ctz(mask16);
+                m_statistics.m_sum_probe_lengths += offset;
+                size_t idx = (i + offset) & mask;
+                m_slots[idx] = slot;
+                m_controls[idx] = ctrl;
+                ++m_size;
+                ++m_statistics.m_num_probes;
+                return idx;
+            }
+
+            // Else probe further
+            i = (i + 16) & mask;
+            m_statistics.m_sum_probe_lengths += 16;
         }
-
-        Index unstable_index = offset1 + m_bucket_sizes[h1]++;
-
-        m_bucket_data[unstable_index] = slot;
-        ++m_size;
-
-        return unstable_index;
     }
 
     template<std::input_iterator Iterator>
@@ -346,18 +350,10 @@ private:
     }
 
 public:
-    TreeDatabase(size_t num_buckets = 1024) :
-        m_roots(),
-        m_bucket_data(),
-        m_bucket_sizes(),
-        m_num_buckets(num_buckets),
-        m_size(0),
-        m_capacity(num_buckets * BucketSize),
-        m_hash(),
-        m_equal_to()
+    TreeDatabase() : m_roots(), m_slots(), m_controls(), m_size(0), m_capacity(InitialCapacity), m_hash(), m_equal_to()
     {
-        m_bucket_data.resize(m_capacity);
-        m_bucket_sizes.resize(m_num_buckets, 0);
+        m_slots.resize(m_capacity);
+        m_controls.resize(m_capacity, ctrl_t::kEmpty);
 
         m_roots.insert(Slot(0, 0));
     }
@@ -423,7 +419,7 @@ public:
                     return;
                 }
 
-                const auto slot = db().m_bucket_data[entry.m_index];
+                const auto slot = db().m_slots[entry.m_index];
 
                 assert(entry.m_size >= 0);
                 Index mid = std::bit_floor(entry.m_size - 1);
@@ -498,7 +494,6 @@ public:
     size_t num_roots() const { return m_roots.size(); }
     size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
-    size_t num_buckets() const { return m_num_buckets; }
     double load_factor() const { return static_cast<double>(m_size) / m_capacity; };
     const Statistics& statistics() const { return m_statistics; }
 };
