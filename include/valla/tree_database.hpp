@@ -91,7 +91,7 @@ private:
     static_assert(BucketSize != 0 && (BucketSize & (BucketSize - 1)) == 0 && "BucketSize must be a power of two.");
     static_assert(BucketSize <= 128 && "Bucket size must fit into uint8_t");
 
-    static constexpr Index INDEX_SENTINEL = std::numeric_limits<Index>::max();
+    static constexpr Index INDEX_SENTINEL = std::numeric_limits<Index>::max();  ///< used to indicate insertion failure to trigger a rehash.
 
     IndexedHashSet m_roots;
 
@@ -119,7 +119,7 @@ private:
         }
     };
 
-    std::pair<Index, bool> insert(Slot slot, RehashData& tmp)
+    Index insert(Slot slot, RehashData& tmp)
     {
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
@@ -134,7 +134,7 @@ private:
             Index unstable_index = offset1 + i;
 
             if (EqualTo {}(tmp.bucket_data[unstable_index], slot))
-                return { unstable_index, true };
+                return unstable_index;
         }
 
         for (size_t i = 0; i < tmp.bucket_sizes[h2]; ++i)
@@ -142,7 +142,7 @@ private:
             Index unstable_index = offset2 + i;
 
             if (EqualTo {}(tmp.bucket_data[unstable_index], slot))
-                return { unstable_index, true };
+                return unstable_index;
         }
 
         if (tmp.bucket_sizes[h1] > tmp.bucket_sizes[h2])
@@ -154,24 +154,23 @@ private:
         if (tmp.bucket_sizes[h1] == BucketSize)
         {
             assert(tmp.bucket_sizes[h2] == BucketSize);
-            return { INDEX_SENTINEL, false };
+            return INDEX_SENTINEL;
         }
 
         Index unstable_index = offset1 + tmp.bucket_sizes[h1]++;
 
         tmp.bucket_data[unstable_index] = slot;
 
-        return { unstable_index, true };
+        return unstable_index;
     }
 
-    std::pair<Index, bool> rehash_recursively(Index unstable_index, size_t size, RehashData& tmp)
+    Index rehash_recursively(Index unstable_index, size_t size, RehashData& tmp)
     {
         /* Base case 1: skipped node creation */
         if (size == 1)
-            return { unstable_index, true };
+            return unstable_index;
 
-        /* TODO: Base case 2: unstable index was already relocated
-           ATTENTION: this requires taking size into account. */
+        /* Note: caching relocation is expensive to cache because the tree structure depends on size. */
 
         const auto& slot = m_bucket_data[unstable_index];
 
@@ -186,12 +185,12 @@ private:
         const auto mid = std::bit_floor(size - 1);
 
         /* Conquer */
-        const auto [i1, i1_success] = rehash_recursively(slot.i1, mid, tmp);
-        if (!i1_success)
-            return { i1, false };
-        const auto [i2, i2_success] = rehash_recursively(slot.i2, size - mid, tmp);
-        if (!i2_success)
-            return { i2, false };
+        Index i1 = rehash_recursively(slot.i1, mid, tmp);
+        if (i1 == INDEX_SENTINEL)
+            return i1;
+        Index i2 = rehash_recursively(slot.i2, size - mid, tmp);
+        if (i2 == INDEX_SENTINEL)
+            return i2;
 
         return insert(Slot(i1, i2), tmp);
     }
@@ -214,11 +213,11 @@ private:
             // Relocate remaining roots
             for (Index stable_index = 1; stable_index < m_roots.size(); ++stable_index)
             {
-                const auto& root = m_roots[stable_index];
+                const Slot& root = m_roots[stable_index];
 
-                const auto [unstable_index, success] = rehash_recursively(root.i1, root.i2, tmp);
+                Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
 
-                if (!success)
+                if (unstable_index == INDEX_SENTINEL)
                 {
                     rehash_success = false;
                     break;
@@ -243,7 +242,7 @@ private:
         }
     }
 
-    std::pair<Index, bool> insert(Slot slot)
+    Index insert(Slot slot)
     {
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
@@ -258,7 +257,7 @@ private:
             Index unstable_index = offset1 + i;
 
             if (EqualTo {}(m_bucket_data[unstable_index], slot))
-                return { unstable_index, true };
+                return unstable_index;
         }
 
         for (size_t i = 0; i < m_bucket_sizes[h2]; ++i)
@@ -266,7 +265,7 @@ private:
             Index unstable_index = offset2 + i;
 
             if (EqualTo {}(m_bucket_data[unstable_index], slot))
-                return { unstable_index, true };
+                return unstable_index;
         }
 
         if (m_bucket_sizes[h1] > m_bucket_sizes[h2])
@@ -278,7 +277,7 @@ private:
         if (m_bucket_sizes[h1] == BucketSize)
         {
             assert(m_bucket_sizes[h2] == BucketSize);
-            return { INDEX_SENTINEL, false };
+            return INDEX_SENTINEL;
         }
 
         Index unstable_index = offset1 + m_bucket_sizes[h1]++;
@@ -286,16 +285,16 @@ private:
         m_bucket_data[unstable_index] = slot;
         ++m_size;
 
-        return { unstable_index, true };
+        return unstable_index;
     }
 
     template<std::input_iterator Iterator>
         requires std::same_as<std::iter_value_t<Iterator>, Index>
-    inline std::pair<Index, bool> insert_recursively(Iterator it, Iterator end, size_t size)
+    inline Index insert_recursively(Iterator it, Iterator end, size_t size)
     {
         /* Base cases */
         if (size == 1)
-            return { *it, true };  ///< Skip node creation
+            return *it;  ///< Skip node creation
 
         if (size == 2)
             return insert(Slot(*it, *(it + 1)));
@@ -306,12 +305,12 @@ private:
 
         /* Conquer */
         const auto mid_it = it + mid;
-        const auto [i1, i1_success] = insert_recursively(it, mid_it, mid);
-        if (!i1_success)
-            return { i1, false };
-        const auto [i2, i2_success] = insert_recursively(mid_it, end, size - mid);
-        if (!i2_success)
-            return { i2, false };
+        Index i1 = insert_recursively(it, mid_it, mid);
+        if (i1 == INDEX_SENTINEL)
+            return i1;
+        Index i2 = insert_recursively(mid_it, end, size - mid);
+        if (i2 == INDEX_SENTINEL)
+            return i2;
 
         return insert(Slot(i1, i2));
     }
@@ -347,9 +346,9 @@ public:
 
         while (true)
         {
-            const auto [unstable_index, success] = insert_recursively(range.begin(), range.end(), size);
+            Index unstable_index = insert_recursively(range.begin(), range.end(), size);
 
-            if (!success)
+            if (unstable_index == INDEX_SENTINEL)
             {
                 factor *= 2;
                 rehash(factor);
