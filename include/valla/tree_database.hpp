@@ -22,6 +22,7 @@
 #include "valla/details/unique_object_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -110,6 +111,7 @@ private:
     {
         size_t m_num_rehashes = 0;
         size_t m_max_num_subsequent_rehashes = 1;
+        std::chrono::milliseconds m_total_rehash_time = std::chrono::milliseconds::zero();
     };
 
     Statistics m_statistics;
@@ -210,7 +212,11 @@ private:
 
     void rehash(double factor = 2.)
     {
+        using clock = std::chrono::high_resolution_clock;
+
         size_t num_subsequent_rehashes = 0;
+
+        auto start = clock::now();  // Start timing
 
         while (true)
         {
@@ -256,6 +262,9 @@ private:
             std::swap(m_roots, tmp.roots);
             std::swap(m_bucket_data, tmp.bucket_data);
             std::swap(m_bucket_sizes, tmp.bucket_sizes);
+
+            auto end = clock::now();
+            m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             std::cout << "Finish rehash with load factor: " << load_factor() << std::endl;
             return;
         }
