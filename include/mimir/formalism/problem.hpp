@@ -28,7 +28,7 @@
 
 namespace mimir::formalism
 {
-using TreeDatabase = valla::tdb::TreeDatabase<valla::SlotHash, std::equal_to<valla::Slot>, 32>;
+using TreeDatabase = valla::tdb::TreeDatabase<valla::RawSlotHash, std::equal_to<valla::RawSlot>, 8>;
 
 class ProblemImpl
 {

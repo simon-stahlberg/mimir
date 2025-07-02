@@ -84,7 +84,7 @@ static thread_local UniqueObjectPool<std::vector<Entry>> s_stack_pool = UniqueOb
  * So the stored quotient fits in 49 bits. This is a ~24% reduction from 64 bits,
  * and storage shrinks further as m increases (i.e., as the table grows).
  */
-template<typename Hash = std::hash<Slot>, typename EqualTo = std::equal_to<Slot>, size_t BucketSize = 64>
+template<typename Hash = std::hash<RawSlot>, typename EqualTo = std::equal_to<RawSlot>, size_t BucketSize = 8>
 class TreeDatabase
 {
 private:
@@ -93,9 +93,11 @@ private:
 
     static constexpr Index INDEX_SENTINEL = std::numeric_limits<Index>::max();  ///< used to indicate insertion failure to trigger a rehash.
 
+    static constexpr double MAX_LOAD_FACTOR = 0.7;
+
     IndexedHashSet m_roots;
 
-    std::vector<Slot> m_bucket_data;
+    std::vector<RawSlot> m_bucket_data;
     std::vector<uint8_t> m_bucket_sizes;
     size_t m_num_buckets;
     size_t m_size;
@@ -109,7 +111,7 @@ private:
         size_t num_buckets;
         size_t capacity;
         IndexedHashSet roots;
-        std::vector<Slot> bucket_data;
+        std::vector<RawSlot> bucket_data;
         std::vector<uint8_t> bucket_sizes;
 
         RehashData(size_t num_buckets, size_t capacity) :
@@ -122,7 +124,7 @@ private:
         }
     };
 
-    Index insert(Slot slot, RehashData& tmp)
+    Index insert(RawSlot slot, RehashData& tmp)
     {
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
@@ -188,14 +190,14 @@ private:
         const auto mid = std::bit_floor(size - 1);
 
         /* Conquer */
-        Index i1 = rehash_recursively(slot.i1, mid, tmp);
+        Index i1 = rehash_recursively(first(slot), mid, tmp);
         if (i1 == INDEX_SENTINEL)
             return i1;
-        Index i2 = rehash_recursively(slot.i2, size - mid, tmp);
+        Index i2 = rehash_recursively(second(slot), size - mid, tmp);
         if (i2 == INDEX_SENTINEL)
             return i2;
 
-        return insert(Slot(i1, i2), tmp);
+        return insert(make_slot(i1, i2), tmp);
     }
 
     void rehash(double factor = 2.)
@@ -245,8 +247,11 @@ private:
         }
     }
 
-    Index insert(Slot slot)
+    Index insert(RawSlot slot)
     {
+        if (load_factor() >= MAX_LOAD_FACTOR)
+            return INDEX_SENTINEL;
+
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
         size_t h = m_hash(slot);
@@ -300,7 +305,7 @@ private:
             return *it;  ///< Skip node creation
 
         if (size == 2)
-            return insert(Slot(*it, *(it + 1)));
+            return insert(make_slot(*it, *(it + 1)));
 
         /* Divide */
         assert(size >= 2);
@@ -315,7 +320,7 @@ private:
         if (i2 == INDEX_SENTINEL)
             return i2;
 
-        return insert(Slot(i1, i2));
+        return insert(make_slot(i1, i2));
     }
 
 public:
@@ -402,8 +407,8 @@ public:
                 Index mid = std::bit_floor(entry.m_size - 1);
 
                 // Emplace i2 first to ensure i1 is visited first in dfs.
-                m_stack->emplace_back(slot.i2, entry.m_size - mid);
-                m_stack->emplace_back(slot.i1, mid);
+                m_stack->emplace_back(second(slot), entry.m_size - mid);
+                m_stack->emplace_back(first(slot), mid);
             }
 
             m_value = END_POS;
