@@ -106,6 +106,14 @@ private:
     Hash m_hash;
     EqualTo m_equal_to;
 
+    struct Statistics
+    {
+        size_t m_num_rehashes = 0;
+        size_t m_max_num_subsequent_rehashes = 1;
+    };
+
+    Statistics m_statistics;
+
     struct RehashData
     {
         size_t num_buckets;
@@ -202,8 +210,13 @@ private:
 
     void rehash(double factor = 2.)
     {
+        size_t num_subsequent_rehashes = 0;
+
         while (true)
         {
+            ++num_subsequent_rehashes;
+            ++m_statistics.m_num_rehashes;
+
             std::cout << "Start rehash with load factor: " << load_factor() << std::endl;
             size_t new_num_buckets = factor * m_num_buckets;
             size_t new_capacity = factor * m_capacity;
@@ -236,6 +249,7 @@ private:
                 factor *= 2;
                 continue;
             }
+            m_statistics.m_max_num_subsequent_rehashes = std::max(m_statistics.m_max_num_subsequent_rehashes, num_subsequent_rehashes);
 
             m_num_buckets = new_num_buckets;
             m_capacity = new_capacity;
@@ -478,6 +492,7 @@ public:
     size_t capacity() const { return m_capacity; }
     size_t num_buckets() const { return m_num_buckets; }
     double load_factor() const { return static_cast<double>(m_size) / m_capacity; };
+    const Statistics& statistics() const { return m_statistics; }
 };
 }
 

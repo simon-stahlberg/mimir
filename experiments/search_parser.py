@@ -106,7 +106,9 @@ class SearchParser(Parser):
         self.add_pattern("average_num_derived_state_atoms", r"Average number of derived state atoms: (.+)", type=float)
         self.add_pattern("average_num_state_atoms", r"Average number of state atoms: (.+)", type=float)
         self.add_pattern("average_num_slots_per_state", r"Average number of slots per state: (.+)", type=float)
-        self.add_pattern("load_factor", r"Final load factor: (.+)", type=float)
+        self.add_pattern("load_factor", r"[TreeDB] Final load factor: (.+)", type=float)
+        self.add_pattern("num_rehashes", r"[TreeDB] Num rehashes: (.+)", type=float)
+        self.add_pattern("max_num_subsequent_rehashes", r"[TreeDB] Max num subsequent rehashes: (.+)", type=float)
 
         self.add_pattern("initial_h_value", r"Initial h_value: (.+)", type=str)
 

@@ -85,6 +85,8 @@ ATTRIBUTES = [
     "average_num_state_atoms",
     "average_num_slots_per_state",
     "load_factor",
+    "num_rehashes",
+    "max_num_subsequent_rehashes",
 
     "initial_h_value",
 
