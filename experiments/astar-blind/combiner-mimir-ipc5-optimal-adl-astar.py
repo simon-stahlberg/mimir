@@ -56,6 +56,7 @@ ATTRIBUTES = [
     "average_num_derived_state_atoms",
     "average_num_state_atoms",
     "average_num_slots_per_state",
+    "load_factor",
 
     "initial_h_value",
 

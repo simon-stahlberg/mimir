@@ -42,7 +42,7 @@ if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
-        extra_options="#SBATCH --account=naiss2024-5-421")
+        extra_options="#SBATCH --account=naiss2024-5-404")
     SUITE = SUITE_IPC_OPTIMAL_STRIPS
     TIME_LIMIT = 5 * 60  # 5 minutes
 else:
@@ -87,6 +87,7 @@ ATTRIBUTES = [
     "average_num_derived_state_atoms",
     "average_num_state_atoms",
     "average_num_slots_per_state",
+    "load_factor",
 
     "initial_h_value",
 
