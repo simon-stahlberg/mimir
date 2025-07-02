@@ -101,6 +101,9 @@ private:
     size_t m_size;
     size_t m_capacity;
 
+    Hash m_hash;
+    EqualTo m_equal_to;
+
     struct RehashData
     {
         size_t num_buckets;
@@ -123,7 +126,7 @@ private:
     {
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
-        size_t h = Hash {}(slot);
+        size_t h = m_hash(slot);
         size_t h1 = h % tmp.num_buckets;
         size_t h2 = std::rotl(h, 23) % tmp.num_buckets;
         size_t offset1 = BucketSize * h1;
@@ -133,7 +136,7 @@ private:
         {
             Index unstable_index = offset1 + i;
 
-            if (EqualTo {}(tmp.bucket_data[unstable_index], slot))
+            if (m_equal_to(tmp.bucket_data[unstable_index], slot))
                 return unstable_index;
         }
 
@@ -141,7 +144,7 @@ private:
         {
             Index unstable_index = offset2 + i;
 
-            if (EqualTo {}(tmp.bucket_data[unstable_index], slot))
+            if (m_equal_to(tmp.bucket_data[unstable_index], slot))
                 return unstable_index;
         }
 
@@ -246,7 +249,7 @@ private:
     {
         // The Power of Two Choices in Randomized Load Balancing:
         // https://www.eecs.harvard.edu/~michaelm/postscripts/mythesis.pdf?utm_source=chatgpt.com
-        size_t h = Hash {}(slot);
+        size_t h = m_hash(slot);
         size_t h1 = h % m_num_buckets;
         size_t h2 = std::rotl(h, 23) % m_num_buckets;
         size_t offset1 = BucketSize * h1;
@@ -256,7 +259,7 @@ private:
         {
             Index unstable_index = offset1 + i;
 
-            if (EqualTo {}(m_bucket_data[unstable_index], slot))
+            if (m_equal_to(m_bucket_data[unstable_index], slot))
                 return unstable_index;
         }
 
@@ -264,7 +267,7 @@ private:
         {
             Index unstable_index = offset2 + i;
 
-            if (EqualTo {}(m_bucket_data[unstable_index], slot))
+            if (m_equal_to(m_bucket_data[unstable_index], slot))
                 return unstable_index;
         }
 
@@ -322,7 +325,9 @@ public:
         m_bucket_sizes(),
         m_num_buckets(num_buckets),
         m_size(0),
-        m_capacity(num_buckets * BucketSize)
+        m_capacity(num_buckets * BucketSize),
+        m_hash(),
+        m_equal_to()
     {
         m_bucket_data.resize(m_capacity);
         m_bucket_sizes.resize(m_num_buckets, 0);
