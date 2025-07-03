@@ -203,7 +203,6 @@ int main(int argc, char** argv)
     std::cout << "[TreeDB] Final load factor: " << problem->get_tree_database().load_factor() << std::endl;
     std::cout << "[TreeDB] Total time rehash: " << problem->get_tree_database().statistics().m_total_rehash_time.count() << std::endl;
     std::cout << "[TreeDB] Num rehashes: " << problem->get_tree_database().statistics().m_num_rehashes << std::endl;
-    std::cout << "[TreeDB] Max num subsequent rehashes: " << problem->get_tree_database().statistics().m_max_num_subsequent_rehashes << std::endl;
     std::cout << "[TreeDB] Num probes: " << problem->get_tree_database().statistics().m_num_probes << std::endl;
     std::cout << "[TreeDB] Average probe length: "
               << static_cast<double>(problem->get_tree_database().statistics().m_sum_probe_lengths) / problem->get_tree_database().statistics().m_num_probes

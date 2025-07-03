@@ -27,6 +27,7 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
+#include <smmintrin.h>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -111,25 +112,30 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t>& v
     return out;
 }
 
+inline std::ostream& operator<<(std::ostream& out, __m128i v)
+{
+    alignas(16) int8_t bytes[16];
+    _mm_storeu_si128(reinterpret_cast<__m128i*>(bytes), v);
+
+    out << "[";
+    for (int i = 0; i < 16; ++i)
+    {
+        out << static_cast<int>(bytes[i]);
+        if (i < 15)
+            out << ", ";
+    }
+    out << "]" << std::endl;
+
+    return out;
+}
+
 /**
  * Hashing
  */
 
-/* Source: https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp */
-inline uint64_t fmix64(uint64_t k)
-{
-    k ^= k >> 33;
-    k *= 0xff51afd7ed558ccd;
-    k ^= k >> 33;
-    k *= 0xc4ceb9fe1a85ec53;
-    k ^= k >> 33;
-
-    return k;
-}
-
 struct SlotHash
 {
-    size_t operator()(Slot el) const { return fmix64((uint64_t(el.i1) << 32) | el.i2); }
+    size_t operator()(Slot el) const { return absl::HashOf(el.i1, el.i2); }
 };
 
 }

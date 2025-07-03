@@ -166,9 +166,6 @@ ProblemImpl::ProblemImpl(Index index,
      */
 
     m_details = problem::Details(*this);
-
-    auto empty_list = IndexList {};
-    m_empty_slot = m_tree_database.insert(empty_list);
 }
 
 Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
@@ -251,7 +248,6 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
 
 TreeDatabase& ProblemImpl::get_tree_database() { return m_tree_database; }
 const TreeDatabase& ProblemImpl::get_tree_database() const { return m_tree_database; }
-Index ProblemImpl::get_empty_slot() const { return m_empty_slot; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {

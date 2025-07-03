@@ -96,8 +96,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_derived_atoms.unset_all();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
     /* Sparse state */
-    auto state_fluent_atoms_slot = problem.get_empty_slot();
-    auto state_derived_atoms_slot = problem.get_empty_slot();
+    auto state_fluent_atoms_slot = tree_database.empty_stable_index();
+    auto state_derived_atoms_slot = tree_database.empty_stable_index();
     auto state_numeric_variables = m_empty_double_list;
 
     /* 2. Construct non-extended state */
@@ -285,8 +285,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = problem.get_empty_slot();
-    auto state_derived_atoms_slot = problem.get_empty_slot();
+    auto state_fluent_atoms_slot = tree_database.empty_stable_index();
+    auto state_derived_atoms_slot = tree_database.empty_stable_index();
     auto state_numeric_variables = m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;

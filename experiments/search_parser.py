@@ -109,7 +109,6 @@ class SearchParser(Parser):
         self.add_pattern("load_factor", r"\[TreeDB\] Final load factor: (.+)", type=float)
         self.add_pattern("total_rehash_time", r"\[TreeDB\] Total time rehash: (\d+)", type=int)
         self.add_pattern("num_rehashes", r"\[TreeDB\] Num rehashes: (\d+)", type=int)
-        self.add_pattern("max_num_subsequent_rehashes", r"\[TreeDB\] Max num subsequent rehashes: (\d+)", type=int)
         self.add_pattern("num_probes", r"\[TreeDB\] Num probes: (\d+)", type=int)
         self.add_pattern("avg_probe_length", r"\[TreeDB\] Average probe length: (.+)", type=float)
 

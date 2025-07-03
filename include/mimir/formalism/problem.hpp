@@ -63,7 +63,6 @@ private:
     std::vector<const FlatDoubleList*> m_flat_double_lists;
 
     TreeDatabase m_tree_database;
-    Index m_empty_slot;
 
     SharedObjectPool<FlatBitset> m_bitset_pool;
     SharedObjectPool<FlatIndexList> m_index_list_pool;
@@ -135,7 +134,6 @@ public:
 
     TreeDatabase& get_tree_database();
     const TreeDatabase& get_tree_database() const;
-    Index get_empty_slot() const;
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;

@@ -87,7 +87,6 @@ ATTRIBUTES = [
     "load_factor",
     "total_rehash_time",
     "num_rehashes",
-    "max_num_subsequent_rehashes",
     "num_probes",
     "avg_probe_length",
 
