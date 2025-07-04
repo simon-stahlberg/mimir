@@ -28,7 +28,6 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
-#include <smmintrin.h>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -43,17 +42,6 @@ inline bool is_within_bounds(const Container& container, size_t index)
 {
     return index < container.size();
 }
-
-// Code
-// https://github.com/kampersanda/bonsais
-// https://github.com/simongog/sdsl-lite/tree/master
-// https://github.com/tudocomp/tudocomp
-// https://github.com/Poyias/mBonsai
-
-// Papers:
-// https://arxiv.org/pdf/1906.06015
-// https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b7620871f53d759a15cf9e820584b89f984f74c1
-// https://link.springer.com/article/10.1007/s00453-022-00996-y
 
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
 
@@ -97,35 +85,6 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec)
         out << x << ", ";
     }
     out << "]";
-
-    return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t>& vec)
-{
-    out << "[";
-    for (const auto x : vec)
-    {
-        out << static_cast<uint32_t>(x) << ", ";
-    }
-    out << "]";
-
-    return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, __m128i v)
-{
-    alignas(16) int8_t bytes[16];
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(bytes), v);
-
-    out << "[";
-    for (int i = 0; i < 16; ++i)
-    {
-        out << static_cast<int>(bytes[i]);
-        if (i < 15)
-            out << ", ";
-    }
-    out << "]" << std::endl;
 
     return out;
 }
