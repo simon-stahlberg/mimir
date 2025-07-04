@@ -61,7 +61,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
         return *it;  ///< Skip node creation
 
     if (size == 2)
-        return table.insert(Slot(*it, *(it + 1))).first->second;
+        return *table.insert(Slot(*it, *(it + 1))).first;
 
     /* Divide */
     const auto mid = std::bit_floor(size - 1);
@@ -71,7 +71,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
     const auto i1 = insert_recursively(it, mid_it, mid, table);
     const auto i2 = insert_recursively(mid_it, end, size - mid, table);
 
-    return table.insert(Slot(i1, i2)).first->second;
+    return *table.insert(Slot(i1, i2)).first;
 }
 
 /// @brief Inserts the elements from the given `state` into the `tree_table`.
