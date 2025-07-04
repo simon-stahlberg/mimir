@@ -71,7 +71,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
         Index left_delta = i1 - prev;
         Index right_delta = i2 - i1;
         prev = i2;
-        return tree_table.insert(Slot(left_delta, right_delta)).first->second;
+        return *tree_table.insert(Slot(left_delta, right_delta)).first;
     }
 
     /* Divide */
@@ -82,7 +82,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
     const auto i1 = insert_recursively(it, mid_it, mid, tree_table, prev);
     const auto i2 = insert_recursively(mid_it, end, size - mid, tree_table, prev);
 
-    return tree_table.insert(Slot(i1, i2)).first->second;
+    return *tree_table.insert(Slot(i1, i2)).first;
 }
 
 /// @brief Inserts the elements from the given `state` into the `tree_table`.

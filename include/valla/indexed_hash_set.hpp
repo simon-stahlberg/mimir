@@ -33,16 +33,20 @@ namespace valla
 class IndexedHashSet
 {
 public:
+    IndexedHashSet() : m_index_to_slot(), m_slot_to_index(0, IndexReferencedSlotHash(m_index_to_slot), IndexReferencedSlotEqualTo(m_index_to_slot)) {}
+
     auto insert(Slot slot)
     {
         assert(m_slot_to_index.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
-        const auto result = m_slot_to_index.emplace(slot, m_slot_to_index.size());
+        Index index = m_index_to_slot.size();
 
-        if (result.second)
-        {
-            m_index_to_slot.push_back(slot);
-        }
+        m_index_to_slot.push_back(slot);
+
+        const auto result = m_slot_to_index.emplace(index);
+
+        if (!result.second)
+            m_index_to_slot.pop_back();
 
         return result;
     }
@@ -57,10 +61,8 @@ public:
     size_t size() const { return m_index_to_slot.size(); }
 
 private:
-    absl::flat_hash_map<Slot, Index, SlotHash> m_slot_to_index;
     std::vector<Slot> m_index_to_slot;
-
-    static_assert(sizeof(absl::flat_hash_map<Slot, Index, SlotHash>::value_type) == 12);
+    absl::flat_hash_set<Index, IndexReferencedSlotHash, IndexReferencedSlotEqualTo> m_slot_to_index;
 };
 
 }

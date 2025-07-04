@@ -19,6 +19,7 @@
 #define VALLA_INCLUDE_DECLARATIONS_HPP_
 
 #include <absl/container/flat_hash_map.h>
+#include <absl/container/flat_hash_set.h>
 #include <absl/container/node_hash_map.h>
 #include <absl/container/node_hash_set.h>
 #include <cassert>
@@ -136,6 +137,35 @@ inline std::ostream& operator<<(std::ostream& out, __m128i v)
 struct SlotHash
 {
     size_t operator()(Slot el) const { return absl::HashOf(el.i1, el.i2); }
+};
+
+// Instead of additionally storing the size in the unstable_to_stable mapping,
+// we reference to stable_to_unstable to access this piece of information.
+struct IndexReferencedSlotHash
+{
+    std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+
+    IndexReferencedSlotHash(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+
+    size_t operator()(Index el) const
+    {
+        assert(el < stable_to_unstable.get().size());
+        return SlotHash {}(stable_to_unstable.get()[el]);
+    }
+};
+
+struct IndexReferencedSlotEqualTo
+{
+    std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+
+    IndexReferencedSlotEqualTo(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+
+    size_t operator()(Index lhs, Index rhs) const
+    {
+        assert(lhs < stable_to_unstable.get().size());
+        assert(rhs < stable_to_unstable.get().size());
+        return stable_to_unstable.get()[lhs] == stable_to_unstable.get()[rhs];
+    }
 };
 
 }

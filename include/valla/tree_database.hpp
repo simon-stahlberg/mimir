@@ -104,41 +104,11 @@ private:
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Root Table: 16 bytes per slot
+    /// Root Table: 12+1 bytes per slot
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<Slot> m_stable_to_unstable;  ///< lookup
-
-    // Instead of additionally storing the size in the unstable_to_stable mapping,
-    // we reference to stable_to_unstable to access this piece of information.
-    struct IndexReferencedSlotHash
-    {
-        std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
-
-        IndexReferencedSlotHash(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
-
-        size_t operator()(const std::pair<Index, Index>& el) const
-        {
-            assert(el.second < stable_to_unstable.get().size());
-            return SlotHash {}(stable_to_unstable.get()[el.second]);
-        }
-    };
-
-    struct IndexReferencedSlotEqualTo
-    {
-        std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
-
-        IndexReferencedSlotEqualTo(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
-
-        size_t operator()(const std::pair<Index, Index>& lhs, const std::pair<Index, Index>& rhs) const
-        {
-            assert(lhs.second < stable_to_unstable.get().size());
-            assert(rhs.second < stable_to_unstable.get().size());
-            return stable_to_unstable.get()[lhs.second] == stable_to_unstable.get()[rhs.second];
-        }
-    };
-
-    absl::flat_hash_set<std::pair<Index, Index>, IndexReferencedSlotHash, IndexReferencedSlotEqualTo> m_unstable_to_stable;  ///< insert
+    std::vector<Slot> m_stable_to_unstable;                                                                ///< lookup
+    absl::flat_hash_set<Index, IndexReferencedSlotHash, IndexReferencedSlotEqualTo> m_unstable_to_stable;  ///< insert
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Tree Table: 8+1 bytes per slot
@@ -293,7 +263,7 @@ private:
             Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
 
             m_stable_to_unstable[stable_index] = Slot(unstable_index, root.i2);
-            m_unstable_to_stable.emplace(unstable_index, stable_index);
+            m_unstable_to_stable.emplace(stable_index);
         }
 
         m_capacity = new_capacity;
@@ -435,12 +405,12 @@ public:
 
         m_stable_to_unstable.push_back(Slot(unstable_index, size));
 
-        auto result = m_unstable_to_stable.emplace(unstable_index, stable_index);
+        auto result = m_unstable_to_stable.emplace(stable_index);
 
         if (!result.second)
             m_stable_to_unstable.pop_back();
 
-        return result.first->second;
+        return *result.first;
     }
 
     /**
@@ -553,6 +523,14 @@ public:
     size_t capacity() const { return m_capacity; }
     double load_factor() const { return static_cast<double>(m_size) / m_capacity; };
     const Statistics& statistics() const { return m_statistics; }
+
+    friend std::ostream& operator<<(std::ostream& os, const TreeDatabase& db)
+    {
+        os << "Bucket data: " << db.m_slots << "\n"
+           << "Load factor: " << db.load_factor();
+
+        return os;
+    }
 };
 }
 
