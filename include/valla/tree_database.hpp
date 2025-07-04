@@ -103,11 +103,47 @@ private:
         kSentinel = -1,  // 0b11111111
     };
 
-    // Stable indexed root hash set 20 byte per slot
-    std::vector<Slot> m_stable_to_unstable;                       ///< lookup
-    absl::flat_hash_map<Slot, Index, Hash> m_unstable_to_stable;  ///< insert
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Root Table: 16 bytes per slot
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Unstable tree hash set. 8+1 bytes per slot
+    std::vector<Slot> m_stable_to_unstable;  ///< lookup
+
+    // Instead of additionally storing the size in the unstable_to_stable mapping,
+    // we reference to stable_to_unstable to access this piece of information.
+    struct IndexReferencedSlotHash
+    {
+        std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+
+        IndexReferencedSlotHash(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+
+        size_t operator()(const std::pair<Index, Index>& el) const
+        {
+            assert(el.second < stable_to_unstable.get().size());
+            return SlotHash {}(stable_to_unstable.get()[el.second]);
+        }
+    };
+
+    struct IndexReferencedSlotEqualTo
+    {
+        std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+
+        IndexReferencedSlotEqualTo(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+
+        size_t operator()(const std::pair<Index, Index>& lhs, const std::pair<Index, Index>& rhs) const
+        {
+            assert(lhs.second < stable_to_unstable.get().size());
+            assert(rhs.second < stable_to_unstable.get().size());
+            return stable_to_unstable.get()[lhs.second] == stable_to_unstable.get()[rhs.second];
+        }
+    };
+
+    absl::flat_hash_set<std::pair<Index, Index>, IndexReferencedSlotHash, IndexReferencedSlotEqualTo> m_unstable_to_stable;  ///< insert
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Tree Table: 8+1 bytes per slot
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     std::vector<Slot> m_slots;
     std::vector<ctrl_t> m_controls;
     size_t m_size;
@@ -256,8 +292,8 @@ private:
 
             Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
 
-            m_unstable_to_stable.emplace(Slot(unstable_index, root.i2), stable_index);
             m_stable_to_unstable[stable_index] = Slot(unstable_index, root.i2);
+            m_unstable_to_stable.emplace(unstable_index, stable_index);
         }
 
         m_capacity = new_capacity;
@@ -358,7 +394,15 @@ private:
     }
 
 public:
-    TreeDatabase() : m_stable_to_unstable(), m_unstable_to_stable(), m_slots(), m_controls(), m_size(0), m_capacity(InitialCapacity), m_hash(), m_equal_to()
+    TreeDatabase() :
+        m_stable_to_unstable(),
+        m_unstable_to_stable(0, IndexReferencedSlotHash(m_stable_to_unstable), IndexReferencedSlotEqualTo(m_stable_to_unstable)),
+        m_slots(),
+        m_controls(),
+        m_size(0),
+        m_capacity(InitialCapacity),
+        m_hash(),
+        m_equal_to()
     {
         m_slots.resize(m_capacity);
 
@@ -387,9 +431,14 @@ public:
 
         Index unstable_index = insert_recursively(range.begin(), range.end(), size);
 
-        auto result = m_unstable_to_stable.emplace(Slot(unstable_index, size), m_stable_to_unstable.size());
-        if (result.second)
-            m_stable_to_unstable.push_back(Slot(unstable_index, size));
+        Index stable_index = m_stable_to_unstable.size();
+
+        m_stable_to_unstable.push_back(Slot(unstable_index, size));
+
+        auto result = m_unstable_to_stable.emplace(unstable_index, stable_index);
+
+        if (!result.second)
+            m_stable_to_unstable.pop_back();
 
         return result.first->second;
     }
