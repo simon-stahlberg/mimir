@@ -117,7 +117,7 @@ struct Hash<mimir::search::PackedStateImpl>
 {
     const mimir::formalism::ProblemImpl& problem;
 
-    explicit Hash<mimir::search::PackedStateImpl>(const mimir::formalism::ProblemImpl& problem);
+    explicit Hash(const mimir::formalism::ProblemImpl& problem);
 
     size_t operator()(const mimir::search::PackedStateImpl& el) const;
 };
