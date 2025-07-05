@@ -256,6 +256,10 @@ template<typename Value, IsStaticOrFluentOrDerivedTag P>
 using PredicateMap = std::unordered_map<Predicate<P>, Value>;
 template<typename Value, IsStaticOrFluentOrDerivedTag... Ps>
 using PredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateMap<Value, Ps>>...>;
+template<template<typename> typename Value, IsStaticOrFluentOrDerivedTag P>
+using FuncPredicateMapT = std::unordered_map<Predicate<P>, Value<P>>;
+template<template<typename> typename Value, IsStaticOrFluentOrDerivedTag... Ps>
+using FuncPredicateMapTs = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, FuncPredicateMapT<Value, Ps>>...>;
 
 class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;

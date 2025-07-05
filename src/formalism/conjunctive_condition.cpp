@@ -20,6 +20,7 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -69,6 +70,20 @@ ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
     assert(std::is_sorted(get_numeric_constraints().begin(),
                           get_numeric_constraints().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+
+    boost::hana::for_each(m_literals,
+                          [this](auto&& arg)
+                          {
+                              const auto key = boost::hana::first(arg);
+                              const auto& value = boost::hana::second(arg);
+
+                              auto& map = boost::hana::at_key(m_literals_grouped_by_predicate, key);
+
+                              for (const auto& literal : value)
+                              {
+                                  map[literal->get_atom()->get_predicate()].push_back(literal);
+                              }
+                          });
 }
 
 Index ConjunctiveConditionImpl::get_index() const { return m_index; }
@@ -105,6 +120,11 @@ const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ConjunctiveCondition
 const NumericConstraintList& ConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
+
+const FuncPredicateMapTs<LiteralList, StaticTag, FluentTag, DerivedTag>& ConjunctiveConditionImpl::get_literals_grouped_by_predicate() const
+{
+    return m_literals_grouped_by_predicate;
+}
 
 std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element)
 {

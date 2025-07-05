@@ -32,6 +32,7 @@ private:
     NumericConstraintList m_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
+    FuncPredicateMapTs<LiteralList, StaticTag, FluentTag, DerivedTag> m_literals_grouped_by_predicate;
 
     ConjunctiveConditionImpl(Index index,
                              VariableList parameters,
@@ -63,6 +64,7 @@ public:
     const NumericConstraintList& get_numeric_constraints() const;
 
     size_t get_arity() const;
+    const FuncPredicateMapTs<LiteralList, StaticTag, FluentTag, DerivedTag>& get_literals_grouped_by_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
