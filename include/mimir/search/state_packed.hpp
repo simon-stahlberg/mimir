@@ -25,6 +25,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
+#include <absl/container/node_hash_map.h>
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
