@@ -41,10 +41,10 @@ REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
 if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
-        memory_per_cpu="3G",
+        memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-22-1086")
     SUITE = SUITE_IPC2023_NUMERIC
-    TIME_LIMIT = 30 * 60  # 5 minutes
+    TIME_LIMIT = 30 * 60 
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
