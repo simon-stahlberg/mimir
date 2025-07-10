@@ -49,7 +49,7 @@ ContinuousCost compute_state_metric_value(const State& state)
 
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
-    m_states(),
+    m_states(0, loki::Hash<PackedStateImpl>(*m_axiom_evaluator->get_problem())),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
     m_applied_positive_effect_atoms(),

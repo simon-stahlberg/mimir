@@ -80,9 +80,11 @@ template bool PackedStateImpl::literals_hold(const GroundLiteralList<DerivedTag>
 namespace loki
 {
 
+Hash<mimir::search::PackedStateImpl>::Hash(const mimir::formalism::ProblemImpl& problem) : problem(problem) { }
+
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(el.get_atoms<FluentTag>(), el.get_numeric_variables());
+    return loki::hash_combine(el.get_atoms<FluentTag>(), problem.get_index_list(el.get_atoms<FluentTag>())->size(), el.get_numeric_variables(), problem.get_double_list(el.get_numeric_variables())->size());
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
