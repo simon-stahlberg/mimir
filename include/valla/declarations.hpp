@@ -18,17 +18,13 @@
 #ifndef VALLA_INCLUDE_DECLARATIONS_HPP_
 #define VALLA_INCLUDE_DECLARATIONS_HPP_
 
-#include <absl/container/flat_hash_map.h>
 #include <absl/container/flat_hash_set.h>
-#include <absl/container/node_hash_map.h>
-#include <absl/container/node_hash_set.h>
 #include <cassert>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <ostream>
-#include <smmintrin.h>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
