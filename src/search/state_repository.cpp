@@ -106,6 +106,10 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     state_numeric_variables = valla::d::plain::insert(dense_fluent_numeric_variables, index_tree_table, double_tree_table);
 
+    assert(std::equal(dense_fluent_numeric_variables.begin(),
+                      dense_fluent_numeric_variables.end(),
+                      valla::d::plain::begin(state_numeric_variables, index_tree_table, double_tree_table)));
+
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
     {
@@ -308,6 +312,10 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     state_numeric_variables = valla::d::plain::insert(dense_fluent_numeric_variables, index_tree_table, double_tree_table);
+
+    assert(std::equal(dense_fluent_numeric_variables.begin(),
+                      dense_fluent_numeric_variables.end(),
+                      valla::d::plain::begin(state_numeric_variables, index_tree_table, double_tree_table)));
 
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));

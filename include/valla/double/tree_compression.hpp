@@ -27,6 +27,7 @@
 #include <cmath>
 #include <concepts>
 #include <iostream>
+#include <optional>
 #include <ranges>
 #include <stack>
 
@@ -83,8 +84,6 @@ template<std::ranges::input_range Range>
     requires std::same_as<std::ranges::range_value_t<Range>, double>
 auto insert(const Range& state, IndexedHashSet<Index>& inner_table, IndexedHashSet<double>& leaf_table)
 {
-    assert(std::is_sorted(state.begin(), state.end()));
-
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
     const auto size = static_cast<Index>(std::distance(state.begin(), state.end()));
 
@@ -174,9 +173,7 @@ private:
     const IndexedHashSet<double>* m_leaf_table;
     UniqueObjectPoolPtr<std::vector<Entry>> m_inner_stack;
     UniqueObjectPoolPtr<std::vector<double>> m_leaf_stack;
-    Index m_value;
-
-    static constexpr const Index END_POS = Index(-1);
+    std::optional<double> m_value;
 
     const IndexedHashSet<Index>& inner_table() const
     {
@@ -233,7 +230,7 @@ private:
             }
         }
 
-        m_value = END_POS;
+        m_value = std::nullopt;
     }
 
 public:
@@ -244,7 +241,7 @@ public:
     using iterator_category = std::input_iterator_tag;
     using iterator_concept = std::input_iterator_tag;
 
-    const_iterator() : m_inner_table(nullptr), m_leaf_table(nullptr), m_inner_stack(), m_value(END_POS) {}
+    const_iterator() : m_inner_table(nullptr), m_leaf_table(nullptr), m_inner_stack(), m_value(std::nullopt) {}
     const_iterator(const const_iterator& other) :
         m_inner_table(other.m_inner_table),
         m_leaf_table(other.m_leaf_table),
@@ -272,7 +269,7 @@ public:
         m_leaf_table(&leaf_table),
         m_inner_stack(),
         m_leaf_stack(),
-        m_value(END_POS)
+        m_value(std::nullopt)
     {
         assert(m_inner_table);
 
@@ -301,7 +298,7 @@ public:
             advance();
         }
     }
-    value_type operator*() const { return m_value; }
+    value_type operator*() const { return *m_value; }
     const_iterator& operator++()
     {
         advance();
