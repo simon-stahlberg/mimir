@@ -45,8 +45,6 @@ private:
 
     SharedObjectPool<UnpackedStateImpl> m_unpacked_state_pool;
 
-    Index m_empty_double_list;
-
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
 

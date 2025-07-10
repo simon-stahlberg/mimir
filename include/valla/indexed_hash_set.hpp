@@ -30,20 +30,26 @@ namespace valla
 {
 /// @brief `IndexedHashSet` encapsulates a bijective function f : Slot -> Index with inverse mapping f^{-1} : Index -> Slot
 /// where the indices in the image are enumerated 0,1,2,... and so on.
+template<typename T>
 class IndexedHashSet
 {
 public:
-    IndexedHashSet() : m_index_to_slot(), m_slot_to_index(0, IndexReferencedSlotHash(m_index_to_slot), IndexReferencedSlotEqualTo(m_index_to_slot)) {}
+    IndexedHashSet() : m_index_to_slot(), m_uniqueness(0, IndexReferencedSlotHash<T>(m_index_to_slot), IndexReferencedSlotEqualTo<T>(m_index_to_slot)) {}
+    // Uncopieable and unmoveable to avoid dangling references of m_index_to_slot in hash and equal_to.
+    IndexedHashSet(const IndexedHashSet& other) = delete;
+    IndexedHashSet& operator=(const IndexedHashSet& other) = delete;
+    IndexedHashSet(IndexedHashSet&& other) = delete;
+    IndexedHashSet& operator=(IndexedHashSet&& other) = delete;
 
-    auto insert(Slot slot)
+    auto insert(Slot<T> slot)
     {
-        assert(m_slot_to_index.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
+        assert(m_uniqueness.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
         Index index = m_index_to_slot.size();
 
         m_index_to_slot.push_back(slot);
 
-        const auto result = m_slot_to_index.emplace(index);
+        const auto result = m_uniqueness.emplace(index);
 
         if (!result.second)
             m_index_to_slot.pop_back();
@@ -51,7 +57,7 @@ public:
         return result;
     }
 
-    Slot operator[](Index index) const
+    Slot<T> operator[](Index index) const
     {
         assert(index < m_index_to_slot.size() && "Index out of bounds");
 
@@ -61,8 +67,8 @@ public:
     size_t size() const { return m_index_to_slot.size(); }
 
 private:
-    std::vector<Slot> m_index_to_slot;
-    absl::flat_hash_set<Index, IndexReferencedSlotHash, IndexReferencedSlotEqualTo> m_slot_to_index;
+    std::vector<Slot<T>> m_index_to_slot;
+    absl::flat_hash_set<Index, IndexReferencedSlotHash<T>, IndexReferencedSlotEqualTo<T>> m_uniqueness;
 };
 
 }

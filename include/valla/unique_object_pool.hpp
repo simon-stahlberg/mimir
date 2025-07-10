@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_DETAILS_UNIQUE_OBJECT_POOL_HPP_
-#define VALLA_INCLUDE_DETAILS_UNIQUE_OBJECT_POOL_HPP_
+#ifndef VALLA_INCLUDE_UNIQUE_OBJECT_POOL_HPP_
+#define VALLA_INCLUDE_UNIQUE_OBJECT_POOL_HPP_
 
 #include <cassert>
 #include <concepts>
@@ -91,7 +91,7 @@ public:
         if (m_pool && m_object)
         {
             UniqueObjectPoolPtr pointer = m_pool->get_or_allocate();
-            copy(this->operator*(), *pointer);
+            copy_object(this->operator*(), *pointer);
             return pointer;
         }
         else

@@ -29,12 +29,9 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
-namespace v = valla::plain;
 
 class State
 {

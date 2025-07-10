@@ -28,9 +28,9 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
-#include <valla/delta_tree_compression.hpp>
+#include <valla/double/tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
+#include <valla/uint/tree_compression.hpp>
 
 using namespace mimir::formalism;
 
@@ -60,8 +60,6 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_applied_negative_effect_atoms(),
     m_unpacked_state_pool()
 {
-    auto tmp_double_list = FlatDoubleList {};
-    m_empty_double_list = m_axiom_evaluator->get_problem()->get_or_create_double_list(tmp_double_list).second;
 }
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
@@ -86,7 +84,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
                                                                           const FlatDoubleList& fluent_numeric_variables)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
-    auto& tree_table = problem.get_tree_table();
+    auto& index_tree_table = problem.get_index_tree_table();
+    auto& double_tree_table = problem.get_double_tree_table();
 
     /* Dense state */
     auto unpacked_state = m_unpacked_state_pool.get_or_allocate(problem);
@@ -96,16 +95,16 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_derived_atoms.unset_all();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_numeric_variables = m_empty_double_list;
+    auto state_fluent_atoms_slot = valla::Slot<Index>();
+    auto state_derived_atoms_slot = valla::Slot<Index>();
+    auto state_numeric_variables = valla::Slot<Index>();
 
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+    state_numeric_variables = valla::d::plain::insert(dense_fluent_numeric_variables, index_tree_table, double_tree_table);
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -113,7 +112,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = valla::u::plain::insert(dense_fluent_atoms, index_tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -136,7 +135,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = valla::plain::insert(dense_derived_atoms, tree_table);
+            state_derived_atoms_slot = valla::u::plain::insert(dense_derived_atoms, index_tree_table);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -271,7 +270,8 @@ static void apply_action_effects(GroundAction action,
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(const State& state, GroundAction action, ContinuousCost state_metric_value)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
-    auto& tree_table = problem.get_tree_table();
+    auto& index_tree_table = problem.get_index_tree_table();
+    auto& double_tree_table = problem.get_double_tree_table();
 
     /* Dense state*/
     auto unpacked_state = m_unpacked_state_pool.get_or_allocate(problem);
@@ -285,9 +285,9 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_derived_atoms_slot = valla::plain::get_empty_root_slot();
-    auto state_numeric_variables = m_empty_double_list;
+    auto state_fluent_atoms_slot = valla::Slot<Index>();
+    auto state_derived_atoms_slot = valla::Slot<Index>();
+    auto state_numeric_variables = valla::Slot<Index>();
 
     auto successor_state_metric_value = state_metric_value;
 
@@ -303,11 +303,11 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = valla::plain::insert(dense_fluent_atoms, tree_table);
+    state_fluent_atoms_slot = valla::u::plain::insert(dense_fluent_atoms, index_tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+    state_numeric_variables = valla::d::plain::insert(dense_fluent_numeric_variables, index_tree_table, double_tree_table);
 
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
@@ -330,7 +330,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table);
+            state_derived_atoms_slot = valla::u::plain::insert(dense_derived_atoms, index_tree_table);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -365,7 +365,10 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     }
 
     dense_fluent_numeric_variables.clear();
-    dense_fluent_numeric_variables = *problem.get_double_list(state.get_numeric_variables());
+    for (const auto value : state.get_numeric_variables(problem))
+    {
+        dense_fluent_numeric_variables.push_back(value);
+    }
 
     return State(m_states.at(state), &state, std::move(unpacked_state), shared_from_this());
 }

@@ -81,11 +81,13 @@ ATTRIBUTES = [
     "num_of_actions",
     "num_of_axioms",
 
-    "num_slots",
+    "num_index_slots",
+    "num_double_slots",
     "average_num_fluent_state_atoms",
     "average_num_derived_state_atoms",
     "average_num_state_atoms",
-    "average_num_slots_per_state",
+    "average_num_index_slots_per_state",
+    "average_num_double_slots_per_state",
 
     "initial_h_value",
 
@@ -112,48 +114,47 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     weight_standard_queue = 1
     heuristic_type = "blind"
     enabled_grounding = True
+    enable_eager = True
 
-    enable_eager_str = None
-    for enable_eager in [True, False]:
-        enable_eager_str = "eager" if enable_eager else "lazy"
-        for enabled_grounding in [True, False]:
-            enabled_grounding_str = "grounded" if enabled_grounding else "lifted"
-    
-            ################ Grounded ################
-            run = exp.add_run()
-            run.add_resource("domain", task.domain_file, symlink=True)
-            run.add_resource("problem", task.problem_file, symlink=True)
+    for enabled_grounding in [True, False]:
+        enabled_grounding_str = "grounded" if enabled_grounding else "lifted"
 
-            run.add_command(
-                f"astar_{enable_eager_str}_planner",
-                [
-                    "{run_planner}", 
-                    "{planner_exe}", 
-                    "{domain}", 
-                    "{problem}", 
-                    "plan.out", 
-                    str(int(enable_eager)), 
-                    str(weight_preferred_queue), 
-                    str(weight_standard_queue), 
-                    heuristic_type, 
-                    str(int(enabled_grounding))
-                ],
-                time_limit=TIME_LIMIT,
-                memory_limit=MEMORY_LIMIT,
-            )
-            # AbsoluteReport needs the following properties:
-            # 'domain', 'problem', 'algorithm', 'coverage'.
-            run.set_property("domain", task.domain)
-            run.set_property("problem", task.problem)
-            run.set_property("algorithm", f"mimir-{enabled_grounding_str}-astar-{enable_eager_str}-blind")
-            # BaseReport needs the following properties:
-            # 'time_limit', 'memory_limit'.
-            run.set_property("time_limit", TIME_LIMIT)
-            run.set_property("memory_limit", MEMORY_LIMIT)
-            # Every run has to have a unique id in the form of a list.
-            # The algorithm name is only really needed when there are
-            # multiple algorithms.
-            run.set_property("id", [f"mimir-{enabled_grounding_str}-astar-{enable_eager_str}-blind", task.domain, task.problem])
+        ################ Grounded ################
+        run = exp.add_run()
+        run.add_resource("domain", task.domain_file, symlink=True)
+        run.add_resource("problem", task.problem_file, symlink=True)
+
+        run.add_command(
+            f"astar_eager_planner",
+            [
+                "{run_planner}", 
+                "{planner_exe}", 
+                "{domain}", 
+                "{problem}", 
+                "plan.out", 
+                str(int(enable_eager)), 
+                str(weight_preferred_queue), 
+                str(weight_standard_queue), 
+                heuristic_type, 
+                str(int(enabled_grounding))
+            ],
+            time_limit=TIME_LIMIT,
+            memory_limit=MEMORY_LIMIT,
+        )
+        # AbsoluteReport needs the following properties:
+        # 'domain', 'problem', 'algorithm', 'coverage'.
+        run.set_property("domain", task.domain)
+        run.set_property("problem", task.problem)
+        run.set_property("algorithm", f"mimir-{enabled_grounding_str}-astar-eager-blind")
+        # BaseReport needs the following properties:
+        # 'time_limit', 'memory_limit'.
+        run.set_property("time_limit", TIME_LIMIT)
+        run.set_property("memory_limit", MEMORY_LIMIT)
+        # Every run has to have a unique id in the form of a list.
+        # The algorithm name is only really needed when there are
+        # multiple algorithms.
+        run.set_property("id", [f"mimir-{enabled_grounding_str}-astar-eager-blind", task.domain, task.problem])
+
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

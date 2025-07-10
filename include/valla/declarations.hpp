@@ -28,6 +28,7 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
+#include <smmintrin.h>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -44,18 +45,22 @@ inline bool is_within_bounds(const Container& container, size_t index)
 }
 
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
+using IndexList = std::vector<Index>;
+
+using DoubleList = std::vector<double>;
 
 /**
- * Integer slot
+ * Slot
  */
 
+template<typename T>
 struct Slot
 {
-    Index i1;
-    Index i2;
+    T i1;
+    T i2;
 
     constexpr Slot() : i1(0), i2(0) {}
-    constexpr Slot(Index i1, Index i2) : i1(i1), i2(i2) {}
+    constexpr Slot(T i1, T i2) : i1(i1), i2(i2) {}
 
     constexpr friend bool operator==(const Slot& lhs, const Slot& rhs) { return lhs.i1 == rhs.i1 && lhs.i2 == rhs.i2; }
 
@@ -66,11 +71,34 @@ struct Slot
     }
 };
 
-static_assert(alignof(Slot) == 4);
+using IndexSlot = Slot<Index>;
+using DoubleSlot = Slot<double>;
 
-static constexpr const Slot EMPTY_ROOT_SLOT = Slot(Index(0), Index(0));  ///< represents the empty state.
+static constexpr const Slot EMPTY_ROOT_SLOT = IndexSlot();  ///< represents the empty state.
 
-using IndexList = std::vector<Index>;
+/**
+ * Iterator
+ */
+
+struct Entry
+{
+    Index m_index;
+    Index m_size;
+
+    Entry(Index index, Index size) : m_index(index), m_size(size) {}
+};
+
+inline void copy_object(const std::vector<Entry>& src, std::vector<Entry>& dst)
+{
+    dst.clear();
+    dst.insert(dst.end(), src.begin(), src.end());
+}
+
+inline void copy_object(const std::vector<double>& src, std::vector<double>& dst)
+{
+    dst.clear();
+    dst.insert(dst.end(), src.begin(), src.end());
+}
 
 /**
  * Printing
@@ -89,41 +117,73 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec)
     return out;
 }
 
+inline std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t>& vec)
+{
+    out << "[";
+    for (const auto x : vec)
+    {
+        out << static_cast<uint32_t>(x) << ", ";
+    }
+    out << "]";
+
+    return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, __m128i v)
+{
+    alignas(16) int8_t bytes[16];
+    _mm_storeu_si128(reinterpret_cast<__m128i*>(bytes), v);
+
+    out << "[";
+    for (int i = 0; i < 16; ++i)
+    {
+        out << static_cast<int>(bytes[i]);
+        if (i < 15)
+            out << ", ";
+    }
+    out << "]" << std::endl;
+
+    return out;
+}
+
 /**
  * Hashing
  */
 
+template<typename T>
 struct SlotHash
 {
-    size_t operator()(Slot el) const { return absl::HashOf(el.i1, el.i2); }
+    size_t operator()(Slot<T> el) const { return absl::HashOf(el.i1, el.i2); }
 };
 
 // Instead of additionally storing the size in the unstable_to_stable mapping,
 // we reference to stable_to_unstable to access this piece of information.
+template<typename T>
 struct IndexReferencedSlotHash
 {
-    std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+    const std::vector<Slot<T>>& stable_to_unstable;
 
-    IndexReferencedSlotHash(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+    IndexReferencedSlotHash(const std::vector<Slot<T>>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
 
     size_t operator()(Index el) const
     {
-        assert(el < stable_to_unstable.get().size());
-        return SlotHash {}(stable_to_unstable.get()[el]);
+        assert(el < stable_to_unstable.size());
+        return SlotHash<T> {}(stable_to_unstable[el]);
     }
 };
 
+template<typename T>
 struct IndexReferencedSlotEqualTo
 {
-    std::reference_wrapper<const std::vector<Slot>> stable_to_unstable;
+    const std::vector<Slot<T>>& stable_to_unstable;
 
-    IndexReferencedSlotEqualTo(const std::vector<Slot>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+    IndexReferencedSlotEqualTo(const std::vector<Slot<T>>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
 
     size_t operator()(Index lhs, Index rhs) const
     {
-        assert(lhs < stable_to_unstable.get().size());
-        assert(rhs < stable_to_unstable.get().size());
-        return stable_to_unstable.get()[lhs] == stable_to_unstable.get()[rhs];
+        assert(lhs < stable_to_unstable.size());
+        assert(rhs < stable_to_unstable.size());
+        return stable_to_unstable[lhs] == stable_to_unstable[rhs];
     }
 };
 

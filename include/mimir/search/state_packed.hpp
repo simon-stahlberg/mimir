@@ -28,22 +28,23 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
+#include <valla/double/tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
+#include <valla/uint/tree_compression.hpp>
 
 namespace mimir::search
 {
-namespace v = valla::plain;
+namespace v = valla::u::plain;
 
 /// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
 class PackedStateImpl
 {
 private:
-    v::RootSlotType m_fluent_atoms;
-    v::RootSlotType m_derived_atoms;
-    Index m_numeric_variables;
+    valla::Slot<Index> m_fluent_atoms;
+    valla::Slot<Index> m_derived_atoms;
+    valla::Slot<Index> m_numeric_variables;
 
-    PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
+    PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -57,12 +58,12 @@ public:
      */
 
     template<formalism::IsFluentOrDerivedTag P>
-    v::RootSlotType get_atoms() const;
-    Index get_numeric_variables() const;
+    valla::Slot<Index> get_atoms() const;
+    valla::Slot<Index> get_numeric_variables() const;
 
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms(const formalism::ProblemImpl& problem) const;
-    const FlatDoubleList& get_numeric_variables(const formalism::ProblemImpl& problem) const;
+    auto get_numeric_variables(const formalism::ProblemImpl& problem) const;
 
     /**
      * Utils
@@ -87,7 +88,7 @@ public:
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const;
 };
 
-static_assert(sizeof(PackedStateImpl) == 20);
+static_assert(sizeof(PackedStateImpl) == 24);
 
 /**
  * Implementations
@@ -96,7 +97,13 @@ static_assert(sizeof(PackedStateImpl) == 20);
 template<formalism::IsFluentOrDerivedTag P>
 auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
-    return std::ranges::subrange(valla::plain::begin(get_atoms<P>(), problem.get_tree_table()), valla::plain::end());
+    return std::ranges::subrange(valla::u::plain::begin(get_atoms<P>(), problem.get_index_tree_table()), valla::u::plain::end());
+}
+
+inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
+{
+    return std::ranges::subrange(valla::d::plain::begin(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_tree_table()),
+                                 valla::d::plain::end());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
@@ -130,7 +137,7 @@ namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
 
-static_assert(sizeof(PackedStateImplMap::value_type) == 24);
+static_assert(sizeof(PackedStateImplMap::value_type) == 28);
 }
 
 #endif

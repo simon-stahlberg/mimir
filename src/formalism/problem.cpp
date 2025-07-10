@@ -87,7 +87,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_index_lists(),
     m_flat_double_list_map(),
     m_flat_double_lists(),
-    m_tree_table(),
+    m_index_tree_table(),
+    m_double_tree_table(),
     m_bitset_pool(),
     m_index_list_pool(),
     m_double_list_pool()
@@ -246,8 +247,11 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
  * Additional members
  */
 
-valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
-const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
+valla::IndexedHashSet<Index>& ProblemImpl::get_index_tree_table() { return m_index_tree_table; }
+const valla::IndexedHashSet<Index>& ProblemImpl::get_index_tree_table() const { return m_index_tree_table; }
+
+valla::IndexedHashSet<double>& ProblemImpl::get_double_tree_table() { return m_double_tree_table; }
+const valla::IndexedHashSet<double>& ProblemImpl::get_double_tree_table() const { return m_double_tree_table; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {

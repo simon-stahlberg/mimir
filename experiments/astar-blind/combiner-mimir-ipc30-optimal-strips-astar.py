@@ -51,11 +51,13 @@ ATTRIBUTES = [
     "num_of_actions",
     "num_of_axioms",
 
-    "num_slots",
+    "num_index_slots",
+    "num_double_slots",
     "average_num_fluent_state_atoms",
     "average_num_derived_state_atoms",
     "average_num_state_atoms",
-    "average_num_slots_per_state",
+    "average_num_index_slots_per_state",
+    "average_num_double_slots_per_state",
 
     "initial_h_value",
 

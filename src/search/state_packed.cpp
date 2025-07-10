@@ -22,7 +22,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
+PackedStateImpl::PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables) :
     m_fluent_atoms(fluent_atoms),
     m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
@@ -30,7 +30,7 @@ PackedStateImpl::PackedStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType d
 }
 
 template<IsFluentOrDerivedTag P>
-v::RootSlotType PackedStateImpl::get_atoms() const
+valla::Slot<Index> PackedStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, FluentTag>)
     {
@@ -46,15 +46,10 @@ v::RootSlotType PackedStateImpl::get_atoms() const
     }
 }
 
-template v::RootSlotType PackedStateImpl::get_atoms<FluentTag>() const;
-template v::RootSlotType PackedStateImpl::get_atoms<DerivedTag>() const;
+template valla::Slot<Index> PackedStateImpl::get_atoms<FluentTag>() const;
+template valla::Slot<Index> PackedStateImpl::get_atoms<DerivedTag>() const;
 
-Index PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
-
-const FlatDoubleList& PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
-{
-    return *problem.get_double_list(get_numeric_variables());
-}
+valla::Slot<Index> PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
 template<IsFluentOrDerivedTag P>
 bool PackedStateImpl::literal_holds(GroundLiteral<P> literal, const ProblemImpl& problem) const
@@ -82,7 +77,7 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::SlotHash {}(el.get_atoms<FluentTag>()), el.get_numeric_variables());
+    return loki::hash_combine(valla::SlotHash<valla::Index> {}(el.get_atoms<FluentTag>()), valla::SlotHash<valla::Index> {}(el.get_numeric_variables()));
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
