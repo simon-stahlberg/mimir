@@ -65,19 +65,23 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("filtered-astar-blind-30")
+exp = Experiment("filtered-astar-blind-30-numeric")
 
 def add_average_num_entities_per_state(run):
-    average_num_state_atoms = run.get("average_num_state_atoms")
-    average_num_slots_per_state = run.get("average_num_slots_per_state")
     algorithm = run.get("algorithm")
     if algorithm in ["list-grounded-astar-eager-blind", "list-grounded-astar-lazy-blind", "list-lifted-astar-eager-blind", "list-lifted-astar-lazy-blind"]:
+        average_num_state_atoms = run.get("average_num_state_atoms")
         run["average_num_entities_per_state"] = average_num_state_atoms
     elif algorithm in ["tree-grounded-astar-eager-blind", "tree-grounded-astar-lazy-blind", "tree-lifted-astar-eager-blind", "tree-lifted-astar-lazy-blind"]:
-        run["average_num_entities_per_state"] = average_num_slots_per_state
+        average_num_index_slots_per_state = run.get("average_num_index_slots_per_state") 
+        average_num_double_slots_per_state = run.get("average_num_double_slots_per_state")
+        if average_num_index_slots_per_state is None or average_num_double_slots_per_state is None:
+            run["average_num_entities_per_state"] = None
+        else:
+            run["average_num_entities_per_state"] = average_num_index_slots_per_state + average_num_double_slots_per_state
     return run
 
-exp.add_fetcher("combined-astar-blind-30-eval", name="fetch")
+exp.add_fetcher("combined-astar-blind-30-numeric-eval", name="fetch")
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter=[add_average_num_entities_per_state]))
 

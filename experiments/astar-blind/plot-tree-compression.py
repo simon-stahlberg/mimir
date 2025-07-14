@@ -4,8 +4,8 @@ import json
 from collections import defaultdict
 
 def main():
-    with open("filtered-astar-blind-30-eval/properties", 'r') as file:
-    # with open("data/2025-05-06-astar30-ipc-optimal-strips-eval/properties", 'r') as file:
+    # with open("filtered-astar-blind-30-propositional-eval/properties", 'r') as file:
+    with open("filtered-astar-blind-30-numeric-eval/properties", 'r') as file:
         data = json.load(file)
 
         task_to_runs = defaultdict(list)
@@ -30,7 +30,7 @@ def main():
                     list_avg_num_state_atoms = run["average_num_state_atoms"] 
                 elif run["algorithm"] == "tree-lifted-astar-eager-blind":
                     tree_peak_mem = run["peak_memory_usage_in_bytes"]
-                    tree_avg_num_slots = run["average_num_slots_per_state"]
+                    tree_avg_num_slots = run["average_num_index_slots_per_state"] + run["average_num_double_slots_per_state"]
 
             X.append(list_avg_num_state_atoms / tree_avg_num_slots)
             Y.append(list_peak_mem / tree_peak_mem)

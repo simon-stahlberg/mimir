@@ -62,7 +62,7 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("combined-astar-blind-30")
+exp = Experiment("combined-astar-blind-30-propositional")
 
 def rename_algorithm_lhs(properties):
     """Rename algorithm dynamically during fetching."""
