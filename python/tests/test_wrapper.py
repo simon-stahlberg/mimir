@@ -259,17 +259,17 @@ class TestState(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert initial_state.get_index() is not None
 
-    def test_get_ground_atoms(self):
+    def test_get_atoms(self):
         domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
         problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
         assert initial_state.get_index() is not None
-        initial_atoms = initial_state.get_ground_atoms()
-        initial_static_atoms = initial_state.get_ground_atoms(ignore_fluent=True, ignore_derived=True)
-        initial_fluent_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_derived=True)
-        initial_derived_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_fluent=True)
+        initial_atoms = initial_state.get_atoms()
+        initial_static_atoms = initial_state.get_atoms(ignore_fluent=True, ignore_derived=True)
+        initial_fluent_atoms = initial_state.get_atoms(ignore_static=True, ignore_derived=True)
+        initial_derived_atoms = initial_state.get_atoms(ignore_static=True, ignore_fluent=True)
         assert len(initial_atoms) == 28
         assert len(initial_static_atoms) == 22
         assert len(initial_fluent_atoms) == 1
@@ -284,7 +284,7 @@ class TestState(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
-        assert initial_state.contains_all(initial_state.get_ground_atoms())
+        assert initial_state.contains_all(initial_state.get_atoms())
 
     def test_literal_holds(self):
         domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'

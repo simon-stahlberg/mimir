@@ -1397,6 +1397,19 @@ class GroundAction:
         """
         return [GroundConditionalEffect(x) for x in self._advanced_ground_action.get_conditional_effects()]
 
+    def is_applicable(self, state: 'State') -> 'bool':
+        """
+        Check if the ground action is applicable in the given state.
+
+        :param state: The state to check applicability against.
+        :type state: State
+        :return: True if the ground action is applicable, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(state, State), "Invalid state type."
+        assert state._problem == self._problem, "State and action belong to different problems."
+        return self.get_precondition().holds(state)
+
     def apply(self, state: 'State') -> 'State':
         """
         Apply the ground action to the given state.
@@ -1956,7 +1969,7 @@ class State:
         """
         return self._problem
 
-    def get_ground_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
+    def get_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
         """
         Returns the ground atoms of the state.
 
