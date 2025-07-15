@@ -2137,7 +2137,7 @@ class State:
         :return: A string representation of the state.
         :rtype: str
         """
-        return self._advanced_state.to_string(self._problem._advanced_problem)
+        return str(self._advanced_state)
 
     def __repr__(self) -> 'str':
         """
