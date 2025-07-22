@@ -41,7 +41,7 @@ public:
     IndexedHashSet(IndexedHashSet&& other) = delete;
     IndexedHashSet& operator=(IndexedHashSet&& other) = delete;
 
-    auto insert(Slot<T> slot)
+    Index insert(Slot<T> slot)
     {
         assert(m_uniqueness.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
@@ -54,10 +54,10 @@ public:
         if (!result.second)
             m_index_to_slot.pop_back();
 
-        return result;
+        return *result.first;
     }
 
-    Slot<T> operator[](Index index) const
+    const Slot<T>& operator[](Index index) const
     {
         assert(index < m_index_to_slot.size() && "Index out of bounds");
 
@@ -69,6 +69,9 @@ public:
 private:
     std::vector<Slot<T>> m_index_to_slot;
     absl::flat_hash_set<Index, IndexReferencedSlotHash<T>, IndexReferencedSlotEqualTo<T>> m_uniqueness;
+
+    template<typename Hash, typename EqualTo, size_t InitialCapacity>
+    friend class TreeHashIDMap;
 };
 
 }

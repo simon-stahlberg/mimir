@@ -29,14 +29,12 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/double/tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/uint/tree_compression.hpp>
+#include <valla/plain/double/swiss.hpp>
+#include <valla/plain/uint/swiss.hpp>
 
 namespace mimir::search
 {
-namespace v = valla::u::plain;
-
 /// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
 class PackedStateImpl
 {
@@ -98,13 +96,12 @@ static_assert(sizeof(PackedStateImpl) == 24);
 template<formalism::IsFluentOrDerivedTag P>
 auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
-    return std::ranges::subrange(valla::u::plain::begin(get_atoms<P>(), problem.get_index_tree_table()), valla::u::plain::end());
+    return valla::plain::uint::swiss::range(get_atoms<P>(), problem.get_index_tree_table());
 }
 
 inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
 {
-    return std::ranges::subrange(valla::d::plain::begin(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_tree_table()),
-                                 valla::d::plain::end());
+    return valla::plain::dbl::swiss::range(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_tree_table());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
