@@ -2,8 +2,6 @@ name: Pip - Macos
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build:

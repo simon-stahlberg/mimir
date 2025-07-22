@@ -9,8 +9,6 @@ jobs:
     steps:
     - name: Checkout Mimir
       uses: actions/checkout@v2
-      with:
-        ref: main
 
     - name: Configure, Build, and Install Dependencies
       run: |
