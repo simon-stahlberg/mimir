@@ -18,8 +18,6 @@
 #ifndef VALLA_INCLUDE_DECLARATIONS_HPP_
 #define VALLA_INCLUDE_DECLARATIONS_HPP_
 
-#include "valla/config.hpp"
-//
 #include <absl/container/flat_hash_map.h>
 #include <absl/container/flat_hash_set.h>
 #include <absl/container/node_hash_map.h>
@@ -127,23 +125,6 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t>& v
         out << static_cast<uint32_t>(x) << ", ";
     }
     out << "]";
-
-    return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, __m128i v)
-{
-    alignas(16) int8_t bytes[16];
-    _mm_storeu_si128(reinterpret_cast<__m128i*>(bytes), v);
-
-    out << "[";
-    for (int i = 0; i < 16; ++i)
-    {
-        out << static_cast<int>(bytes[i]);
-        if (i < 15)
-            out << ", ";
-    }
-    out << "]" << std::endl;
 
     return out;
 }
