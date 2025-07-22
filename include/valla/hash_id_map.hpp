@@ -306,13 +306,13 @@ private:
         // Relocate remaining roots.
         for (Index stable_index = 1; stable_index < this->m_roots.size(); ++stable_index)
         {
-            Slot<Index> root = this->m_roots.m_index_to_slot[stable_index];
+            Slot<Index> root = this->m_roots.m_slots[stable_index];
 
             assert(root.i2 > 0);  // Ensure nonempty.
 
             Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
 
-            this->m_roots.m_index_to_slot[stable_index] = Slot<Index>(unstable_index, root.i2);
+            this->m_roots.m_slots[stable_index] = Slot<Index>(unstable_index, root.i2);
             this->m_roots.m_uniqueness.emplace(stable_index);
         }
 
@@ -339,7 +339,18 @@ public:
 
     const Slot<Index>& lookup_internal(Index pos) const { return this->m_slots[pos]; }
 
+    size_t num_internals() const { return Base::size(); }
     size_t num_roots() const { return m_roots.size(); }
+    size_t num_slots() const { return num_internals() + num_roots(); }
+
+    size_t mem_usage() const
+    {
+        size_t usage = 0;
+        usage += m_roots.mem_usage();
+        usage += this->m_slots.capacity() * sizeof(Slot<Index>);
+        usage += this->m_controls.capacity() * sizeof(ctrl_t);
+        return usage;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const TreeHashIDMap& el)
     {
