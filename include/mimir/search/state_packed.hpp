@@ -30,8 +30,8 @@
 #include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/plain/double/swiss.hpp>
-#include <valla/plain/uint/swiss.hpp>
+#include <valla/plain/double/hash_id_map.hpp>
+#include <valla/plain/uint/hash_id_map.hpp>
 
 namespace mimir::search
 {
@@ -39,11 +39,11 @@ namespace mimir::search
 class PackedStateImpl
 {
 private:
-    valla::Slot<Index> m_fluent_atoms;
-    valla::Slot<Index> m_derived_atoms;
-    valla::Slot<Index> m_numeric_variables;
+    Index m_fluent_atoms;
+    Index m_derived_atoms;
+    Index m_numeric_variables;
 
-    PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables);
+    PackedStateImpl(Index fluent_atoms, Index derived_atoms, Index numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -57,8 +57,8 @@ public:
      */
 
     template<formalism::IsFluentOrDerivedTag P>
-    valla::Slot<Index> get_atoms() const;
-    valla::Slot<Index> get_numeric_variables() const;
+    Index get_atoms() const;
+    Index get_numeric_variables() const;
 
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms(const formalism::ProblemImpl& problem) const;
@@ -87,7 +87,7 @@ public:
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const;
 };
 
-static_assert(sizeof(PackedStateImpl) == 24);
+static_assert(sizeof(PackedStateImpl) == 12);
 
 /**
  * Implementations
@@ -96,12 +96,12 @@ static_assert(sizeof(PackedStateImpl) == 24);
 template<formalism::IsFluentOrDerivedTag P>
 auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::uint::swiss::range(get_atoms<P>(), problem.get_index_tree_table());
+    return valla::plain::uint::hash_id_map::range(get_atoms<P>(), problem.get_index_hashid_tree_table());
 }
 
 inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::dbl::swiss::range(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_tree_table());
+    return valla::plain::dbl::hash_id_map::range(get_numeric_variables(), problem.get_index_hashid_tree_table(), problem.get_double_tree_table());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
@@ -120,8 +120,13 @@ namespace loki
 template<>
 struct Hash<mimir::search::PackedStateImpl>
 {
+    const mimir::formalism::ProblemImpl& problem;
+
+    explicit Hash(const mimir::formalism::ProblemImpl& problem);
+
     size_t operator()(const mimir::search::PackedStateImpl& el) const;
 };
+
 /// @private
 template<>
 struct EqualTo<mimir::search::PackedStateImpl>
@@ -135,7 +140,7 @@ namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
 
-static_assert(sizeof(PackedStateImplMap::value_type) == 28);
+static_assert(sizeof(PackedStateImplMap::value_type) == 16);
 }
 
 #endif

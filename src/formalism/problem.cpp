@@ -89,6 +89,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_double_lists(),
     m_index_tree_table(),
     m_double_tree_table(),
+    m_index_hashid_tree_table(),
     m_bitset_pool(),
     m_index_list_pool(),
     m_double_list_pool()
@@ -252,6 +253,9 @@ const valla::IndexedHashSet<Index>& ProblemImpl::get_index_tree_table() const { 
 
 valla::IndexedHashSet<double>& ProblemImpl::get_double_tree_table() { return m_double_tree_table; }
 const valla::IndexedHashSet<double>& ProblemImpl::get_double_tree_table() const { return m_double_tree_table; }
+
+valla::TreeHashIDMap<>& ProblemImpl::get_index_hashid_tree_table() { return m_index_hashid_tree_table; }
+const valla::TreeHashIDMap<>& ProblemImpl::get_index_hashid_tree_table() const { return m_index_hashid_tree_table; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {

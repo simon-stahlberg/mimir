@@ -263,13 +263,13 @@ public:
 };
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline const_iterator<Hash, EqualTo, InitialCapacity> begin(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
+inline auto begin(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
 {
     return const_iterator(table, root, true);
 }
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline const_iterator<Hash, EqualTo, InitialCapacity> end(const TreeHashIDMap<Hash, EqualTo, InitialCapacity>&)
+inline auto end(const TreeHashIDMap<Hash, EqualTo, InitialCapacity>&)
 {
     return const_iterator<Hash, EqualTo, InitialCapacity>();
 }
