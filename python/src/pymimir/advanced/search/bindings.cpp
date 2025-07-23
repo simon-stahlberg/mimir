@@ -596,7 +596,6 @@ void bind_module_definitions(nb::module_& m)
              "state_metric_value"_a,
              nb::rv_policy::copy)
         .def("get_state", &StateRepositoryImpl::get_state, nb::rv_policy::copy, "packed_state"_a)
-        .def("get_state_index", &StateRepositoryImpl::get_state_index, nb::rv_policy::copy, "packed_state"_a)
         .def("get_state_count", &StateRepositoryImpl::get_state_count, nb::rv_policy::copy)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);

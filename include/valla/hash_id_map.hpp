@@ -37,6 +37,18 @@ enum class ctrl_t : int8_t
     kSentinel = -1,  // 0b11111111
 };
 
+inline std::ostream& operator<<(std::ostream& out, const std::vector<ctrl_t>& vec)
+{
+    out << "[";
+    for (const auto x : vec)
+    {
+        out << static_cast<int32_t>(x) << ", ";
+    }
+    out << "]";
+
+    return out;
+}
+
 alignas(16) inline static const __m128i kEmptyPattern = _mm_set1_epi8(static_cast<signed char>(ctrl_t::kEmpty));
 
 /// @brief `HashIDMap implements a hash ID map with open addressing in a Swiss table format where the position of a key implicitly becomes the index.
@@ -78,6 +90,17 @@ protected:
 
     Statistics m_statistics;
 
+    size_t num_occupied() const
+    {
+        size_t count = 0;
+        for (const auto& ctrl : m_controls)
+        {
+            if (static_cast<int>(ctrl) >= 0)
+                ++count;
+        }
+        return count;
+    }
+
 public:
     HashIDMap() : m_slots(), m_controls(), m_size(0), m_capacity(InitialCapacity), m_hash(), m_equal_to()
     {
@@ -87,22 +110,6 @@ public:
         m_controls.reserve(m_capacity + 15);
         m_controls.resize(m_capacity, ctrl_t::kEmpty);
         m_controls.resize(m_capacity + 15, ctrl_t::kSentinel);
-    }
-
-    void rehash(double factor = 2.)
-    {
-        using clock = std::chrono::high_resolution_clock;
-
-        auto start = clock::now();  // Start timing
-
-        ++m_statistics.m_num_rehashes;
-
-        size_t new_capacity = factor * m_capacity;
-
-        self().rehash_impl(new_capacity);
-
-        auto end = clock::now();
-        m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
 
     Index insert(const Key& slot)
@@ -206,6 +213,8 @@ private:
 
     Index insert(Slot<Index> slot, RehashData& tmp)
     {
+        assert(this->size() < tmp.capacity && "Insert failed. Rehashing to higher capacity is required.");
+
         size_t h = this->m_hash(slot);
         size_t mask = (tmp.capacity - 1);
         size_t i = h & mask;
@@ -257,6 +266,7 @@ private:
 
                     tmp.slots[idx] = slot;
                     tmp.controls[idx] = ctrl;
+                    ++this->m_size;
                     ++this->m_statistics.m_num_probes;
                     return idx;
                 }
@@ -268,6 +278,7 @@ private:
         }
     }
 
+    template<bool StableLeaves>
     Index rehash_recursively(Index unstable_index, size_t size, RehashData& tmp)
     {
         /* Base case 1: skipped node creation */
@@ -276,26 +287,36 @@ private:
 
         /* Note: caching relocation is expensive to cache because the tree structure depends on size. */
 
+        if constexpr (StableLeaves)
+        {
+            if (size == 2)
+                return unstable_index;
+        }
+
         assert(is_within_bounds(this->m_slots, unstable_index));
         const auto& slot = this->m_slots[unstable_index];
 
         /* Base case 3: rellocate slot */
-        if (size == 2)
-            return insert(slot, tmp);
+        if constexpr (!StableLeaves)
+        {
+            if (size == 2)
+                return insert(slot, tmp);
+        }
 
         /* Divide */
         assert(size >= 2);
         const auto mid = std::bit_floor(size - 1);
 
         /* Conquer */
-        Index i1 = rehash_recursively(slot.i1, mid, tmp);
-        Index i2 = rehash_recursively(slot.i2, size - mid, tmp);
+        Index i1 = rehash_recursively<StableLeaves>(slot.i1, mid, tmp);
+        Index i2 = rehash_recursively<StableLeaves>(slot.i2, size - mid, tmp);
 
         return insert(Slot<Index>(i1, i2), tmp);
     }
 
     /// @brief Depth-first rehash policy for a HashIDMap that stores a collection of perfectly balanced binary trees.
     /// @param new_capacity is the capacity after rehash.
+    template<bool StableLeaves>
     void rehash_impl(size_t new_capacity)
     {
         auto tmp = RehashData(new_capacity);
@@ -310,7 +331,7 @@ private:
 
             assert(root.i2 > 0);  // Ensure nonempty.
 
-            Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
+            Index unstable_index = rehash_recursively<StableLeaves>(root.i1, root.i2, tmp);
 
             this->m_roots.m_slots[stable_index] = Slot<Index>(unstable_index, root.i2);
             this->m_roots.m_uniqueness.emplace(stable_index);
@@ -329,6 +350,26 @@ public:
     explicit TreeHashIDMap() : Base(), m_roots()
     {
         this->m_roots.insert(Slot<Index>(0, 0));  // root representing empty sequence
+    }
+
+    void rehash(bool stable_leaves = false, double factor = 2.)
+    {
+        using clock = std::chrono::high_resolution_clock;
+
+        auto start = clock::now();  // Start timing
+
+        ++this->m_statistics.m_num_rehashes;
+
+        size_t new_capacity = factor * this->m_capacity;
+        this->m_size = 0;
+
+        if (stable_leaves)
+            rehash_impl<true>(new_capacity);
+        else
+            rehash_impl<false>(new_capacity);
+
+        auto end = clock::now();
+        this->m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
 
     Index insert_root(const Slot<Index>& slot) { return m_roots.insert(slot); }
