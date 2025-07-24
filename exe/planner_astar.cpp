@@ -189,8 +189,16 @@ int main(int argc, char** argv)
     uint64_t num_fluent_state_variables = 0;
     uint64_t num_derived_state_variables = 0;
     uint64_t num_numeric_state_variables = 0;
+    size_t states_mem_usage = 0;
     for (const auto& [packed_state, index] : state_repository->get_states())
     {
+        const auto& fluent_atoms = problem->get_index_list(packed_state.get_atoms<formalism::FluentTag>());
+        states_mem_usage += fluent_atoms->blocks().size() * sizeof(Index) + sizeof(FlatIndexList);
+        const auto& derived_atoms = problem->get_index_list(packed_state.get_atoms<formalism::DerivedTag>());
+        states_mem_usage += derived_atoms->blocks().size() * sizeof(Index) + sizeof(FlatIndexList);
+        const auto& numeric_variables = problem->get_double_list(packed_state.get_numeric_variables());
+        states_mem_usage += numeric_variables->size() * sizeof(double) + sizeof(FlatDoubleList);
+
         auto state = state_repository->get_state(packed_state);
         num_fluent_state_variables += state.get_atoms<formalism::FluentTag>().count();
         num_derived_state_variables += state.get_atoms<formalism::DerivedTag>().count();
@@ -210,6 +218,9 @@ int main(int argc, char** argv)
     std::cout << "Average number of index slots per state: " << 0 << std::endl;
     std::cout << "Average number of double slots per state: " << 0 << std::endl;
     std::cout << "Average number of slots per state: " << 0 << std::endl;
+
+    std::cout << "Peak memory usage in bytes for states: "
+              << states_mem_usage + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index)) << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {
