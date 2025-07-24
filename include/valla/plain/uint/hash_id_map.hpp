@@ -46,14 +46,15 @@ namespace valla::plain::uint::hash_id_map
 /// @return the index of the slot at the root.
 template<std::input_iterator Iterator, typename Hash, typename EqualTo, size_t InitialCapacity>
     requires std::same_as<std::iter_value_t<Iterator>, Index>
-inline Index insert_recursively(Iterator it, Iterator end, size_t size, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
+inline Index
+insert_recursively(Iterator it, Iterator end, size_t size, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table, IndexedHashSet<Index>& leaf_table)
 {
     /* Base cases */
     if (size == 1)
-        return *it;  ///< Skip node creation
+        return leaf_table.insert(Slot<Index>(*it, *it));
 
     if (size == 2)
-        return table.insert_internal(Slot<Index>(*it, *(it + 1)));
+        return leaf_table.insert(Slot<Index>(*it, *(it + 1)));
 
     /* Divide */
     const auto mid = std::bit_floor(size - 1);
@@ -61,10 +62,10 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, TreeHash
     /* Conquer */
 
     const auto mid_it = it + mid;
-    const auto i1 = insert_recursively(it, mid_it, mid, table);
-    const auto i2 = insert_recursively(mid_it, end, size - mid, table);
+    const auto i1 = insert_recursively(it, mid_it, mid, inner_table, leaf_table);
+    const auto i2 = insert_recursively(mid_it, end, size - mid, inner_table, leaf_table);
 
-    return table.insert_internal(Slot<Index>(i1, i2));
+    return inner_table.insert_internal(Slot<Index>(i1, i2));
 }
 
 /// @brief Inserts the elements from the given `state` into the `table`.
@@ -73,7 +74,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, TreeHash
 /// @return A pair (it, bool) where it points to the entry in the root table and bool is true if and only if the state was newly inserted.
 template<std::ranges::input_range Range, typename Hash, typename EqualTo, size_t InitialCapacity>
     requires std::same_as<std::ranges::range_value_t<Range>, Index>
-Index insert(const Range& state, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
+Index insert(const Range& state, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table, IndexedHashSet<Index>& leaf_table)
 {
     assert(std::is_sorted(state.begin(), state.end()));
 
@@ -83,10 +84,10 @@ Index insert(const Range& state, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& 
     if (size == 0)  ///< Special case for empty state.
         return 0;   ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
-    while ((static_cast<double>(table.size() + 2 * size) / table.capacity()) > table.max_load_factor())
-        table.rehash(false);
+    if (!inner_table.has_capacity_for(2 * size))
+        inner_table.rehash();
 
-    return table.insert_root(Slot<Index>(insert_recursively(state.begin(), state.end(), size, table), size));
+    return inner_table.insert_root(Slot<Index>(insert_recursively(state.begin(), state.end(), size, inner_table, leaf_table), size));
 }
 
 /**
@@ -99,20 +100,23 @@ Index insert(const Range& state, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& 
 /// @param tree_table is the tree table.
 /// @param out_state is the output state.
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline void read_state_recursively(Index index, size_t size, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table, IndexList& ref_state)
+inline void read_state_recursively(Index index,
+                                   size_t size,
+                                   const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table,
+                                   const IndexedHashSet<Index>& leaf_table,
+                                   IndexList& ref_state)
 {
-    /* Base case */
+    /* Base cases */
     if (size == 1)
     {
-        ref_state.push_back(index);
+        const auto slot = leaf_table[index];
+        ref_state.push_back(slot.i1);
         return;
     }
 
-    const auto slot = tree_table.lookup_internal(index);
-
-    /* Base case */
     if (size == 2)
     {
+        const auto slot = leaf_table[index];
         ref_state.push_back(slot.i1);
         ref_state.push_back(slot.i2);
         return;
@@ -122,8 +126,9 @@ inline void read_state_recursively(Index index, size_t size, const TreeHashIDMap
     const auto mid = std::bit_floor(size - 1);
 
     /* Conquer */
-    read_state_recursively(slot.i1, mid, tree_table, ref_state);
-    read_state_recursively(slot.i2, size - mid, tree_table, ref_state);
+    const auto& slot = inner_table.lookup_internal(index);
+    read_state_recursively(slot.i1, mid, inner_table, leaf_table, ref_state);
+    read_state_recursively(slot.i2, size - mid, inner_table, leaf_table, ref_state);
 }
 
 /// @brief Read the `out_state` from the given `tree_index` from the `tree_table`.
@@ -132,14 +137,18 @@ inline void read_state_recursively(Index index, size_t size, const TreeHashIDMap
 /// @param tree_table
 /// @param out_state
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline void read_state(Index tree_index, size_t size, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table, IndexList& out_state)
+inline void read_state(Index tree_index,
+                       size_t size,
+                       const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table,
+                       const IndexedHashSet<Index>& leaf_table,
+                       IndexList& out_state)
 {
     out_state.clear();
 
     if (size == 0)  ///< Special case for empty state.
         return;
 
-    read_state_recursively(tree_index, size, tree_table, out_state);
+    read_state_recursively(tree_index, size, tree_table, leaf_table, out_state);
 }
 
 /// @brief Read the `out_state` from the given `root_index` from the `root_table`.
@@ -148,59 +157,88 @@ inline void read_state(Index tree_index, size_t size, const TreeHashIDMap<Hash, 
 /// @param root_table is the root table.
 /// @param out_state is the output state.
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline void read_state(Index root_index, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table, IndexList& out_state)
+inline void
+read_state(Index root_index, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table, const IndexedHashSet<Index>& leaf_table, IndexList& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
     const auto& slot = tree_table.lookup_root(root_index);
 
-    read_state(slot.i1, slot.i2, tree_table, out_state);
+    read_state(slot.i1, slot.i2, tree_table, leaf_table, out_state);
 }
 
 /**
  * ConstIterator
  */
 
-static thread_local UniqueObjectPool<std::vector<Entry>> s_stack_pool = UniqueObjectPool<std::vector<Entry>> {};
+static thread_local UniqueObjectPool<std::vector<Entry>> s_inner_stack_pool = UniqueObjectPool<std::vector<Entry>> {};
+static thread_local UniqueObjectPool<std::vector<Index>> s_leaf_stack_pool = UniqueObjectPool<std::vector<Index>> {};
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
 class const_iterator
 {
 private:
-    const TreeHashIDMap<Hash, EqualTo, InitialCapacity>* m_tree_table;
-    UniqueObjectPoolPtr<std::vector<Entry>> m_stack;
-    Index m_value;
+    const TreeHashIDMap<Hash, EqualTo, InitialCapacity>* m_inner_table;
+    const IndexedHashSet<Index>* m_leaf_table;
+    UniqueObjectPoolPtr<std::vector<Entry>> m_inner_stack;
+    UniqueObjectPoolPtr<std::vector<Index>> m_leaf_stack;
+    std::optional<Index> m_value;
 
-    static constexpr const Index END_POS = Index(-1);
-
-    const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table() const
+    const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table() const
     {
-        assert(m_tree_table);
-        return *m_tree_table;
+        assert(m_inner_table);
+        return *m_inner_table;
+    }
+
+    const IndexedHashSet<Index>& leaf_table() const
+    {
+        assert(m_leaf_table);
+        return *m_leaf_table;
     }
 
     void advance()
     {
-        while (!m_stack->empty())
+        while (!(m_leaf_stack->empty() && m_inner_stack->empty()))
         {
-            auto entry = m_stack->back();
-            m_stack->pop_back();
-
-            if (entry.m_size == 1)
+            if (!m_leaf_stack->empty())
             {
-                m_value = entry.m_index;
+                m_value = m_leaf_stack->back();
+                m_leaf_stack->pop_back();
                 return;
             }
+            else
+            {
+                while (!m_inner_stack->empty())
+                {
+                    auto entry = m_inner_stack->back();
+                    m_inner_stack->pop_back();
 
-            const auto slot = tree_table().lookup_internal(entry.m_index);
+                    if (entry.m_size == 1)
+                    {
+                        m_leaf_stack->emplace_back(this->leaf_table()[entry.m_index].i1);
+                        break;
+                    }
+                    else if (entry.m_size == 2)
+                    {
+                        const auto& slot = this->leaf_table()[entry.m_index];
+                        m_leaf_stack->emplace_back(slot.i2);
+                        m_leaf_stack->emplace_back(slot.i1);
+                        break;
+                    }
 
-            Index mid = std::bit_floor(entry.m_size - 1);
+                    assert(entry.m_size > 2);
 
-            // Emplace i2 first to ensure i1 is visited first in dfs.
-            m_stack->emplace_back(slot.i2, entry.m_size - mid);
-            m_stack->emplace_back(slot.i1, mid);
+                    const auto slot = this->inner_table().lookup_internal(entry.m_index);
+
+                    Index mid = std::bit_floor(entry.m_size - 1);
+
+                    // Emplace i2 first to ensure i1 is visited first in dfs.
+                    m_inner_stack->emplace_back(slot.i2, entry.m_size - mid);
+                    m_inner_stack->emplace_back(slot.i1, mid);
+                }
+            }
         }
 
-        m_value = END_POS;
+        m_value = std::nullopt;
     }
 
 public:
@@ -211,42 +249,69 @@ public:
     using iterator_category = std::input_iterator_tag;
     using iterator_concept = std::input_iterator_tag;
 
-    const_iterator() : m_tree_table(nullptr), m_stack(), m_value(END_POS) {}
-    const_iterator(const const_iterator& other) : m_tree_table(other.m_tree_table), m_stack(other.m_stack.clone()), m_value(other.m_value) {}
+    const_iterator() : m_inner_table(nullptr), m_leaf_table(nullptr), m_inner_stack(), m_value(std::nullopt) {}
+    const_iterator(const const_iterator& other) :
+        m_inner_table(other.m_inner_table),
+        m_leaf_table(other.m_leaf_table),
+        m_inner_stack(other.m_inner_stack.clone()),
+        m_leaf_stack(other.m_leaf_stack.clone()),
+        m_value(other.m_value)
+    {
+    }
     const_iterator& operator=(const const_iterator& other)
     {
         if (*this != other)
         {
-            m_tree_table = other.m_tree_table;
-            m_stack = other.m_stack.clone();
+            m_inner_table = other.m_inner_table;
+            m_leaf_table = other.m_leaf_table;
+            m_inner_stack = other.m_inner_stack.clone();
+            m_leaf_stack = other.m_leaf_stack.clone();
             m_value = other.m_value;
         }
         return *this;
     }
     const_iterator(const_iterator&& other) = default;
     const_iterator& operator=(const_iterator&& other) = default;
-    const_iterator(const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& tree_table, Index root, bool begin) :
-        m_tree_table(&tree_table),
-        m_stack(),
-        m_value(END_POS)
+    const_iterator(const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<Index>& leaf_table, Index root, bool begin) :
+        m_inner_table(&inner_table),
+        m_leaf_table(&leaf_table),
+        m_inner_stack(),
+        m_leaf_stack(),
+        m_value(std::nullopt)
     {
-        assert(m_tree_table);
+        assert(m_inner_table);
 
         if (begin)
         {
-            m_stack = s_stack_pool.get_or_allocate();
-            m_stack->clear();
+            m_inner_stack = s_inner_stack_pool.get_or_allocate();
+            m_inner_stack->clear();
+            m_leaf_stack = s_leaf_stack_pool.get_or_allocate();
+            m_leaf_stack->clear();
 
-            const auto& root_slot = tree_table.lookup_root(root);
+            const auto& root_slot = inner_table.lookup_root(root);
 
-            if (root_slot.i2 > 0)  ///< Push to stack only if there leafs
+            if (root_slot.i2 > 0)
             {
-                m_stack->emplace_back(root_slot.i1, root_slot.i2);
+                if (root_slot.i2 == 1)
+                {
+                    m_leaf_stack->emplace_back(this->leaf_table()[root_slot.i1].i1);
+                }
+                else if (root_slot.i2 == 2)
+                {
+                    const auto& slot = this->leaf_table()[root_slot.i1];
+                    m_leaf_stack->emplace_back(slot.i2);
+                    m_leaf_stack->emplace_back(slot.i1);
+                }
+                else if (root_slot.i2 > 2)
+                {
+                    m_inner_stack->emplace_back(root_slot.i1, root_slot.i2);
+                }
+
                 advance();
             }
         }
     }
-    value_type operator*() const { return m_value; }
+    value_type operator*() const { return *m_value; }
     const_iterator& operator++()
     {
         advance();
@@ -263,9 +328,9 @@ public:
 };
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline auto begin(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
+inline auto begin(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<Index>& leaf_table)
 {
-    return const_iterator(table, root, true);
+    return const_iterator(inner_table, leaf_table, root, true);
 }
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
@@ -275,9 +340,9 @@ inline auto end(const TreeHashIDMap<Hash, EqualTo, InitialCapacity>&)
 }
 
 template<typename Hash, typename EqualTo, size_t InitialCapacity>
-inline auto range(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& table)
+inline auto range(Index root, const TreeHashIDMap<Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<Index>& leaf_table)
 {
-    return std::ranges::subrange(begin(root, table), end(table));
+    return std::ranges::subrange(begin(root, inner_table, leaf_table), end(inner_table));
 }
 
 }

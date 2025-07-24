@@ -102,10 +102,10 @@ struct PackedStateHashData
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
     size_t fluent_index = el.get_atoms<FluentTag>();
-    size_t num_fluents = problem.get_index_hashid_tree_table().lookup_root(el.get_atoms<FluentTag>()).i2;
+    size_t num_fluents = problem.get_inner_tree_table().lookup_root(el.get_atoms<FluentTag>()).i2;
 
     size_t numeric_index = el.get_numeric_variables();
-    size_t num_numeric = problem.get_index_hashid_tree_table().lookup_root(el.get_numeric_variables()).i2;
+    size_t num_numeric = problem.get_inner_tree_table().lookup_root(el.get_numeric_variables()).i2;
 
     PackedStateHashData data { .fluent_index = fluent_index, .num_fluents = num_fluents, .numeric_index = numeric_index, .num_numeric = num_numeric };
 

@@ -96,6 +96,12 @@ inline void copy_object(const std::vector<Entry>& src, std::vector<Entry>& dst)
     dst.insert(dst.end(), src.begin(), src.end());
 }
 
+inline void copy_object(const std::vector<Index>& src, std::vector<Index>& dst)
+{
+    dst.clear();
+    dst.insert(dst.end(), src.begin(), src.end());
+}
+
 inline void copy_object(const std::vector<double>& src, std::vector<double>& dst)
 {
     dst.clear();

@@ -82,6 +82,7 @@ ATTRIBUTES = [
     "num_of_actions",
     "num_of_axioms",
 
+    "num_inner_slots",
     "num_index_slots",
     "num_double_slots",
     "num_slots",

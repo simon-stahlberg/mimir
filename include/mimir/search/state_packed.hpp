@@ -96,12 +96,12 @@ static_assert(sizeof(PackedStateImpl) == 12);
 template<formalism::IsFluentOrDerivedTag P>
 auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::uint::hash_id_map::range(get_atoms<P>(), problem.get_index_hashid_tree_table());
+    return valla::plain::uint::hash_id_map::range(get_atoms<P>(), problem.get_inner_tree_table(), problem.get_index_tree_table());
 }
 
 inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::dbl::hash_id_map::range(get_numeric_variables(), problem.get_index_hashid_tree_table(), problem.get_double_tree_table());
+    return valla::plain::dbl::hash_id_map::range(get_numeric_variables(), problem.get_inner_tree_table(), problem.get_double_tree_table());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>

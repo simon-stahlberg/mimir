@@ -63,7 +63,7 @@ private:
 
     valla::IndexedHashSet<Index> m_index_tree_table;
     valla::IndexedHashSet<double> m_double_tree_table;
-    valla::TreeHashIDMap<> m_index_hashid_tree_table;
+    valla::TreeHashIDMap<> m_inner_tree_table;
 
     SharedObjectPool<FlatBitset> m_bitset_pool;
     SharedObjectPool<FlatIndexList> m_index_list_pool;
@@ -137,8 +137,8 @@ public:
     const valla::IndexedHashSet<Index>& get_index_tree_table() const;
     valla::IndexedHashSet<double>& get_double_tree_table();
     const valla::IndexedHashSet<double>& get_double_tree_table() const;
-    valla::TreeHashIDMap<>& get_index_hashid_tree_table();
-    const valla::TreeHashIDMap<>& get_index_hashid_tree_table() const;
+    valla::TreeHashIDMap<>& get_inner_tree_table();
+    const valla::TreeHashIDMap<>& get_inner_tree_table() const;
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;

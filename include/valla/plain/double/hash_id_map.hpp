@@ -84,8 +84,8 @@ auto insert(const Range& state, TreeHashIDMap<Hash, EqualTo, InitialCapacity>& i
     if (size == 0)        ///< Special case for empty state.
         return Index(0);  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
-    while ((static_cast<double>(inner_table.size() + 2 * size) / inner_table.capacity()) > inner_table.max_load_factor())
-        inner_table.rehash(true);
+    if (!inner_table.has_capacity_for(2 * size))
+        inner_table.rehash();
 
     return inner_table.insert_root(Slot<Index>(insert_recursively(state.begin(), state.end(), size, inner_table, leaf_table), size));
 }
@@ -107,6 +107,7 @@ inline void read_state_recursively(Index index,
                                    const IndexedHashSet<double>& leaf_table,
                                    DoubleList& ref_state)
 {
+    /* Base cases */
     if (size == 1)
     {
         const auto slot = leaf_table[index];
@@ -114,7 +115,6 @@ inline void read_state_recursively(Index index,
         return;
     }
 
-    /* Base case */
     if (size == 2)
     {
         const auto slot = leaf_table[index];
