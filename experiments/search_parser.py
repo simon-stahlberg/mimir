@@ -93,6 +93,7 @@ class SearchParser(Parser):
         self.add_pattern("memory_in_bytes_for_problem", r"Number of bytes for states: (\d+)", type=int)
         self.add_pattern("total_memory_in_bytes", r"Total number of bytes used: (\d+)", type=int)
         self.add_pattern("peak_memory_usage_in_bytes", r"Peak memory usage in bytes: (\d+)", type=int)
+        self.add_pattern("state_peak_memory_usage_in_bytes", r"Peak memory usage in bytes for states: (\d+)", type=int)
 
         self.add_pattern("std_bad_alloc", r".*(std::bad_alloc).*", type=str, file="run.err")
 

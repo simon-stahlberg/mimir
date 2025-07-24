@@ -42,7 +42,7 @@ if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
-        extra_options="#SBATCH --account=naiss2024-22-1086")
+        extra_options="#SBATCH --account=naiss2024-5-421")
     SUITE = SUITE_IPC2023_NUMERIC
     TIME_LIMIT = 5 * 60  # 5 minutes
 else:
@@ -74,6 +74,7 @@ ATTRIBUTES = [
     "memory_in_bytes_for_problem",
     "total_memory_in_bytes",
     "peak_memory_usage_in_bytes",
+    "state_peak_memory_usage_in_bytes",
 
     "score_peak_memory_usage_in_bytes",
     

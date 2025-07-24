@@ -34,8 +34,8 @@ template<typename T>
 class IndexedHashSet
 {
 public:
-    IndexedHashSet() : m_index_to_slot(), m_uniqueness(0, IndexReferencedSlotHash<T>(m_index_to_slot), IndexReferencedSlotEqualTo<T>(m_index_to_slot)) {}
-    // Uncopieable and unmoveable to avoid dangling references of m_index_to_slot in hash and equal_to.
+    IndexedHashSet() : m_slots(), m_uniqueness(0, IndexReferencedSlotHash<T>(m_slots), IndexReferencedSlotEqualTo<T>(m_slots)) {}
+    // Uncopieable and unmoveable to avoid dangling references of m_slots in hash and equal_to.
     IndexedHashSet(const IndexedHashSet& other) = delete;
     IndexedHashSet& operator=(const IndexedHashSet& other) = delete;
     IndexedHashSet(IndexedHashSet&& other) = delete;
@@ -45,29 +45,37 @@ public:
     {
         assert(m_uniqueness.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
-        Index index = m_index_to_slot.size();
+        Index index = m_slots.size();
 
-        m_index_to_slot.push_back(slot);
+        m_slots.push_back(slot);
 
         const auto result = m_uniqueness.emplace(index);
 
         if (!result.second)
-            m_index_to_slot.pop_back();
+            m_slots.pop_back();
 
         return *result.first;
     }
 
     const Slot<T>& operator[](Index index) const
     {
-        assert(index < m_index_to_slot.size() && "Index out of bounds");
+        assert(index < m_slots.size() && "Index out of bounds");
 
-        return m_index_to_slot[index];
+        return m_slots[index];
     }
 
-    size_t size() const { return m_index_to_slot.size(); }
+    size_t size() const { return m_slots.size(); }
+
+    size_t mem_usage() const
+    {
+        size_t usage = 0;
+        usage += m_slots.capacity() * sizeof(Slot<T>);
+        usage += m_uniqueness.capacity() * (sizeof(Index) + 1);
+        return usage;
+    }
 
 private:
-    std::vector<Slot<T>> m_index_to_slot;
+    std::vector<Slot<T>> m_slots;
     absl::flat_hash_set<Index, IndexReferencedSlotHash<T>, IndexReferencedSlotEqualTo<T>> m_uniqueness;
 
     template<typename Hash, typename EqualTo, size_t InitialCapacity>

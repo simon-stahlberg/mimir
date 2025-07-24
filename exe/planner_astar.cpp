@@ -217,6 +217,11 @@ int main(int argc, char** argv)
                      / state_repository->get_state_count()
               << std::endl;
 
+    std::cout << "Peak memory usage in bytes for states: "
+              << problem->get_index_tree_table().mem_usage() + problem->get_double_tree_table().mem_usage()
+                     + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index))
+              << std::endl;
+
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;

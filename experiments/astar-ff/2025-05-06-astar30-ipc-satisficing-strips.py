@@ -71,6 +71,7 @@ ATTRIBUTES = [
     "memory_in_bytes_for_problem",
     "total_memory_in_bytes",
     "peak_memory_usage_in_bytes",
+    "state_peak_memory_usage_in_bytes",
 
     "score_peak_memory_usage_in_bytes",
 
