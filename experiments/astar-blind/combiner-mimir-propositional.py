@@ -87,32 +87,32 @@ def rename_algorithm_lhs(properties):
 def rename_algorithm_rhs(properties):
     """Rename algorithm dynamically during fetching."""
     if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
-        properties["algorithm"] = "tree-grounded-astar-eager-blind"
-        properties["id"][0] = "tree-grounded-astar-eager-blind"
+        properties["algorithm"] = "tree-swiss-grounded-astar-eager-blind"
+        properties["id"][0] = "tree-swiss-grounded-astar-eager-blind"
     if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
-        properties["algorithm"] = "tree-grounded-astar-lazy-blind"
-        properties["id"][0] = "tree-grounded-astar-lazy-blind"
+        properties["algorithm"] = "tree-swiss-grounded-astar-lazy-blind"
+        properties["id"][0] = "tree-swiss-grounded-astar-lazy-blind"
     if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
-        properties["algorithm"] = "tree-lifted-astar-eager-blind"
-        properties["id"][0] = "tree-lifted-astar-eager-blind"
+        properties["algorithm"] = "tree-swiss-lifted-astar-eager-blind"
+        properties["id"][0] = "tree-swiss-lifted-astar-eager-blind"
     if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
-        properties["algorithm"] = "tree-lifted-astar-lazy-blind"
-        properties["id"][0] = "tree-lifted-astar-lazy-blind"
+        properties["algorithm"] = "tree-swiss-lifted-astar-lazy-blind"
+        properties["id"][0] = "tree-swiss-lifted-astar-lazy-blind"
     return properties
 
-exp.add_fetcher("baseline/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="list-fetch-beluga-scalability-deterministic", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="tree-fetch-beluga-scalability-deterministic", filter=rename_algorithm_rhs)
-exp.add_fetcher("baseline/2025-05-06-astar30-pushworld-eval", name="list-fetch-pushworld", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-pushworld-eval", name="tree-fetch-pushworld", filter=rename_algorithm_rhs)
-exp.add_fetcher("baseline/2025-05-06-astar30-minepddl-eval", name="list-fetch-minepddl", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-minepddl-eval", name="tree-fetch-minepddl", filter=rename_algorithm_rhs)
-exp.add_fetcher("baseline/2025-05-06-astar30-ipc-optimal-strips-eval", name="list-fetch-ipc-optimal-strips", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-ipc-optimal-strips-eval", name="tree-fetch-ipc-optimal-strips", filter=rename_algorithm_rhs)
-exp.add_fetcher("baseline/2025-05-06-astar30-ipc-optimal-adl-eval", name="list-fetch-ipc-optimal-adl", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-ipc-optimal-adl-eval", name="tree-fetch-ipc-optimal-adl", filter=rename_algorithm_rhs)
-exp.add_fetcher("baseline/2025-05-06-astar30-htg-eval", name="list-fetch-htg", filter=rename_algorithm_lhs)
-exp.add_fetcher("tree-compression/2025-05-06-astar30-htg-eval", name="tree-fetch-htg", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="list-fetch-beluga-scalability-deterministic", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-beluga-scalability-deterministic-eval", name="tree-swiss-fetch-beluga-scalability-deterministic", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-pushworld-eval", name="list-fetch-pushworld", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-pushworld-eval", name="tree-swiss-fetch-pushworld", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-minepddl-eval", name="list-fetch-minepddl", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-minepddl-eval", name="tree-swiss-fetch-minepddl", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-ipc-optimal-strips-eval", name="list-fetch-ipc-optimal-strips", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-ipc-optimal-strips-eval", name="tree-swiss-fetch-ipc-optimal-strips", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-ipc-optimal-adl-eval", name="list-fetch-ipc-optimal-adl", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-ipc-optimal-adl-eval", name="tree-swiss-fetch-ipc-optimal-adl", filter=rename_algorithm_rhs)
+exp.add_fetcher("data-list/2025-05-06-astar30-htg-eval", name="list-fetch-htg", filter=rename_algorithm_lhs)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-htg-eval", name="tree-swiss-fetch-htg", filter=rename_algorithm_rhs)
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-lifted-astar-eager-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-swiss-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-swiss-lifted-astar-eager-blind"]))
 
 exp.run_steps()
