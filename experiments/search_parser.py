@@ -110,6 +110,7 @@ class SearchParser(Parser):
         self.add_pattern("average_num_derived_state_variables", r"Average number of derived state variables: (.+)", type=float)
         self.add_pattern("average_num_numeric_state_variables", r"Average number of numeric state variables: (.+)", type=float)
         self.add_pattern("average_num_state_variables", r"Average number of state variables: (.+)", type=float)
+        self.add_pattern("average_num_inner_slots_per_state", r"Average number of inner slots per state: (.+)", type=float)
         self.add_pattern("average_num_index_slots_per_state", r"Average number of index slots per state: (.+)", type=float)
         self.add_pattern("average_num_double_slots_per_state", r"Average number of double slots per state: (.+)", type=float)
         self.add_pattern("average_num_slots_per_state", r"Average number of slots per state: (.+)", type=float)

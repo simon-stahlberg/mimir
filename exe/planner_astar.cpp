@@ -210,8 +210,10 @@ int main(int argc, char** argv)
                      / state_repository->get_state_count()
               << std::endl;
 
-    std::cout << "Average number of index slots per state: "
+    std::cout << "Average number of inner slots per state: "
               << static_cast<double>(problem->get_inner_tree_table().num_slots()) / state_repository->get_state_count() << std::endl;
+    std::cout << "Average number of index slots per state: "
+              << static_cast<double>(problem->get_index_tree_table().size()) / state_repository->get_state_count() << std::endl;
     std::cout << "Average number of double slots per state: "
               << static_cast<double>(problem->get_double_tree_table().size()) / state_repository->get_state_count() << std::endl;
     std::cout << "Average number of slots per state: "
