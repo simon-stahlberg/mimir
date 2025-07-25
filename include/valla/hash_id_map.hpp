@@ -51,6 +51,8 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<ctrl_t>& ve
 
 alignas(16) inline static const __m128i kEmptyPattern = _mm_set1_epi8(static_cast<signed char>(ctrl_t::kEmpty));
 
+static constexpr double MAX_LOAD_FACTOR = static_cast<double>(7) / 8;
+
 /// @brief `HashIDMap implements a hash ID map with open addressing in a Swiss table format where the position of a key implicitly becomes the index.
 /// @tparam Derived is the derived class that must implement the rehash logic in rehash_impl.
 /// @tparam Key is the key.
@@ -70,8 +72,6 @@ private:
 protected:
     static constexpr Index INDEX_SENTINEL = std::numeric_limits<Index>::max();  ///< used to indicate insertion failure to trigger a rehash.
 
-    static constexpr double MAX_LOAD_FACTOR = static_cast<double>(7) / 8;
-
     std::vector<Key> m_slots;
     std::vector<ctrl_t> m_controls;
     size_t m_size;
@@ -89,17 +89,6 @@ protected:
     };
 
     Statistics m_statistics;
-
-    size_t num_occupied() const
-    {
-        size_t count = 0;
-        for (const auto& ctrl : m_controls)
-        {
-            if (static_cast<int>(ctrl) >= 0)
-                ++count;
-        }
-        return count;
-    }
 
 public:
     HashIDMap() : m_slots(), m_controls(), m_size(0), m_capacity(InitialCapacity), m_hash(), m_equal_to()
@@ -213,6 +202,8 @@ private:
             controls.resize(capacity, ctrl_t::kEmpty);
             controls.resize(capacity + 15, ctrl_t::kSentinel);
         }
+
+        bool has_capacity_for(size_t amount) const { return (static_cast<double>(size + amount) / capacity) <= MAX_LOAD_FACTOR; }
     };
 
     Index insert(Slot<Index> slot, RehashData& tmp)
@@ -309,19 +300,37 @@ private:
 
     /// @brief Depth-first rehash policy for a HashIDMap that stores a collection of perfectly balanced binary trees.
     /// @param new_capacity is the capacity after rehash.
-    void rehash_impl(size_t new_capacity)
+    bool rehash_impl(size_t new_capacity)
     {
         auto tmp = RehashData(new_capacity);
 
         /* Relocate trees underlying the stable indices */
         m_roots.m_uniqueness.clear();
 
+        auto backup_unstable_indices = IndexList { 0 };
+
         // Relocate remaining roots.
         for (Index stable_index = 1; stable_index < this->m_roots.size(); ++stable_index)
         {
             Slot<Index> root = this->m_roots.m_slots[stable_index];
-
             assert(root.i2 > 0);  // Ensure nonempty.
+
+            backup_unstable_indices.push_back(root.i1);
+
+            if (!tmp.has_capacity_for(root.i2))
+            {
+                /* Rollback rehash */
+                for (Index stable_index_2 = 1; stable_index_2 < backup_unstable_indices.size(); ++stable_index_2)
+                {
+                    this->m_roots.m_slots[stable_index].i1 = backup_unstable_indices[stable_index_2];
+                }
+                m_roots.m_uniqueness.clear();
+                for (Index stable_index_2 = 1; stable_index_2 < this->m_roots.size(); ++stable_index_2)
+                {
+                    this->m_roots.m_uniqueness.emplace(stable_index);
+                }
+                return false;
+            }
 
             Index unstable_index = rehash_recursively(root.i1, root.i2, tmp);
 
@@ -336,6 +345,8 @@ private:
         this->m_size = tmp.size;
         std::swap(this->m_slots, tmp.slots);
         std::swap(this->m_controls, tmp.controls);
+
+        return true;
     }
 
     using Base = HashIDMap<TreeHashIDMap<Hash, EqualTo, InitialCapacity>, Slot<Index>, Hash, EqualTo, InitialCapacity>;
@@ -357,9 +368,15 @@ public:
 
         ++this->m_statistics.m_num_rehashes;
 
-        size_t new_capacity = factor * this->m_capacity;
+        size_t new_capacity = this->m_capacity;
 
-        rehash_impl(new_capacity);
+        while (true)
+        {
+            new_capacity *= factor;
+
+            if (rehash_impl(new_capacity))
+                break;
+        }
 
         auto end = clock::now();
         this->m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
