@@ -29,12 +29,22 @@ def ensure_minimum_times(content, props):
         if time is not None:
             props[attr] = max(time, 1) 
 
-def make_add_score(max_memory_in_bytes: int):
+def make_add_score_peak_memory_usage_in_bytes(max_memory_in_bytes: int):
     def add_scores(content, props):
         success = props["coverage"] or props["unsolvable"]
 
         props["score_peak_memory_usage_in_bytes"] = tools.compute_log_score(
             success, props.get("peak_memory_usage_in_bytes"), lower_bound=2_000_000, upper_bound=max_memory_in_bytes
+        )
+
+    return add_scores
+
+def make_add_score_state_peak_memory_usage_in_bytes(max_memory_in_bytes: int):
+    def add_scores(content, props):
+        success = props["coverage"] or props["unsolvable"]
+
+        props["score_state_peak_memory_usage_in_bytes"] = tools.compute_log_score(
+            success, props.get("state_peak_memory_usage_in_bytes"), lower_bound=2_000_000, upper_bound=max_memory_in_bytes
         )
 
     return add_scores
@@ -129,7 +139,8 @@ class SearchParser(Parser):
 
         self.add_function(resolve_unexplained_errors)
         self.add_function(ensure_minimum_times)
-        self.add_function(make_add_score(self.max_memory_in_bytes))
+        self.add_function(make_add_score_peak_memory_usage_in_bytes(self.max_memory_in_bytes))
+        self.add_function(make_add_score_state_peak_memory_usage_in_bytes(self.max_memory_in_bytes))
 
         self.add_function(postprocess_initial_h_value)
 
