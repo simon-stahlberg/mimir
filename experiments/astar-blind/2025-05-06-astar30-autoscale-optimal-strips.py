@@ -76,6 +76,7 @@ ATTRIBUTES = [
     "state_peak_memory_usage_in_bytes",
 
     "score_peak_memory_usage_in_bytes",
+    "score_state_peak_memory_usage_in_bytes",
     
     "num_of_states",
     "num_of_nodes",
