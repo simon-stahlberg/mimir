@@ -68,7 +68,7 @@ ATTRIBUTES = [
 
 exp = Experiment("combined-astar-blind-30-numeric")
 
-def rename_algorithm_lhs(properties):
+def rename_algorithm_list(properties):
     """Rename algorithm dynamically during fetching."""
     if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
         properties["algorithm"] = "list-grounded-astar-eager-blind"
@@ -84,7 +84,7 @@ def rename_algorithm_lhs(properties):
         properties["id"][0] = "list-lifted-astar-lazy-blind"
     return properties
 
-def rename_algorithm_rhs(properties):
+def rename_algorithm_tree_swiss(properties):
     """Rename algorithm dynamically during fetching."""
     if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
         properties["algorithm"] = "tree-swiss-grounded-astar-eager-blind"
@@ -100,9 +100,26 @@ def rename_algorithm_rhs(properties):
         properties["id"][0] = "tree-swiss-lifted-astar-lazy-blind"
     return properties
 
-exp.add_fetcher("data-list/2025-05-06-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=rename_algorithm_lhs)
-exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-ipc-numeric-eval", name="tree-swiss-fetch-ipc-numeric", filter=rename_algorithm_rhs)
+def rename_algorithm_tree_hashid(properties):
+    """Rename algorithm dynamically during fetching."""
+    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
+        properties["algorithm"] = "tree-hashid-grounded-astar-eager-blind"
+        properties["id"][0] = "tree-hashid-grounded-astar-eager-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-lazy-blind":
+        properties["algorithm"] = "tree-hashid-grounded-astar-lazy-blind"
+        properties["id"][0] = "tree-hashid-grounded-astar-lazy-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-eager-blind":
+        properties["algorithm"] = "tree-hashid-lifted-astar-eager-blind"
+        properties["id"][0] = "tree-hashid-lifted-astar-eager-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-lazy-blind":
+        properties["algorithm"] = "tree-hashid-lifted-astar-lazy-blind"
+        properties["id"][0] = "tree-hashid-lifted-astar-lazy-blind"
+    return properties
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-swiss-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-swiss-lifted-astar-eager-blind"]))
+exp.add_fetcher("data-list/2025-05-06-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=rename_algorithm_list)
+exp.add_fetcher("data-tree-swiss/2025-05-06-astar30-ipc-numeric-eval", name="tree-swiss-fetch-ipc-numeric", filter=rename_algorithm_tree_swiss)
+exp.add_fetcher("data-tree-hashid/2025-05-06-astar30-ipc-numeric-eval", name="tree-hashid-fetch-ipc-numeric", filter=rename_algorithm_tree_hashid)
+
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "tree-swiss-grounded-astar-eager-blind", "tree-hashid-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "tree-swiss-lifted-astar-eager-blind", "tree-hashid-lifted-astar-eager-blind"]))
 
 exp.run_steps()
