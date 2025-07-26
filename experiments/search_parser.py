@@ -29,12 +29,22 @@ def ensure_minimum_times(content, props):
         if time is not None:
             props[attr] = max(time, 1) 
 
-def make_add_score(max_memory_in_bytes: int):
+def make_add_score_peak_memory_usage_in_bytes(max_memory_in_bytes: int):
     def add_scores(content, props):
         success = props["coverage"] or props["unsolvable"]
 
         props["score_peak_memory_usage_in_bytes"] = tools.compute_log_score(
             success, props.get("peak_memory_usage_in_bytes"), lower_bound=2_000_000, upper_bound=max_memory_in_bytes
+        )
+
+    return add_scores
+
+def make_add_score_state_peak_memory_usage_in_bytes(max_memory_in_bytes: int):
+    def add_scores(content, props):
+        success = props["coverage"] or props["unsolvable"]
+
+        props["score_state_peak_memory_usage_in_bytes"] = tools.compute_log_score(
+            success, props.get("state_peak_memory_usage_in_bytes"), lower_bound=2_000_000, upper_bound=max_memory_in_bytes
         )
 
     return add_scores
@@ -102,7 +112,6 @@ class SearchParser(Parser):
         self.add_pattern("num_of_actions", r"Number of actions: (\d+)", type=int)
         self.add_pattern("num_of_axioms", r"Number of axioms: (\d+)", type=int)
 
-        self.add_pattern("num_inner_slots", r"Number of inner slots: (\d+)", type=int)
         self.add_pattern("num_index_slots", r"Number of index slots: (\d+)", type=int)
         self.add_pattern("num_double_slots", r"Number of double slots: (\d+)", type=int)
         self.add_pattern("num_slots", r"Number of slots: (\d+)", type=int)
@@ -110,7 +119,6 @@ class SearchParser(Parser):
         self.add_pattern("average_num_derived_state_variables", r"Average number of derived state variables: (.+)", type=float)
         self.add_pattern("average_num_numeric_state_variables", r"Average number of numeric state variables: (.+)", type=float)
         self.add_pattern("average_num_state_variables", r"Average number of state variables: (.+)", type=float)
-        self.add_pattern("average_num_inner_slots_per_state", r"Average number of inner slots per state: (.+)", type=float)
         self.add_pattern("average_num_index_slots_per_state", r"Average number of index slots per state: (.+)", type=float)
         self.add_pattern("average_num_double_slots_per_state", r"Average number of double slots per state: (.+)", type=float)
         self.add_pattern("average_num_slots_per_state", r"Average number of slots per state: (.+)", type=float)
@@ -131,7 +139,8 @@ class SearchParser(Parser):
 
         self.add_function(resolve_unexplained_errors)
         self.add_function(ensure_minimum_times)
-        self.add_function(make_add_score(self.max_memory_in_bytes))
+        self.add_function(make_add_score_peak_memory_usage_in_bytes(self.max_memory_in_bytes))
+        self.add_function(make_add_score_state_peak_memory_usage_in_bytes(self.max_memory_in_bytes))
 
         self.add_function(postprocess_initial_h_value)
 
