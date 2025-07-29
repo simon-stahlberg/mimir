@@ -16,6 +16,7 @@
     "problem": "Bridge_Easy.pddl",
     "run_dir": "runs-00001-00100/00001",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3423764 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -39,6 +40,7 @@
     "problem": "Bridge_Hard.pddl",
     "run_dir": "runs-00001-00100/00003",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -63,6 +65,7 @@
     "problem": "Bridge_Medium.pddl",
     "run_dir": "runs-00001-00100/00005",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -87,6 +90,7 @@
     "problem": "Build_Cabin_Easy.pddl",
     "run_dir": "runs-00001-00100/00007",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -111,6 +115,7 @@
     "problem": "Build_Cabin_Hard.pddl",
     "run_dir": "runs-00001-00100/00009",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -135,6 +140,7 @@
     "problem": "Build_Cabin_Medium.pddl",
     "run_dir": "runs-00001-00100/00011",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -159,6 +165,7 @@
     "problem": "Build_Cross_Easy.pddl",
     "run_dir": "runs-00001-00100/00013",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3026083 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -182,6 +189,7 @@
     "problem": "Build_Cross_Hard.pddl",
     "run_dir": "runs-00001-00100/00015",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -206,6 +214,7 @@
     "problem": "Build_Cross_Medium.pddl",
     "run_dir": "runs-00001-00100/00017",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -230,6 +239,7 @@
     "problem": "Build_Shape_Easy.pddl",
     "run_dir": "runs-00001-00100/00019",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1359974 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -253,6 +263,7 @@
     "problem": "Build_Shape_Hard.pddl",
     "run_dir": "runs-00001-00100/00021",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -277,6 +288,7 @@
     "problem": "Build_Shape_Medium.pddl",
     "run_dir": "runs-00001-00100/00023",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -301,6 +313,7 @@
     "problem": "Build_Wall_Easy.pddl",
     "run_dir": "runs-00001-00100/00025",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1433291 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -324,6 +337,7 @@
     "problem": "Build_Wall_Hard.pddl",
     "run_dir": "runs-00001-00100/00027",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -348,6 +362,7 @@
     "problem": "Build_Wall_Medium.pddl",
     "run_dir": "runs-00001-00100/00029",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -372,6 +387,7 @@
     "problem": "Build_Well_Easy.pddl",
     "run_dir": "runs-00001-00100/00031",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3682078 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -395,6 +411,7 @@
     "problem": "Build_Well_Hard.pddl",
     "run_dir": "runs-00001-00100/00033",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -419,6 +436,7 @@
     "problem": "Build_Well_Medium.pddl",
     "run_dir": "runs-00001-00100/00035",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -443,6 +461,7 @@
     "problem": "Climb_Place_Easy.pddl",
     "run_dir": "runs-00001-00100/00037",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3074813 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -466,6 +485,7 @@
     "problem": "Climb_Place_Hard.pddl",
     "run_dir": "runs-00001-00100/00039",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -490,6 +510,7 @@
     "problem": "Climb_Place_Medium.pddl",
     "run_dir": "runs-00001-00100/00041",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -514,6 +535,7 @@
     "problem": "Collect_Build_Shape_Easy.pddl",
     "run_dir": "runs-00001-00100/00043",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3225016 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -537,6 +559,7 @@
     "problem": "Collect_Build_Shape_Hard.pddl",
     "run_dir": "runs-00001-00100/00045",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -561,6 +584,7 @@
     "problem": "Collect_Build_Shape_Medium.pddl",
     "run_dir": "runs-00001-00100/00047",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -585,6 +609,7 @@
     "problem": "Cut_Tree_Easy.pddl",
     "run_dir": "runs-00001-00100/00049",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -609,6 +634,7 @@
     "problem": "Cut_Tree_Hard.pddl",
     "run_dir": "runs-00001-00100/00051",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -633,6 +659,7 @@
     "problem": "Cut_Tree_Medium.pddl",
     "run_dir": "runs-00001-00100/00053",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -657,6 +684,7 @@
     "problem": "Gather_Multiple_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00055",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3992327 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -680,6 +708,7 @@
     "problem": "Gather_Multiple_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00057",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -704,6 +733,7 @@
     "problem": "Gather_Multiple_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00059",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -728,6 +758,7 @@
     "problem": "Gather_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00061",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3152642 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -751,6 +782,7 @@
     "problem": "Gather_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00063",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -775,6 +807,7 @@
     "problem": "Gather_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00065",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -821,6 +854,7 @@
     "problem": "Move_to_Location_Easy.pddl",
     "run_dir": "runs-00001-00100/00067",
     "score_peak_memory_usage_in_bytes": 0.2181638727580043,
+    "score_state_peak_memory_usage_in_bytes": 0.5443898619230049,
     "search_time": 4064,
     "state_peak_memory_usage_in_bytes": 87531636,
     "time_limit": 1800,
@@ -844,6 +878,7 @@
     "problem": "Move_to_Location_Hard.pddl",
     "run_dir": "runs-00001-00100/00069",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -868,6 +903,7 @@
     "problem": "Move_to_Location_Medium.pddl",
     "run_dir": "runs-00001-00100/00071",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -892,6 +928,7 @@
     "problem": "Pickup_Diamond_Easy.pddl",
     "run_dir": "runs-00001-00100/00079",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25:  4444 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -915,6 +952,7 @@
     "problem": "Pickup_Diamond_Hard.pddl",
     "run_dir": "runs-00001-00100/00081",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -939,6 +977,7 @@
     "problem": "Pickup_Diamond_Medium.pddl",
     "run_dir": "runs-00001-00100/00083",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -963,6 +1002,7 @@
     "problem": "Pickup_and_Place_Easy.pddl",
     "run_dir": "runs-00001-00100/00073",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1088787 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -986,6 +1026,7 @@
     "problem": "Pickup_and_Place_Hard.pddl",
     "run_dir": "runs-00001-00100/00075",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1010,6 +1051,7 @@
     "problem": "Pickup_and_Place_Medium.pddl",
     "run_dir": "runs-00001-00100/00077",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1034,6 +1076,7 @@
     "problem": "Place_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00085",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 775481 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1057,6 +1100,7 @@
     "problem": "Place_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00087",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1081,6 +1125,7 @@
     "problem": "Place_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00089",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1127,6 +1172,7 @@
     "problem": "Scaled_Move_to_Location_100.pddl",
     "run_dir": "runs-00101-00200/00193",
     "score_peak_memory_usage_in_bytes": -0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.13258638477160553,
     "search_time": 95605,
     "state_peak_memory_usage_in_bytes": 2663826132,
     "time_limit": 1800,
@@ -1172,6 +1218,7 @@
     "problem": "Scaled_Move_to_Location_101.pddl",
     "run_dir": "runs-00101-00200/00195",
     "score_peak_memory_usage_in_bytes": -0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.13019882053814677,
     "search_time": 95190,
     "state_peak_memory_usage_in_bytes": 2717102516,
     "time_limit": 1800,
@@ -1196,6 +1243,7 @@
     "problem": "Scaled_Move_to_Location_102.pddl",
     "run_dir": "runs-00101-00200/00197",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1338091 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1219,6 +1267,7 @@
     "problem": "Scaled_Move_to_Location_103.pddl",
     "run_dir": "runs-00101-00200/00199",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1243,6 +1292,7 @@
     "problem": "Scaled_Move_to_Location_104.pddl",
     "run_dir": "runs-00201-00300/00201",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1267,6 +1317,7 @@
     "problem": "Scaled_Move_to_Location_105.pddl",
     "run_dir": "runs-00201-00300/00203",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1291,6 +1342,7 @@
     "problem": "Scaled_Move_to_Location_106.pddl",
     "run_dir": "runs-00201-00300/00205",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1315,6 +1367,7 @@
     "problem": "Scaled_Move_to_Location_107.pddl",
     "run_dir": "runs-00201-00300/00207",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1339,6 +1392,7 @@
     "problem": "Scaled_Move_to_Location_108.pddl",
     "run_dir": "runs-00201-00300/00209",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1363,6 +1417,7 @@
     "problem": "Scaled_Move_to_Location_109.pddl",
     "run_dir": "runs-00201-00300/00211",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1387,6 +1442,7 @@
     "problem": "Scaled_Move_to_Location_110.pddl",
     "run_dir": "runs-00201-00300/00213",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1411,6 +1467,7 @@
     "problem": "Scaled_Move_to_Location_111.pddl",
     "run_dir": "runs-00201-00300/00215",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1837489 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1433,6 +1490,7 @@
     "problem": "Scaled_Move_to_Location_112.pddl",
     "run_dir": "runs-00201-00300/00217",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 970237 Segmentation fault      \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1456,6 +1514,7 @@
     "problem": "Scaled_Move_to_Location_113.pddl",
     "run_dir": "runs-00201-00300/00219",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2336525 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1479,6 +1538,7 @@
     "problem": "Scaled_Move_to_Location_114.pddl",
     "run_dir": "runs-00201-00300/00221",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 952532 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1502,6 +1562,7 @@
     "problem": "Scaled_Move_to_Location_115.pddl",
     "run_dir": "runs-00201-00300/00223",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 744164 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1524,6 +1585,7 @@
     "problem": "Scaled_Move_to_Location_116.pddl",
     "run_dir": "runs-00201-00300/00225",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 744147 Segmentation fault      \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1547,6 +1609,7 @@
     "problem": "Scaled_Move_to_Location_117.pddl",
     "run_dir": "runs-00201-00300/00227",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2960127 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1570,6 +1633,7 @@
     "problem": "Scaled_Move_to_Location_118.pddl",
     "run_dir": "runs-00201-00300/00229",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2681143 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1593,6 +1657,7 @@
     "problem": "Scaled_Move_to_Location_119.pddl",
     "run_dir": "runs-00201-00300/00231",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3119984 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -1616,6 +1681,7 @@
     "problem": "Scaled_Move_to_Location_120.pddl",
     "run_dir": "runs-00201-00300/00233",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1640,6 +1706,7 @@
     "problem": "Scaled_Move_to_Location_121.pddl",
     "run_dir": "runs-00201-00300/00235",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1664,6 +1731,7 @@
     "problem": "Scaled_Move_to_Location_122.pddl",
     "run_dir": "runs-00201-00300/00237",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1688,6 +1756,7 @@
     "problem": "Scaled_Move_to_Location_123.pddl",
     "run_dir": "runs-00201-00300/00239",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1712,6 +1781,7 @@
     "problem": "Scaled_Move_to_Location_124.pddl",
     "run_dir": "runs-00201-00300/00241",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1736,6 +1806,7 @@
     "problem": "Scaled_Move_to_Location_125.pddl",
     "run_dir": "runs-00201-00300/00243",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1760,6 +1831,7 @@
     "problem": "Scaled_Move_to_Location_126.pddl",
     "run_dir": "runs-00201-00300/00245",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1784,6 +1856,7 @@
     "problem": "Scaled_Move_to_Location_127.pddl",
     "run_dir": "runs-00201-00300/00247",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1808,6 +1881,7 @@
     "problem": "Scaled_Move_to_Location_128.pddl",
     "run_dir": "runs-00201-00300/00249",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1832,6 +1906,7 @@
     "problem": "Scaled_Move_to_Location_129.pddl",
     "run_dir": "runs-00201-00300/00251",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1856,6 +1931,7 @@
     "problem": "Scaled_Move_to_Location_130.pddl",
     "run_dir": "runs-00201-00300/00253",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1880,6 +1956,7 @@
     "problem": "Scaled_Move_to_Location_131.pddl",
     "run_dir": "runs-00201-00300/00255",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1904,6 +1981,7 @@
     "problem": "Scaled_Move_to_Location_132.pddl",
     "run_dir": "runs-00201-00300/00257",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1928,6 +2006,7 @@
     "problem": "Scaled_Move_to_Location_133.pddl",
     "run_dir": "runs-00201-00300/00259",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1952,6 +2031,7 @@
     "problem": "Scaled_Move_to_Location_134.pddl",
     "run_dir": "runs-00201-00300/00261",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1976,6 +2056,7 @@
     "problem": "Scaled_Move_to_Location_135.pddl",
     "run_dir": "runs-00201-00300/00263",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2000,6 +2081,7 @@
     "problem": "Scaled_Move_to_Location_136.pddl",
     "run_dir": "runs-00201-00300/00265",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2024,6 +2106,7 @@
     "problem": "Scaled_Move_to_Location_137.pddl",
     "run_dir": "runs-00201-00300/00267",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2048,6 +2131,7 @@
     "problem": "Scaled_Move_to_Location_138.pddl",
     "run_dir": "runs-00201-00300/00269",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2072,6 +2156,7 @@
     "problem": "Scaled_Move_to_Location_139.pddl",
     "run_dir": "runs-00201-00300/00271",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2096,6 +2181,7 @@
     "problem": "Scaled_Move_to_Location_140.pddl",
     "run_dir": "runs-00201-00300/00273",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2120,6 +2206,7 @@
     "problem": "Scaled_Move_to_Location_141.pddl",
     "run_dir": "runs-00201-00300/00275",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2144,6 +2231,7 @@
     "problem": "Scaled_Move_to_Location_142.pddl",
     "run_dir": "runs-00201-00300/00277",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2168,6 +2256,7 @@
     "problem": "Scaled_Move_to_Location_143.pddl",
     "run_dir": "runs-00201-00300/00279",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2192,6 +2281,7 @@
     "problem": "Scaled_Move_to_Location_144.pddl",
     "run_dir": "runs-00201-00300/00281",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2216,6 +2306,7 @@
     "problem": "Scaled_Move_to_Location_145.pddl",
     "run_dir": "runs-00201-00300/00283",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2240,6 +2331,7 @@
     "problem": "Scaled_Move_to_Location_146.pddl",
     "run_dir": "runs-00201-00300/00285",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2264,6 +2356,7 @@
     "problem": "Scaled_Move_to_Location_147.pddl",
     "run_dir": "runs-00201-00300/00287",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2288,6 +2381,7 @@
     "problem": "Scaled_Move_to_Location_148.pddl",
     "run_dir": "runs-00201-00300/00289",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2312,6 +2406,7 @@
     "problem": "Scaled_Move_to_Location_149.pddl",
     "run_dir": "runs-00201-00300/00291",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2336,6 +2431,7 @@
     "problem": "Scaled_Move_to_Location_150.pddl",
     "run_dir": "runs-00201-00300/00293",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2360,6 +2456,7 @@
     "problem": "Scaled_Move_to_Location_151.pddl",
     "run_dir": "runs-00201-00300/00295",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2384,6 +2481,7 @@
     "problem": "Scaled_Move_to_Location_152.pddl",
     "run_dir": "runs-00201-00300/00297",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2408,6 +2506,7 @@
     "problem": "Scaled_Move_to_Location_153.pddl",
     "run_dir": "runs-00201-00300/00299",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2432,6 +2531,7 @@
     "problem": "Scaled_Move_to_Location_154.pddl",
     "run_dir": "runs-00301-00400/00301",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2456,6 +2556,7 @@
     "problem": "Scaled_Move_to_Location_155.pddl",
     "run_dir": "runs-00301-00400/00303",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2480,6 +2581,7 @@
     "problem": "Scaled_Move_to_Location_156.pddl",
     "run_dir": "runs-00301-00400/00305",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2504,6 +2606,7 @@
     "problem": "Scaled_Move_to_Location_157.pddl",
     "run_dir": "runs-00301-00400/00307",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2528,6 +2631,7 @@
     "problem": "Scaled_Move_to_Location_158.pddl",
     "run_dir": "runs-00301-00400/00309",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2552,6 +2656,7 @@
     "problem": "Scaled_Move_to_Location_159.pddl",
     "run_dir": "runs-00301-00400/00311",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2576,6 +2681,7 @@
     "problem": "Scaled_Move_to_Location_160.pddl",
     "run_dir": "runs-00301-00400/00313",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2600,6 +2706,7 @@
     "problem": "Scaled_Move_to_Location_161.pddl",
     "run_dir": "runs-00301-00400/00315",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2624,6 +2731,7 @@
     "problem": "Scaled_Move_to_Location_162.pddl",
     "run_dir": "runs-00301-00400/00317",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2648,6 +2756,7 @@
     "problem": "Scaled_Move_to_Location_163.pddl",
     "run_dir": "runs-00301-00400/00319",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2672,6 +2781,7 @@
     "problem": "Scaled_Move_to_Location_164.pddl",
     "run_dir": "runs-00301-00400/00321",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2696,6 +2806,7 @@
     "problem": "Scaled_Move_to_Location_165.pddl",
     "run_dir": "runs-00301-00400/00323",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2720,6 +2831,7 @@
     "problem": "Scaled_Move_to_Location_166.pddl",
     "run_dir": "runs-00301-00400/00325",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2744,6 +2856,7 @@
     "problem": "Scaled_Move_to_Location_167.pddl",
     "run_dir": "runs-00301-00400/00327",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2768,6 +2881,7 @@
     "problem": "Scaled_Move_to_Location_168.pddl",
     "run_dir": "runs-00301-00400/00329",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2792,6 +2906,7 @@
     "problem": "Scaled_Move_to_Location_169.pddl",
     "run_dir": "runs-00301-00400/00331",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2838,6 +2953,7 @@
     "problem": "Scaled_Move_to_Location_49.pddl",
     "run_dir": "runs-00001-00100/00091",
     "score_peak_memory_usage_in_bytes": 0.24758226345352974,
+    "score_state_peak_memory_usage_in_bytes": 0.4686251157416589,
     "search_time": 5750,
     "state_peak_memory_usage_in_bytes": 164087012,
     "time_limit": 1800,
@@ -2883,6 +2999,7 @@
     "problem": "Scaled_Move_to_Location_50.pddl",
     "run_dir": "runs-00001-00100/00093",
     "score_peak_memory_usage_in_bytes": 0.23762936079155228,
+    "score_state_peak_memory_usage_in_bytes": 0.4548397879138201,
     "search_time": 7241,
     "state_peak_memory_usage_in_bytes": 183962704,
     "time_limit": 1800,
@@ -2928,6 +3045,7 @@
     "problem": "Scaled_Move_to_Location_51.pddl",
     "run_dir": "runs-00001-00100/00095",
     "score_peak_memory_usage_in_bytes": 0.23182171020541695,
+    "score_state_peak_memory_usage_in_bytes": 0.45011057216596034,
     "search_time": 7458,
     "state_peak_memory_usage_in_bytes": 191321908,
     "time_limit": 1800,
@@ -2973,6 +3091,7 @@
     "problem": "Scaled_Move_to_Location_52.pddl",
     "run_dir": "runs-00001-00100/00097",
     "score_peak_memory_usage_in_bytes": 0.21724411405203115,
+    "score_state_peak_memory_usage_in_bytes": 0.4368314863300794,
     "search_time": 8021,
     "state_peak_memory_usage_in_bytes": 213597796,
     "time_limit": 1800,
@@ -3018,6 +3137,7 @@
     "problem": "Scaled_Move_to_Location_53.pddl",
     "run_dir": "runs-00001-00100/00099",
     "score_peak_memory_usage_in_bytes": 0.21610836501361108,
+    "score_state_peak_memory_usage_in_bytes": 0.4322807030767411,
     "search_time": 7716,
     "state_peak_memory_usage_in_bytes": 221814004,
     "time_limit": 1800,
@@ -3063,6 +3183,7 @@
     "problem": "Scaled_Move_to_Location_54.pddl",
     "run_dir": "runs-00101-00200/00101",
     "score_peak_memory_usage_in_bytes": 0.20299740388876547,
+    "score_state_peak_memory_usage_in_bytes": 0.4194725784741255,
     "search_time": 9991,
     "state_peak_memory_usage_in_bytes": 246674692,
     "time_limit": 1800,
@@ -3108,6 +3229,7 @@
     "problem": "Scaled_Move_to_Location_55.pddl",
     "run_dir": "runs-00101-00200/00103",
     "score_peak_memory_usage_in_bytes": 0.20160721043219423,
+    "score_state_peak_memory_usage_in_bytes": 0.4150873630004446,
     "search_time": 9110,
     "state_peak_memory_usage_in_bytes": 255811700,
     "time_limit": 1800,
@@ -3153,6 +3275,7 @@
     "problem": "Scaled_Move_to_Location_56.pddl",
     "run_dir": "runs-00101-00200/00105",
     "score_peak_memory_usage_in_bytes": 0.19505617816265397,
+    "score_state_peak_memory_usage_in_bytes": 0.40271745053257996,
     "search_time": 9256,
     "state_peak_memory_usage_in_bytes": 283450724,
     "time_limit": 1800,
@@ -3198,6 +3321,7 @@
     "problem": "Scaled_Move_to_Location_57.pddl",
     "run_dir": "runs-00101-00200/00107",
     "score_peak_memory_usage_in_bytes": 0.19365840207065574,
+    "score_state_peak_memory_usage_in_bytes": 0.3984861894317046,
     "search_time": 10766,
     "state_peak_memory_usage_in_bytes": 293574836,
     "time_limit": 1800,
@@ -3243,6 +3367,7 @@
     "problem": "Scaled_Move_to_Location_58.pddl",
     "run_dir": "runs-00101-00200/00109",
     "score_peak_memory_usage_in_bytes": 0.1863072825676727,
+    "score_state_peak_memory_usage_in_bytes": 0.3865263069691876,
     "search_time": 11600,
     "state_peak_memory_usage_in_bytes": 324189572,
     "time_limit": 1800,
@@ -3288,6 +3413,7 @@
     "problem": "Scaled_Move_to_Location_59.pddl",
     "run_dir": "runs-00101-00200/00111",
     "score_peak_memory_usage_in_bytes": 0.18462370603633896,
+    "score_state_peak_memory_usage_in_bytes": 0.38243853839174125,
     "search_time": 11658,
     "state_peak_memory_usage_in_bytes": 335369396,
     "time_limit": 1800,
@@ -3333,6 +3459,7 @@
     "problem": "Scaled_Move_to_Location_60.pddl",
     "run_dir": "runs-00101-00200/00113",
     "score_peak_memory_usage_in_bytes": 0.17145088525578606,
+    "score_state_peak_memory_usage_in_bytes": 0.37086191732070956,
     "search_time": 13236,
     "state_peak_memory_usage_in_bytes": 369167204,
     "time_limit": 1800,
@@ -3378,6 +3505,7 @@
     "problem": "Scaled_Move_to_Location_61.pddl",
     "run_dir": "runs-00101-00200/00115",
     "score_peak_memory_usage_in_bytes": 0.17002171189307141,
+    "score_state_peak_memory_usage_in_bytes": 0.3669082256065752,
     "search_time": 14143,
     "state_peak_memory_usage_in_bytes": 381473652,
     "time_limit": 1800,
@@ -3423,6 +3551,7 @@
     "problem": "Scaled_Move_to_Location_62.pddl",
     "run_dir": "runs-00101-00200/00117",
     "score_peak_memory_usage_in_bytes": 0.16375612443905876,
+    "score_state_peak_memory_usage_in_bytes": 0.35569103527013796,
     "search_time": 14980,
     "state_peak_memory_usage_in_bytes": 418667780,
     "time_limit": 1800,
@@ -3468,6 +3597,7 @@
     "problem": "Scaled_Move_to_Location_63.pddl",
     "run_dir": "runs-00101-00200/00119",
     "score_peak_memory_usage_in_bytes": 0.1624592298511742,
+    "score_state_peak_memory_usage_in_bytes": 0.35186297374360154,
     "search_time": 14905,
     "state_peak_memory_usage_in_bytes": 432173812,
     "time_limit": 1800,
@@ -3513,6 +3643,7 @@
     "problem": "Scaled_Move_to_Location_64.pddl",
     "run_dir": "runs-00101-00200/00121",
     "score_peak_memory_usage_in_bytes": 0.15379573466861457,
+    "score_state_peak_memory_usage_in_bytes": 0.3409837355311771,
     "search_time": 16596,
     "state_peak_memory_usage_in_bytes": 472983636,
     "time_limit": 1800,
@@ -3558,6 +3689,7 @@
     "problem": "Scaled_Move_to_Location_65.pddl",
     "run_dir": "runs-00101-00200/00123",
     "score_peak_memory_usage_in_bytes": 0.1485980772593284,
+    "score_state_peak_memory_usage_in_bytes": 0.3372736871720519,
     "search_time": 19183,
     "state_peak_memory_usage_in_bytes": 487764212,
     "time_limit": 1800,
@@ -3603,6 +3735,7 @@
     "problem": "Scaled_Move_to_Location_66.pddl",
     "run_dir": "runs-00101-00200/00125",
     "score_peak_memory_usage_in_bytes": 0.13569681899155084,
+    "score_state_peak_memory_usage_in_bytes": 0.32671245266066534,
     "search_time": 17778,
     "state_peak_memory_usage_in_bytes": 532417268,
     "time_limit": 1800,
@@ -3648,6 +3781,7 @@
     "problem": "Scaled_Move_to_Location_67.pddl",
     "run_dir": "runs-00101-00200/00127",
     "score_peak_memory_usage_in_bytes": 0.13455342598802605,
+    "score_state_peak_memory_usage_in_bytes": 0.3231131650191979,
     "search_time": 19116,
     "state_peak_memory_usage_in_bytes": 548550964,
     "time_limit": 1800,
@@ -3693,6 +3827,7 @@
     "problem": "Scaled_Move_to_Location_68.pddl",
     "run_dir": "runs-00101-00200/00129",
     "score_peak_memory_usage_in_bytes": 0.1226265653719145,
+    "score_state_peak_memory_usage_in_bytes": 0.3128517937681416,
     "search_time": 22547,
     "state_peak_memory_usage_in_bytes": 597281492,
     "time_limit": 1800,
@@ -3738,6 +3873,7 @@
     "problem": "Scaled_Move_to_Location_69.pddl",
     "run_dir": "runs-00101-00200/00131",
     "score_peak_memory_usage_in_bytes": 0.12153127885967424,
+    "score_state_peak_memory_usage_in_bytes": 0.30935684497844873,
     "search_time": 21631,
     "state_peak_memory_usage_in_bytes": 614848436,
     "time_limit": 1800,
@@ -3783,6 +3919,7 @@
     "problem": "Scaled_Move_to_Location_70.pddl",
     "run_dir": "runs-00101-00200/00133",
     "score_peak_memory_usage_in_bytes": 0.11630907421681619,
+    "score_state_peak_memory_usage_in_bytes": 0.2993787668622862,
     "search_time": 21297,
     "state_peak_memory_usage_in_bytes": 667897332,
     "time_limit": 1800,
@@ -3828,6 +3965,7 @@
     "problem": "Scaled_Move_to_Location_71.pddl",
     "run_dir": "runs-00101-00200/00135",
     "score_peak_memory_usage_in_bytes": 0.11521198358376829,
+    "score_state_peak_memory_usage_in_bytes": 0.29598227783974923,
     "search_time": 23102,
     "state_peak_memory_usage_in_bytes": 686979956,
     "time_limit": 1800,
@@ -3873,6 +4011,7 @@
     "problem": "Scaled_Move_to_Location_72.pddl",
     "run_dir": "runs-00101-00200/00137",
     "score_peak_memory_usage_in_bytes": 0.10997945424651218,
+    "score_state_peak_memory_usage_in_bytes": 0.2862722601967852,
     "search_time": 27693,
     "state_peak_memory_usage_in_bytes": 744595028,
     "time_limit": 1800,
@@ -3918,6 +4057,7 @@
     "problem": "Scaled_Move_to_Location_73.pddl",
     "run_dir": "runs-00101-00200/00139",
     "score_peak_memory_usage_in_bytes": 0.10888201941224485,
+    "score_state_peak_memory_usage_in_bytes": 0.2829688351455868,
     "search_time": 26991,
     "state_peak_memory_usage_in_bytes": 765278068,
     "time_limit": 1800,
@@ -3963,6 +4103,7 @@
     "problem": "Scaled_Move_to_Location_74.pddl",
     "run_dir": "runs-00101-00200/00141",
     "score_peak_memory_usage_in_bytes": 0.10316221466870308,
+    "score_state_peak_memory_usage_in_bytes": 0.27351284252158603,
     "search_time": 28430,
     "state_peak_memory_usage_in_bytes": 827714036,
     "time_limit": 1800,
@@ -4008,6 +4149,7 @@
     "problem": "Scaled_Move_to_Location_75.pddl",
     "run_dir": "runs-00101-00200/00143",
     "score_peak_memory_usage_in_bytes": 0.10206927983790673,
+    "score_state_peak_memory_usage_in_bytes": 0.27029751737572605,
     "search_time": 30697,
     "state_peak_memory_usage_in_bytes": 850084532,
     "time_limit": 1800,
@@ -4053,6 +4195,7 @@
     "problem": "Scaled_Move_to_Location_76.pddl",
     "run_dir": "runs-00101-00200/00145",
     "score_peak_memory_usage_in_bytes": 0.08999460189649704,
+    "score_state_peak_memory_usage_in_bytes": 0.2610825891937638,
     "search_time": 31679,
     "state_peak_memory_usage_in_bytes": 917603028,
     "time_limit": 1800,
@@ -4098,6 +4241,7 @@
     "problem": "Scaled_Move_to_Location_77.pddl",
     "run_dir": "runs-00101-00200/00147",
     "score_peak_memory_usage_in_bytes": 0.0889787695824505,
+    "score_state_peak_memory_usage_in_bytes": 0.257950786755023,
     "search_time": 32190,
     "state_peak_memory_usage_in_bytes": 941750324,
     "time_limit": 1800,
@@ -4143,6 +4287,7 @@
     "problem": "Scaled_Move_to_Location_78.pddl",
     "run_dir": "runs-00101-00200/00149",
     "score_peak_memory_usage_in_bytes": 0.08385375376820833,
+    "score_state_peak_memory_usage_in_bytes": 0.24896493022921073,
     "search_time": 36675,
     "state_peak_memory_usage_in_bytes": 1014619892,
     "time_limit": 1800,
@@ -4188,6 +4333,7 @@
     "problem": "Scaled_Move_to_Location_79.pddl",
     "run_dir": "runs-00101-00200/00151",
     "score_peak_memory_usage_in_bytes": 0.0828261834365401,
+    "score_state_peak_memory_usage_in_bytes": 0.24591242098468172,
     "search_time": 34899,
     "state_peak_memory_usage_in_bytes": 1040635636,
     "time_limit": 1800,
@@ -4233,6 +4379,7 @@
     "problem": "Scaled_Move_to_Location_80.pddl",
     "run_dir": "runs-00101-00200/00153",
     "score_peak_memory_usage_in_bytes": 0.0779096971144412,
+    "score_state_peak_memory_usage_in_bytes": 0.2371445170525557,
     "search_time": 37999,
     "state_peak_memory_usage_in_bytes": 1119131732,
     "time_limit": 1800,
@@ -4278,6 +4425,7 @@
     "problem": "Scaled_Move_to_Location_81.pddl",
     "run_dir": "runs-00101-00200/00155",
     "score_peak_memory_usage_in_bytes": 0.07688416118168019,
+    "score_state_peak_memory_usage_in_bytes": 0.23416738483022,
     "search_time": 39359,
     "state_peak_memory_usage_in_bytes": 1147109876,
     "time_limit": 1800,
@@ -4323,6 +4471,7 @@
     "problem": "Scaled_Move_to_Location_82.pddl",
     "run_dir": "runs-00101-00200/00157",
     "score_peak_memory_usage_in_bytes": 0.06582399122252555,
+    "score_state_peak_memory_usage_in_bytes": 0.22560710524872565,
     "search_time": 42214,
     "state_peak_memory_usage_in_bytes": 1231514868,
     "time_limit": 1800,
@@ -4368,6 +4517,7 @@
     "problem": "Scaled_Move_to_Location_83.pddl",
     "run_dir": "runs-00101-00200/00159",
     "score_peak_memory_usage_in_bytes": 0.06486121507929733,
+    "score_state_peak_memory_usage_in_bytes": 0.22270171701151156,
     "search_time": 42656,
     "state_peak_memory_usage_in_bytes": 1261551668,
     "time_limit": 1800,
@@ -4413,6 +4563,7 @@
     "problem": "Scaled_Move_to_Location_84.pddl",
     "run_dir": "runs-00101-00200/00161",
     "score_peak_memory_usage_in_bytes": 0.05211825369603735,
+    "score_state_peak_memory_usage_in_bytes": 0.21433945106288177,
     "search_time": 47407,
     "state_peak_memory_usage_in_bytes": 1352154836,
     "time_limit": 1800,
@@ -4458,6 +4609,7 @@
     "problem": "Scaled_Move_to_Location_85.pddl",
     "run_dir": "runs-00101-00200/00163",
     "score_peak_memory_usage_in_bytes": 0.051461299391356206,
+    "score_state_peak_memory_usage_in_bytes": 0.21150243025686755,
     "search_time": 47572,
     "state_peak_memory_usage_in_bytes": 1384348852,
     "time_limit": 1800,
@@ -4503,6 +4655,7 @@
     "problem": "Scaled_Move_to_Location_86.pddl",
     "run_dir": "runs-00101-00200/00165",
     "score_peak_memory_usage_in_bytes": 0.04057977254393459,
+    "score_state_peak_memory_usage_in_bytes": 0.20332921975736487,
     "search_time": 52707,
     "state_peak_memory_usage_in_bytes": 1481446388,
     "time_limit": 1800,
@@ -4548,6 +4701,7 @@
     "problem": "Scaled_Move_to_Location_87.pddl",
     "run_dir": "runs-00101-00200/00167",
     "score_peak_memory_usage_in_bytes": 0.03972583139197361,
+    "score_state_peak_memory_usage_in_bytes": 0.20055742272384183,
     "search_time": 54207,
     "state_peak_memory_usage_in_bytes": 1515898484,
     "time_limit": 1800,
@@ -4593,6 +4747,7 @@
     "problem": "Scaled_Move_to_Location_88.pddl",
     "run_dir": "runs-00101-00200/00169",
     "score_peak_memory_usage_in_bytes": 0.035611640472457656,
+    "score_state_peak_memory_usage_in_bytes": 0.19256490423120753,
     "search_time": 61854,
     "state_peak_memory_usage_in_bytes": 1619793492,
     "time_limit": 1800,
@@ -4638,6 +4793,7 @@
     "problem": "Scaled_Move_to_Location_89.pddl",
     "run_dir": "runs-00101-00200/00171",
     "score_peak_memory_usage_in_bytes": 0.03475589497687303,
+    "score_state_peak_memory_usage_in_bytes": 0.1898553992694391,
     "search_time": 62114,
     "state_peak_memory_usage_in_bytes": 1656606836,
     "time_limit": 1800,
@@ -4683,6 +4839,7 @@
     "problem": "Scaled_Move_to_Location_90.pddl",
     "run_dir": "runs-00101-00200/00173",
     "score_peak_memory_usage_in_bytes": 0.030630098656553424,
+    "score_state_peak_memory_usage_in_bytes": 0.18203575255256826,
     "search_time": 56981,
     "state_peak_memory_usage_in_bytes": 1767609332,
     "time_limit": 1800,
@@ -4728,6 +4885,7 @@
     "problem": "Scaled_Move_to_Location_91.pddl",
     "run_dir": "runs-00101-00200/00175",
     "score_peak_memory_usage_in_bytes": 0.029771805374915847,
+    "score_state_peak_memory_usage_in_bytes": 0.1793858012836613,
     "search_time": 61014,
     "state_peak_memory_usage_in_bytes": 1806889396,
     "time_limit": 1800,
@@ -4773,6 +4931,7 @@
     "problem": "Scaled_Move_to_Location_92.pddl",
     "run_dir": "runs-00101-00200/00177",
     "score_peak_memory_usage_in_bytes": 0.02563913016460208,
+    "score_state_peak_memory_usage_in_bytes": 0.1717317032571778,
     "search_time": 66131,
     "state_peak_memory_usage_in_bytes": 1925316308,
     "time_limit": 1800,
@@ -4818,6 +4977,7 @@
     "problem": "Scaled_Move_to_Location_93.pddl",
     "run_dir": "runs-00101-00200/00179",
     "score_peak_memory_usage_in_bytes": 0.024780869034181495,
+    "score_state_peak_memory_usage_in_bytes": 0.16913874399210588,
     "search_time": 57262,
     "state_peak_memory_usage_in_bytes": 1967170868,
     "time_limit": 1800,
@@ -4863,6 +5023,7 @@
     "problem": "Scaled_Move_to_Location_94.pddl",
     "run_dir": "runs-00101-00200/00181",
     "score_peak_memory_usage_in_bytes": 0.020158892068429902,
+    "score_state_peak_memory_usage_in_bytes": 0.1616433274345451,
     "search_time": 68979,
     "state_peak_memory_usage_in_bytes": 2093346036,
     "time_limit": 1800,
@@ -4908,6 +5069,7 @@
     "problem": "Scaled_Move_to_Location_95.pddl",
     "run_dir": "runs-00101-00200/00183",
     "score_peak_memory_usage_in_bytes": 0.019304727558049087,
+    "score_state_peak_memory_usage_in_bytes": 0.15910496029313997,
     "search_time": 65733,
     "state_peak_memory_usage_in_bytes": 2137885172,
     "time_limit": 1800,
@@ -4953,6 +5115,7 @@
     "problem": "Scaled_Move_to_Location_96.pddl",
     "run_dir": "runs-00101-00200/00185",
     "score_peak_memory_usage_in_bytes": 0.008289435760857023,
+    "score_state_peak_memory_usage_in_bytes": 0.1517617767645463,
     "search_time": 77145,
     "state_peak_memory_usage_in_bytes": 2272139348,
     "time_limit": 1800,
@@ -4998,6 +5161,7 @@
     "problem": "Scaled_Move_to_Location_97.pddl",
     "run_dir": "runs-00101-00200/00187",
     "score_peak_memory_usage_in_bytes": 0.007483367576238107,
+    "score_state_peak_memory_usage_in_bytes": 0.14927575032880736,
     "search_time": 77913,
     "state_peak_memory_usage_in_bytes": 2319475444,
     "time_limit": 1800,
@@ -5043,6 +5207,7 @@
     "problem": "Scaled_Move_to_Location_98.pddl",
     "run_dir": "runs-00101-00200/00189",
     "score_peak_memory_usage_in_bytes": 0.0033322470282759883,
+    "score_state_peak_memory_usage_in_bytes": 0.14207873678516142,
     "search_time": 90674,
     "state_peak_memory_usage_in_bytes": 2462146292,
     "time_limit": 1800,
@@ -5088,6 +5253,7 @@
     "problem": "Scaled_Move_to_Location_99.pddl",
     "run_dir": "runs-00101-00200/00191",
     "score_peak_memory_usage_in_bytes": 0.0025277145094759436,
+    "score_state_peak_memory_usage_in_bytes": 0.1396429361008915,
     "search_time": 87134,
     "state_peak_memory_usage_in_bytes": 2512394036,
     "time_limit": 1800,
@@ -5111,6 +5277,7 @@
     "problem": "Scaled_Move_to_Location_170.pddl",
     "run_dir": "runs-00301-00400/00333",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5135,6 +5302,7 @@
     "problem": "Scaled_Move_to_Location_180.pddl",
     "run_dir": "runs-00301-00400/00335",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5159,6 +5327,7 @@
     "problem": "Scaled_Move_to_Location_190.pddl",
     "run_dir": "runs-00301-00400/00337",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5183,6 +5352,7 @@
     "problem": "Scaled_Move_to_Location_200.pddl",
     "run_dir": "runs-00301-00400/00339",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5207,6 +5377,7 @@
     "problem": "Scaled_Move_to_Location_210.pddl",
     "run_dir": "runs-00301-00400/00341",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5231,6 +5402,7 @@
     "problem": "Scaled_Move_to_Location_220.pddl",
     "run_dir": "runs-00301-00400/00343",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5255,6 +5427,7 @@
     "problem": "Scaled_Move_to_Location_230.pddl",
     "run_dir": "runs-00301-00400/00345",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5279,6 +5452,7 @@
     "problem": "Scaled_Move_to_Location_240.pddl",
     "run_dir": "runs-00301-00400/00347",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5303,6 +5477,7 @@
     "problem": "Scaled_Move_to_Location_250.pddl",
     "run_dir": "runs-00301-00400/00349",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5327,6 +5502,7 @@
     "problem": "Scaled_Move_to_Location_260.pddl",
     "run_dir": "runs-00301-00400/00351",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5351,6 +5527,7 @@
     "problem": "Scaled_Move_to_Location_270.pddl",
     "run_dir": "runs-00301-00400/00353",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5375,6 +5552,7 @@
     "problem": "Scaled_Move_to_Location_280.pddl",
     "run_dir": "runs-00301-00400/00355",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5399,6 +5577,7 @@
     "problem": "Scaled_Move_to_Location_290.pddl",
     "run_dir": "runs-00301-00400/00357",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5423,6 +5602,7 @@
     "problem": "Scaled_Move_to_Location_300.pddl",
     "run_dir": "runs-00301-00400/00359",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5447,6 +5627,7 @@
     "problem": "Scaled_Move_to_Location_310.pddl",
     "run_dir": "runs-00301-00400/00361",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5471,6 +5652,7 @@
     "problem": "Scaled_Move_to_Location_320.pddl",
     "run_dir": "runs-00301-00400/00363",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5495,6 +5677,7 @@
     "problem": "Scaled_Move_to_Location_330.pddl",
     "run_dir": "runs-00301-00400/00365",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5519,6 +5702,7 @@
     "problem": "Scaled_Move_to_Location_340.pddl",
     "run_dir": "runs-00301-00400/00367",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5543,6 +5727,7 @@
     "problem": "Scaled_Move_to_Location_350.pddl",
     "run_dir": "runs-00301-00400/00369",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5567,6 +5752,7 @@
     "problem": "Scaled_Move_to_Location_360.pddl",
     "run_dir": "runs-00301-00400/00371",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5591,6 +5777,7 @@
     "problem": "Scaled_Move_to_Location_370.pddl",
     "run_dir": "runs-00301-00400/00373",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5615,6 +5802,7 @@
     "problem": "Scaled_Move_to_Location_380.pddl",
     "run_dir": "runs-00301-00400/00375",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5639,6 +5827,7 @@
     "problem": "Scaled_Move_to_Location_390.pddl",
     "run_dir": "runs-00301-00400/00377",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5663,6 +5852,7 @@
     "problem": "Scaled_Move_to_Location_400.pddl",
     "run_dir": "runs-00301-00400/00379",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5687,6 +5877,7 @@
     "problem": "Scaled_Move_to_Location_410.pddl",
     "run_dir": "runs-00301-00400/00381",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5711,6 +5902,7 @@
     "problem": "Scaled_Move_to_Location_420.pddl",
     "run_dir": "runs-00301-00400/00383",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5735,6 +5927,7 @@
     "problem": "Scaled_Move_to_Location_430.pddl",
     "run_dir": "runs-00301-00400/00385",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5759,6 +5952,7 @@
     "problem": "Scaled_Move_to_Location_440.pddl",
     "run_dir": "runs-00301-00400/00387",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5783,6 +5977,7 @@
     "problem": "Scaled_Move_to_Location_450.pddl",
     "run_dir": "runs-00301-00400/00389",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5808,6 +6003,7 @@
     "problem": "Bridge_Easy.pddl",
     "run_dir": "runs-00001-00100/00002",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3711480 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -5831,6 +6027,7 @@
     "problem": "Bridge_Hard.pddl",
     "run_dir": "runs-00001-00100/00004",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5855,6 +6052,7 @@
     "problem": "Bridge_Medium.pddl",
     "run_dir": "runs-00001-00100/00006",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5879,6 +6077,7 @@
     "problem": "Build_Cabin_Easy.pddl",
     "run_dir": "runs-00001-00100/00008",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5903,6 +6102,7 @@
     "problem": "Build_Cabin_Hard.pddl",
     "run_dir": "runs-00001-00100/00010",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5927,6 +6127,7 @@
     "problem": "Build_Cabin_Medium.pddl",
     "run_dir": "runs-00001-00100/00012",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5952,6 +6153,7 @@
     "problem": "Build_Cross_Easy.pddl",
     "run_dir": "runs-00001-00100/00014",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2054738 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -5975,6 +6177,7 @@
     "problem": "Build_Cross_Hard.pddl",
     "run_dir": "runs-00001-00100/00016",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5999,6 +6202,7 @@
     "problem": "Build_Cross_Medium.pddl",
     "run_dir": "runs-00001-00100/00018",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6024,6 +6228,7 @@
     "problem": "Build_Shape_Easy.pddl",
     "run_dir": "runs-00001-00100/00020",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3951491 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6047,6 +6252,7 @@
     "problem": "Build_Shape_Hard.pddl",
     "run_dir": "runs-00001-00100/00022",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6071,6 +6277,7 @@
     "problem": "Build_Shape_Medium.pddl",
     "run_dir": "runs-00001-00100/00024",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6096,6 +6303,7 @@
     "problem": "Build_Wall_Easy.pddl",
     "run_dir": "runs-00001-00100/00026",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1765667 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6119,6 +6327,7 @@
     "problem": "Build_Wall_Hard.pddl",
     "run_dir": "runs-00001-00100/00028",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6143,6 +6352,7 @@
     "problem": "Build_Wall_Medium.pddl",
     "run_dir": "runs-00001-00100/00030",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6168,6 +6378,7 @@
     "problem": "Build_Well_Easy.pddl",
     "run_dir": "runs-00001-00100/00032",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3948420 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6191,6 +6402,7 @@
     "problem": "Build_Well_Hard.pddl",
     "run_dir": "runs-00001-00100/00034",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6215,6 +6427,7 @@
     "problem": "Build_Well_Medium.pddl",
     "run_dir": "runs-00001-00100/00036",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6240,6 +6453,7 @@
     "problem": "Climb_Place_Easy.pddl",
     "run_dir": "runs-00001-00100/00038",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2016921 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6263,6 +6477,7 @@
     "problem": "Climb_Place_Hard.pddl",
     "run_dir": "runs-00001-00100/00040",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6287,6 +6502,7 @@
     "problem": "Climb_Place_Medium.pddl",
     "run_dir": "runs-00001-00100/00042",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6312,6 +6528,7 @@
     "problem": "Collect_Build_Shape_Easy.pddl",
     "run_dir": "runs-00001-00100/00044",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1970061 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6335,6 +6552,7 @@
     "problem": "Collect_Build_Shape_Hard.pddl",
     "run_dir": "runs-00001-00100/00046",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6359,6 +6577,7 @@
     "problem": "Collect_Build_Shape_Medium.pddl",
     "run_dir": "runs-00001-00100/00048",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6383,6 +6602,7 @@
     "problem": "Cut_Tree_Easy.pddl",
     "run_dir": "runs-00001-00100/00050",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6407,6 +6627,7 @@
     "problem": "Cut_Tree_Hard.pddl",
     "run_dir": "runs-00001-00100/00052",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6431,6 +6652,7 @@
     "problem": "Cut_Tree_Medium.pddl",
     "run_dir": "runs-00001-00100/00054",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6456,6 +6678,7 @@
     "problem": "Gather_Multiple_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00056",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 4176428 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6479,6 +6702,7 @@
     "problem": "Gather_Multiple_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00058",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6503,6 +6727,7 @@
     "problem": "Gather_Multiple_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00060",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6549,6 +6774,7 @@
     "problem": "Gather_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00062",
     "score_peak_memory_usage_in_bytes": 0.1460044425778289,
+    "score_state_peak_memory_usage_in_bytes": 0.5936308754109931,
     "search_time": 22620,
     "state_peak_memory_usage_in_bytes": 58182980,
     "time_limit": 1800,
@@ -6572,6 +6798,7 @@
     "problem": "Gather_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00064",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6596,6 +6823,7 @@
     "problem": "Gather_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00066",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6642,6 +6870,7 @@
     "problem": "Move_to_Location_Easy.pddl",
     "run_dir": "runs-00001-00100/00068",
     "score_peak_memory_usage_in_bytes": 0.21841257284787788,
+    "score_state_peak_memory_usage_in_bytes": 0.5174863697866445,
     "search_time": 42609,
     "state_peak_memory_usage_in_bytes": 109414036,
     "time_limit": 1800,
@@ -6665,6 +6894,7 @@
     "problem": "Move_to_Location_Hard.pddl",
     "run_dir": "runs-00001-00100/00070",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6689,6 +6919,7 @@
     "problem": "Move_to_Location_Medium.pddl",
     "run_dir": "runs-00001-00100/00072",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6735,6 +6966,7 @@
     "problem": "Pickup_Diamond_Easy.pddl",
     "run_dir": "runs-00001-00100/00080",
     "score_peak_memory_usage_in_bytes": 0.14605584272264452,
+    "score_state_peak_memory_usage_in_bytes": 0.4863732838191723,
     "search_time": 60677,
     "state_peak_memory_usage_in_bytes": 141626408,
     "time_limit": 1800,
@@ -6758,6 +6990,7 @@
     "problem": "Pickup_Diamond_Hard.pddl",
     "run_dir": "runs-00001-00100/00082",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6782,6 +7015,7 @@
     "problem": "Pickup_Diamond_Medium.pddl",
     "run_dir": "runs-00001-00100/00084",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6807,6 +7041,7 @@
     "problem": "Pickup_and_Place_Easy.pddl",
     "run_dir": "runs-00001-00100/00074",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3889598 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -6830,6 +7065,7 @@
     "problem": "Pickup_and_Place_Hard.pddl",
     "run_dir": "runs-00001-00100/00076",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6854,6 +7090,7 @@
     "problem": "Pickup_and_Place_Medium.pddl",
     "run_dir": "runs-00001-00100/00078",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6900,6 +7137,7 @@
     "problem": "Place_Wood_Easy.pddl",
     "run_dir": "runs-00001-00100/00086",
     "score_peak_memory_usage_in_bytes": 0.1448596471745885,
+    "score_state_peak_memory_usage_in_bytes": 0.34086754839113675,
     "search_time": 183103,
     "state_peak_memory_usage_in_bytes": 473439652,
     "time_limit": 1800,
@@ -6923,6 +7161,7 @@
     "problem": "Place_Wood_Hard.pddl",
     "run_dir": "runs-00001-00100/00088",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6947,6 +7186,7 @@
     "problem": "Place_Wood_Medium.pddl",
     "run_dir": "runs-00001-00100/00090",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6993,6 +7233,7 @@
     "problem": "Scaled_Move_to_Location_100.pddl",
     "run_dir": "runs-00101-00200/00194",
     "score_peak_memory_usage_in_bytes": 0.05188241592359585,
+    "score_state_peak_memory_usage_in_bytes": 0.13258638477160553,
     "search_time": 853145,
     "state_peak_memory_usage_in_bytes": 2663826132,
     "time_limit": 1800,
@@ -7038,6 +7279,7 @@
     "problem": "Scaled_Move_to_Location_101.pddl",
     "run_dir": "runs-00101-00200/00196",
     "score_peak_memory_usage_in_bytes": 0.051061351955729105,
+    "score_state_peak_memory_usage_in_bytes": 0.13019882053814677,
     "search_time": 988703,
     "state_peak_memory_usage_in_bytes": 2717102516,
     "time_limit": 1800,
@@ -7083,6 +7325,7 @@
     "problem": "Scaled_Move_to_Location_102.pddl",
     "run_dir": "runs-00101-00200/00198",
     "score_peak_memory_usage_in_bytes": 0.04745796940473748,
+    "score_state_peak_memory_usage_in_bytes": 0.12327735169112289,
     "search_time": 1133053,
     "state_peak_memory_usage_in_bytes": 2877647348,
     "time_limit": 1800,
@@ -7128,6 +7371,7 @@
     "problem": "Scaled_Move_to_Location_103.pddl",
     "run_dir": "runs-00101-00200/00200",
     "score_peak_memory_usage_in_bytes": 0.046650394026026484,
+    "score_state_peak_memory_usage_in_bytes": 0.12093615050076252,
     "search_time": 1022956,
     "state_peak_memory_usage_in_bytes": 2934071668,
     "time_limit": 1800,
@@ -7173,6 +7417,7 @@
     "problem": "Scaled_Move_to_Location_104.pddl",
     "run_dir": "runs-00201-00300/00202",
     "score_peak_memory_usage_in_bytes": 0.03828706374462487,
+    "score_state_peak_memory_usage_in_bytes": 0.11414468776899528,
     "search_time": 1170261,
     "state_peak_memory_usage_in_bytes": 3104087636,
     "time_limit": 1800,
@@ -7218,6 +7463,7 @@
     "problem": "Scaled_Move_to_Location_105.pddl",
     "run_dir": "runs-00201-00300/00204",
     "score_peak_memory_usage_in_bytes": 0.03750255693544433,
+    "score_state_peak_memory_usage_in_bytes": 0.1118480832760603,
     "search_time": 1160849,
     "state_peak_memory_usage_in_bytes": 3163781492,
     "time_limit": 1800,
@@ -7263,6 +7509,7 @@
     "problem": "Scaled_Move_to_Location_106.pddl",
     "run_dir": "runs-00201-00300/00206",
     "score_peak_memory_usage_in_bytes": 0.02801421048431158,
+    "score_state_peak_memory_usage_in_bytes": 0.10518183126191818,
     "search_time": 1269278,
     "state_peak_memory_usage_in_bytes": 3343633908,
     "time_limit": 1800,
@@ -7308,6 +7555,7 @@
     "problem": "Scaled_Move_to_Location_107.pddl",
     "run_dir": "runs-00201-00300/00208",
     "score_peak_memory_usage_in_bytes": 0.02727098430959167,
+    "score_state_peak_memory_usage_in_bytes": 0.10292815617728464,
     "search_time": 1267153,
     "state_peak_memory_usage_in_bytes": 3406721204,
     "time_limit": 1800,
@@ -7353,6 +7601,7 @@
     "problem": "Scaled_Move_to_Location_108.pddl",
     "run_dir": "runs-00201-00300/00210",
     "score_peak_memory_usage_in_bytes": 0.024002323326946618,
+    "score_state_peak_memory_usage_in_bytes": 0.09638258008666396,
     "search_time": 1187913,
     "state_peak_memory_usage_in_bytes": 3596782292,
     "time_limit": 1800,
@@ -7398,6 +7647,7 @@
     "problem": "Scaled_Move_to_Location_109.pddl",
     "run_dir": "runs-00201-00300/00212",
     "score_peak_memory_usage_in_bytes": 0.020233485760535148,
+    "score_state_peak_memory_usage_in_bytes": 0.09417025890679966,
     "search_time": 1416709,
     "state_peak_memory_usage_in_bytes": 3663389236,
     "time_limit": 1800,
@@ -7421,6 +7671,7 @@
     "problem": "Scaled_Move_to_Location_110.pddl",
     "run_dir": "runs-00201-00300/00214",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1013981 Segmentation fault      \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7466,6 +7717,7 @@
     "problem": "Scaled_Move_to_Location_111.pddl",
     "run_dir": "runs-00201-00300/00216",
     "score_peak_memory_usage_in_bytes": 0.01225700474716676,
+    "score_state_peak_memory_usage_in_bytes": 0.08556860838735102,
     "search_time": 1395639,
     "state_peak_memory_usage_in_bytes": 3934293236,
     "time_limit": 1800,
@@ -7502,6 +7754,7 @@
     "problem": "Scaled_Move_to_Location_112.pddl",
     "run_dir": "runs-00201-00300/00218",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "search_time": 1732823,
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7527,6 +7780,7 @@
     "problem": "Scaled_Move_to_Location_113.pddl",
     "run_dir": "runs-00201-00300/00220",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3325451 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7560,6 +7814,7 @@
     "problem": "Scaled_Move_to_Location_114.pddl",
     "run_dir": "runs-00201-00300/00222",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "search_time": 1674952,
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7585,6 +7840,7 @@
     "problem": "Scaled_Move_to_Location_115.pddl",
     "run_dir": "runs-00201-00300/00224",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 534428 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7609,6 +7865,7 @@
     "problem": "Scaled_Move_to_Location_116.pddl",
     "run_dir": "runs-00201-00300/00226",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2995430 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7633,6 +7890,7 @@
     "problem": "Scaled_Move_to_Location_117.pddl",
     "run_dir": "runs-00201-00300/00228",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1266057 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7657,6 +7915,7 @@
     "problem": "Scaled_Move_to_Location_118.pddl",
     "run_dir": "runs-00201-00300/00230",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2320061 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7680,6 +7939,7 @@
     "problem": "Scaled_Move_to_Location_119.pddl",
     "run_dir": "runs-00201-00300/00232",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3369049 Segmentation fault      \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7703,6 +7963,7 @@
     "problem": "Scaled_Move_to_Location_120.pddl",
     "run_dir": "runs-00201-00300/00234",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7727,6 +7988,7 @@
     "problem": "Scaled_Move_to_Location_121.pddl",
     "run_dir": "runs-00201-00300/00236",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7751,6 +8013,7 @@
     "problem": "Scaled_Move_to_Location_122.pddl",
     "run_dir": "runs-00201-00300/00238",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7775,6 +8038,7 @@
     "problem": "Scaled_Move_to_Location_123.pddl",
     "run_dir": "runs-00201-00300/00240",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7799,6 +8063,7 @@
     "problem": "Scaled_Move_to_Location_124.pddl",
     "run_dir": "runs-00201-00300/00242",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7823,6 +8088,7 @@
     "problem": "Scaled_Move_to_Location_125.pddl",
     "run_dir": "runs-00201-00300/00244",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7847,6 +8113,7 @@
     "problem": "Scaled_Move_to_Location_126.pddl",
     "run_dir": "runs-00201-00300/00246",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7871,6 +8138,7 @@
     "problem": "Scaled_Move_to_Location_127.pddl",
     "run_dir": "runs-00201-00300/00248",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7895,6 +8163,7 @@
     "problem": "Scaled_Move_to_Location_128.pddl",
     "run_dir": "runs-00201-00300/00250",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7919,6 +8188,7 @@
     "problem": "Scaled_Move_to_Location_129.pddl",
     "run_dir": "runs-00201-00300/00252",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7943,6 +8213,7 @@
     "problem": "Scaled_Move_to_Location_130.pddl",
     "run_dir": "runs-00201-00300/00254",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7967,6 +8238,7 @@
     "problem": "Scaled_Move_to_Location_131.pddl",
     "run_dir": "runs-00201-00300/00256",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -7991,6 +8263,7 @@
     "problem": "Scaled_Move_to_Location_132.pddl",
     "run_dir": "runs-00201-00300/00258",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8015,6 +8288,7 @@
     "problem": "Scaled_Move_to_Location_133.pddl",
     "run_dir": "runs-00201-00300/00260",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8039,6 +8313,7 @@
     "problem": "Scaled_Move_to_Location_134.pddl",
     "run_dir": "runs-00201-00300/00262",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8063,6 +8338,7 @@
     "problem": "Scaled_Move_to_Location_135.pddl",
     "run_dir": "runs-00201-00300/00264",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8087,6 +8363,7 @@
     "problem": "Scaled_Move_to_Location_136.pddl",
     "run_dir": "runs-00201-00300/00266",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8111,6 +8388,7 @@
     "problem": "Scaled_Move_to_Location_137.pddl",
     "run_dir": "runs-00201-00300/00268",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8135,6 +8413,7 @@
     "problem": "Scaled_Move_to_Location_138.pddl",
     "run_dir": "runs-00201-00300/00270",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8159,6 +8438,7 @@
     "problem": "Scaled_Move_to_Location_139.pddl",
     "run_dir": "runs-00201-00300/00272",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8183,6 +8463,7 @@
     "problem": "Scaled_Move_to_Location_140.pddl",
     "run_dir": "runs-00201-00300/00274",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8207,6 +8488,7 @@
     "problem": "Scaled_Move_to_Location_141.pddl",
     "run_dir": "runs-00201-00300/00276",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8231,6 +8513,7 @@
     "problem": "Scaled_Move_to_Location_142.pddl",
     "run_dir": "runs-00201-00300/00278",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8255,6 +8538,7 @@
     "problem": "Scaled_Move_to_Location_143.pddl",
     "run_dir": "runs-00201-00300/00280",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8279,6 +8563,7 @@
     "problem": "Scaled_Move_to_Location_144.pddl",
     "run_dir": "runs-00201-00300/00282",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8303,6 +8588,7 @@
     "problem": "Scaled_Move_to_Location_145.pddl",
     "run_dir": "runs-00201-00300/00284",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8327,6 +8613,7 @@
     "problem": "Scaled_Move_to_Location_146.pddl",
     "run_dir": "runs-00201-00300/00286",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8351,6 +8638,7 @@
     "problem": "Scaled_Move_to_Location_147.pddl",
     "run_dir": "runs-00201-00300/00288",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8375,6 +8663,7 @@
     "problem": "Scaled_Move_to_Location_148.pddl",
     "run_dir": "runs-00201-00300/00290",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8399,6 +8688,7 @@
     "problem": "Scaled_Move_to_Location_149.pddl",
     "run_dir": "runs-00201-00300/00292",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8423,6 +8713,7 @@
     "problem": "Scaled_Move_to_Location_150.pddl",
     "run_dir": "runs-00201-00300/00294",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8447,6 +8738,7 @@
     "problem": "Scaled_Move_to_Location_151.pddl",
     "run_dir": "runs-00201-00300/00296",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8471,6 +8763,7 @@
     "problem": "Scaled_Move_to_Location_152.pddl",
     "run_dir": "runs-00201-00300/00298",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8495,6 +8788,7 @@
     "problem": "Scaled_Move_to_Location_153.pddl",
     "run_dir": "runs-00201-00300/00300",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8519,6 +8813,7 @@
     "problem": "Scaled_Move_to_Location_154.pddl",
     "run_dir": "runs-00301-00400/00302",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8543,6 +8838,7 @@
     "problem": "Scaled_Move_to_Location_155.pddl",
     "run_dir": "runs-00301-00400/00304",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8567,6 +8863,7 @@
     "problem": "Scaled_Move_to_Location_156.pddl",
     "run_dir": "runs-00301-00400/00306",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8591,6 +8888,7 @@
     "problem": "Scaled_Move_to_Location_157.pddl",
     "run_dir": "runs-00301-00400/00308",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8615,6 +8913,7 @@
     "problem": "Scaled_Move_to_Location_158.pddl",
     "run_dir": "runs-00301-00400/00310",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8639,6 +8938,7 @@
     "problem": "Scaled_Move_to_Location_159.pddl",
     "run_dir": "runs-00301-00400/00312",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8663,6 +8963,7 @@
     "problem": "Scaled_Move_to_Location_160.pddl",
     "run_dir": "runs-00301-00400/00314",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8687,6 +8988,7 @@
     "problem": "Scaled_Move_to_Location_161.pddl",
     "run_dir": "runs-00301-00400/00316",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8711,6 +9013,7 @@
     "problem": "Scaled_Move_to_Location_162.pddl",
     "run_dir": "runs-00301-00400/00318",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8735,6 +9038,7 @@
     "problem": "Scaled_Move_to_Location_163.pddl",
     "run_dir": "runs-00301-00400/00320",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8759,6 +9063,7 @@
     "problem": "Scaled_Move_to_Location_164.pddl",
     "run_dir": "runs-00301-00400/00322",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8783,6 +9088,7 @@
     "problem": "Scaled_Move_to_Location_165.pddl",
     "run_dir": "runs-00301-00400/00324",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8807,6 +9113,7 @@
     "problem": "Scaled_Move_to_Location_166.pddl",
     "run_dir": "runs-00301-00400/00326",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8831,6 +9138,7 @@
     "problem": "Scaled_Move_to_Location_167.pddl",
     "run_dir": "runs-00301-00400/00328",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8855,6 +9163,7 @@
     "problem": "Scaled_Move_to_Location_168.pddl",
     "run_dir": "runs-00301-00400/00330",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8879,6 +9188,7 @@
     "problem": "Scaled_Move_to_Location_169.pddl",
     "run_dir": "runs-00301-00400/00332",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8925,6 +9235,7 @@
     "problem": "Scaled_Move_to_Location_49.pddl",
     "run_dir": "runs-00001-00100/00092",
     "score_peak_memory_usage_in_bytes": 0.2683790116924075,
+    "score_state_peak_memory_usage_in_bytes": 0.4686251157416589,
     "search_time": 54183,
     "state_peak_memory_usage_in_bytes": 164087012,
     "time_limit": 1800,
@@ -8970,6 +9281,7 @@
     "problem": "Scaled_Move_to_Location_50.pddl",
     "run_dir": "runs-00001-00100/00094",
     "score_peak_memory_usage_in_bytes": 0.2610240354484887,
+    "score_state_peak_memory_usage_in_bytes": 0.4548397879138201,
     "search_time": 64170,
     "state_peak_memory_usage_in_bytes": 183962704,
     "time_limit": 1800,
@@ -9015,6 +9327,7 @@
     "problem": "Scaled_Move_to_Location_51.pddl",
     "run_dir": "runs-00001-00100/00096",
     "score_peak_memory_usage_in_bytes": 0.2569728428945419,
+    "score_state_peak_memory_usage_in_bytes": 0.4501107032446939,
     "search_time": 69257,
     "state_peak_memory_usage_in_bytes": 191321700,
     "time_limit": 1800,
@@ -9060,6 +9373,7 @@
     "problem": "Scaled_Move_to_Location_52.pddl",
     "run_dir": "runs-00001-00100/00098",
     "score_peak_memory_usage_in_bytes": 0.24567415719564847,
+    "score_state_peak_memory_usage_in_bytes": 0.4368316059966041,
     "search_time": 83747,
     "state_peak_memory_usage_in_bytes": 213597584,
     "time_limit": 1800,
@@ -9105,6 +9419,7 @@
     "problem": "Scaled_Move_to_Location_53.pddl",
     "run_dir": "runs-00001-00100/00100",
     "score_peak_memory_usage_in_bytes": 0.24446679050443895,
+    "score_state_peak_memory_usage_in_bytes": 0.432280820484925,
     "search_time": 79818,
     "state_peak_memory_usage_in_bytes": 221813788,
     "time_limit": 1800,
@@ -9150,6 +9465,7 @@
     "problem": "Scaled_Move_to_Location_54.pddl",
     "run_dir": "runs-00101-00200/00102",
     "score_peak_memory_usage_in_bytes": 0.23260663375901436,
+    "score_state_peak_memory_usage_in_bytes": 0.4194726860046217,
     "search_time": 86634,
     "state_peak_memory_usage_in_bytes": 246674472,
     "time_limit": 1800,
@@ -9195,6 +9511,7 @@
     "problem": "Scaled_Move_to_Location_55.pddl",
     "run_dir": "runs-00101-00200/00104",
     "score_peak_memory_usage_in_bytes": 0.23004382489019148,
+    "score_state_peak_memory_usage_in_bytes": 0.41508746857546497,
     "search_time": 90650,
     "state_peak_memory_usage_in_bytes": 255811476,
     "time_limit": 1800,
@@ -9240,6 +9557,7 @@
     "problem": "Scaled_Move_to_Location_56.pddl",
     "run_dir": "runs-00101-00200/00106",
     "score_peak_memory_usage_in_bytes": 0.22514874643292188,
+    "score_state_peak_memory_usage_in_bytes": 0.4027175475145095,
     "search_time": 109531,
     "state_peak_memory_usage_in_bytes": 283450496,
     "time_limit": 1800,
@@ -9285,6 +9603,7 @@
     "problem": "Scaled_Move_to_Location_57.pddl",
     "run_dir": "runs-00101-00200/00108",
     "score_peak_memory_usage_in_bytes": 0.22372581436584907,
+    "score_state_peak_memory_usage_in_bytes": 0.3984862847119134,
     "search_time": 98855,
     "state_peak_memory_usage_in_bytes": 293574604,
     "time_limit": 1800,
@@ -9330,6 +9649,7 @@
     "problem": "Scaled_Move_to_Location_58.pddl",
     "run_dir": "runs-00101-00200/00110",
     "score_peak_memory_usage_in_bytes": 0.21752354316540864,
+    "score_state_peak_memory_usage_in_bytes": 0.38652639473926675,
     "search_time": 106416,
     "state_peak_memory_usage_in_bytes": 324189336,
     "time_limit": 1800,
@@ -9375,6 +9695,7 @@
     "problem": "Scaled_Move_to_Location_59.pddl",
     "run_dir": "runs-00101-00200/00112",
     "score_peak_memory_usage_in_bytes": 0.21591653222351118,
+    "score_state_peak_memory_usage_in_bytes": 0.38243862467396655,
     "search_time": 109734,
     "state_peak_memory_usage_in_bytes": 335369156,
     "time_limit": 1800,
@@ -9420,6 +9741,7 @@
     "problem": "Scaled_Move_to_Location_60.pddl",
     "run_dir": "runs-00101-00200/00114",
     "score_peak_memory_usage_in_bytes": 0.20579585696361824,
+    "score_state_peak_memory_usage_in_bytes": 0.37086199701004885,
     "search_time": 130875,
     "state_peak_memory_usage_in_bytes": 369166960,
     "time_limit": 1800,
@@ -9465,6 +9787,7 @@
     "problem": "Scaled_Move_to_Location_61.pddl",
     "run_dir": "runs-00101-00200/00116",
     "score_peak_memory_usage_in_bytes": 0.20377682807833727,
+    "score_state_peak_memory_usage_in_bytes": 0.36690830398935215,
     "search_time": 140148,
     "state_peak_memory_usage_in_bytes": 381473404,
     "time_limit": 1800,
@@ -9510,6 +9833,7 @@
     "problem": "Scaled_Move_to_Location_62.pddl",
     "run_dir": "runs-00101-00200/00118",
     "score_peak_memory_usage_in_bytes": 0.19821178017351945,
+    "score_state_peak_memory_usage_in_bytes": 0.35569110784137103,
     "search_time": 148481,
     "state_peak_memory_usage_in_bytes": 418667528,
     "time_limit": 1800,
@@ -9555,6 +9879,7 @@
     "problem": "Scaled_Move_to_Location_63.pddl",
     "run_dir": "runs-00101-00200/00120",
     "score_peak_memory_usage_in_bytes": 0.1968952955183863,
+    "score_state_peak_memory_usage_in_bytes": 0.35186297374360154,
     "search_time": 159909,
     "state_peak_memory_usage_in_bytes": 432173812,
     "time_limit": 1800,
@@ -9600,6 +9925,7 @@
     "problem": "Scaled_Move_to_Location_64.pddl",
     "run_dir": "runs-00101-00200/00122",
     "score_peak_memory_usage_in_bytes": 0.19055650588101572,
+    "score_state_peak_memory_usage_in_bytes": 0.3409837355311771,
     "search_time": 181547,
     "state_peak_memory_usage_in_bytes": 472983636,
     "time_limit": 1800,
@@ -9645,6 +9971,7 @@
     "problem": "Scaled_Move_to_Location_65.pddl",
     "run_dir": "runs-00101-00200/00124",
     "score_peak_memory_usage_in_bytes": 0.18655531801235697,
+    "score_state_peak_memory_usage_in_bytes": 0.3372736871720519,
     "search_time": 198318,
     "state_peak_memory_usage_in_bytes": 487764212,
     "time_limit": 1800,
@@ -9690,6 +10017,7 @@
     "problem": "Scaled_Move_to_Location_66.pddl",
     "run_dir": "runs-00101-00200/00126",
     "score_peak_memory_usage_in_bytes": 0.17571006003099673,
+    "score_state_peak_memory_usage_in_bytes": 0.32671245266066534,
     "search_time": 197796,
     "state_peak_memory_usage_in_bytes": 532417268,
     "time_limit": 1800,
@@ -9735,6 +10063,7 @@
     "problem": "Scaled_Move_to_Location_67.pddl",
     "run_dir": "runs-00101-00200/00128",
     "score_peak_memory_usage_in_bytes": 0.17452661629259142,
+    "score_state_peak_memory_usage_in_bytes": 0.3231131650191979,
     "search_time": 181363,
     "state_peak_memory_usage_in_bytes": 548550964,
     "time_limit": 1800,
@@ -9780,6 +10109,7 @@
     "problem": "Scaled_Move_to_Location_68.pddl",
     "run_dir": "runs-00101-00200/00130",
     "score_peak_memory_usage_in_bytes": 0.1633513034089896,
+    "score_state_peak_memory_usage_in_bytes": 0.3128517937681416,
     "search_time": 222641,
     "state_peak_memory_usage_in_bytes": 597281492,
     "time_limit": 1800,
@@ -9825,6 +10155,7 @@
     "problem": "Scaled_Move_to_Location_69.pddl",
     "run_dir": "runs-00101-00200/00132",
     "score_peak_memory_usage_in_bytes": 0.16214990729116005,
+    "score_state_peak_memory_usage_in_bytes": 0.30935684497844873,
     "search_time": 198519,
     "state_peak_memory_usage_in_bytes": 614848436,
     "time_limit": 1800,
@@ -9870,6 +10201,7 @@
     "problem": "Scaled_Move_to_Location_70.pddl",
     "run_dir": "runs-00101-00200/00134",
     "score_peak_memory_usage_in_bytes": 0.15752097281114683,
+    "score_state_peak_memory_usage_in_bytes": 0.2993787668622862,
     "search_time": 258357,
     "state_peak_memory_usage_in_bytes": 667897332,
     "time_limit": 1800,
@@ -9915,6 +10247,7 @@
     "problem": "Scaled_Move_to_Location_71.pddl",
     "run_dir": "runs-00101-00200/00136",
     "score_peak_memory_usage_in_bytes": 0.15639318615312012,
+    "score_state_peak_memory_usage_in_bytes": 0.29598227783974923,
     "search_time": 233404,
     "state_peak_memory_usage_in_bytes": 686979956,
     "time_limit": 1800,
@@ -9960,6 +10293,7 @@
     "problem": "Scaled_Move_to_Location_72.pddl",
     "run_dir": "runs-00101-00200/00138",
     "score_peak_memory_usage_in_bytes": 0.1516990922310369,
+    "score_state_peak_memory_usage_in_bytes": 0.2862722601967852,
     "search_time": 267217,
     "state_peak_memory_usage_in_bytes": 744595028,
     "time_limit": 1800,
@@ -10005,6 +10339,7 @@
     "problem": "Scaled_Move_to_Location_73.pddl",
     "run_dir": "runs-00101-00200/00140",
     "score_peak_memory_usage_in_bytes": 0.15057859610295657,
+    "score_state_peak_memory_usage_in_bytes": 0.2829688351455868,
     "search_time": 260198,
     "state_peak_memory_usage_in_bytes": 765278068,
     "time_limit": 1800,
@@ -10050,6 +10385,7 @@
     "problem": "Scaled_Move_to_Location_74.pddl",
     "run_dir": "runs-00101-00200/00142",
     "score_peak_memory_usage_in_bytes": 0.14544481378664198,
+    "score_state_peak_memory_usage_in_bytes": 0.27351284252158603,
     "search_time": 319014,
     "state_peak_memory_usage_in_bytes": 827714036,
     "time_limit": 1800,
@@ -10095,6 +10431,7 @@
     "problem": "Scaled_Move_to_Location_75.pddl",
     "run_dir": "runs-00101-00200/00144",
     "score_peak_memory_usage_in_bytes": 0.14433451531275204,
+    "score_state_peak_memory_usage_in_bytes": 0.27029751737572605,
     "search_time": 267153,
     "state_peak_memory_usage_in_bytes": 850084532,
     "time_limit": 1800,
@@ -10140,6 +10477,7 @@
     "problem": "Scaled_Move_to_Location_76.pddl",
     "run_dir": "runs-00101-00200/00146",
     "score_peak_memory_usage_in_bytes": 0.1347927936634597,
+    "score_state_peak_memory_usage_in_bytes": 0.2610825891937638,
     "search_time": 313384,
     "state_peak_memory_usage_in_bytes": 917603028,
     "time_limit": 1800,
@@ -10185,6 +10523,7 @@
     "problem": "Scaled_Move_to_Location_77.pddl",
     "run_dir": "runs-00101-00200/00148",
     "score_peak_memory_usage_in_bytes": 0.1336766077177107,
+    "score_state_peak_memory_usage_in_bytes": 0.257950786755023,
     "search_time": 339836,
     "state_peak_memory_usage_in_bytes": 941750324,
     "time_limit": 1800,
@@ -10230,6 +10569,7 @@
     "problem": "Scaled_Move_to_Location_78.pddl",
     "run_dir": "runs-00101-00200/00150",
     "score_peak_memory_usage_in_bytes": 0.12880846144427496,
+    "score_state_peak_memory_usage_in_bytes": 0.24896493022921073,
     "search_time": 346200,
     "state_peak_memory_usage_in_bytes": 1014619892,
     "time_limit": 1800,
@@ -10275,6 +10615,7 @@
     "problem": "Scaled_Move_to_Location_79.pddl",
     "run_dir": "runs-00101-00200/00152",
     "score_peak_memory_usage_in_bytes": 0.12771260955800418,
+    "score_state_peak_memory_usage_in_bytes": 0.24591242098468172,
     "search_time": 340486,
     "state_peak_memory_usage_in_bytes": 1040635636,
     "time_limit": 1800,
@@ -10320,6 +10661,7 @@
     "problem": "Scaled_Move_to_Location_80.pddl",
     "run_dir": "runs-00101-00200/00154",
     "score_peak_memory_usage_in_bytes": 0.1232719668817401,
+    "score_state_peak_memory_usage_in_bytes": 0.2371445170525557,
     "search_time": 393572,
     "state_peak_memory_usage_in_bytes": 1119131732,
     "time_limit": 1800,
@@ -10365,6 +10707,7 @@
     "problem": "Scaled_Move_to_Location_81.pddl",
     "run_dir": "runs-00101-00200/00156",
     "score_peak_memory_usage_in_bytes": 0.12220654359503166,
+    "score_state_peak_memory_usage_in_bytes": 0.23416738483022,
     "search_time": 366311,
     "state_peak_memory_usage_in_bytes": 1147109876,
     "time_limit": 1800,
@@ -10410,6 +10753,7 @@
     "problem": "Scaled_Move_to_Location_82.pddl",
     "run_dir": "runs-00101-00200/00158",
     "score_peak_memory_usage_in_bytes": 0.11381055561244241,
+    "score_state_peak_memory_usage_in_bytes": 0.22560710524872565,
     "search_time": 407788,
     "state_peak_memory_usage_in_bytes": 1231514868,
     "time_limit": 1800,
@@ -10455,6 +10799,7 @@
     "problem": "Scaled_Move_to_Location_83.pddl",
     "run_dir": "runs-00101-00200/00160",
     "score_peak_memory_usage_in_bytes": 0.11281089644291051,
+    "score_state_peak_memory_usage_in_bytes": 0.22270171701151156,
     "search_time": 421509,
     "state_peak_memory_usage_in_bytes": 1261551668,
     "time_limit": 1800,
@@ -10500,6 +10845,7 @@
     "problem": "Scaled_Move_to_Location_84.pddl",
     "run_dir": "runs-00101-00200/00162",
     "score_peak_memory_usage_in_bytes": 0.10205373598205368,
+    "score_state_peak_memory_usage_in_bytes": 0.21433945106288177,
     "search_time": 490367,
     "state_peak_memory_usage_in_bytes": 1352154836,
     "time_limit": 1800,
@@ -10545,6 +10891,7 @@
     "problem": "Scaled_Move_to_Location_85.pddl",
     "run_dir": "runs-00101-00200/00164",
     "score_peak_memory_usage_in_bytes": 0.1011217538908255,
+    "score_state_peak_memory_usage_in_bytes": 0.21150243025686755,
     "search_time": 441385,
     "state_peak_memory_usage_in_bytes": 1384348852,
     "time_limit": 1800,
@@ -10590,6 +10937,7 @@
     "problem": "Scaled_Move_to_Location_86.pddl",
     "run_dir": "runs-00101-00200/00166",
     "score_peak_memory_usage_in_bytes": 0.08988591929991908,
+    "score_state_peak_memory_usage_in_bytes": 0.20332921975736487,
     "search_time": 506465,
     "state_peak_memory_usage_in_bytes": 1481446388,
     "time_limit": 1800,
@@ -10635,6 +10983,7 @@
     "problem": "Scaled_Move_to_Location_87.pddl",
     "run_dir": "runs-00101-00200/00168",
     "score_peak_memory_usage_in_bytes": 0.08900679295500138,
+    "score_state_peak_memory_usage_in_bytes": 0.20055742272384183,
     "search_time": 556340,
     "state_peak_memory_usage_in_bytes": 1515898484,
     "time_limit": 1800,
@@ -10680,6 +11029,7 @@
     "problem": "Scaled_Move_to_Location_88.pddl",
     "run_dir": "runs-00101-00200/00170",
     "score_peak_memory_usage_in_bytes": 0.08522451272842027,
+    "score_state_peak_memory_usage_in_bytes": 0.19256490423120753,
     "search_time": 561200,
     "state_peak_memory_usage_in_bytes": 1619793492,
     "time_limit": 1800,
@@ -10725,6 +11075,7 @@
     "problem": "Scaled_Move_to_Location_89.pddl",
     "run_dir": "runs-00101-00200/00172",
     "score_peak_memory_usage_in_bytes": 0.08434679545238948,
+    "score_state_peak_memory_usage_in_bytes": 0.1898553992694391,
     "search_time": 646329,
     "state_peak_memory_usage_in_bytes": 1656606836,
     "time_limit": 1800,
@@ -10770,6 +11121,7 @@
     "problem": "Scaled_Move_to_Location_90.pddl",
     "run_dir": "runs-00101-00200/00174",
     "score_peak_memory_usage_in_bytes": 0.08056455322043593,
+    "score_state_peak_memory_usage_in_bytes": 0.18203575255256826,
     "search_time": 686411,
     "state_peak_memory_usage_in_bytes": 1767609332,
     "time_limit": 1800,
@@ -10815,6 +11167,7 @@
     "problem": "Scaled_Move_to_Location_91.pddl",
     "run_dir": "runs-00101-00200/00176",
     "score_peak_memory_usage_in_bytes": 0.07968460561405157,
+    "score_state_peak_memory_usage_in_bytes": 0.1793858012836613,
     "search_time": 636883,
     "state_peak_memory_usage_in_bytes": 1806889396,
     "time_limit": 1800,
@@ -10860,6 +11213,7 @@
     "problem": "Scaled_Move_to_Location_92.pddl",
     "run_dir": "runs-00101-00200/00178",
     "score_peak_memory_usage_in_bytes": 0.07590144638366046,
+    "score_state_peak_memory_usage_in_bytes": 0.1717317032571778,
     "search_time": 683939,
     "state_peak_memory_usage_in_bytes": 1925316308,
     "time_limit": 1800,
@@ -10905,6 +11259,7 @@
     "problem": "Scaled_Move_to_Location_93.pddl",
     "run_dir": "runs-00101-00200/00180",
     "score_peak_memory_usage_in_bytes": 0.07502635306495949,
+    "score_state_peak_memory_usage_in_bytes": 0.16913874399210588,
     "search_time": 779302,
     "state_peak_memory_usage_in_bytes": 1967170868,
     "time_limit": 1800,
@@ -10950,6 +11305,7 @@
     "problem": "Scaled_Move_to_Location_94.pddl",
     "run_dir": "runs-00101-00200/00182",
     "score_peak_memory_usage_in_bytes": 0.07087141528030108,
+    "score_state_peak_memory_usage_in_bytes": 0.1616433274345451,
     "search_time": 807266,
     "state_peak_memory_usage_in_bytes": 2093346036,
     "time_limit": 1800,
@@ -10995,6 +11351,7 @@
     "problem": "Scaled_Move_to_Location_95.pddl",
     "run_dir": "runs-00101-00200/00184",
     "score_peak_memory_usage_in_bytes": 0.07000216485693134,
+    "score_state_peak_memory_usage_in_bytes": 0.15910496029313997,
     "search_time": 793866,
     "state_peak_memory_usage_in_bytes": 2137885172,
     "time_limit": 1800,
@@ -11040,6 +11397,7 @@
     "problem": "Scaled_Move_to_Location_96.pddl",
     "run_dir": "runs-00101-00200/00186",
     "score_peak_memory_usage_in_bytes": 0.060935397998339864,
+    "score_state_peak_memory_usage_in_bytes": 0.1517617767645463,
     "search_time": 913525,
     "state_peak_memory_usage_in_bytes": 2272139348,
     "time_limit": 1800,
@@ -11085,6 +11443,7 @@
     "problem": "Scaled_Move_to_Location_97.pddl",
     "run_dir": "runs-00101-00200/00188",
     "score_peak_memory_usage_in_bytes": 0.060106629837403606,
+    "score_state_peak_memory_usage_in_bytes": 0.14927575032880736,
     "search_time": 846636,
     "state_peak_memory_usage_in_bytes": 2319475444,
     "time_limit": 1800,
@@ -11130,6 +11489,7 @@
     "problem": "Scaled_Move_to_Location_98.pddl",
     "run_dir": "runs-00101-00200/00190",
     "score_peak_memory_usage_in_bytes": 0.05630160319866327,
+    "score_state_peak_memory_usage_in_bytes": 0.14207873678516142,
     "search_time": 942218,
     "state_peak_memory_usage_in_bytes": 2462146292,
     "time_limit": 1800,
@@ -11175,6 +11535,7 @@
     "problem": "Scaled_Move_to_Location_99.pddl",
     "run_dir": "runs-00101-00200/00192",
     "score_peak_memory_usage_in_bytes": 0.05547659281492246,
+    "score_state_peak_memory_usage_in_bytes": 0.1396429361008915,
     "search_time": 1002048,
     "state_peak_memory_usage_in_bytes": 2512394036,
     "time_limit": 1800,
@@ -11198,6 +11559,7 @@
     "problem": "Scaled_Move_to_Location_170.pddl",
     "run_dir": "runs-00301-00400/00334",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11222,6 +11584,7 @@
     "problem": "Scaled_Move_to_Location_180.pddl",
     "run_dir": "runs-00301-00400/00336",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11246,6 +11609,7 @@
     "problem": "Scaled_Move_to_Location_190.pddl",
     "run_dir": "runs-00301-00400/00338",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11270,6 +11634,7 @@
     "problem": "Scaled_Move_to_Location_200.pddl",
     "run_dir": "runs-00301-00400/00340",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11294,6 +11659,7 @@
     "problem": "Scaled_Move_to_Location_210.pddl",
     "run_dir": "runs-00301-00400/00342",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11318,6 +11684,7 @@
     "problem": "Scaled_Move_to_Location_220.pddl",
     "run_dir": "runs-00301-00400/00344",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11342,6 +11709,7 @@
     "problem": "Scaled_Move_to_Location_230.pddl",
     "run_dir": "runs-00301-00400/00346",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11366,6 +11734,7 @@
     "problem": "Scaled_Move_to_Location_240.pddl",
     "run_dir": "runs-00301-00400/00348",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11390,6 +11759,7 @@
     "problem": "Scaled_Move_to_Location_250.pddl",
     "run_dir": "runs-00301-00400/00350",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11414,6 +11784,7 @@
     "problem": "Scaled_Move_to_Location_260.pddl",
     "run_dir": "runs-00301-00400/00352",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11438,6 +11809,7 @@
     "problem": "Scaled_Move_to_Location_270.pddl",
     "run_dir": "runs-00301-00400/00354",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11462,6 +11834,7 @@
     "problem": "Scaled_Move_to_Location_280.pddl",
     "run_dir": "runs-00301-00400/00356",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11486,6 +11859,7 @@
     "problem": "Scaled_Move_to_Location_290.pddl",
     "run_dir": "runs-00301-00400/00358",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11510,6 +11884,7 @@
     "problem": "Scaled_Move_to_Location_300.pddl",
     "run_dir": "runs-00301-00400/00360",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11534,6 +11909,7 @@
     "problem": "Scaled_Move_to_Location_310.pddl",
     "run_dir": "runs-00301-00400/00362",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11558,6 +11934,7 @@
     "problem": "Scaled_Move_to_Location_320.pddl",
     "run_dir": "runs-00301-00400/00364",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11582,6 +11959,7 @@
     "problem": "Scaled_Move_to_Location_330.pddl",
     "run_dir": "runs-00301-00400/00366",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11606,6 +11984,7 @@
     "problem": "Scaled_Move_to_Location_340.pddl",
     "run_dir": "runs-00301-00400/00368",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11630,6 +12009,7 @@
     "problem": "Scaled_Move_to_Location_350.pddl",
     "run_dir": "runs-00301-00400/00370",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11654,6 +12034,7 @@
     "problem": "Scaled_Move_to_Location_360.pddl",
     "run_dir": "runs-00301-00400/00372",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11678,6 +12059,7 @@
     "problem": "Scaled_Move_to_Location_370.pddl",
     "run_dir": "runs-00301-00400/00374",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11702,6 +12084,7 @@
     "problem": "Scaled_Move_to_Location_380.pddl",
     "run_dir": "runs-00301-00400/00376",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11726,6 +12109,7 @@
     "problem": "Scaled_Move_to_Location_390.pddl",
     "run_dir": "runs-00301-00400/00378",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11750,6 +12134,7 @@
     "problem": "Scaled_Move_to_Location_400.pddl",
     "run_dir": "runs-00301-00400/00380",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11774,6 +12159,7 @@
     "problem": "Scaled_Move_to_Location_410.pddl",
     "run_dir": "runs-00301-00400/00382",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11798,6 +12184,7 @@
     "problem": "Scaled_Move_to_Location_420.pddl",
     "run_dir": "runs-00301-00400/00384",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11822,6 +12209,7 @@
     "problem": "Scaled_Move_to_Location_430.pddl",
     "run_dir": "runs-00301-00400/00386",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11846,6 +12234,7 @@
     "problem": "Scaled_Move_to_Location_440.pddl",
     "run_dir": "runs-00301-00400/00388",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11870,6 +12259,7 @@
     "problem": "Scaled_Move_to_Location_450.pddl",
     "run_dir": "runs-00301-00400/00390",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [

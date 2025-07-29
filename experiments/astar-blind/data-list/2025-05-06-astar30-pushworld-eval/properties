@@ -38,6 +38,7 @@
     "problem": "2 Obstacle.pddl",
     "run_dir": "runs-00001-00100/00001",
     "score_peak_memory_usage_in_bytes": 0.4945670804864121,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 58,
     "state_peak_memory_usage_in_bytes": 1383504,
     "time_limit": 1800,
@@ -83,6 +84,7 @@
     "problem": "A Perfect Fit.pddl",
     "run_dir": "runs-00001-00100/00003",
     "score_peak_memory_usage_in_bytes": 0.5408048044503714,
+    "score_state_peak_memory_usage_in_bytes": 0.731419717160226,
     "search_time": 843,
     "state_peak_memory_usage_in_bytes": 18555484,
     "time_limit": 1800,
@@ -128,6 +130,7 @@
     "problem": "A Tight Squeeze.pddl",
     "run_dir": "runs-00001-00100/00005",
     "score_peak_memory_usage_in_bytes": 0.661386060289762,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 21,
     "state_peak_memory_usage_in_bytes": 1070360,
     "time_limit": 1800,
@@ -173,6 +176,7 @@
     "problem": "A Worthy Sacrifice.pddl",
     "run_dir": "runs-00001-00100/00007",
     "score_peak_memory_usage_in_bytes": 0.38140526414572723,
+    "score_state_peak_memory_usage_in_bytes": 0.446565841387469,
     "search_time": 10839,
     "state_peak_memory_usage_in_bytes": 197030308,
     "time_limit": 1800,
@@ -218,6 +222,7 @@
     "problem": "At Crossroads.pddl",
     "run_dir": "runs-00001-00100/00009",
     "score_peak_memory_usage_in_bytes": 0.46765481692466776,
+    "score_state_peak_memory_usage_in_bytes": 0.98635573971546,
     "search_time": 116,
     "state_peak_memory_usage_in_bytes": 2239636,
     "time_limit": 1800,
@@ -263,6 +268,7 @@
     "problem": "Box Walls.pddl",
     "run_dir": "runs-00001-00100/00011",
     "score_peak_memory_usage_in_bytes": 0.6093936813879738,
+    "score_state_peak_memory_usage_in_bytes": 0.8918756165905488,
     "search_time": 167,
     "state_peak_memory_usage_in_bytes": 4903436,
     "time_limit": 1800,
@@ -308,6 +314,7 @@
     "problem": "Building Blocks.pddl",
     "run_dir": "runs-00001-00100/00013",
     "score_peak_memory_usage_in_bytes": 0.2908088337766851,
+    "score_state_peak_memory_usage_in_bytes": 0.47741946942527996,
     "search_time": 19168,
     "state_peak_memory_usage_in_bytes": 152544452,
     "time_limit": 1800,
@@ -353,6 +360,7 @@
     "problem": "Cage Door.pddl",
     "run_dir": "runs-00001-00100/00015",
     "score_peak_memory_usage_in_bytes": 0.5583471621490858,
+    "score_state_peak_memory_usage_in_bytes": 0.869048949190426,
     "search_time": 229,
     "state_peak_memory_usage_in_bytes": 5925480,
     "time_limit": 1800,
@@ -377,6 +385,7 @@
     "problem": "Carry The Bucket.pddl",
     "run_dir": "runs-00001-00100/00017",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -423,6 +432,7 @@
     "problem": "Choose Wisely.pddl",
     "run_dir": "runs-00001-00100/00019",
     "score_peak_memory_usage_in_bytes": 0.7496947973680028,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 36580,
     "time_limit": 1800,
@@ -468,6 +478,7 @@
     "problem": "Clear The Way.pddl",
     "run_dir": "runs-00001-00100/00021",
     "score_peak_memory_usage_in_bytes": 0.7107347593600343,
+    "score_state_peak_memory_usage_in_bytes": 0.9610287816665896,
     "search_time": 55,
     "state_peak_memory_usage_in_bytes": 2763164,
     "time_limit": 1800,
@@ -492,6 +503,7 @@
     "problem": "Corner Sequencing.pddl",
     "run_dir": "runs-00001-00100/00023",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -538,6 +550,7 @@
     "problem": "Dont Get Distracted.pddl",
     "run_dir": "runs-00001-00100/00025",
     "score_peak_memory_usage_in_bytes": 0.3273240419389864,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 265264,
     "time_limit": 1800,
@@ -583,6 +596,7 @@
     "problem": "Double Obstacle.pddl",
     "run_dir": "runs-00001-00100/00027",
     "score_peak_memory_usage_in_bytes": 0.6678858338326868,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 9,
     "state_peak_memory_usage_in_bytes": 345052,
     "time_limit": 1800,
@@ -628,6 +642,7 @@
     "problem": "Double Simple Tool.pddl",
     "run_dir": "runs-00001-00100/00029",
     "score_peak_memory_usage_in_bytes": 0.327478899040706,
+    "score_state_peak_memory_usage_in_bytes": 0.3880640530399738,
     "search_time": 17697,
     "state_peak_memory_usage_in_bytes": 320081068,
     "time_limit": 1800,
@@ -673,6 +688,7 @@
     "problem": "Double Trouble.pddl",
     "run_dir": "runs-00001-00100/00031",
     "score_peak_memory_usage_in_bytes": 0.19681820819268026,
+    "score_state_peak_memory_usage_in_bytes": 0.2683459591509285,
     "search_time": 87238,
     "state_peak_memory_usage_in_bytes": 863956236,
     "time_limit": 1800,
@@ -718,6 +734,7 @@
     "problem": "Eyes On The Prize.pddl",
     "run_dir": "runs-00001-00100/00033",
     "score_peak_memory_usage_in_bytes": 0.06573121080129936,
+    "score_state_peak_memory_usage_in_bytes": 0.5235324885928876,
     "search_time": 37255,
     "state_peak_memory_usage_in_bytes": 104062572,
     "time_limit": 1800,
@@ -763,6 +780,7 @@
     "problem": "Friendly Obstacle.pddl",
     "run_dir": "runs-00001-00100/00035",
     "score_peak_memory_usage_in_bytes": 0.11143912252855663,
+    "score_state_peak_memory_usage_in_bytes": 0.19858062578361213,
     "search_time": 283789,
     "state_peak_memory_usage_in_bytes": 1540957496,
     "time_limit": 1800,
@@ -808,6 +826,7 @@
     "problem": "Get Out Of My Spot.pddl",
     "run_dir": "runs-00001-00100/00037",
     "score_peak_memory_usage_in_bytes": 0.5609726325822311,
+    "score_state_peak_memory_usage_in_bytes": 0.995537694864842,
     "search_time": 75,
     "state_peak_memory_usage_in_bytes": 2075408,
     "time_limit": 1800,
@@ -853,6 +872,7 @@
     "problem": "Goal Is A Tool.pddl",
     "run_dir": "runs-00001-00100/00039",
     "score_peak_memory_usage_in_bytes": 0.4156893075939021,
+    "score_state_peak_memory_usage_in_bytes": 0.7511018528121518,
     "search_time": 1418,
     "state_peak_memory_usage_in_bytes": 15760720,
     "time_limit": 1800,
@@ -898,6 +918,7 @@
     "problem": "Hockey Stick.pddl",
     "run_dir": "runs-00001-00100/00041",
     "score_peak_memory_usage_in_bytes": 0.28152838957669085,
+    "score_state_peak_memory_usage_in_bytes": 0.4425672795347732,
     "search_time": 33940,
     "state_peak_memory_usage_in_bytes": 203674236,
     "time_limit": 1800,
@@ -943,6 +964,7 @@
     "problem": "Horizontal Channel.pddl",
     "run_dir": "runs-00001-00100/00043",
     "score_peak_memory_usage_in_bytes": 0.5897129779624515,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 52,
     "state_peak_memory_usage_in_bytes": 1877348,
     "time_limit": 1800,
@@ -988,6 +1010,7 @@
     "problem": "Horizontal Separation.pddl",
     "run_dir": "runs-00001-00100/00045",
     "score_peak_memory_usage_in_bytes": 0.2725220984896997,
+    "score_state_peak_memory_usage_in_bytes": 0.3263868487497735,
     "search_time": 41168,
     "state_peak_memory_usage_in_bytes": 533857044,
     "time_limit": 1800,
@@ -1012,6 +1035,7 @@
     "problem": "Ignorable Obstacles.pddl",
     "run_dir": "runs-00001-00100/00047",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1058,6 +1082,7 @@
     "problem": "Insert Tool.pddl",
     "run_dir": "runs-00001-00100/00049",
     "score_peak_memory_usage_in_bytes": 0.26222093872951285,
+    "score_state_peak_memory_usage_in_bytes": 0.3178889069091468,
     "search_time": 35455,
     "state_peak_memory_usage_in_bytes": 572842292,
     "time_limit": 1800,
@@ -1103,6 +1128,7 @@
     "problem": "Interlocking Pieces.pddl",
     "run_dir": "runs-00001-00100/00051",
     "score_peak_memory_usage_in_bytes": 0.18849656592251499,
+    "score_state_peak_memory_usage_in_bytes": 0.24028714143360722,
     "search_time": 74547,
     "state_peak_memory_usage_in_bytes": 1090338352,
     "time_limit": 1800,
@@ -1126,6 +1152,7 @@
     "problem": "Irrelevant Obstacles.pddl",
     "run_dir": "runs-00001-00100/00053",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1172,6 +1199,7 @@
     "problem": "J Tool.pddl",
     "run_dir": "runs-00001-00100/00055",
     "score_peak_memory_usage_in_bytes": 0.4872965339236229,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 58,
     "state_peak_memory_usage_in_bytes": 1069432,
     "time_limit": 1800,
@@ -1217,6 +1245,7 @@
     "problem": "Kangaroo Pouch.pddl",
     "run_dir": "runs-00001-00100/00057",
     "score_peak_memory_usage_in_bytes": 0.5194769989474951,
+    "score_state_peak_memory_usage_in_bytes": 0.8910479611210711,
     "search_time": 202,
     "state_peak_memory_usage_in_bytes": 4937212,
     "time_limit": 1800,
@@ -1241,6 +1270,7 @@
     "problem": "Make A Triangle.pddl",
     "run_dir": "runs-00001-00100/00059",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1287,6 +1317,7 @@
     "problem": "Make Room For Me.pddl",
     "run_dir": "runs-00001-00100/00061",
     "score_peak_memory_usage_in_bytes": 0.4415920339172356,
+    "score_state_peak_memory_usage_in_bytes": 0.8163760757809083,
     "search_time": 1053,
     "state_peak_memory_usage_in_bytes": 9171796,
     "time_limit": 1800,
@@ -1332,6 +1363,7 @@
     "problem": "Many Small Tools.pddl",
     "run_dir": "runs-00001-00100/00063",
     "score_peak_memory_usage_in_bytes": 0.42077350520073564,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 31,
     "state_peak_memory_usage_in_bytes": 434732,
     "time_limit": 1800,
@@ -1377,6 +1409,7 @@
     "problem": "Minefield.pddl",
     "run_dir": "runs-00001-00100/00065",
     "score_peak_memory_usage_in_bytes": 0.3565692469779395,
+    "score_state_peak_memory_usage_in_bytes": 0.5436420067643,
     "search_time": 8104,
     "state_peak_memory_usage_in_bytes": 88076260,
     "time_limit": 1800,
@@ -1422,6 +1455,7 @@
     "problem": "Mini Minefield.pddl",
     "run_dir": "runs-00001-00100/00067",
     "score_peak_memory_usage_in_bytes": 0.4854553871059548,
+    "score_state_peak_memory_usage_in_bytes": 0.7887239055423543,
     "search_time": 690,
     "state_peak_memory_usage_in_bytes": 11536104,
     "time_limit": 1800,
@@ -1446,6 +1480,7 @@
     "problem": "Multiple Goals.pddl",
     "run_dir": "runs-00001-00100/00069",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1492,6 +1527,7 @@
     "problem": "Narrow Path.pddl",
     "run_dir": "runs-00001-00100/00071",
     "score_peak_memory_usage_in_bytes": 0.670298233832624,
+    "score_state_peak_memory_usage_in_bytes": 0.9601439935172987,
     "search_time": 81,
     "state_peak_memory_usage_in_bytes": 2783516,
     "time_limit": 1800,
@@ -1537,6 +1573,7 @@
     "problem": "Obstacle Has Obstacle.pddl",
     "run_dir": "runs-00001-00100/00073",
     "score_peak_memory_usage_in_bytes": 0.7772354242686675,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 120188,
     "time_limit": 1800,
@@ -1582,6 +1619,7 @@
     "problem": "Pick A Tool.pddl",
     "run_dir": "runs-00001-00100/00075",
     "score_peak_memory_usage_in_bytes": 0.5305017062278697,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 8,
     "state_peak_memory_usage_in_bytes": 172752,
     "time_limit": 1800,
@@ -1606,6 +1644,7 @@
     "problem": "Plus Two Goals.pddl",
     "run_dir": "runs-00001-00100/00077",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1631,6 +1670,7 @@
     "problem": "Pull Up.pddl",
     "run_dir": "runs-00001-00100/00079",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1655,6 +1695,7 @@
     "problem": "Pulling.pddl",
     "run_dir": "runs-00001-00100/00081",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1701,6 +1742,7 @@
     "problem": "Pummel Through.pddl",
     "run_dir": "runs-00001-00100/00083",
     "score_peak_memory_usage_in_bytes": 0.5042581376669141,
+    "score_state_peak_memory_usage_in_bytes": 0.6890146659255347,
     "search_time": 1366,
     "state_peak_memory_usage_in_bytes": 26376540,
     "time_limit": 1800,
@@ -1746,6 +1788,7 @@
     "problem": "Road Block.pddl",
     "run_dir": "runs-00001-00100/00085",
     "score_peak_memory_usage_in_bytes": 0.7600364872913818,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 17,
     "state_peak_memory_usage_in_bytes": 1065952,
     "time_limit": 1800,
@@ -1770,6 +1813,7 @@
     "problem": "Sand Castle.pddl",
     "run_dir": "runs-00001-00100/00087",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -1816,6 +1860,7 @@
     "problem": "Seeing Red.pddl",
     "run_dir": "runs-00001-00100/00089",
     "score_peak_memory_usage_in_bytes": 0.11781462447169182,
+    "score_state_peak_memory_usage_in_bytes": 0.16146629400737927,
     "search_time": 129862,
     "state_peak_memory_usage_in_bytes": 2096422004,
     "time_limit": 1800,
@@ -1861,6 +1906,7 @@
     "problem": "Shape Of You.pddl",
     "run_dir": "runs-00001-00100/00091",
     "score_peak_memory_usage_in_bytes": 0.009547448269958035,
+    "score_state_peak_memory_usage_in_bytes": 0.06252286935568398,
     "search_time": 428994,
     "state_peak_memory_usage_in_bytes": 4762981128,
     "time_limit": 1800,
@@ -1906,6 +1952,7 @@
     "problem": "Simple Tool.pddl",
     "run_dir": "runs-00001-00100/00093",
     "score_peak_memory_usage_in_bytes": 0.47834664975890057,
+    "score_state_peak_memory_usage_in_bytes": 0.5495670762927873,
     "search_time": 3990,
     "state_peak_memory_usage_in_bytes": 83852576,
     "time_limit": 1800,
@@ -1951,6 +1998,7 @@
     "problem": "Single Obstacle.pddl",
     "run_dir": "runs-00001-00100/00095",
     "score_peak_memory_usage_in_bytes": 0.7107347593600343,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 2,
     "state_peak_memory_usage_in_bytes": 89004,
     "time_limit": 1800,
@@ -1975,6 +2023,7 @@
     "problem": "Size Limit.pddl",
     "run_dir": "runs-00001-00100/00097",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2021,6 +2070,7 @@
     "problem": "Small Wins.pddl",
     "run_dir": "runs-00001-00100/00099",
     "score_peak_memory_usage_in_bytes": 0.6875923691861112,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 3,
     "state_peak_memory_usage_in_bytes": 177116,
     "time_limit": 1800,
@@ -2045,6 +2095,7 @@
     "problem": "Swap Places.pddl",
     "run_dir": "runs-00101-00200/00101",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2069,6 +2120,7 @@
     "problem": "Swap S Places.pddl",
     "run_dir": "runs-00101-00200/00103",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2115,6 +2167,7 @@
     "problem": "Swiss Army Knife.pddl",
     "run_dir": "runs-00101-00200/00105",
     "score_peak_memory_usage_in_bytes": 0.3291823297879234,
+    "score_state_peak_memory_usage_in_bytes": 0.649117101474316,
     "search_time": 3743,
     "state_peak_memory_usage_in_bytes": 36722416,
     "time_limit": 1800,
@@ -2160,6 +2213,7 @@
     "problem": "Take Diversion.pddl",
     "run_dir": "runs-00101-00200/00107",
     "score_peak_memory_usage_in_bytes": 0.5556475005381877,
+    "score_state_peak_memory_usage_in_bytes": 0.9033855404403482,
     "search_time": 133,
     "state_peak_memory_usage_in_bytes": 4456984,
     "time_limit": 1800,
@@ -2205,6 +2259,7 @@
     "problem": "Take The Long Route.pddl",
     "run_dir": "runs-00101-00200/00109",
     "score_peak_memory_usage_in_bytes": 0.6722700392365585,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 194204,
     "time_limit": 1800,
@@ -2250,6 +2305,7 @@
     "problem": "Three Goals.pddl",
     "run_dir": "runs-00101-00200/00111",
     "score_peak_memory_usage_in_bytes": 0.20606392794249878,
+    "score_state_peak_memory_usage_in_bytes": 0.24950080112912612,
     "search_time": 50305,
     "state_peak_memory_usage_in_bytes": 1010120380,
     "time_limit": 1800,
@@ -2295,6 +2351,7 @@
     "problem": "Tool Train.pddl",
     "run_dir": "runs-00101-00200/00113",
     "score_peak_memory_usage_in_bytes": 0.36242809514526125,
+    "score_state_peak_memory_usage_in_bytes": 0.4801839352096871,
     "search_time": 14393,
     "state_peak_memory_usage_in_bytes": 149086612,
     "time_limit": 1800,
@@ -2319,6 +2376,7 @@
     "problem": "Trade Places.pddl",
     "run_dir": "runs-00101-00200/00115",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2365,6 +2423,7 @@
     "problem": "Triple Obstacle.pddl",
     "run_dir": "runs-00101-00200/00117",
     "score_peak_memory_usage_in_bytes": 0.623628450763941,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 43,
     "state_peak_memory_usage_in_bytes": 1441988,
     "time_limit": 1800,
@@ -2410,6 +2469,7 @@
     "problem": "Triple Simple Tool.pddl",
     "run_dir": "runs-00101-00200/00119",
     "score_peak_memory_usage_in_bytes": 0.17095570266231813,
+    "score_state_peak_memory_usage_in_bytes": 0.21734543460853076,
     "search_time": 86580,
     "state_peak_memory_usage_in_bytes": 1318859988,
     "time_limit": 1800,
@@ -2455,6 +2515,7 @@
     "problem": "Tucked Away.pddl",
     "run_dir": "runs-00101-00200/00121",
     "score_peak_memory_usage_in_bytes": 0.6049494867744557,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 25,
     "state_peak_memory_usage_in_bytes": 1032560,
     "time_limit": 1800,
@@ -2500,6 +2561,7 @@
     "problem": "Two Goals.pddl",
     "run_dir": "runs-00101-00200/00123",
     "score_peak_memory_usage_in_bytes": 0.588828849654919,
+    "score_state_peak_memory_usage_in_bytes": 0.9896209791819319,
     "search_time": 72,
     "state_peak_memory_usage_in_bytes": 2179796,
     "time_limit": 1800,
@@ -2524,6 +2586,7 @@
     "problem": "Two Is Company.pddl",
     "run_dir": "runs-00101-00200/00125",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2570,6 +2633,7 @@
     "problem": "Vertical Separation.pddl",
     "run_dir": "runs-00101-00200/00127",
     "score_peak_memory_usage_in_bytes": 0.43884324052835283,
+    "score_state_peak_memory_usage_in_bytes": 0.5790545317220015,
     "search_time": 4173,
     "state_peak_memory_usage_in_bytes": 65659992,
     "time_limit": 1800,
@@ -2615,6 +2679,7 @@
     "problem": "Victory Road.pddl",
     "run_dir": "runs-00101-00200/00129",
     "score_peak_memory_usage_in_bytes": 0.5351193135730612,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 33,
     "state_peak_memory_usage_in_bytes": 1069296,
     "time_limit": 1800,
@@ -2660,6 +2725,7 @@
     "problem": "Walk Past.pddl",
     "run_dir": "runs-00101-00200/00131",
     "score_peak_memory_usage_in_bytes": 0.4713564156295784,
+    "score_state_peak_memory_usage_in_bytes": 0.5837565449431823,
     "search_time": 2556,
     "state_peak_memory_usage_in_bytes": 63148624,
     "time_limit": 1800,
@@ -2705,6 +2771,7 @@
     "problem": "Youre In My Spot.pddl",
     "run_dir": "runs-00101-00200/00133",
     "score_peak_memory_usage_in_bytes": 0.5905208920773849,
+    "score_state_peak_memory_usage_in_bytes": 0.8248628742824835,
     "search_time": 376,
     "state_peak_memory_usage_in_bytes": 8548392,
     "time_limit": 1800,
@@ -2750,6 +2817,7 @@
     "problem": "Youre In My Way.pddl",
     "run_dir": "runs-00101-00200/00135",
     "score_peak_memory_usage_in_bytes": 0.5767988545333708,
+    "score_state_peak_memory_usage_in_bytes": 0.7401731647761203,
     "search_time": 569,
     "state_peak_memory_usage_in_bytes": 17256068,
     "time_limit": 1800,
@@ -2795,6 +2863,7 @@
     "problem": "Anticipated Obstacle.pddl",
     "run_dir": "runs-00101-00200/00137",
     "score_peak_memory_usage_in_bytes": 0.02648701056660634,
+    "score_state_peak_memory_usage_in_bytes": 0.07655382678718628,
     "search_time": 825679,
     "state_peak_memory_usage_in_bytes": 4239733028,
     "time_limit": 1800,
@@ -2840,6 +2909,7 @@
     "problem": "Archery.pddl",
     "run_dir": "runs-00101-00200/00139",
     "score_peak_memory_usage_in_bytes": -0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.28256547010119293,
     "search_time": 386729,
     "state_peak_memory_usage_in_bytes": 767842616,
     "time_limit": 1800,
@@ -2864,6 +2934,7 @@
     "problem": "Bottle Opener.pddl",
     "run_dir": "runs-00101-00200/00141",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2889,6 +2960,7 @@
     "problem": "Boulders.pddl",
     "run_dir": "runs-00101-00200/00143",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2914,6 +2986,7 @@
     "problem": "Bring A Friend.pddl",
     "run_dir": "runs-00101-00200/00145",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2938,6 +3011,7 @@
     "problem": "Bubbles.pddl",
     "run_dir": "runs-00101-00200/00147",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2962,6 +3036,7 @@
     "problem": "C Tool Wall.pddl",
     "run_dir": "runs-00101-00200/00149",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -2987,6 +3062,7 @@
     "problem": "Canonical Repeated Obstacle.pddl",
     "run_dir": "runs-00101-00200/00151",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3011,6 +3087,7 @@
     "problem": "Cant Slip Around.pddl",
     "run_dir": "runs-00101-00200/00153",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3036,6 +3113,7 @@
     "problem": "Cavern Obstacle.pddl",
     "run_dir": "runs-00101-00200/00155",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3061,6 +3139,7 @@
     "problem": "Choose Your Obstacle.pddl",
     "run_dir": "runs-00101-00200/00157",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3085,6 +3164,7 @@
     "problem": "Clean Sweep.pddl",
     "run_dir": "runs-00101-00200/00159",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3109,6 +3189,7 @@
     "problem": "Container Assembly.pddl",
     "run_dir": "runs-00101-00200/00161",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3133,6 +3214,7 @@
     "problem": "Corridor Obstacle With Distractors.pddl",
     "run_dir": "runs-00101-00200/00163",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3157,6 +3239,7 @@
     "problem": "Corridor Obstacle.pddl",
     "run_dir": "runs-00101-00200/00165",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3181,6 +3264,7 @@
     "problem": "Dinner Table.pddl",
     "run_dir": "runs-00101-00200/00167",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3206,6 +3290,7 @@
     "problem": "Disassemble Box.pddl",
     "run_dir": "runs-00101-00200/00169",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3231,6 +3316,7 @@
     "problem": "Dont Push With Obstacle.pddl",
     "run_dir": "runs-00101-00200/00171",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3256,6 +3342,7 @@
     "problem": "Drawer With Lock.pddl",
     "run_dir": "runs-00101-00200/00173",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3280,6 +3367,7 @@
     "problem": "Encircle.pddl",
     "run_dir": "runs-00101-00200/00175",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3305,6 +3393,7 @@
     "problem": "Expensive Obstacle.pddl",
     "run_dir": "runs-00101-00200/00177",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3329,6 +3418,7 @@
     "problem": "Fewest Obstacles Push.pddl",
     "run_dir": "runs-00101-00200/00179",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3353,6 +3443,7 @@
     "problem": "Get Tool First.pddl",
     "run_dir": "runs-00101-00200/00181",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3378,6 +3469,7 @@
     "problem": "Go Backward To Go Forward.pddl",
     "run_dir": "runs-00101-00200/00183",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3402,6 +3494,7 @@
     "problem": "Go Fishing.pddl",
     "run_dir": "runs-00101-00200/00185",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3426,6 +3519,7 @@
     "problem": "Goggles.pddl",
     "run_dir": "runs-00101-00200/00187",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3451,6 +3545,7 @@
     "problem": "Halfway Done.pddl",
     "run_dir": "runs-00101-00200/00189",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3476,6 +3571,7 @@
     "problem": "House.pddl",
     "run_dir": "runs-00101-00200/00191",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 944860 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -3500,6 +3596,7 @@
     "problem": "Interlocking Piece Insertion.pddl",
     "run_dir": "runs-00101-00200/00193",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3525,6 +3622,7 @@
     "problem": "Lattice.pddl",
     "run_dir": "runs-00101-00200/00195",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3549,6 +3647,7 @@
     "problem": "Lock And Load.pddl",
     "run_dir": "runs-00101-00200/00197",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3574,6 +3673,7 @@
     "problem": "Maze Of Mystery.pddl",
     "run_dir": "runs-00101-00200/00199",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3598,6 +3698,7 @@
     "problem": "Memory Card Slots.pddl",
     "run_dir": "runs-00201-00300/00201",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3622,6 +3723,7 @@
     "problem": "Misleading Shorter Path.pddl",
     "run_dir": "runs-00201-00300/00203",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3647,6 +3749,7 @@
     "problem": "Moveable H Obstacle.pddl",
     "run_dir": "runs-00201-00300/00205",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3672,6 +3775,7 @@
     "problem": "Multiple Wall Obstacles.pddl",
     "run_dir": "runs-00201-00300/00207",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3718,6 +3822,7 @@
     "problem": "Nutcracker.pddl",
     "run_dir": "runs-00201-00300/00209",
     "score_peak_memory_usage_in_bytes": 0.05814060489152907,
+    "score_state_peak_memory_usage_in_bytes": 0.7642864071240315,
     "search_time": 5568,
     "state_peak_memory_usage_in_bytes": 14128124,
     "time_limit": 1800,
@@ -3741,6 +3846,7 @@
     "problem": "Obstacle Ordering.pddl",
     "run_dir": "runs-00201-00300/00211",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3766,6 +3872,7 @@
     "problem": "Obstacle To Reach Tool.pddl",
     "run_dir": "runs-00201-00300/00213",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3791,6 +3898,7 @@
     "problem": "Parasitic Field.pddl",
     "run_dir": "runs-00201-00300/00215",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3815,6 +3923,7 @@
     "problem": "Parasitic Obstacle.pddl",
     "run_dir": "runs-00201-00300/00217",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3839,6 +3948,7 @@
     "problem": "Pinata.pddl",
     "run_dir": "runs-00201-00300/00219",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3864,6 +3974,7 @@
     "problem": "Pull Dont Push.pddl",
     "run_dir": "runs-00201-00300/00221",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3889,6 +4000,7 @@
     "problem": "Pyramid Assembly.pddl",
     "run_dir": "runs-00201-00300/00223",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3913,6 +4025,7 @@
     "problem": "Pyramid Corridor Obstacle.pddl",
     "run_dir": "runs-00201-00300/00225",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3937,6 +4050,7 @@
     "problem": "Recursive Obstacle.pddl",
     "run_dir": "runs-00201-00300/00227",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3962,6 +4076,7 @@
     "problem": "Reflection.pddl",
     "run_dir": "runs-00201-00300/00229",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -3986,6 +4101,7 @@
     "problem": "Remote Obstacle.pddl",
     "run_dir": "runs-00201-00300/00231",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4010,6 +4126,7 @@
     "problem": "Required Tool.pddl",
     "run_dir": "runs-00201-00300/00233",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4034,6 +4151,7 @@
     "problem": "Robot Assembly.pddl",
     "run_dir": "runs-00201-00300/00235",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4059,6 +4177,7 @@
     "problem": "S Tool.pddl",
     "run_dir": "runs-00201-00300/00237",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4083,6 +4202,7 @@
     "problem": "Sandwich.pddl",
     "run_dir": "runs-00201-00300/00239",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4129,6 +4249,7 @@
     "problem": "Sequence Your Goals.pddl",
     "run_dir": "runs-00201-00300/00241",
     "score_peak_memory_usage_in_bytes": 0.12255455512044128,
+    "score_state_peak_memory_usage_in_bytes": 0.15627629653730055,
     "search_time": 126663,
     "state_peak_memory_usage_in_bytes": 2188635260,
     "time_limit": 1800,
@@ -4152,6 +4273,7 @@
     "problem": "Simultaneous Obstacle Removal.pddl",
     "run_dir": "runs-00201-00300/00243",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4176,6 +4298,7 @@
     "problem": "Simultaneous Obstacles.pddl",
     "run_dir": "runs-00201-00300/00245",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4200,6 +4323,7 @@
     "problem": "Sneak Around Corridor Obstacle.pddl",
     "run_dir": "runs-00201-00300/00247",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4224,6 +4348,7 @@
     "problem": "Sorting Assembly.pddl",
     "run_dir": "runs-00201-00300/00249",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4249,6 +4374,7 @@
     "problem": "Spiral.pddl",
     "run_dir": "runs-00201-00300/00251",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4295,6 +4421,7 @@
     "problem": "Squeeze Around Obstacle.pddl",
     "run_dir": "runs-00201-00300/00253",
     "score_peak_memory_usage_in_bytes": 0.08643934264299116,
+    "score_state_peak_memory_usage_in_bytes": 0.38149180207357664,
     "search_time": 92973,
     "state_peak_memory_usage_in_bytes": 338013176,
     "time_limit": 1800,
@@ -4318,6 +4445,7 @@
     "problem": "Stack The Dishes.pddl",
     "run_dir": "runs-00201-00300/00255",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4342,6 +4470,7 @@
     "problem": "Stacked Corridor Obstacles.pddl",
     "run_dir": "runs-00201-00300/00257",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4367,6 +4496,7 @@
     "problem": "Tidy Up.pddl",
     "run_dir": "runs-00201-00300/00259",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4392,6 +4522,7 @@
     "problem": "Tight Corner.pddl",
     "run_dir": "runs-00201-00300/00261",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4417,6 +4548,7 @@
     "problem": "Together Again.pddl",
     "run_dir": "runs-00201-00300/00263",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4441,6 +4573,7 @@
     "problem": "Tool From Drawer.pddl",
     "run_dir": "runs-00201-00300/00265",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4465,6 +4598,7 @@
     "problem": "Tool To Remove Obstacle.pddl",
     "run_dir": "runs-00201-00300/00267",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4490,6 +4624,7 @@
     "problem": "Transport Container.pddl",
     "run_dir": "runs-00201-00300/00269",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4514,6 +4649,7 @@
     "problem": "Trap Obstacle.pddl",
     "run_dir": "runs-00201-00300/00271",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4560,6 +4696,7 @@
     "problem": "Tunnel Swap.pddl",
     "run_dir": "runs-00201-00300/00273",
     "score_peak_memory_usage_in_bytes": 0.5331296572498985,
+    "score_state_peak_memory_usage_in_bytes": 0.6320831112643795,
     "search_time": 1404,
     "state_peak_memory_usage_in_bytes": 42294968,
     "time_limit": 1800,
@@ -4584,6 +4721,7 @@
     "problem": "Unhook To Go Around.pddl",
     "run_dir": "runs-00201-00300/00275",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4608,6 +4746,7 @@
     "problem": "Unlock The Chest.pddl",
     "run_dir": "runs-00201-00300/00277",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4632,6 +4771,7 @@
     "problem": "Up And Over.pddl",
     "run_dir": "runs-00201-00300/00279",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4656,6 +4796,7 @@
     "problem": "Walk The Plank.pddl",
     "run_dir": "runs-00201-00300/00281",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4702,6 +4843,7 @@
     "problem": "You Are Your Own Obstacle.pddl",
     "run_dir": "runs-00201-00300/00283",
     "score_peak_memory_usage_in_bytes": 0.15655184481942067,
+    "score_state_peak_memory_usage_in_bytes": 0.3280461322300728,
     "search_time": 91458,
     "state_peak_memory_usage_in_bytes": 526560332,
     "time_limit": 1800,
@@ -4725,6 +4867,7 @@
     "problem": "Armor.pddl",
     "run_dir": "runs-00201-00300/00285",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4750,6 +4893,7 @@
     "problem": "Assemble Box.pddl",
     "run_dir": "runs-00201-00300/00287",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4775,6 +4919,7 @@
     "problem": "Back Door.pddl",
     "run_dir": "runs-00201-00300/00289",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4799,6 +4944,7 @@
     "problem": "Bear Claw.pddl",
     "run_dir": "runs-00201-00300/00291",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4823,6 +4969,7 @@
     "problem": "Break In.pddl",
     "run_dir": "runs-00201-00300/00293",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4848,6 +4995,7 @@
     "problem": "Button Up.pddl",
     "run_dir": "runs-00201-00300/00295",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4872,6 +5020,7 @@
     "problem": "Caged Key.pddl",
     "run_dir": "runs-00201-00300/00297",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4896,6 +5045,7 @@
     "problem": "Chain Link Tunnel.pddl",
     "run_dir": "runs-00201-00300/00299",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4920,6 +5070,7 @@
     "problem": "Chandelier.pddl",
     "run_dir": "runs-00301-00400/00301",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4944,6 +5095,7 @@
     "problem": "Chocolate Box.pddl",
     "run_dir": "runs-00301-00400/00303",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4969,6 +5121,7 @@
     "problem": "Close But Far.pddl",
     "run_dir": "runs-00301-00400/00305",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -4993,6 +5146,7 @@
     "problem": "Competing Obstacles.pddl",
     "run_dir": "runs-00301-00400/00307",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5017,6 +5171,7 @@
     "problem": "Compression.pddl",
     "run_dir": "runs-00301-00400/00309",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5041,6 +5196,7 @@
     "problem": "Crow Pulling.pddl",
     "run_dir": "runs-00301-00400/00311",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5065,6 +5221,7 @@
     "problem": "Crow Pushing.pddl",
     "run_dir": "runs-00301-00400/00313",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5089,6 +5246,7 @@
     "problem": "Cubism.pddl",
     "run_dir": "runs-00301-00400/00315",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5113,6 +5271,7 @@
     "problem": "Diagonal Maze.pddl",
     "run_dir": "runs-00301-00400/00317",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5138,6 +5297,7 @@
     "problem": "Diagonal Stack.pddl",
     "run_dir": "runs-00301-00400/00319",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5163,6 +5323,7 @@
     "problem": "Disassemble Toolbox.pddl",
     "run_dir": "runs-00301-00400/00321",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5188,6 +5349,7 @@
     "problem": "Dont Push Directly.pddl",
     "run_dir": "runs-00301-00400/00323",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5212,6 +5374,7 @@
     "problem": "Double Key.pddl",
     "run_dir": "runs-00301-00400/00325",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5236,6 +5399,7 @@
     "problem": "Double Scoop.pddl",
     "run_dir": "runs-00301-00400/00327",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5261,6 +5425,7 @@
     "problem": "Earplugs.pddl",
     "run_dir": "runs-00301-00400/00329",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5285,6 +5450,7 @@
     "problem": "Extended Tool.pddl",
     "run_dir": "runs-00301-00400/00331",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5309,6 +5475,7 @@
     "problem": "Extraction.pddl",
     "run_dir": "runs-00301-00400/00333",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5333,6 +5500,7 @@
     "problem": "Fancy Key.pddl",
     "run_dir": "runs-00301-00400/00335",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5357,6 +5525,7 @@
     "problem": "Free The Tools.pddl",
     "run_dir": "runs-00301-00400/00337",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5382,6 +5551,7 @@
     "problem": "Get Cozy.pddl",
     "run_dir": "runs-00301-00400/00339",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1671999 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -5405,6 +5575,7 @@
     "problem": "Inner Eye.pddl",
     "run_dir": "runs-00301-00400/00341",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5429,6 +5600,7 @@
     "problem": "Interlock.pddl",
     "run_dir": "runs-00301-00400/00343",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5453,6 +5625,7 @@
     "problem": "Ladder.pddl",
     "run_dir": "runs-00301-00400/00345",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5477,6 +5650,7 @@
     "problem": "Light Bulb.pddl",
     "run_dir": "runs-00301-00400/00347",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5501,6 +5675,7 @@
     "problem": "Matching Key.pddl",
     "run_dir": "runs-00301-00400/00349",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5525,6 +5700,7 @@
     "problem": "Mouse Hole.pddl",
     "run_dir": "runs-00301-00400/00351",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5549,6 +5725,7 @@
     "problem": "Moving Mountains.pddl",
     "run_dir": "runs-00301-00400/00353",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5574,6 +5751,7 @@
     "problem": "Multi Goal Maze.pddl",
     "run_dir": "runs-00301-00400/00355",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5598,6 +5776,7 @@
     "problem": "Multiple Backtracking Corridor.pddl",
     "run_dir": "runs-00301-00400/00357",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5623,6 +5802,7 @@
     "problem": "Multiple Corridor Obstacles.pddl",
     "run_dir": "runs-00301-00400/00359",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5648,6 +5828,7 @@
     "problem": "Pile Of Tools.pddl",
     "run_dir": "runs-00301-00400/00361",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5694,6 +5875,7 @@
     "problem": "Plug Obstacle.pddl",
     "run_dir": "runs-00301-00400/00363",
     "score_peak_memory_usage_in_bytes": 0.07069830585172493,
+    "score_state_peak_memory_usage_in_bytes": 0.2284527559525986,
     "search_time": 452138,
     "state_peak_memory_usage_in_bytes": 1202789020,
     "time_limit": 1800,
@@ -5717,6 +5899,7 @@
     "problem": "Poke Around.pddl",
     "run_dir": "runs-00301-00400/00365",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5741,6 +5924,7 @@
     "problem": "Precision Tooling.pddl",
     "run_dir": "runs-00301-00400/00367",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5766,6 +5950,7 @@
     "problem": "Preemptive Parasite.pddl",
     "run_dir": "runs-00301-00400/00369",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5790,6 +5975,7 @@
     "problem": "Preemptive Recursive Obstacle.pddl",
     "run_dir": "runs-00301-00400/00371",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5815,6 +6001,7 @@
     "problem": "Pull Around.pddl",
     "run_dir": "runs-00301-00400/00373",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5839,6 +6026,7 @@
     "problem": "Put Away Toys.pddl",
     "run_dir": "runs-00301-00400/00375",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5863,6 +6051,7 @@
     "problem": "Recursive Plugs.pddl",
     "run_dir": "runs-00301-00400/00377",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5888,6 +6077,7 @@
     "problem": "Repeating Obstacle.pddl",
     "run_dir": "runs-00301-00400/00379",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5913,6 +6103,7 @@
     "problem": "Reusable Parasitic Tool.pddl",
     "run_dir": "runs-00301-00400/00381",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5937,6 +6128,7 @@
     "problem": "Rivalry.pddl",
     "run_dir": "runs-00301-00400/00383",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5961,6 +6153,7 @@
     "problem": "Rocky Shore.pddl",
     "run_dir": "runs-00301-00400/00385",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -5985,6 +6178,7 @@
     "problem": "Salt Shaker.pddl",
     "run_dir": "runs-00301-00400/00387",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6009,6 +6203,7 @@
     "problem": "Sawtooth.pddl",
     "run_dir": "runs-00301-00400/00389",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6034,6 +6229,7 @@
     "problem": "Sequential Latch.pddl",
     "run_dir": "runs-00301-00400/00391",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6058,6 +6254,7 @@
     "problem": "Sticks And Stones.pddl",
     "run_dir": "runs-00301-00400/00393",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6083,6 +6280,7 @@
     "problem": "Surrounded Corridor.pddl",
     "run_dir": "runs-00301-00400/00395",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6107,6 +6305,7 @@
     "problem": "Swap Drawers.pddl",
     "run_dir": "runs-00301-00400/00397",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6131,6 +6330,7 @@
     "problem": "Swap On Wall.pddl",
     "run_dir": "runs-00301-00400/00399",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6155,6 +6355,7 @@
     "problem": "Swap Shelves.pddl",
     "run_dir": "runs-00401-00500/00401",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6180,6 +6381,7 @@
     "problem": "Tool Timing.pddl",
     "run_dir": "runs-00401-00500/00403",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6205,6 +6407,7 @@
     "problem": "Tool Track.pddl",
     "run_dir": "runs-00401-00500/00405",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6229,6 +6432,7 @@
     "problem": "Unavoidable Corridor.pddl",
     "run_dir": "runs-00401-00500/00407",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6253,6 +6457,7 @@
     "problem": "Unpack Box.pddl",
     "run_dir": "runs-00401-00500/00409",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6277,6 +6482,7 @@
     "problem": "Unpack Star.pddl",
     "run_dir": "runs-00401-00500/00411",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6302,6 +6508,7 @@
     "problem": "Volcano.pddl",
     "run_dir": "runs-00401-00500/00413",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6326,6 +6533,7 @@
     "problem": "Windy Day.pddl",
     "run_dir": "runs-00401-00500/00415",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6350,6 +6558,7 @@
     "problem": "Yin Yang.pddl",
     "run_dir": "runs-00401-00500/00417",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6374,6 +6583,7 @@
     "problem": "Captive.pddl",
     "run_dir": "runs-00401-00500/00419",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6398,6 +6608,7 @@
     "problem": "Chain Link Push.pddl",
     "run_dir": "runs-00401-00500/00421",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6422,6 +6633,7 @@
     "problem": "Cup Stacking.pddl",
     "run_dir": "runs-00401-00500/00423",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6446,6 +6658,7 @@
     "problem": "Down the Well.pddl",
     "run_dir": "runs-00401-00500/00425",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6470,6 +6683,7 @@
     "problem": "Escape The Room.pddl",
     "run_dir": "runs-00401-00500/00427",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6494,6 +6708,7 @@
     "problem": "Four Pistons.pddl",
     "run_dir": "runs-00401-00500/00429",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6518,6 +6733,7 @@
     "problem": "Four Rooms.pddl",
     "run_dir": "runs-00401-00500/00431",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6542,6 +6758,7 @@
     "problem": "Hourglass.pddl",
     "run_dir": "runs-00401-00500/00433",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6566,6 +6783,7 @@
     "problem": "Maze With Obstacles.pddl",
     "run_dir": "runs-00401-00500/00435",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6590,6 +6808,7 @@
     "problem": "Mind The Gap.pddl",
     "run_dir": "runs-00401-00500/00437",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6614,6 +6833,7 @@
     "problem": "Pinhole Lock.pddl",
     "run_dir": "runs-00401-00500/00439",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6638,6 +6858,7 @@
     "problem": "Preparation.pddl",
     "run_dir": "runs-00401-00500/00441",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6662,6 +6883,7 @@
     "problem": "Repeating Tool.pddl",
     "run_dir": "runs-00401-00500/00443",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6686,6 +6908,7 @@
     "problem": "Tool Chain.pddl",
     "run_dir": "runs-00401-00500/00445",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -6732,6 +6955,7 @@
     "problem": "2 Obstacle.pddl",
     "run_dir": "runs-00001-00100/00002",
     "score_peak_memory_usage_in_bytes": 0.6467656917651659,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 504,
     "state_peak_memory_usage_in_bytes": 1384212,
     "time_limit": 1800,
@@ -6777,6 +7001,7 @@
     "problem": "A Perfect Fit.pddl",
     "run_dir": "runs-00001-00100/00004",
     "score_peak_memory_usage_in_bytes": 0.5830947600894699,
+    "score_state_peak_memory_usage_in_bytes": 0.7316852984164748,
     "search_time": 4381,
     "state_peak_memory_usage_in_bytes": 18514656,
     "time_limit": 1800,
@@ -6822,6 +7047,7 @@
     "problem": "A Tight Squeeze.pddl",
     "run_dir": "runs-00001-00100/00006",
     "score_peak_memory_usage_in_bytes": 0.7469694535378439,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 271,
     "state_peak_memory_usage_in_bytes": 1065840,
     "time_limit": 1800,
@@ -6867,6 +7093,7 @@
     "problem": "A Worthy Sacrifice.pddl",
     "run_dir": "runs-00001-00100/00008",
     "score_peak_memory_usage_in_bytes": 0.38614887573002743,
+    "score_state_peak_memory_usage_in_bytes": 0.44656361643775033,
     "search_time": 50627,
     "state_peak_memory_usage_in_bytes": 197033944,
     "time_limit": 1800,
@@ -6912,6 +7139,7 @@
     "problem": "At Crossroads.pddl",
     "run_dir": "runs-00001-00100/00010",
     "score_peak_memory_usage_in_bytes": 0.6533937083156284,
+    "score_state_peak_memory_usage_in_bytes": 0.98635573971546,
     "search_time": 643,
     "state_peak_memory_usage_in_bytes": 2239636,
     "time_limit": 1800,
@@ -6957,6 +7185,7 @@
     "problem": "Box Walls.pddl",
     "run_dir": "runs-00001-00100/00012",
     "score_peak_memory_usage_in_bytes": 0.6593340973660226,
+    "score_state_peak_memory_usage_in_bytes": 0.892537583796554,
     "search_time": 1493,
     "state_peak_memory_usage_in_bytes": 4876588,
     "time_limit": 1800,
@@ -7002,6 +7231,7 @@
     "problem": "Building Blocks.pddl",
     "run_dir": "runs-00001-00100/00014",
     "score_peak_memory_usage_in_bytes": 0.3616745559576958,
+    "score_state_peak_memory_usage_in_bytes": 0.4797940546628528,
     "search_time": 57130,
     "state_peak_memory_usage_in_bytes": 149569492,
     "time_limit": 1800,
@@ -7047,6 +7277,7 @@
     "problem": "Cage Door.pddl",
     "run_dir": "runs-00001-00100/00016",
     "score_peak_memory_usage_in_bytes": 0.6467261330516891,
+    "score_state_peak_memory_usage_in_bytes": 0.8700195114955733,
     "search_time": 1469,
     "state_peak_memory_usage_in_bytes": 5877972,
     "time_limit": 1800,
@@ -7071,6 +7302,7 @@
     "problem": "Carry The Bucket.pddl",
     "run_dir": "runs-00001-00100/00018",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1930982 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7116,6 +7348,7 @@
     "problem": "Choose Wisely.pddl",
     "run_dir": "runs-00001-00100/00020",
     "score_peak_memory_usage_in_bytes": 0.7911205363723904,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 36580,
     "time_limit": 1800,
@@ -7161,6 +7394,7 @@
     "problem": "Clear The Way.pddl",
     "run_dir": "runs-00001-00100/00022",
     "score_peak_memory_usage_in_bytes": 0.7347699795620767,
+    "score_state_peak_memory_usage_in_bytes": 0.9610287816665896,
     "search_time": 239,
     "state_peak_memory_usage_in_bytes": 2763164,
     "time_limit": 1800,
@@ -7185,6 +7419,7 @@
     "problem": "Corner Sequencing.pddl",
     "run_dir": "runs-00001-00100/00024",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3704598 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7230,6 +7465,7 @@
     "problem": "Dont Get Distracted.pddl",
     "run_dir": "runs-00001-00100/00026",
     "score_peak_memory_usage_in_bytes": 0.5913176022306598,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 443,
     "state_peak_memory_usage_in_bytes": 265264,
     "time_limit": 1800,
@@ -7275,6 +7511,7 @@
     "problem": "Double Obstacle.pddl",
     "run_dir": "runs-00001-00100/00028",
     "score_peak_memory_usage_in_bytes": 0.7568397899622893,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 60,
     "state_peak_memory_usage_in_bytes": 345052,
     "time_limit": 1800,
@@ -7320,6 +7557,7 @@
     "problem": "Double Simple Tool.pddl",
     "run_dir": "runs-00001-00100/00030",
     "score_peak_memory_usage_in_bytes": 0.32974126232362483,
+    "score_state_peak_memory_usage_in_bytes": 0.38377479259416397,
     "search_time": 53167,
     "state_peak_memory_usage_in_bytes": 331673032,
     "time_limit": 1800,
@@ -7365,6 +7603,7 @@
     "problem": "Double Trouble.pddl",
     "run_dir": "runs-00001-00100/00032",
     "score_peak_memory_usage_in_bytes": 0.20099652560996067,
+    "score_state_peak_memory_usage_in_bytes": 0.2683459591509285,
     "search_time": 285889,
     "state_peak_memory_usage_in_bytes": 863956236,
     "time_limit": 1800,
@@ -7410,6 +7649,7 @@
     "problem": "Eyes On The Prize.pddl",
     "run_dir": "runs-00001-00100/00034",
     "score_peak_memory_usage_in_bytes": 0.28180992368728514,
+    "score_state_peak_memory_usage_in_bytes": 0.5235324885928876,
     "search_time": 85314,
     "state_peak_memory_usage_in_bytes": 104062572,
     "time_limit": 1800,
@@ -7455,6 +7695,7 @@
     "problem": "Friendly Obstacle.pddl",
     "run_dir": "runs-00001-00100/00036",
     "score_peak_memory_usage_in_bytes": 0.150321459173675,
+    "score_state_peak_memory_usage_in_bytes": 0.19858062578361213,
     "search_time": 890758,
     "state_peak_memory_usage_in_bytes": 1540957496,
     "time_limit": 1800,
@@ -7500,6 +7741,7 @@
     "problem": "Get Out Of My Spot.pddl",
     "run_dir": "runs-00001-00100/00038",
     "score_peak_memory_usage_in_bytes": 0.6707962185921035,
+    "score_state_peak_memory_usage_in_bytes": 0.9959301174713251,
     "search_time": 522,
     "state_peak_memory_usage_in_bytes": 2068664,
     "time_limit": 1800,
@@ -7545,6 +7787,7 @@
     "problem": "Goal Is A Tool.pddl",
     "run_dir": "runs-00001-00100/00040",
     "score_peak_memory_usage_in_bytes": 0.529505247100371,
+    "score_state_peak_memory_usage_in_bytes": 0.7511018528121518,
     "search_time": 5157,
     "state_peak_memory_usage_in_bytes": 15760720,
     "time_limit": 1800,
@@ -7590,6 +7833,7 @@
     "problem": "Hockey Stick.pddl",
     "run_dir": "runs-00001-00100/00042",
     "score_peak_memory_usage_in_bytes": 0.32855814292223434,
+    "score_state_peak_memory_usage_in_bytes": 0.4425672795347732,
     "search_time": 93685,
     "state_peak_memory_usage_in_bytes": 203674236,
     "time_limit": 1800,
@@ -7635,6 +7879,7 @@
     "problem": "Horizontal Channel.pddl",
     "run_dir": "runs-00001-00100/00044",
     "score_peak_memory_usage_in_bytes": 0.6841989365691621,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 529,
     "state_peak_memory_usage_in_bytes": 1864528,
     "time_limit": 1800,
@@ -7680,6 +7925,7 @@
     "problem": "Horizontal Separation.pddl",
     "run_dir": "runs-00001-00100/00046",
     "score_peak_memory_usage_in_bytes": 0.2734672809370399,
+    "score_state_peak_memory_usage_in_bytes": 0.3263868487497735,
     "search_time": 151637,
     "state_peak_memory_usage_in_bytes": 533857044,
     "time_limit": 1800,
@@ -7704,6 +7950,7 @@
     "problem": "Ignorable Obstacles.pddl",
     "run_dir": "runs-00001-00100/00048",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1021524 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7749,6 +7996,7 @@
     "problem": "Insert Tool.pddl",
     "run_dir": "runs-00001-00100/00050",
     "score_peak_memory_usage_in_bytes": 0.26399585795171515,
+    "score_state_peak_memory_usage_in_bytes": 0.31794888753078426,
     "search_time": 169730,
     "state_peak_memory_usage_in_bytes": 572557384,
     "time_limit": 1800,
@@ -7794,6 +8042,7 @@
     "problem": "Interlocking Pieces.pddl",
     "run_dir": "runs-00001-00100/00052",
     "score_peak_memory_usage_in_bytes": 0.19062069015936742,
+    "score_state_peak_memory_usage_in_bytes": 0.24028236982935872,
     "search_time": 375841,
     "state_peak_memory_usage_in_bytes": 1090381504,
     "time_limit": 1800,
@@ -7818,6 +8067,7 @@
     "problem": "Irrelevant Obstacles.pddl",
     "run_dir": "runs-00001-00100/00054",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3044662 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7863,6 +8113,7 @@
     "problem": "J Tool.pddl",
     "run_dir": "runs-00001-00100/00056",
     "score_peak_memory_usage_in_bytes": 0.6340124411997778,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 482,
     "state_peak_memory_usage_in_bytes": 1069328,
     "time_limit": 1800,
@@ -7908,6 +8159,7 @@
     "problem": "Kangaroo Pouch.pddl",
     "run_dir": "runs-00001-00100/00058",
     "score_peak_memory_usage_in_bytes": 0.6297005585834012,
+    "score_state_peak_memory_usage_in_bytes": 0.8914862715646784,
     "search_time": 1099,
     "state_peak_memory_usage_in_bytes": 4919296,
     "time_limit": 1800,
@@ -7932,6 +8184,7 @@
     "problem": "Make A Triangle.pddl",
     "run_dir": "runs-00001-00100/00060",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3683727 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -7977,6 +8230,7 @@
     "problem": "Make Room For Me.pddl",
     "run_dir": "runs-00001-00100/00062",
     "score_peak_memory_usage_in_bytes": 0.5429598417560745,
+    "score_state_peak_memory_usage_in_bytes": 0.816422935650087,
     "search_time": 4264,
     "state_peak_memory_usage_in_bytes": 9168232,
     "time_limit": 1800,
@@ -8022,6 +8276,7 @@
     "problem": "Many Small Tools.pddl",
     "run_dir": "runs-00001-00100/00064",
     "score_peak_memory_usage_in_bytes": 0.6836067263991793,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 210,
     "state_peak_memory_usage_in_bytes": 434732,
     "time_limit": 1800,
@@ -8067,6 +8322,7 @@
     "problem": "Minefield.pddl",
     "run_dir": "runs-00001-00100/00066",
     "score_peak_memory_usage_in_bytes": 0.4352669452460996,
+    "score_state_peak_memory_usage_in_bytes": 0.5436420067643,
     "search_time": 32892,
     "state_peak_memory_usage_in_bytes": 88076260,
     "time_limit": 1800,
@@ -8112,6 +8368,7 @@
     "problem": "Mini Minefield.pddl",
     "run_dir": "runs-00001-00100/00068",
     "score_peak_memory_usage_in_bytes": 0.5849049063436814,
+    "score_state_peak_memory_usage_in_bytes": 0.7887239055423543,
     "search_time": 2462,
     "state_peak_memory_usage_in_bytes": 11536104,
     "time_limit": 1800,
@@ -8136,6 +8393,7 @@
     "problem": "Multiple Goals.pddl",
     "run_dir": "runs-00001-00100/00070",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1941561 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8181,6 +8439,7 @@
     "problem": "Narrow Path.pddl",
     "run_dir": "runs-00001-00100/00072",
     "score_peak_memory_usage_in_bytes": 0.7029226334958224,
+    "score_state_peak_memory_usage_in_bytes": 0.9601439935172987,
     "search_time": 585,
     "state_peak_memory_usage_in_bytes": 2783516,
     "time_limit": 1800,
@@ -8226,6 +8485,7 @@
     "problem": "Obstacle Has Obstacle.pddl",
     "run_dir": "runs-00001-00100/00074",
     "score_peak_memory_usage_in_bytes": 0.7914266031011549,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 120188,
     "time_limit": 1800,
@@ -8271,6 +8531,7 @@
     "problem": "Pick A Tool.pddl",
     "run_dir": "runs-00001-00100/00076",
     "score_peak_memory_usage_in_bytes": 0.7153273072202179,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 84,
     "state_peak_memory_usage_in_bytes": 172752,
     "time_limit": 1800,
@@ -8295,6 +8556,7 @@
     "problem": "Plus Two Goals.pddl",
     "run_dir": "runs-00001-00100/00078",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2919616 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8319,6 +8581,7 @@
     "problem": "Pull Up.pddl",
     "run_dir": "runs-00001-00100/00080",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3462423 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8343,6 +8606,7 @@
     "problem": "Pulling.pddl",
     "run_dir": "runs-00001-00100/00082",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -8389,6 +8653,7 @@
     "problem": "Pummel Through.pddl",
     "run_dir": "runs-00001-00100/00084",
     "score_peak_memory_usage_in_bytes": 0.5444690348189519,
+    "score_state_peak_memory_usage_in_bytes": 0.6889359964772344,
     "search_time": 4212,
     "state_peak_memory_usage_in_bytes": 26393756,
     "time_limit": 1800,
@@ -8434,6 +8699,7 @@
     "problem": "Road Block.pddl",
     "run_dir": "runs-00001-00100/00086",
     "score_peak_memory_usage_in_bytes": 0.7678425395865316,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 85,
     "state_peak_memory_usage_in_bytes": 1065952,
     "time_limit": 1800,
@@ -8458,6 +8724,7 @@
     "problem": "Sand Castle.pddl",
     "run_dir": "runs-00001-00100/00088",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3685684 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8503,6 +8770,7 @@
     "problem": "Seeing Red.pddl",
     "run_dir": "runs-00001-00100/00090",
     "score_peak_memory_usage_in_bytes": 0.15442648166069614,
+    "score_state_peak_memory_usage_in_bytes": 0.18934266089594362,
     "search_time": 498419,
     "state_peak_memory_usage_in_bytes": 1663666852,
     "time_limit": 1800,
@@ -8548,6 +8816,7 @@
     "problem": "Shape Of You.pddl",
     "run_dir": "runs-00001-00100/00092",
     "score_peak_memory_usage_in_bytes": -0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0466160797659224,
     "search_time": 1544982,
     "state_peak_memory_usage_in_bytes": 5434706200,
     "time_limit": 1800,
@@ -8593,6 +8862,7 @@
     "problem": "Simple Tool.pddl",
     "run_dir": "runs-00001-00100/00094",
     "score_peak_memory_usage_in_bytes": 0.4793655480241225,
+    "score_state_peak_memory_usage_in_bytes": 0.5495670762927873,
     "search_time": 16410,
     "state_peak_memory_usage_in_bytes": 83852576,
     "time_limit": 1800,
@@ -8638,6 +8908,7 @@
     "problem": "Single Obstacle.pddl",
     "run_dir": "runs-00001-00100/00096",
     "score_peak_memory_usage_in_bytes": 0.7754583511606147,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 22,
     "state_peak_memory_usage_in_bytes": 89004,
     "time_limit": 1800,
@@ -8662,6 +8933,7 @@
     "problem": "Size Limit.pddl",
     "run_dir": "runs-00001-00100/00098",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2689302 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8707,6 +8979,7 @@
     "problem": "Small Wins.pddl",
     "run_dir": "runs-00001-00100/00100",
     "score_peak_memory_usage_in_bytes": 0.7733674079961838,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 25,
     "state_peak_memory_usage_in_bytes": 177116,
     "time_limit": 1800,
@@ -8731,6 +9004,7 @@
     "problem": "Swap Places.pddl",
     "run_dir": "runs-00101-00200/00102",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1089217 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8755,6 +9029,7 @@
     "problem": "Swap S Places.pddl",
     "run_dir": "runs-00101-00200/00104",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3082596 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -8800,6 +9075,7 @@
     "problem": "Swiss Army Knife.pddl",
     "run_dir": "runs-00101-00200/00106",
     "score_peak_memory_usage_in_bytes": 0.4337069017642479,
+    "score_state_peak_memory_usage_in_bytes": 0.649117101474316,
     "search_time": 15490,
     "state_peak_memory_usage_in_bytes": 36722416,
     "time_limit": 1800,
@@ -8845,6 +9121,7 @@
     "problem": "Take Diversion.pddl",
     "run_dir": "runs-00101-00200/00108",
     "score_peak_memory_usage_in_bytes": 0.654640229779302,
+    "score_state_peak_memory_usage_in_bytes": 0.9047160000978913,
     "search_time": 948,
     "state_peak_memory_usage_in_bytes": 4408072,
     "time_limit": 1800,
@@ -8890,6 +9167,7 @@
     "problem": "Take The Long Route.pddl",
     "run_dir": "runs-00101-00200/00110",
     "score_peak_memory_usage_in_bytes": 0.7752284781367828,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 32,
     "state_peak_memory_usage_in_bytes": 194204,
     "time_limit": 1800,
@@ -8935,6 +9213,7 @@
     "problem": "Three Goals.pddl",
     "run_dir": "runs-00101-00200/00112",
     "score_peak_memory_usage_in_bytes": 0.20696549173841014,
+    "score_state_peak_memory_usage_in_bytes": 0.24951712070889412,
     "search_time": 188044,
     "state_peak_memory_usage_in_bytes": 1009983664,
     "time_limit": 1800,
@@ -8980,6 +9259,7 @@
     "problem": "Tool Train.pddl",
     "run_dir": "runs-00101-00200/00114",
     "score_peak_memory_usage_in_bytes": 0.3974019366325218,
+    "score_state_peak_memory_usage_in_bytes": 0.4801839352096871,
     "search_time": 36575,
     "state_peak_memory_usage_in_bytes": 149086612,
     "time_limit": 1800,
@@ -9004,6 +9284,7 @@
     "problem": "Trade Places.pddl",
     "run_dir": "runs-00101-00200/00116",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 849223 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9049,6 +9330,7 @@
     "problem": "Triple Obstacle.pddl",
     "run_dir": "runs-00101-00200/00118",
     "score_peak_memory_usage_in_bytes": 0.7272643466772303,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 220,
     "state_peak_memory_usage_in_bytes": 1441988,
     "time_limit": 1800,
@@ -9094,6 +9376,7 @@
     "problem": "Triple Simple Tool.pddl",
     "run_dir": "runs-00101-00200/00120",
     "score_peak_memory_usage_in_bytes": 0.1717252720849372,
+    "score_state_peak_memory_usage_in_bytes": 0.21592114226182235,
     "search_time": 268554,
     "state_peak_memory_usage_in_bytes": 1334532268,
     "time_limit": 1800,
@@ -9139,6 +9422,7 @@
     "problem": "Tucked Away.pddl",
     "run_dir": "runs-00101-00200/00122",
     "score_peak_memory_usage_in_bytes": 0.7183219233257698,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 274,
     "state_peak_memory_usage_in_bytes": 1026004,
     "time_limit": 1800,
@@ -9184,6 +9468,7 @@
     "problem": "Two Goals.pddl",
     "run_dir": "runs-00101-00200/00124",
     "score_peak_memory_usage_in_bytes": 0.6792468761968451,
+    "score_state_peak_memory_usage_in_bytes": 0.9896209791819319,
     "search_time": 526,
     "state_peak_memory_usage_in_bytes": 2179796,
     "time_limit": 1800,
@@ -9208,6 +9493,7 @@
     "problem": "Two Is Company.pddl",
     "run_dir": "runs-00101-00200/00126",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -9254,6 +9540,7 @@
     "problem": "Vertical Separation.pddl",
     "run_dir": "runs-00101-00200/00128",
     "score_peak_memory_usage_in_bytes": 0.4720232401875317,
+    "score_state_peak_memory_usage_in_bytes": 0.5791196628460374,
     "search_time": 17764,
     "state_peak_memory_usage_in_bytes": 65624532,
     "time_limit": 1800,
@@ -9299,6 +9586,7 @@
     "problem": "Victory Road.pddl",
     "run_dir": "runs-00101-00200/00130",
     "score_peak_memory_usage_in_bytes": 0.7169922862955427,
+    "score_state_peak_memory_usage_in_bytes": 1.0,
     "search_time": 201,
     "state_peak_memory_usage_in_bytes": 1059392,
     "time_limit": 1800,
@@ -9344,6 +9632,7 @@
     "problem": "Walk Past.pddl",
     "run_dir": "runs-00101-00200/00132",
     "score_peak_memory_usage_in_bytes": 0.48702277005340566,
+    "score_state_peak_memory_usage_in_bytes": 0.5836136628008695,
     "search_time": 8592,
     "state_peak_memory_usage_in_bytes": 63223504,
     "time_limit": 1800,
@@ -9389,6 +9678,7 @@
     "problem": "Youre In My Spot.pddl",
     "run_dir": "runs-00101-00200/00134",
     "score_peak_memory_usage_in_bytes": 0.6430388191377666,
+    "score_state_peak_memory_usage_in_bytes": 0.8248628742824835,
     "search_time": 1599,
     "state_peak_memory_usage_in_bytes": 8548392,
     "time_limit": 1800,
@@ -9434,6 +9724,7 @@
     "problem": "Youre In My Way.pddl",
     "run_dir": "runs-00101-00200/00136",
     "score_peak_memory_usage_in_bytes": 0.605641389330228,
+    "score_state_peak_memory_usage_in_bytes": 0.7401731647761203,
     "search_time": 2981,
     "state_peak_memory_usage_in_bytes": 17256068,
     "time_limit": 1800,
@@ -9458,6 +9749,7 @@
     "problem": "Anticipated Obstacle.pddl",
     "run_dir": "runs-00101-00200/00138",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3700780 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9503,6 +9795,7 @@
     "problem": "Archery.pddl",
     "run_dir": "runs-00101-00200/00140",
     "score_peak_memory_usage_in_bytes": 0.14781409075031343,
+    "score_state_peak_memory_usage_in_bytes": 0.2882728829902994,
     "search_time": 946741,
     "state_peak_memory_usage_in_bytes": 732341708,
     "time_limit": 1800,
@@ -9527,6 +9820,7 @@
     "problem": "Bottle Opener.pddl",
     "run_dir": "runs-00101-00200/00142",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2647362 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9551,6 +9845,7 @@
     "problem": "Boulders.pddl",
     "run_dir": "runs-00101-00200/00144",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1362178 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9575,6 +9870,7 @@
     "problem": "Bring A Friend.pddl",
     "run_dir": "runs-00101-00200/00146",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3460042 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9599,6 +9895,7 @@
     "problem": "Bubbles.pddl",
     "run_dir": "runs-00101-00200/00148",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3893194 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9623,6 +9920,7 @@
     "problem": "C Tool Wall.pddl",
     "run_dir": "runs-00101-00200/00150",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2921962 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9647,6 +9945,7 @@
     "problem": "Canonical Repeated Obstacle.pddl",
     "run_dir": "runs-00101-00200/00152",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3413144 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9671,6 +9970,7 @@
     "problem": "Cant Slip Around.pddl",
     "run_dir": "runs-00101-00200/00154",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3037186 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9695,6 +9995,7 @@
     "problem": "Cavern Obstacle.pddl",
     "run_dir": "runs-00101-00200/00156",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 497753 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9719,6 +10020,7 @@
     "problem": "Choose Your Obstacle.pddl",
     "run_dir": "runs-00101-00200/00158",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3354128 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9743,6 +10045,7 @@
     "problem": "Clean Sweep.pddl",
     "run_dir": "runs-00101-00200/00160",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2914863 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9767,6 +10070,7 @@
     "problem": "Container Assembly.pddl",
     "run_dir": "runs-00101-00200/00162",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1550032 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9791,6 +10095,7 @@
     "problem": "Corridor Obstacle With Distractors.pddl",
     "run_dir": "runs-00101-00200/00164",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1809403 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9815,6 +10120,7 @@
     "problem": "Corridor Obstacle.pddl",
     "run_dir": "runs-00101-00200/00166",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3894223 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9839,6 +10145,7 @@
     "problem": "Dinner Table.pddl",
     "run_dir": "runs-00101-00200/00168",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1802183 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9863,6 +10170,7 @@
     "problem": "Disassemble Box.pddl",
     "run_dir": "runs-00101-00200/00170",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1470633 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9887,6 +10195,7 @@
     "problem": "Dont Push With Obstacle.pddl",
     "run_dir": "runs-00101-00200/00172",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3461528 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9911,6 +10220,7 @@
     "problem": "Drawer With Lock.pddl",
     "run_dir": "runs-00101-00200/00174",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2836663 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9935,6 +10245,7 @@
     "problem": "Encircle.pddl",
     "run_dir": "runs-00101-00200/00176",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1024848 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -9959,6 +10270,7 @@
     "problem": "Expensive Obstacle.pddl",
     "run_dir": "runs-00101-00200/00178",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2616315 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10004,6 +10316,7 @@
     "problem": "Fewest Obstacles Push.pddl",
     "run_dir": "runs-00101-00200/00180",
     "score_peak_memory_usage_in_bytes": 0.17612034794410295,
+    "score_state_peak_memory_usage_in_bytes": 0.5707363855827762,
     "search_time": 94576,
     "state_peak_memory_usage_in_bytes": 70349868,
     "time_limit": 1800,
@@ -10028,6 +10341,7 @@
     "problem": "Get Tool First.pddl",
     "run_dir": "runs-00101-00200/00182",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1841697 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10052,6 +10366,7 @@
     "problem": "Go Backward To Go Forward.pddl",
     "run_dir": "runs-00101-00200/00184",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1065550 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10076,6 +10391,7 @@
     "problem": "Go Fishing.pddl",
     "run_dir": "runs-00101-00200/00186",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1137265 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10100,6 +10416,7 @@
     "problem": "Goggles.pddl",
     "run_dir": "runs-00101-00200/00188",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3124694 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10124,6 +10441,7 @@
     "problem": "Halfway Done.pddl",
     "run_dir": "runs-00101-00200/00190",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2338271 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10148,6 +10466,7 @@
     "problem": "House.pddl",
     "run_dir": "runs-00101-00200/00192",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1827716 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10172,6 +10491,7 @@
     "problem": "Interlocking Piece Insertion.pddl",
     "run_dir": "runs-00101-00200/00194",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1152026 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10196,6 +10516,7 @@
     "problem": "Lattice.pddl",
     "run_dir": "runs-00101-00200/00196",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2546951 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10220,6 +10541,7 @@
     "problem": "Lock And Load.pddl",
     "run_dir": "runs-00101-00200/00198",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2013770 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10244,6 +10566,7 @@
     "problem": "Maze Of Mystery.pddl",
     "run_dir": "runs-00101-00200/00200",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2920019 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10268,6 +10591,7 @@
     "problem": "Memory Card Slots.pddl",
     "run_dir": "runs-00201-00300/00202",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2923528 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10292,6 +10616,7 @@
     "problem": "Misleading Shorter Path.pddl",
     "run_dir": "runs-00201-00300/00204",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2685924 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10316,6 +10641,7 @@
     "problem": "Moveable H Obstacle.pddl",
     "run_dir": "runs-00201-00300/00206",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3457848 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10340,6 +10666,7 @@
     "problem": "Multiple Wall Obstacles.pddl",
     "run_dir": "runs-00201-00300/00208",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2955823 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10385,6 +10712,7 @@
     "problem": "Nutcracker.pddl",
     "run_dir": "runs-00201-00300/00210",
     "score_peak_memory_usage_in_bytes": 0.2755651270870059,
+    "score_state_peak_memory_usage_in_bytes": 0.7642820036986371,
     "search_time": 24421,
     "state_peak_memory_usage_in_bytes": 14128640,
     "time_limit": 1800,
@@ -10409,6 +10737,7 @@
     "problem": "Obstacle Ordering.pddl",
     "run_dir": "runs-00201-00300/00212",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1257160 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10433,6 +10762,7 @@
     "problem": "Obstacle To Reach Tool.pddl",
     "run_dir": "runs-00201-00300/00214",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 975808 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10457,6 +10787,7 @@
     "problem": "Parasitic Field.pddl",
     "run_dir": "runs-00201-00300/00216",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2893779 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10481,6 +10812,7 @@
     "problem": "Parasitic Obstacle.pddl",
     "run_dir": "runs-00201-00300/00218",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1086920 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10505,6 +10837,7 @@
     "problem": "Pinata.pddl",
     "run_dir": "runs-00201-00300/00220",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1085683 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10529,6 +10862,7 @@
     "problem": "Pull Dont Push.pddl",
     "run_dir": "runs-00201-00300/00222",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3685133 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10553,6 +10887,7 @@
     "problem": "Pyramid Assembly.pddl",
     "run_dir": "runs-00201-00300/00224",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 916784 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10577,6 +10912,7 @@
     "problem": "Pyramid Corridor Obstacle.pddl",
     "run_dir": "runs-00201-00300/00226",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1598905 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10601,6 +10937,7 @@
     "problem": "Recursive Obstacle.pddl",
     "run_dir": "runs-00201-00300/00228",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3958220 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10625,6 +10962,7 @@
     "problem": "Reflection.pddl",
     "run_dir": "runs-00201-00300/00230",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 594552 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10649,6 +10987,7 @@
     "problem": "Remote Obstacle.pddl",
     "run_dir": "runs-00201-00300/00232",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2507480 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10673,6 +11012,7 @@
     "problem": "Required Tool.pddl",
     "run_dir": "runs-00201-00300/00234",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2677410 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10697,6 +11037,7 @@
     "problem": "Robot Assembly.pddl",
     "run_dir": "runs-00201-00300/00236",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1049150 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10721,6 +11062,7 @@
     "problem": "S Tool.pddl",
     "run_dir": "runs-00201-00300/00238",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3929759 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10745,6 +11087,7 @@
     "problem": "Sandwich.pddl",
     "run_dir": "runs-00201-00300/00240",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3460829 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10790,6 +11133,7 @@
     "problem": "Sequence Your Goals.pddl",
     "run_dir": "runs-00201-00300/00242",
     "score_peak_memory_usage_in_bytes": 0.12353670452754344,
+    "score_state_peak_memory_usage_in_bytes": 0.15495481142278142,
     "search_time": 478274,
     "state_peak_memory_usage_in_bytes": 2212755660,
     "time_limit": 1800,
@@ -10814,6 +11158,7 @@
     "problem": "Simultaneous Obstacle Removal.pddl",
     "run_dir": "runs-00201-00300/00244",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1086078 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10838,6 +11183,7 @@
     "problem": "Simultaneous Obstacles.pddl",
     "run_dir": "runs-00201-00300/00246",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3495340 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10862,6 +11208,7 @@
     "problem": "Sneak Around Corridor Obstacle.pddl",
     "run_dir": "runs-00201-00300/00248",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1812405 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10886,6 +11233,7 @@
     "problem": "Sorting Assembly.pddl",
     "run_dir": "runs-00201-00300/00250",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3590416 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10910,6 +11258,7 @@
     "problem": "Spiral.pddl",
     "run_dir": "runs-00201-00300/00252",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3278807 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -10955,6 +11304,7 @@
     "problem": "Squeeze Around Obstacle.pddl",
     "run_dir": "runs-00201-00300/00254",
     "score_peak_memory_usage_in_bytes": 0.27682612696858694,
+    "score_state_peak_memory_usage_in_bytes": 0.3814962380419651,
     "search_time": 217258,
     "state_peak_memory_usage_in_bytes": 338000740,
     "time_limit": 1800,
@@ -10979,6 +11329,7 @@
     "problem": "Stack The Dishes.pddl",
     "run_dir": "runs-00201-00300/00256",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1267500 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11003,6 +11354,7 @@
     "problem": "Stacked Corridor Obstacles.pddl",
     "run_dir": "runs-00201-00300/00258",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3459203 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11027,6 +11379,7 @@
     "problem": "Tidy Up.pddl",
     "run_dir": "runs-00201-00300/00260",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 498520 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11051,6 +11404,7 @@
     "problem": "Tight Corner.pddl",
     "run_dir": "runs-00201-00300/00262",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3561157 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11075,6 +11429,7 @@
     "problem": "Together Again.pddl",
     "run_dir": "runs-00201-00300/00264",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3040422 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11099,6 +11454,7 @@
     "problem": "Tool From Drawer.pddl",
     "run_dir": "runs-00201-00300/00266",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2679510 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11123,6 +11479,7 @@
     "problem": "Tool To Remove Obstacle.pddl",
     "run_dir": "runs-00201-00300/00268",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1363820 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11147,6 +11504,7 @@
     "problem": "Transport Container.pddl",
     "run_dir": "runs-00201-00300/00270",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2065873 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11171,6 +11529,7 @@
     "problem": "Trap Obstacle.pddl",
     "run_dir": "runs-00201-00300/00272",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1841711 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11216,6 +11575,7 @@
     "problem": "Tunnel Swap.pddl",
     "run_dir": "runs-00201-00300/00274",
     "score_peak_memory_usage_in_bytes": 0.5603398619058717,
+    "score_state_peak_memory_usage_in_bytes": 0.6322877566284522,
     "search_time": 10151,
     "state_peak_memory_usage_in_bytes": 42223240,
     "time_limit": 1800,
@@ -11240,6 +11600,7 @@
     "problem": "Unhook To Go Around.pddl",
     "run_dir": "runs-00201-00300/00276",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2979151 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11264,6 +11625,7 @@
     "problem": "Unlock The Chest.pddl",
     "run_dir": "runs-00201-00300/00278",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3708426 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11288,6 +11650,7 @@
     "problem": "Up And Over.pddl",
     "run_dir": "runs-00201-00300/00280",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3438643 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11312,6 +11675,7 @@
     "problem": "Walk The Plank.pddl",
     "run_dir": "runs-00201-00300/00282",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3122451 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11357,6 +11721,7 @@
     "problem": "You Are Your Own Obstacle.pddl",
     "run_dir": "runs-00201-00300/00284",
     "score_peak_memory_usage_in_bytes": 0.2453293766097197,
+    "score_state_peak_memory_usage_in_bytes": 0.3280461322300728,
     "search_time": 619460,
     "state_peak_memory_usage_in_bytes": 526560332,
     "time_limit": 1800,
@@ -11381,6 +11746,7 @@
     "problem": "Armor.pddl",
     "run_dir": "runs-00201-00300/00286",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3354776 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11405,6 +11771,7 @@
     "problem": "Assemble Box.pddl",
     "run_dir": "runs-00201-00300/00288",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3136649 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11429,6 +11796,7 @@
     "problem": "Back Door.pddl",
     "run_dir": "runs-00201-00300/00290",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1549682 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11453,6 +11821,7 @@
     "problem": "Bear Claw.pddl",
     "run_dir": "runs-00201-00300/00292",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2998043 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11477,6 +11846,7 @@
     "problem": "Break In.pddl",
     "run_dir": "runs-00201-00300/00294",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 598316 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11501,6 +11871,7 @@
     "problem": "Button Up.pddl",
     "run_dir": "runs-00201-00300/00296",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 165052 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11525,6 +11896,7 @@
     "problem": "Caged Key.pddl",
     "run_dir": "runs-00201-00300/00298",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3960946 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11549,6 +11921,7 @@
     "problem": "Chain Link Tunnel.pddl",
     "run_dir": "runs-00201-00300/00300",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11574,6 +11947,7 @@
     "problem": "Chandelier.pddl",
     "run_dir": "runs-00301-00400/00302",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1026161 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11598,6 +11972,7 @@
     "problem": "Chocolate Box.pddl",
     "run_dir": "runs-00301-00400/00304",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2914411 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11622,6 +11997,7 @@
     "problem": "Close But Far.pddl",
     "run_dir": "runs-00301-00400/00306",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1424292 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11646,6 +12022,7 @@
     "problem": "Competing Obstacles.pddl",
     "run_dir": "runs-00301-00400/00308",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3484729 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11670,6 +12047,7 @@
     "problem": "Compression.pddl",
     "run_dir": "runs-00301-00400/00310",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 968437 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11694,6 +12072,7 @@
     "problem": "Crow Pulling.pddl",
     "run_dir": "runs-00301-00400/00312",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -11719,6 +12098,7 @@
     "problem": "Crow Pushing.pddl",
     "run_dir": "runs-00301-00400/00314",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3962703 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11743,6 +12123,7 @@
     "problem": "Cubism.pddl",
     "run_dir": "runs-00301-00400/00316",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2104610 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11767,6 +12148,7 @@
     "problem": "Diagonal Maze.pddl",
     "run_dir": "runs-00301-00400/00318",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2963332 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11791,6 +12173,7 @@
     "problem": "Diagonal Stack.pddl",
     "run_dir": "runs-00301-00400/00320",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 748792 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11815,6 +12198,7 @@
     "problem": "Disassemble Toolbox.pddl",
     "run_dir": "runs-00301-00400/00322",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3975934 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11839,6 +12223,7 @@
     "problem": "Dont Push Directly.pddl",
     "run_dir": "runs-00301-00400/00324",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3495327 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11863,6 +12248,7 @@
     "problem": "Double Key.pddl",
     "run_dir": "runs-00301-00400/00326",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3978124 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11887,6 +12273,7 @@
     "problem": "Double Scoop.pddl",
     "run_dir": "runs-00301-00400/00328",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3708516 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11911,6 +12298,7 @@
     "problem": "Earplugs.pddl",
     "run_dir": "runs-00301-00400/00330",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1842888 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11935,6 +12323,7 @@
     "problem": "Extended Tool.pddl",
     "run_dir": "runs-00301-00400/00332",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1423757 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11959,6 +12348,7 @@
     "problem": "Extraction.pddl",
     "run_dir": "runs-00301-00400/00334",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 4144717 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -11983,6 +12373,7 @@
     "problem": "Fancy Key.pddl",
     "run_dir": "runs-00301-00400/00336",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3416488 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12028,6 +12419,7 @@
     "problem": "Free The Tools.pddl",
     "run_dir": "runs-00301-00400/00338",
     "score_peak_memory_usage_in_bytes": 0.08169176714353998,
+    "score_state_peak_memory_usage_in_bytes": 0.28898503147804533,
     "search_time": 1128645,
     "state_peak_memory_usage_in_bytes": 728028812,
     "time_limit": 1800,
@@ -12052,6 +12444,7 @@
     "problem": "Get Cozy.pddl",
     "run_dir": "runs-00301-00400/00340",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3685059 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12076,6 +12469,7 @@
     "problem": "Inner Eye.pddl",
     "run_dir": "runs-00301-00400/00342",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 596531 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12100,6 +12494,7 @@
     "problem": "Interlock.pddl",
     "run_dir": "runs-00301-00400/00344",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2551942 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12124,6 +12519,7 @@
     "problem": "Ladder.pddl",
     "run_dir": "runs-00301-00400/00346",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3414734 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12148,6 +12544,7 @@
     "problem": "Light Bulb.pddl",
     "run_dir": "runs-00301-00400/00348",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1063566 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12172,6 +12569,7 @@
     "problem": "Matching Key.pddl",
     "run_dir": "runs-00301-00400/00350",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3892294 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12196,6 +12594,7 @@
     "problem": "Mouse Hole.pddl",
     "run_dir": "runs-00301-00400/00352",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 943243 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12220,6 +12619,7 @@
     "problem": "Moving Mountains.pddl",
     "run_dir": "runs-00301-00400/00354",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 783844 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12244,6 +12644,7 @@
     "problem": "Multi Goal Maze.pddl",
     "run_dir": "runs-00301-00400/00356",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1362984 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12268,6 +12669,7 @@
     "problem": "Multiple Backtracking Corridor.pddl",
     "run_dir": "runs-00301-00400/00358",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2544694 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12292,6 +12694,7 @@
     "problem": "Multiple Corridor Obstacles.pddl",
     "run_dir": "runs-00301-00400/00360",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1063135 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12316,6 +12719,7 @@
     "problem": "Pile Of Tools.pddl",
     "run_dir": "runs-00301-00400/00362",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1599697 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12361,6 +12765,7 @@
     "problem": "Plug Obstacle.pddl",
     "run_dir": "runs-00301-00400/00364",
     "score_peak_memory_usage_in_bytes": 0.1510871721557124,
+    "score_state_peak_memory_usage_in_bytes": 0.2284527559525986,
     "search_time": 1113390,
     "state_peak_memory_usage_in_bytes": 1202789020,
     "time_limit": 1800,
@@ -12385,6 +12790,7 @@
     "problem": "Poke Around.pddl",
     "run_dir": "runs-00301-00400/00366",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1088334 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12409,6 +12815,7 @@
     "problem": "Precision Tooling.pddl",
     "run_dir": "runs-00301-00400/00368",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2955822 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12433,6 +12840,7 @@
     "problem": "Preemptive Parasite.pddl",
     "run_dir": "runs-00301-00400/00370",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 159803 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12457,6 +12865,7 @@
     "problem": "Preemptive Recursive Obstacle.pddl",
     "run_dir": "runs-00301-00400/00372",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2553521 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12481,6 +12890,7 @@
     "problem": "Pull Around.pddl",
     "run_dir": "runs-00301-00400/00374",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 57246 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12505,6 +12915,7 @@
     "problem": "Put Away Toys.pddl",
     "run_dir": "runs-00301-00400/00376",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -12530,6 +12941,7 @@
     "problem": "Recursive Plugs.pddl",
     "run_dir": "runs-00301-00400/00378",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3962649 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12554,6 +12966,7 @@
     "problem": "Repeating Obstacle.pddl",
     "run_dir": "runs-00301-00400/00380",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2508282 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12578,6 +12991,7 @@
     "problem": "Reusable Parasitic Tool.pddl",
     "run_dir": "runs-00301-00400/00382",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2962467 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12602,6 +13016,7 @@
     "problem": "Rivalry.pddl",
     "run_dir": "runs-00301-00400/00384",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1770699 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12647,6 +13062,7 @@
     "problem": "Rocky Shore.pddl",
     "run_dir": "runs-00301-00400/00386",
     "score_peak_memory_usage_in_bytes": 0.05788481811152933,
+    "score_state_peak_memory_usage_in_bytes": 0.450756655119109,
     "search_time": 641816,
     "state_peak_memory_usage_in_bytes": 190299424,
     "time_limit": 1800,
@@ -12671,6 +13087,7 @@
     "problem": "Salt Shaker.pddl",
     "run_dir": "runs-00301-00400/00388",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3515685 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12695,6 +13112,7 @@
     "problem": "Sawtooth.pddl",
     "run_dir": "runs-00301-00400/00390",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1283128 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12719,6 +13137,7 @@
     "problem": "Sequential Latch.pddl",
     "run_dir": "runs-00301-00400/00392",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1273522 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12743,6 +13162,7 @@
     "problem": "Sticks And Stones.pddl",
     "run_dir": "runs-00301-00400/00394",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 190020 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12767,6 +13187,7 @@
     "problem": "Surrounded Corridor.pddl",
     "run_dir": "runs-00301-00400/00396",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2339128 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12791,6 +13212,7 @@
     "problem": "Swap Drawers.pddl",
     "run_dir": "runs-00301-00400/00398",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2598204 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12815,6 +13237,7 @@
     "problem": "Swap On Wall.pddl",
     "run_dir": "runs-00301-00400/00400",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3983630 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12839,6 +13262,7 @@
     "problem": "Swap Shelves.pddl",
     "run_dir": "runs-00401-00500/00402",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3966413 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12863,6 +13287,7 @@
     "problem": "Tool Timing.pddl",
     "run_dir": "runs-00401-00500/00404",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3891485 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12887,6 +13312,7 @@
     "problem": "Tool Track.pddl",
     "run_dir": "runs-00401-00500/00406",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3559745 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12911,6 +13337,7 @@
     "problem": "Unavoidable Corridor.pddl",
     "run_dir": "runs-00401-00500/00408",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 4169619 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12935,6 +13362,7 @@
     "problem": "Unpack Box.pddl",
     "run_dir": "runs-00401-00500/00410",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2615486 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12959,6 +13387,7 @@
     "problem": "Unpack Star.pddl",
     "run_dir": "runs-00401-00500/00412",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3458242 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -12983,6 +13412,7 @@
     "problem": "Volcano.pddl",
     "run_dir": "runs-00401-00500/00414",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 591714 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13007,6 +13437,7 @@
     "problem": "Windy Day.pddl",
     "run_dir": "runs-00401-00500/00416",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 254883 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13031,6 +13462,7 @@
     "problem": "Yin Yang.pddl",
     "run_dir": "runs-00401-00500/00418",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -13077,6 +13509,7 @@
     "problem": "Captive.pddl",
     "run_dir": "runs-00401-00500/00420",
     "score_peak_memory_usage_in_bytes": 0.2104361620182043,
+    "score_state_peak_memory_usage_in_bytes": 0.4840262194874161,
     "search_time": 207621,
     "state_peak_memory_usage_in_bytes": 144410412,
     "time_limit": 1800,
@@ -13101,6 +13534,7 @@
     "problem": "Chain Link Push.pddl",
     "run_dir": "runs-00401-00500/00422",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 778048 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13125,6 +13559,7 @@
     "problem": "Cup Stacking.pddl",
     "run_dir": "runs-00401-00500/00424",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2063427 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13149,6 +13584,7 @@
     "problem": "Down the Well.pddl",
     "run_dir": "runs-00401-00500/00426",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 982343 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13173,6 +13609,7 @@
     "problem": "Escape The Room.pddl",
     "run_dir": "runs-00401-00500/00428",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2546948 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13197,6 +13634,7 @@
     "problem": "Four Pistons.pddl",
     "run_dir": "runs-00401-00500/00430",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 1156637 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13221,6 +13659,7 @@
     "problem": "Four Rooms.pddl",
     "run_dir": "runs-00401-00500/00432",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3955503 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13245,6 +13684,7 @@
     "problem": "Hourglass.pddl",
     "run_dir": "runs-00401-00500/00434",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3138431 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13269,6 +13709,7 @@
     "problem": "Maze With Obstacles.pddl",
     "run_dir": "runs-00401-00500/00436",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 2920629 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13293,6 +13734,7 @@
     "problem": "Mind The Gap.pddl",
     "run_dir": "runs-00401-00500/00438",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "std_bad_alloc": "std::bad_alloc",
     "time_limit": 1800,
     "unexplained_errors": [
@@ -13318,6 +13760,7 @@
     "problem": "Pinhole Lock.pddl",
     "run_dir": "runs-00401-00500/00440",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3037613 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13342,6 +13785,7 @@
     "problem": "Preparation.pddl",
     "run_dir": "runs-00401-00500/00442",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3966411 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13366,6 +13810,7 @@
     "problem": "Repeating Tool.pddl",
     "run_dir": "runs-00401-00500/00444",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 3036614 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
@@ -13390,6 +13835,7 @@
     "problem": "Tool Chain.pddl",
     "run_dir": "runs-00401-00500/00446",
     "score_peak_memory_usage_in_bytes": 0.0,
+    "score_state_peak_memory_usage_in_bytes": 0.0,
     "time_limit": 1800,
     "unexplained_errors": [
       "run.err: ../../astar_run_planner.sh: line 25: 848073 CPU time limit exceeded \"$planner_exe\" \"-D\" \"$domain_file\" \"-P\" \"$problem_file\" \"-O\" \"$plan_file\" \"-E\" \"$enable_eager\" \"-W0\" \"$weight_preferred_queue\" \"-W1\" \"$weight_standard_queue\" \"-H\" \"$heuristic_type\" \"-G\" \"$enable_grounding\"\n"
