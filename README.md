@@ -50,7 +50,7 @@ Mimir is a C++20-based generalized planning library with Python bindings, design
   This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states. While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State, Ground Action, and Ground Axiom Representations:**
-  Mimir is optimized to work well on large input problems. It uses tree databases of perfectly balanced binary trees to encode sequences of elements, allowing shared representation of common subsequences via shared subtrees. Internally, states are unpacked into dense representations to support constant time randomized access. We represent ground actions and axioms using a sparse propositional and a dense numeric representation.
+  Mimir is optimized to work well on large input problems. It uses tree databases of perfectly balanced binary trees to encode sequences of elements, allowing shared representation of common subsequences via shared subtrees. Internally, states are unpacked into dense representations to support constant time randomized access. We represent ground actions and axioms using a sparse propositional and a symbolic representation for numeric expressions.
 
 ## Getting Started (Python)
 
