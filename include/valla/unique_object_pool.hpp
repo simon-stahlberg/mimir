@@ -166,6 +166,13 @@ public:
     [[nodiscard]] size_t get_num_free() const { return m_stack.size(); }
 };
 
+template<typename T>
+UniqueObjectPool<T>& get_stack_pool()
+{
+    static thread_local UniqueObjectPool<T> s_leaf_stack_pool {};
+    return s_leaf_stack_pool;
+}
+
 }
 
 #endif

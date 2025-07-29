@@ -77,8 +77,8 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::Hasher<valla::Slot<valla::Index>> {}(el.get_atoms<FluentTag>()),
-                              valla::Hasher<valla::Slot<valla::Index>> {}(el.get_numeric_variables()));
+    return loki::hash_combine(valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
+                              valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const

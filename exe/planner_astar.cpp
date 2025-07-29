@@ -184,8 +184,8 @@ int main(int argc, char** argv)
 
     std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
     std::cout << "Number of index slots: " << problem->get_index_tree_table().size() << std::endl;
-    std::cout << "Number of double slots: " << problem->get_double_tree_table().size() << std::endl;
-    std::cout << "Number of slots: " << problem->get_index_tree_table().size() + problem->get_double_tree_table().size() << std::endl;
+    std::cout << "Number of double slots: " << problem->get_double_leaf_table().size() << std::endl;
+    std::cout << "Number of slots: " << problem->get_index_tree_table().size() + problem->get_double_leaf_table().size() << std::endl;
     uint64_t num_fluent_state_variables = 0;
     uint64_t num_derived_state_variables = 0;
     uint64_t num_numeric_state_variables = 0;
@@ -211,14 +211,14 @@ int main(int argc, char** argv)
     std::cout << "Average number of index slots per state: "
               << static_cast<double>(problem->get_index_tree_table().size()) / state_repository->get_state_count() << std::endl;
     std::cout << "Average number of double slots per state: "
-              << static_cast<double>(problem->get_double_tree_table().size()) / state_repository->get_state_count() << std::endl;
+              << static_cast<double>(problem->get_double_leaf_table().size()) / state_repository->get_state_count() << std::endl;
     std::cout << "Average number of slots per state: "
-              << (static_cast<double>(problem->get_index_tree_table().size()) + static_cast<double>(problem->get_double_tree_table().size()))
+              << (static_cast<double>(problem->get_index_tree_table().size()) + static_cast<double>(problem->get_double_leaf_table().size()))
                      / state_repository->get_state_count()
               << std::endl;
 
     std::cout << "Peak memory usage in bytes for states: "
-              << problem->get_index_tree_table().mem_usage() + problem->get_double_tree_table().mem_usage()
+              << problem->get_index_tree_table().mem_usage() + problem->get_double_leaf_table().mem_usage()
                      + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index))
               << std::endl;
 

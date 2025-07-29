@@ -44,23 +44,18 @@ inline bool is_within_bounds(const Container& container, size_t index)
     return index < container.size();
 }
 
-using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
-using IndexList = std::vector<Index>;
-
-using DoubleList = std::vector<double>;
-
 /**
  * Slot
  */
 
-template<typename T>
+template<std::unsigned_integral I>
 struct Slot
 {
-    T i1;
-    T i2;
+    I i1;
+    I i2;
 
     constexpr Slot() : i1(0), i2(0) {}
-    constexpr Slot(T i1, T i2) : i1(i1), i2(i2) {}
+    constexpr Slot(I i1, I i2) : i1(i1), i2(i2) {}
 
     constexpr friend bool operator==(const Slot& lhs, const Slot& rhs) { return lhs.i1 == rhs.i1 && lhs.i2 == rhs.i2; }
 
@@ -71,30 +66,27 @@ struct Slot
     }
 };
 
-using IndexSlot = Slot<Index>;
-using DoubleSlot = Slot<double>;
-
-static constexpr const Slot EMPTY_ROOT_SLOT = IndexSlot();  ///< represents the empty state.
+template<std::unsigned_integral I>
+constexpr inline Slot<I> get_empty_slot()
+{
+    return Slot<I>();
+}
 
 /**
  * Iterator
  */
 
+template<std::unsigned_integral I>
 struct Entry
 {
-    Index m_index;
-    Index m_size;
+    I m_index;
+    I m_size;
 
-    Entry(Index index, Index size) : m_index(index), m_size(size) {}
+    Entry(I index, I size) : m_index(index), m_size(size) {}
 };
 
-inline void copy_object(const std::vector<Entry>& src, std::vector<Entry>& dst)
-{
-    dst.clear();
-    dst.insert(dst.end(), src.begin(), src.end());
-}
-
-inline void copy_object(const std::vector<double>& src, std::vector<double>& dst)
+template<typename T>
+inline void copy_object(const std::vector<T>& src, std::vector<T>& dst)
 {
     dst.clear();
     dst.insert(dst.end(), src.begin(), src.end());
@@ -139,40 +131,38 @@ struct Hasher
     size_t operator()(const T& el) const { return std::hash<T> {}(el); }
 };
 
-template<typename T>
-struct Hasher<Slot<T>>
+template<std::unsigned_integral I>
+struct Hasher<Slot<I>>
 {
-    size_t operator()(const Slot<T>& el) const { return absl::HashOf(el.i1, el.i2); }
+    size_t operator()(const Slot<I>& el) const { return absl::HashOf(el.i1, el.i2); }
 };
 
-// Instead of additionally storing the size in the unstable_to_stable mapping,
-// we reference to stable_to_unstable to access this piece of information.
-template<typename T>
-struct IndexReferencedSlotHash
+template<typename T, std::unsigned_integral I>
+struct IndexReferencedHash
 {
-    const std::vector<Slot<T>>& stable_to_unstable;
+    const std::vector<T>& vec;
 
-    IndexReferencedSlotHash(const std::vector<Slot<T>>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+    IndexReferencedHash(const std::vector<T>& vec) : vec(vec) {}
 
-    size_t operator()(Index el) const
+    size_t operator()(I el) const
     {
-        assert(el < stable_to_unstable.size());
-        return Hasher<Slot<T>> {}(stable_to_unstable[el]);
+        assert(el < vec.size());
+        return Hasher<T> {}(vec[el]);
     }
 };
 
-template<typename T>
-struct IndexReferencedSlotEqualTo
+template<typename T, std::unsigned_integral I>
+struct IndexReferencedEqualTo
 {
-    const std::vector<Slot<T>>& stable_to_unstable;
+    const std::vector<T>& vec;
 
-    IndexReferencedSlotEqualTo(const std::vector<Slot<T>>& stable_to_unstable) : stable_to_unstable(stable_to_unstable) {}
+    IndexReferencedEqualTo(const std::vector<T>& vec) : vec(vec) {}
 
-    size_t operator()(Index lhs, Index rhs) const
+    size_t operator()(I lhs, I rhs) const
     {
-        assert(lhs < stable_to_unstable.size());
-        assert(rhs < stable_to_unstable.size());
-        return stable_to_unstable[lhs] == stable_to_unstable[rhs];
+        assert(lhs < vec.size());
+        assert(rhs < vec.size());
+        return vec[lhs] == vec[rhs];
     }
 };
 

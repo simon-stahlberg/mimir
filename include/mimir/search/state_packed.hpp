@@ -30,8 +30,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/plain/double/swiss.hpp>
-#include <valla/plain/uint/swiss.hpp>
+#include <valla/plain/swiss.hpp>
 
 namespace mimir::search
 {
@@ -96,12 +95,12 @@ static_assert(sizeof(PackedStateImpl) == 24);
 template<formalism::IsFluentOrDerivedTag P>
 auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::uint::swiss::range(get_atoms<P>(), problem.get_index_tree_table());
+    return valla::plain::swiss::range(get_atoms<P>(), problem.get_index_tree_table());
 }
 
 inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
 {
-    return valla::plain::dbl::swiss::range(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_tree_table());
+    return valla::plain::swiss::range(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_leaf_table());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>

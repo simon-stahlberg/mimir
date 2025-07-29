@@ -30,22 +30,22 @@ namespace valla
 {
 /// @brief `IndexedHashSet` encapsulates a bijective function f : Slot -> Index with inverse mapping f^{-1} : Index -> Slot
 /// where the indices in the image are enumerated 0,1,2,... and so on.
-template<typename T>
+template<typename T, std::unsigned_integral I>
 class IndexedHashSet
 {
 public:
-    IndexedHashSet() : m_slots(), m_uniqueness(0, IndexReferencedSlotHash<T>(m_slots), IndexReferencedSlotEqualTo<T>(m_slots)) {}
+    IndexedHashSet() : m_slots(), m_uniqueness(0, IndexReferencedHash<T, I>(m_slots), IndexReferencedEqualTo<T, I>(m_slots)) {}
     // Uncopieable and unmoveable to avoid dangling references of m_slots in hash and equal_to.
     IndexedHashSet(const IndexedHashSet& other) = delete;
     IndexedHashSet& operator=(const IndexedHashSet& other) = delete;
     IndexedHashSet(IndexedHashSet&& other) = delete;
     IndexedHashSet& operator=(IndexedHashSet&& other) = delete;
 
-    Index insert(Slot<T> slot)
+    I insert(T slot)
     {
-        assert(m_uniqueness.size() != std::numeric_limits<Index>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
+        assert(m_uniqueness.size() != std::numeric_limits<I>::max() && "IndexedHashSet: Index overflow! The maximum number of slots reached.");
 
-        Index index = m_slots.size();
+        I index = m_slots.size();
 
         m_slots.push_back(slot);
 
@@ -57,7 +57,7 @@ public:
         return *result.first;
     }
 
-    const Slot<T>& operator[](Index index) const
+    const T& operator[](I index) const
     {
         assert(index < m_slots.size() && "Index out of bounds");
 
@@ -69,16 +69,16 @@ public:
     size_t mem_usage() const
     {
         size_t usage = 0;
-        usage += m_slots.capacity() * sizeof(Slot<T>);
-        usage += m_uniqueness.capacity() * (sizeof(Index) + 1);
+        usage += m_slots.capacity() * sizeof(T);
+        usage += m_uniqueness.capacity() * (sizeof(I) + 1);
         return usage;
     }
 
 private:
-    std::vector<Slot<T>> m_slots;
-    absl::flat_hash_set<Index, IndexReferencedSlotHash<T>, IndexReferencedSlotEqualTo<T>> m_uniqueness;
+    std::vector<T> m_slots;
+    absl::flat_hash_set<I, IndexReferencedHash<T, I>, IndexReferencedEqualTo<T, I>> m_uniqueness;
 
-    template<typename Hash, typename EqualTo, size_t InitialCapacity>
+    template<std::unsigned_integral I_, typename Hash, typename EqualTo, size_t InitialCapacity>
     friend class TreeHashIDMap;
 };
 
