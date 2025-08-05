@@ -85,6 +85,7 @@ ATTRIBUTES = [
     "num_of_axioms",
 
     "num_index_slots",
+    "num_index_slot_bits",
     "num_double_slots",
     "num_slots",
     "average_num_fluent_state_variables",

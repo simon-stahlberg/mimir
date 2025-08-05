@@ -113,6 +113,7 @@ class SearchParser(Parser):
         self.add_pattern("num_of_axioms", r"Number of axioms: (\d+)", type=int)
 
         self.add_pattern("num_index_slots", r"Number of index slots: (\d+)", type=int)
+        self.add_pattern("num_index_slot_bits", r"Number of index slot bits: (\d+)", type=int)
         self.add_pattern("num_double_slots", r"Number of double slots: (\d+)", type=int)
         self.add_pattern("num_slots", r"Number of slots: (\d+)", type=int)
         self.add_pattern("average_num_fluent_state_variables", r"Average number of fluent state variables: (.+)", type=float)
