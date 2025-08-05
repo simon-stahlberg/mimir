@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_PLAIN_HASH_ID_MAP_HPP_
-#define VALLA_INCLUDE_PLAIN_HASH_ID_MAP_HPP_
+#ifndef VALLA_INCLUDE_DTDB_H_IMPL_HPP_
+#define VALLA_INCLUDE_DTDS_H_IMPL_HPP_
 
 #include "valla/declarations.hpp"
 #include "valla/hash_id_map.hpp"
@@ -31,7 +31,7 @@
 #include <ranges>
 #include <stack>
 
-namespace valla::plain::hash_id_map
+namespace valla
 {
 
 ///////////////////////////////////////////
@@ -42,10 +42,12 @@ namespace valla::plain::hash_id_map
  * Insert recursively
  */
 
-template<std::input_iterator Iterator, typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-    requires std::same_as<std::iter_value_t<Iterator>, T>
-inline I insert_recursively(Iterator it, Iterator end, I size, TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table, IndexedHashSet<T, I>& leaf_table)
+template<std::input_iterator Iterator, IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2, std::iter_value_t<Iterator>>
+inline auto insert_recursively(Iterator it, Iterator end, typename Set1::index_type size, Set1& inner_table, Set2& leaf_table)
 {
+    using I = typename Set1::index_type;
+
     /* Base cases */
     if (size == 1)
         return leaf_table.insert(*it);
@@ -69,45 +71,48 @@ inline I insert_recursively(Iterator it, Iterator end, I size, TreeHashIDMap<I, 
     return inner_table.insert_internal(Slot<I>(i1, i2));
 }
 
-template<std::ranges::input_range Range, typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-    requires std::same_as<std::ranges::range_value_t<Range>, T>
-I insert(const Range& state, TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table, IndexedHashSet<T, I>& leaf_table)
+template<std::ranges::input_range Range, IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2, std::ranges::range_value_t<Range>>
+auto insert(const Range& state, Set1& inner_table, Set2& leaf_table)
 {
+    using I = typename Set1::index_type;
+
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
     const auto size = static_cast<I>(std::distance(state.begin(), state.end()));
 
-    if (size == 0)  ///< Special case for empty state.
-        return 0;   ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+    if (size == 0)    ///< Special case for empty state.
+        return I(0);  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
-    while (!inner_table.has_capacity_for(2 * size))
+    while (inner_table.growth_info().growth_left() < 2 * size)
         inner_table.rehash();
 
-    return inner_table.insert_root(Slot(insert_recursively(state.begin(), state.end(), size, inner_table, leaf_table), size));
+    return inner_table.insert_root(Slot<I>(insert_recursively(state.begin(), state.end(), size, inner_table, leaf_table), size));
 }
 
 /**
  * Read recursively
  */
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline void read_state_recursively(I index,
-                                   I size,
-                                   const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table,
-                                   const IndexedHashSet<T, I>& leaf_table,
-                                   std::vector<T>& ref_state)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline void read_state_recursively(typename Set1::index_type index,
+                                   typename Set1::index_type size,
+                                   const Set1& inner_table,
+                                   const Set2& leaf_table,
+                                   std::vector<typename Set2::value_type>& ref_state)
 {
     /* Base cases */
     if (size == 1)
     {
-        ref_state.push_back(leaf_table[index]);
+        ref_state.push_back(leaf_table.lookup(index));
         return;
     }
 
     if (size == 2)
     {
         const auto& slot = inner_table.lookup_internal(index);
-        ref_state.push_back(leaf_table[slot.i1]);
-        ref_state.push_back(leaf_table[slot.i2]);
+        ref_state.push_back(leaf_table.lookup(slot.i1));
+        ref_state.push_back(leaf_table.lookup(slot.i2));
         return;
     }
 
@@ -120,12 +125,13 @@ inline void read_state_recursively(I index,
     read_state_recursively(slot.i2, size - mid, inner_table, leaf_table, ref_state);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline void read_state(I tree_index,
-                       I size,
-                       const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& tree_table,
-                       const IndexedHashSet<T, I>& leaf_table,
-                       std::vector<T>& out_state)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline void read_state(typename Set1::index_type tree_index,
+                       typename Set1::index_type size,
+                       const Set1& tree_table,
+                       const Set2& leaf_table,
+                       std::vector<typename Set2::value_type>& out_state)
 {
     out_state.clear();
 
@@ -135,9 +141,9 @@ inline void read_state(I tree_index,
     read_state_recursively(tree_index, size, tree_table, leaf_table, out_state);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline void
-read_state(I root_index, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& tree_table, const IndexedHashSet<T, I>& leaf_table, std::vector<T>& out_state)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline void read_state(typename Set1::index_type root_index, const Set1& tree_table, const Set2& leaf_table, std::vector<typename Set2::value_type>& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
     const auto& slot = tree_table.lookup_root(root_index);
@@ -149,23 +155,34 @@ read_state(I root_index, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>&
  * ConstIterator
  */
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-class const_iterator
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+class const_iterator_general
 {
-private:
-    const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>* m_inner_table;
-    const IndexedHashSet<T, I>* m_leaf_table;
-    UniqueObjectPoolPtr<std::vector<Entry<I>>> m_inner_stack;
-    UniqueObjectPoolPtr<std::vector<T>> m_leaf_stack;
-    std::optional<T> m_value;
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = typename Set2::value_type;
+    using pointer = value_type*;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
+    using iterator_concept = std::input_iterator_tag;
 
-    const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table() const
+    using index_type = typename Set1::index_type;
+
+private:
+    const Set1* m_inner_table;
+    const Set2* m_leaf_table;
+    UniqueObjectPoolPtr<std::vector<Entry<index_type>>> m_inner_stack;
+    UniqueObjectPoolPtr<std::vector<value_type>> m_leaf_stack;
+    std::optional<value_type> m_value;
+
+    const Set1& inner_table() const
     {
         assert(m_inner_table);
         return *m_inner_table;
     }
 
-    const IndexedHashSet<T, I>& leaf_table() const
+    const Set2& leaf_table() const
     {
         assert(m_leaf_table);
         return *m_leaf_table;
@@ -190,14 +207,14 @@ private:
 
                     if (entry.m_size == 1)
                     {
-                        m_leaf_stack->emplace_back(this->leaf_table()[entry.m_index]);
+                        m_leaf_stack->emplace_back(this->leaf_table().lookup(entry.m_index));
                         break;
                     }
                     else if (entry.m_size == 2)
                     {
                         const auto& slot = this->inner_table().lookup_internal(entry.m_index);
-                        m_leaf_stack->emplace_back(this->leaf_table()[slot.i2]);
-                        m_leaf_stack->emplace_back(this->leaf_table()[slot.i1]);
+                        m_leaf_stack->emplace_back(this->leaf_table().lookup(slot.i2));
+                        m_leaf_stack->emplace_back(this->leaf_table().lookup(slot.i1));
                         break;
                     }
 
@@ -218,15 +235,8 @@ private:
     }
 
 public:
-    using difference_type = std::ptrdiff_t;
-    using value_type = T;
-    using pointer = value_type*;
-    using reference = value_type;
-    using iterator_category = std::input_iterator_tag;
-    using iterator_concept = std::input_iterator_tag;
-
-    const_iterator() : m_inner_table(nullptr), m_leaf_table(nullptr), m_inner_stack(), m_value(std::nullopt) {}
-    const_iterator(const const_iterator& other) :
+    const_iterator_general() : m_inner_table(nullptr), m_leaf_table(nullptr), m_inner_stack(), m_value(std::nullopt) {}
+    const_iterator_general(const const_iterator_general& other) :
         m_inner_table(other.m_inner_table),
         m_leaf_table(other.m_leaf_table),
         m_inner_stack(other.m_inner_stack.clone()),
@@ -234,7 +244,7 @@ public:
         m_value(other.m_value)
     {
     }
-    const_iterator& operator=(const const_iterator& other)
+    const_iterator_general& operator=(const const_iterator_general& other)
     {
         if (*this != other)
         {
@@ -246,9 +256,9 @@ public:
         }
         return *this;
     }
-    const_iterator(const_iterator&& other) = default;
-    const_iterator& operator=(const_iterator&& other) = default;
-    const_iterator(const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<T, I>& leaf_table, I root, bool begin) :
+    const_iterator_general(const_iterator_general&& other) = default;
+    const_iterator_general& operator=(const_iterator_general&& other) = default;
+    const_iterator_general(const Set1& inner_table, const Set2& leaf_table, index_type root, bool begin) :
         m_inner_table(&inner_table),
         m_leaf_table(&leaf_table),
         m_inner_stack(),
@@ -259,9 +269,9 @@ public:
 
         if (begin)
         {
-            m_inner_stack = get_stack_pool<std::vector<Entry<I>>>().get_or_allocate();
+            m_inner_stack = get_stack_pool<std::vector<Entry<index_type>>>().get_or_allocate();
             m_inner_stack->clear();
-            m_leaf_stack = get_stack_pool<std::vector<T>>().get_or_allocate();
+            m_leaf_stack = get_stack_pool<std::vector<value_type>>().get_or_allocate();
             m_leaf_stack->clear();
 
             const auto& root_slot = inner_table.lookup_root(root);
@@ -270,13 +280,13 @@ public:
             {
                 if (root_slot.i2 == 1)
                 {
-                    m_leaf_stack->emplace_back(this->leaf_table()[root_slot.i1]);
+                    m_leaf_stack->emplace_back(this->leaf_table().lookup(root_slot.i1));
                 }
                 else if (root_slot.i2 == 2)
                 {
                     const auto& slot = this->inner_table().lookup_internal(root_slot.i1);
-                    m_leaf_stack->emplace_back(this->leaf_table()[slot.i2]);
-                    m_leaf_stack->emplace_back(this->leaf_table()[slot.i1]);
+                    m_leaf_stack->emplace_back(this->leaf_table().lookup(slot.i2));
+                    m_leaf_stack->emplace_back(this->leaf_table().lookup(slot.i1));
                 }
                 else if (root_slot.i2 > 2)
                 {
@@ -288,35 +298,38 @@ public:
         }
     }
     value_type operator*() const { return *m_value; }
-    const_iterator& operator++()
+    const_iterator_general& operator++()
     {
         advance();
         return *this;
     }
-    const_iterator operator++(int)
+    const_iterator_general operator++(int)
     {
         auto it = *this;
         ++it;
         return it;
     }
-    bool operator==(const const_iterator& other) const { return m_value == other.m_value; }
-    bool operator!=(const const_iterator& other) const { return !(*this == other); }
+    bool operator==(const const_iterator_general& other) const { return m_value == other.m_value; }
+    bool operator!=(const const_iterator_general& other) const { return !(*this == other); }
 };
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline auto begin(I root, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<T, I>& leaf_table)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline auto begin(typename Set1::index_type root, const Set1& inner_table, const Set2& leaf_table)
 {
-    return const_iterator<Hash, EqualTo, InitialCapacity, T, I>(inner_table, leaf_table, root, true);
+    return const_iterator_general<Set1, Set2>(inner_table, leaf_table, root, true);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline auto end(const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>&, const IndexedHashSet<T, I>&)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline auto end(const Set1&, const Set2&)
 {
-    return const_iterator<Hash, EqualTo, InitialCapacity, T, I>();
+    return const_iterator_general<Set1, Set2>();
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, typename T, std::unsigned_integral I>
-inline auto range(I root, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& inner_table, const IndexedHashSet<T, I>& leaf_table)
+template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+    requires AreGeneralCaseHashSets<Set1, Set2>
+inline auto range(typename Set1::index_type root, const Set1& inner_table, const Set2& leaf_table)
 {
     return std::ranges::subrange(begin(root, inner_table, leaf_table), end(inner_table, leaf_table));
 }
@@ -329,10 +342,12 @@ inline auto range(I root, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>
  * Insert recursively
  */
 
-template<std::input_iterator Iterator, typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-    requires std::same_as<std::iter_value_t<Iterator>, I>
-inline I insert_recursively(Iterator it, Iterator end, I size, TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table)
+template<std::input_iterator Iterator, IsUnstableIndexedHashSet Set>
+    requires IsSpecialCaseHashSet<Set, std::iter_value_t<Iterator>>
+inline auto insert_recursively(Iterator it, Iterator end, typename Set::index_type size, Set& table)
 {
+    using I = Set::index_type;
+
     /* Base cases */
     if (size == 1)
         return *it;
@@ -352,17 +367,19 @@ inline I insert_recursively(Iterator it, Iterator end, I size, TreeHashIDMap<I, 
     return table.insert_internal(Slot<I>(i1, i2));
 }
 
-template<std::ranges::input_range Range, typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-    requires std::same_as<std::ranges::range_value_t<Range>, I>
-I insert(const Range& state, TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table)
+template<std::ranges::input_range Range, IsUnstableIndexedHashSet Set>
+    requires IsSpecialCaseHashSet<Set, std::ranges::range_value_t<Range>>
+auto insert(const Range& state, Set& table)
 {
+    using I = Set::index_type;
+
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
     const auto size = static_cast<I>(std::distance(state.begin(), state.end()));
 
-    if (size == 0)  ///< Special case for empty state.
-        return 0;   ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+    if (size == 0)    ///< Special case for empty state.
+        return I(0);  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
-    while (!table.has_capacity_for(2 * size))
+    while (table.growth_info().growth_left() < 2 * size)
         table.rehash();
 
     return table.insert_root(Slot<I>(insert_recursively(state.begin(), state.end(), size, table), size));
@@ -372,8 +389,9 @@ I insert(const Range& state, TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& t
  * Read recursively
  */
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline void read_state_recursively(I index, I size, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table, std::vector<I>& ref_state)
+template<IsUnstableIndexedHashSet Set>
+inline void
+read_state_recursively(typename Set::index_type index, typename Set::index_type size, const Set& table, std::vector<typename Set::index_type>& ref_state)
 {
     /* Base cases */
     if (size == 1)
@@ -399,8 +417,8 @@ inline void read_state_recursively(I index, I size, const TreeHashIDMap<I, Hash,
     read_state_recursively(slot.i2, size - mid, table, ref_state);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline void read_state(I tree_index, I size, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table, std::vector<I>& out_state)
+template<IsUnstableIndexedHashSet Set>
+inline void read_state(typename Set::index_type tree_index, typename Set::index_type size, const Set& table, std::vector<typename Set::index_type>& out_state)
 {
     out_state.clear();
 
@@ -410,8 +428,8 @@ inline void read_state(I tree_index, I size, const TreeHashIDMap<I, Hash, EqualT
     read_state_recursively(tree_index, size, table, out_state);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline void read_state(I root_index, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table, std::vector<I>& out_state)
+template<IsUnstableIndexedHashSet Set>
+inline void read_state(typename Set::index_type root_index, const Set& table, std::vector<typename Set::index_type>& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
     const auto& slot = table.lookup_root(root_index);
@@ -423,17 +441,27 @@ inline void read_state(I root_index, const TreeHashIDMap<I, Hash, EqualTo, Initi
  * ConstIterator
  */
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-class const_iterator<Hash, EqualTo, InitialCapacity, I, I>
+template<IsUnstableIndexedHashSet Set>
+class const_iterator_uint
 {
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = typename Set::index_type;
+    using pointer = value_type*;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
+    using iterator_concept = std::input_iterator_tag;
+
+    using index_type = typename Set::index_type;
+
 private:
-    const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>* m_table;
-    UniqueObjectPoolPtr<std::vector<Entry<I>>> m_stack;
-    I m_value;
+    const Set* m_table;
+    UniqueObjectPoolPtr<std::vector<Entry<index_type>>> m_stack;
+    index_type m_value;
 
-    static constexpr const I END_POS = std::numeric_limits<I>::max();
+    static constexpr const index_type END_POS = std::numeric_limits<index_type>::max();
 
-    const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table() const
+    const Set& table() const
     {
         assert(m_table);
         return *m_table;
@@ -452,7 +480,7 @@ private:
                 return;
             }
 
-            const auto slot = table()[entry.m_index];
+            const auto slot = table().lookup_internal(entry.m_index);
 
             const auto mid = std::bit_floor(entry.m_size - 1);
 
@@ -465,16 +493,9 @@ private:
     }
 
 public:
-    using difference_type = std::ptrdiff_t;
-    using value_type = I;
-    using pointer = value_type*;
-    using reference = value_type;
-    using iterator_category = std::input_iterator_tag;
-    using iterator_concept = std::input_iterator_tag;
-
-    const_iterator() : m_table(nullptr), m_stack(), m_value(END_POS) {}
-    const_iterator(const const_iterator& other) : m_table(other.m_table), m_stack(other.m_stack.clone()), m_value(other.m_value) {}
-    const_iterator& operator=(const const_iterator& other)
+    const_iterator_uint() : m_table(nullptr), m_stack(), m_value(END_POS) {}
+    const_iterator_uint(const const_iterator_uint& other) : m_table(other.m_table), m_stack(other.m_stack.clone()), m_value(other.m_value) {}
+    const_iterator_uint& operator=(const const_iterator_uint& other)
     {
         if (*this != other)
         {
@@ -484,15 +505,15 @@ public:
         }
         return *this;
     }
-    const_iterator(const_iterator&& other) = default;
-    const_iterator& operator=(const_iterator&& other) = default;
-    const_iterator(const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table, I root, bool begin) : m_table(&table), m_stack(), m_value(END_POS)
+    const_iterator_uint(const_iterator_uint&& other) = default;
+    const_iterator_uint& operator=(const_iterator_uint&& other) = default;
+    const_iterator_uint(const Set& table, index_type root, bool begin) : m_table(&table), m_stack(), m_value(END_POS)
     {
         assert(m_table);
 
         if (begin)
         {
-            m_stack = get_stack_pool<std::vector<Entry<I>>>().get_or_allocate();
+            m_stack = get_stack_pool<std::vector<Entry<index_type>>>().get_or_allocate();
             m_stack->clear();
 
             const auto& root_slot = table.lookup_root(root);
@@ -505,35 +526,35 @@ public:
         }
     }
     value_type operator*() const { return m_value; }
-    const_iterator& operator++()
+    const_iterator_uint& operator++()
     {
         advance();
         return *this;
     }
-    const_iterator operator++(int)
+    const_iterator_uint operator++(int)
     {
         auto it = *this;
         ++it;
         return it;
     }
-    bool operator==(const const_iterator& other) const { return m_value == other.m_value; }
-    bool operator!=(const const_iterator& other) const { return !(*this == other); }
+    bool operator==(const const_iterator_uint& other) const { return m_value == other.m_value; }
+    bool operator!=(const const_iterator_uint& other) const { return !(*this == other); }
 };
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline auto begin(I root, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table)
+template<IsUnstableIndexedHashSet Set>
+inline auto begin(typename Set::index_type root, const Set& table)
 {
-    return const_iterator<Hash, EqualTo, InitialCapacity, I, I>(table, root, true);
+    return const_iterator_uint<Set>(table, root, true);
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline auto end(const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>&)
+template<IsUnstableIndexedHashSet Set>
+inline auto end(const Set&)
 {
-    return const_iterator<Hash, EqualTo, InitialCapacity, I, I>();
+    return const_iterator_uint<Set>();
 }
 
-template<typename Hash, typename EqualTo, size_t InitialCapacity, std::unsigned_integral I>
-inline auto range(I root, const TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>& table)
+template<IsUnstableIndexedHashSet Set>
+inline auto range(typename Set::index_type root, const Set& table)
 {
     return std::ranges::subrange(begin(root, table), end(table));
 }

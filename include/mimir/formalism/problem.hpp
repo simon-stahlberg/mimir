@@ -25,6 +25,7 @@
 #include "mimir/formalism/repositories.hpp"
 
 #include <valla/indexed_hash_set.hpp>
+#include <valla/succinct_indexed_hash_set.hpp>
 
 namespace mimir::formalism
 {
@@ -60,7 +61,7 @@ private:
     FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
     std::vector<const FlatDoubleList*> m_flat_double_lists;
 
-    valla::IndexedHashSet<valla::Slot<Index>, Index> m_index_tree_table;
+    valla::SuccinctIndexedHashSet<valla::Slot<Index>, Index> m_index_tree_table;
     valla::IndexedHashSet<double, Index> m_double_leaf_table;
 
     SharedObjectPool<FlatBitset> m_bitset_pool;
@@ -131,8 +132,8 @@ public:
      * Additional members
      */
 
-    valla::IndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table();
-    const valla::IndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table() const;
+    valla::SuccinctIndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table();
+    const valla::SuccinctIndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table() const;
     valla::IndexedHashSet<double, Index>& get_double_leaf_table();
     const valla::IndexedHashSet<double, Index>& get_double_leaf_table() const;
 

@@ -16,6 +16,7 @@
  */
 
 #include "mimir/search/state_packed.hpp"
+#include <valla/hash.hpp>
 
 using namespace mimir::formalism;
 
@@ -77,8 +78,8 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
-                              valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
+    return loki::hash_combine(valla::Hash<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
+                              valla::Hash<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const

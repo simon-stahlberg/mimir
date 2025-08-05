@@ -184,6 +184,7 @@ int main(int argc, char** argv)
 
     std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
     std::cout << "Number of index slots: " << problem->get_index_tree_table().size() << std::endl;
+    std::cout << "Number of index slot bits: " << static_cast<int>(problem->get_index_tree_table().bit_width()) << std::endl;
     std::cout << "Number of double slots: " << problem->get_double_leaf_table().size() << std::endl;
     std::cout << "Number of slots: " << problem->get_index_tree_table().size() + problem->get_double_leaf_table().size() << std::endl;
     uint64_t num_fluent_state_variables = 0;

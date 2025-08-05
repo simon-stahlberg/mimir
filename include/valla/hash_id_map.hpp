@@ -28,47 +28,23 @@
 
 namespace valla
 {
-
-/// @brief `ctrl_t` implements the control byte in a Swiss table.
-enum class ctrl_t : int8_t
-{
-    kEmpty = -128,   // 0b10000000
-    kDeleted = -2,   // 0b11111110
-    kSentinel = -1,  // 0b11111111
-};
-
-inline std::ostream& operator<<(std::ostream& out, const std::vector<ctrl_t>& vec)
-{
-    out << "[";
-    for (const auto x : vec)
-    {
-        out << static_cast<int32_t>(x) << ", ";
-    }
-    out << "]";
-
-    return out;
-}
-
-alignas(16) inline static const __m128i kEmptyPattern = _mm_set1_epi8(static_cast<signed char>(ctrl_t::kEmpty));
-
-static constexpr double MAX_LOAD_FACTOR = static_cast<double>(7) / 8;
-
 /// @brief `HashIDMap implements a hash ID map with open addressing in a Swiss table format where the position of a key implicitly becomes the index.
 /// @tparam Derived is the derived class that must implement the rehash logic in rehash_impl.
 /// @tparam Key is the key.
 /// @tparam Hash is the hash functor for a key.
 /// @tparam EqualTo is the equality comparison functor for a key.
-/// @tparam InitialCapacity is the initial capacity, which must be a multiplicative of 16.
+/// @tparam InitialCapacity is the initial capacity.
 template<typename Derived,
          typename Key,
          std::unsigned_integral I,
-         typename Hash = Hasher<Key>,
+         typename Hash = Hash<Key>,
          typename EqualTo = std::equal_to<Key>,
-         size_t InitialCapacity = 1024>
+         size_t InitialCapacity = 127>
 class HashIDMap
 {
 private:
-    static_assert(InitialCapacity % 16 == 0, "InitialCapacity must be a multiple of 16.");
+    static_assert(((InitialCapacity + 1) & InitialCapacity) == 0, "InitialCapacity must be 2^{InitialCapacity}-1.");
+    static_assert(InitialCapacity >= 127, "InitialCapacity must be greater than 127.");
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
@@ -76,203 +52,157 @@ private:
 
 protected:
     std::vector<Key> m_slots;
-    std::vector<ctrl_t> m_controls;
-    size_t m_size;
-    size_t m_capacity;
+    std::vector<absl::container_internal::ctrl_t> m_controls;
+
+    GrowthInfo m_growth_info;
 
     Hash m_hash;
     EqualTo m_equal_to;
 
-    struct Statistics
-    {
-        size_t m_num_rehashes = 0;
-        std::chrono::milliseconds m_total_rehash_time = std::chrono::milliseconds::zero();
-        size_t m_num_probes = 0;
-        size_t m_sum_probe_lengths = 0;
-    };
+    HashSetStatistics m_statistics;
 
-    Statistics m_statistics;
-
-public:
-    HashIDMap() : m_slots(), m_controls(), m_size(0), m_capacity(InitialCapacity), m_hash(), m_equal_to()
+    HashIDMap() : m_slots(), m_controls(), m_growth_info(InitialCapacity), m_hash(), m_equal_to()
     {
-        m_slots.resize(m_capacity);
+        m_slots.resize(InitialCapacity);
 
         // Sentinel-padded rolling buffer
-        m_controls.reserve(m_capacity + 15);
-        m_controls.resize(m_capacity, ctrl_t::kEmpty);
-        m_controls.resize(m_capacity + 15, ctrl_t::kSentinel);
+        m_controls.reserve(InitialCapacity + absl::container_internal::Group::kWidth);
+        m_controls.resize(InitialCapacity, absl::container_internal::ctrl_t::kEmpty);
+        m_controls.resize(InitialCapacity + absl::container_internal::Group::kWidth, absl::container_internal::ctrl_t::kSentinel);
     }
-
-    bool has_capacity_for(size_t amount) const { return (static_cast<double>(size() + amount) / capacity()) <= MAX_LOAD_FACTOR; }
 
     I insert(const Key& slot)
     {
         assert(size() < capacity() && "Insert failed. Rehashing to higher capacity is required.");
 
+        m_statistics.increment_num_probes();
+
         size_t h = m_hash(slot);
-        size_t mask = (m_capacity - 1);
-        size_t i = h & mask;
-        ctrl_t ctrl = static_cast<ctrl_t>(h >> 57);
-        assert(static_cast<int8_t>(ctrl) >= 0);
+        absl::container_internal::h2_t h2 = absl::container_internal::H2(h);
+
+        absl::container_internal::probe_seq<absl::container_internal::Group::kWidth> probe(h, capacity());
 
         while (true)
         {
-            assert(i < m_capacity);
-            assert(i + 15 < m_controls.size());
+            absl::container_internal::Group group(&m_controls[probe.offset()]);
 
-            // Load 16 control bytes
-            __m128i ctrl_block = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&m_controls[i]));
-            __m128i broadcast_ctrl = _mm_set1_epi8(static_cast<signed char>(ctrl));
-
-            // Compare against ctrl byte
-            __m128i cmp_ctrl = _mm_cmpeq_epi8(ctrl_block, broadcast_ctrl);
-            int mask_ctrl = _mm_movemask_epi8(cmp_ctrl);
-
-            // Check if slot exists
-            while (mask_ctrl != 0)
+            for (const auto i : group.Match(h2))
             {
-                int offset = __builtin_ctz(mask_ctrl);
-                size_t idx = (i + offset) & mask;
+                m_statistics.increase_total_probe_length(i);
 
-                if (m_equal_to(m_slots[idx], slot))
-                {
-                    m_statistics.m_sum_probe_lengths += offset;
-                    return idx;
-                }
+                size_t offset = probe.offset(i);
+                assert(is_within_bounds(m_slots, offset));
 
-                mask_ctrl &= mask_ctrl - 1;  // Clear the lowest set bit
+                if (m_equal_to(m_slots[offset], slot))
+                    return offset;
             }
 
-            // Compare against kEmpty
-            __m128i cmp_empty = _mm_cmpeq_epi8(ctrl_block, kEmptyPattern);
-            int mask_empty = _mm_movemask_epi8(cmp_empty);
-
-            // Second: insert into first empty slot if found
-            if (mask_empty != 0)
+            auto mask_empty = group.MaskEmpty();
+            if (mask_empty)
             {
-                int offset = __builtin_ctz(mask_empty);
-                m_statistics.m_sum_probe_lengths += offset;
-                size_t idx = (i + offset) & mask;
+                int i = mask_empty.LowestBitSet();
 
-                if (m_controls[idx] == ctrl_t::kEmpty)
-                {
-                    assert(m_controls[idx] == ctrl_t::kEmpty && "Unexpected overwrite!");
+                m_statistics.increase_total_probe_length(i);
 
-                    m_slots[idx] = slot;
-                    m_controls[idx] = ctrl;
-                    ++m_size;
-                    ++m_statistics.m_num_probes;
+                size_t offset = probe.offset() + i;
+                assert(is_within_bounds(m_slots, offset));
 
-                    return idx;
-                }
+                m_slots[offset] = slot;
+                m_controls[offset] = static_cast<absl::container_internal::ctrl_t>(h2);
+                m_growth_info.increment_size();
+
+                return offset;
             }
 
-            // Else probe further
-            i = (i + 16) & mask;
-            m_statistics.m_sum_probe_lengths += 16;
+            m_statistics.increase_total_probe_length(absl::container_internal::Group::kWidth);
+
+            probe.next();
         }
     }
 
     const Key& operator[](I pos) const { return m_slots[pos]; }
 
-    size_t size() const { return m_size; }
-    size_t capacity() const { return m_capacity; }
-    double load_factor() const { return static_cast<double>(size()) / capacity(); }
-    constexpr double max_load_factor() const { return MAX_LOAD_FACTOR; }
-    const Statistics& statistics() const { return m_statistics; }
+    const GrowthInfo& growth_info() const { return m_growth_info; }
+    size_t size() const { return m_growth_info.size(); }
+    size_t capacity() const { return m_growth_info.capacity(); }
+    const HashSetStatistics& statistics() const { return m_statistics; }
 };
 
 /// @brief `TreeHashIDMap` implements a HashIDMap for chains of perfectly balanced binary trees with DFS style rehash policy.
-template<std::unsigned_integral I, typename Hash = Hasher<Slot<I>>, typename EqualTo = std::equal_to<Slot<I>>, size_t InitialCapacity = 1024>
+template<std::unsigned_integral I, typename Hash = Hash<Slot<I>>, typename EqualTo = std::equal_to<Slot<I>>, size_t InitialCapacity = 127>
 class TreeHashIDMap : public HashIDMap<TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>, Slot<I>, I, Hash, EqualTo, InitialCapacity>
 {
+public:
+    using value_type = Slot<I>;
+    using index_type = I;
+
+    static constexpr bool is_stable = false;
+
 private:
     IndexedHashSet<Slot<I>, I> m_roots;  ///< Dynamic hash ID maps require stable mapping for root nodes.
     std::vector<bool> m_stable_leaves;
 
     struct RehashData
     {
-        size_t capacity;
-        size_t size;
         std::vector<Slot<I>> slots;
-        std::vector<ctrl_t> controls;
+        std::vector<absl::container_internal::ctrl_t> controls;
+        GrowthInfo growth_info;
 
-        explicit RehashData(size_t capacity) : capacity(capacity), size(0), slots(capacity), controls()
+        explicit RehashData(size_t capacity) : slots(capacity), controls(), growth_info(capacity)
         {
             // Sentinel-padded rolling buffer
-            controls.reserve(capacity + 15);
-            controls.resize(capacity, ctrl_t::kEmpty);
-            controls.resize(capacity + 15, ctrl_t::kSentinel);
+            controls.reserve(capacity + absl::container_internal::Group::kWidth);
+            controls.resize(capacity, absl::container_internal::ctrl_t::kEmpty);
+            controls.resize(capacity + absl::container_internal::Group::kWidth, absl::container_internal::ctrl_t::kSentinel);
         }
-
-        bool has_capacity_for(size_t amount) const { return (static_cast<double>(size + amount) / capacity) <= MAX_LOAD_FACTOR; }
     };
 
-    I insert(Slot<I> slot, RehashData& tmp)
+    I insert(const Slot<I>& slot, RehashData& tmp)
     {
-        assert(this->size() < tmp.capacity && "Insert failed. Rehashing to higher capacity is required.");
+        assert(tmp.size < tmp.capacity && "Insert failed. Rehashing to higher capacity is required.");
+
+        this->m_statistics.increment_num_probes();
 
         size_t h = this->m_hash(slot);
-        size_t mask = (tmp.capacity - 1);
-        size_t i = h & mask;
-        ctrl_t ctrl = static_cast<ctrl_t>(h >> 57);
-        assert(static_cast<int8_t>(ctrl) >= 0);
+        absl::container_internal::h2_t h2 = absl::container_internal::H2(h);
+
+        absl::container_internal::probe_seq<absl::container_internal::Group::kWidth> probe(h, tmp.growth_info.capacity());
 
         while (true)
         {
-            assert(i < tmp.capacity);
-            assert(i + 15 < tmp.controls.size());
+            absl::container_internal::Group group(&tmp.controls[probe.offset()]);
 
-            // Load 16 control bytes
-            __m128i ctrl_block = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&tmp.controls[i]));
-            __m128i broadcast_ctrl = _mm_set1_epi8(static_cast<signed char>(ctrl));
-
-            // Compare against ctrl byte
-            __m128i cmp_ctrl = _mm_cmpeq_epi8(ctrl_block, broadcast_ctrl);
-            int mask_ctrl = _mm_movemask_epi8(cmp_ctrl);
-
-            // Check if slot exists
-            while (mask_ctrl != 0)
+            for (const auto i : group.Match(h2))
             {
-                int offset = __builtin_ctz(mask_ctrl);
-                size_t idx = (i + offset) & mask;
+                this->m_statistics.increase_total_probe_length(i);
 
-                if (this->m_equal_to(tmp.slots[idx], slot))
-                {
-                    this->m_statistics.m_sum_probe_lengths += offset;
-                    return idx;
-                }
+                size_t offset = probe.offset(i);
+                assert(is_within_bounds(tmp.slots, offset));
 
-                mask_ctrl &= mask_ctrl - 1;  // Clear the lowest set bit
+                if (this->m_equal_to(tmp.slots[offset], slot))
+                    return offset;
             }
 
-            // Compare against kEmpty
-            __m128i cmp_empty = _mm_cmpeq_epi8(ctrl_block, kEmptyPattern);
-            int mask_empty = _mm_movemask_epi8(cmp_empty);
-
-            // Second: insert into first empty slot if found
-            if (mask_empty != 0)
+            auto mask_empty = group.MaskEmpty();
+            if (mask_empty)
             {
-                int offset = __builtin_ctz(mask_empty);
-                this->m_statistics.m_sum_probe_lengths += offset;
-                size_t idx = (i + offset) & mask;
+                int i = mask_empty.LowestBitSet();
 
-                if (tmp.controls[idx] == ctrl_t::kEmpty)
-                {
-                    assert(tmp.controls[idx] == ctrl_t::kEmpty && "Unexpected overwrite!");
+                this->m_statistics.increase_total_probe_length(i);
 
-                    tmp.slots[idx] = slot;
-                    tmp.controls[idx] = ctrl;
-                    ++tmp.size;
-                    ++this->m_statistics.m_num_probes;
-                    return idx;
-                }
+                size_t offset = probe.offset() + i;
+                assert(is_within_bounds(tmp.slots, offset));
+
+                tmp.slots[offset] = slot;
+                tmp.controls[offset] = static_cast<absl::container_internal::ctrl_t>(h2);
+                tmp.growth_info.increment_size();
+
+                return offset;
             }
 
-            // Else probe further
-            i = (i + 16) & mask;
-            this->m_statistics.m_sum_probe_lengths += 16;
+            this->m_statistics.increase_total_probe_length(absl::container_internal::Group::kWidth);
+
+            probe.next();
         }
     }
 
@@ -317,18 +247,16 @@ private:
 
             backup_unstable_indices.push_back(root.i1);
 
-            if (!tmp.has_capacity_for(root.i2))
+            if (tmp.growth_info.growth_left() < 2 * root.i2)
             {
                 /* Rollback rehash */
+                m_roots.m_uniqueness.clear();
                 for (I stable_index_2 = 1; stable_index_2 < backup_unstable_indices.size(); ++stable_index_2)
                 {
                     this->m_roots.m_slots[stable_index].i1 = backup_unstable_indices[stable_index_2];
-                }
-                m_roots.m_uniqueness.clear();
-                for (I stable_index_2 = 1; stable_index_2 < this->m_roots.size(); ++stable_index_2)
-                {
                     this->m_roots.m_uniqueness.emplace(stable_index);
                 }
+
                 return false;
             }
 
@@ -338,13 +266,9 @@ private:
             this->m_roots.m_uniqueness.emplace(stable_index);
         }
 
-        if (tmp.size > new_capacity)
-            throw std::runtime_error("Encountered insufficient capacity during rehash due to changed structural sharing.");
-
-        this->m_capacity = new_capacity;
-        this->m_size = tmp.size;
         std::swap(this->m_slots, tmp.slots);
         std::swap(this->m_controls, tmp.controls);
+        std::swap(this->m_growth_info, tmp.growth_info);
 
         return true;
     }
@@ -354,39 +278,44 @@ private:
     friend Base;
 
 public:
+    using Base::capacity;
+    using Base::growth_info;
+    using Base::size;
+    using Base::statistics;
+
     explicit TreeHashIDMap() : Base(), m_roots()
     {
         this->m_roots.insert(get_empty_slot<I>());  // root representing empty sequence
         this->m_stable_leaves.push_back(false);
     }
 
-    void rehash(double factor = 2.)
+    void rehash()
     {
         using clock = std::chrono::high_resolution_clock;
 
         auto start = clock::now();  // Start timing
 
-        ++this->m_statistics.m_num_rehashes;
+        this->m_statistics.increment_num_rehashes();
 
-        size_t new_capacity = this->m_capacity;
+        size_t new_capacity = this->capacity();
 
         while (true)
         {
-            new_capacity *= factor;
+            new_capacity = (new_capacity << 1) | 1;
+            assert(absl::container_internal::IsValidCapacity(new_capacity));
 
             if (rehash_impl(new_capacity))
                 break;
         }
 
-        auto end = clock::now();
-        this->m_statistics.m_total_rehash_time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        this->m_statistics.increase_total_rehash_time(std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - start));
     }
 
     I insert_root(const Slot<I>& slot) { return m_roots.insert(slot); }
 
     I insert_internal(const Slot<I>& slot) { return Base::insert(slot); }
 
-    const Slot<I>& lookup_root(I pos) const { return m_roots[pos]; }
+    const Slot<I>& lookup_root(I pos) const { return m_roots.lookup(pos); }
 
     const Slot<I>& lookup_internal(I pos) const { return this->m_slots[pos]; }
 
@@ -399,7 +328,7 @@ public:
         size_t usage = 0;
         usage += m_roots.mem_usage();
         usage += this->m_slots.capacity() * sizeof(Slot<I>);
-        usage += this->m_controls.capacity() * sizeof(ctrl_t);
+        usage += this->m_controls.capacity() * sizeof(absl::container_internal::ctrl_t);
         return usage;
     }
 

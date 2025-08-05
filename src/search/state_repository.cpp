@@ -29,7 +29,7 @@
 #include "mimir/search/search_context.hpp"
 
 #include <valla/indexed_hash_set.hpp>
-#include <valla/plain/swiss.hpp>
+#include <valla/dtdb_s.hpp>
 
 using namespace mimir::formalism;
 
@@ -103,11 +103,11 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    state_numeric_variables = valla::plain::swiss::insert(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
+    state_numeric_variables = valla::insert(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
 
     assert(std::equal(dense_fluent_numeric_variables.begin(),
                       dense_fluent_numeric_variables.end(),
-                      valla::plain::swiss::begin(state_numeric_variables, index_tree_table, double_leaf_table)));
+                      valla::begin(state_numeric_variables, index_tree_table, double_leaf_table)));
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -115,7 +115,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = valla::plain::swiss::insert(dense_fluent_atoms, index_tree_table);
+    state_fluent_atoms_slot = valla::insert(dense_fluent_atoms, index_tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -138,7 +138,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = valla::plain::swiss::insert(dense_derived_atoms, index_tree_table);
+            state_derived_atoms_slot = valla::insert(dense_derived_atoms, index_tree_table);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -306,15 +306,15 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = valla::plain::swiss::insert(dense_fluent_atoms, index_tree_table);
+    state_fluent_atoms_slot = valla::insert(dense_fluent_atoms, index_tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    state_numeric_variables = valla::plain::swiss::insert(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
+    state_numeric_variables = valla::insert(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
 
     assert(std::equal(dense_fluent_numeric_variables.begin(),
                       dense_fluent_numeric_variables.end(),
-                      valla::plain::swiss::begin(state_numeric_variables, index_tree_table, double_leaf_table)));
+                      valla::begin(state_numeric_variables, index_tree_table, double_leaf_table)));
 
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
@@ -337,7 +337,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
-            state_derived_atoms_slot = valla::plain::swiss::insert(dense_derived_atoms, index_tree_table);
+            state_derived_atoms_slot = valla::insert(dense_derived_atoms, index_tree_table);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }

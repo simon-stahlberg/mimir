@@ -1,5 +1,5 @@
 # List of subdirectory names
-set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages")
+set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages" "sdsl")
 
 # Initialize empty lists for source and header files
 set(MIMIR_SRC_FILES "")
@@ -23,6 +23,9 @@ file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/cista/*.h" "../include/cis
 list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 
 file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/valla/*.hpp" "../include/valla/**/*.hpp")
+list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
+
+file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/sdsl/*.hpp" "../include/sdsl/**/*.hpp")
 list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 
 list(APPEND MIMIR_PUBLIC_HEADER_FILES "../include/mimir/mimir.hpp")
