@@ -15,6 +15,7 @@ class StateLabel:
     def __init__(
         self,
         steps_to_goal: int,
+        cost_to_goal: float,
         is_initial: bool,
         is_goal: bool,
         is_dead_end: bool
@@ -24,6 +25,8 @@ class StateLabel:
 
         :param steps_to_goal: The number of steps to reach the goal from this state.
         :type steps_to_goal: int
+        :param cost_to_goal: The lowest cost to reach the goal from this state.
+        :type cost_to_goal: float
         :param is_initial: Whether this state is the initial state.
         :type is_initial: bool
         :param is_goal: Whether this state is a goal state.
@@ -32,6 +35,7 @@ class StateLabel:
         :type is_dead_end: bool
         """
         self.steps_to_goal = steps_to_goal
+        self.cost_to_goal = cost_to_goal
         self.is_initial = is_initial
         self.is_goal = is_goal
         self.is_dead_end = is_dead_end
@@ -123,10 +127,11 @@ class StateSpaceSampler:
             raise ValueError("state must be an instance of State.")
         advanced_state = state._advanced_state
         steps_to_goal = self._advanced_state_space_sampler.get_steps_to_goal(advanced_state)
+        cost_to_goal = self._advanced_state_space_sampler.get_cost_to_goal(advanced_state)
         is_initial = self._advanced_state_space_sampler.is_initial_state(advanced_state)
         is_goal = self._advanced_state_space_sampler.is_goal_state(advanced_state)
         is_dead_end = self._advanced_state_space_sampler.is_dead_end_state(advanced_state)
-        return StateLabel(steps_to_goal, is_initial, is_goal, is_dead_end)
+        return StateLabel(steps_to_goal, cost_to_goal, is_initial, is_goal, is_dead_end)
 
     def num_states(self) -> int:
         """

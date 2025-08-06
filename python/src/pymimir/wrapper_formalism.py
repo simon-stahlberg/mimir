@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import  Union, Iterable
+from typing import overload, Union, Iterable, Literal as Lit
 
 from pymimir.advanced.formalism import Action as AdvancedAction
 from pymimir.advanced.formalism import ConditionalEffect as AdvancedConditionalEffect
@@ -1410,20 +1410,34 @@ class GroundAction:
         assert state._problem == self._problem, "State and action belong to different problems."
         return self.get_precondition().holds(state)
 
-    def apply(self, state: 'State') -> 'State':
+    @overload
+    def apply(self, state: 'State') -> 'State': ...
+    @overload
+    def apply(self, state: 'State', return_cost: Lit[False]) -> 'State': ...
+    @overload
+    def apply(self, state: 'State', return_cost: Lit[True]) -> 'tuple[State, float]': ...
+    @overload
+    def apply(self, state: 'State', return_cost: 'bool') -> 'Union[State, tuple[State, float]]': ...
+
+    def apply(self, state: 'State', return_cost: 'bool' = False) -> 'Union[State, tuple[State, float]]':
         """
-        Apply the ground action to the given state.
+        Apply the ground action to the given state and optionally return the cost.
 
         :param state: The state to which the ground action will be applied.
         :type state: State
-        :return: The resulting state after applying the ground action.
-        :rtype: State
+        :param return_cost: Whether to return the cost of the applied action in the state.
+        :type return_cost: bool
+        :return: The resulting state after applying the ground action and the cost (if return_cost=True).
+        :rtype: State or tuple[State, float]
         """
         assert isinstance(state, State), "Invalid state type."
         assert state._problem == self._problem, "State and action belong to different problems."
         sr = self._problem._search_context.get_state_repository()
-        advanced_successor_state, _ = sr.get_or_create_successor_state(state._advanced_state, self._advanced_ground_action, 0.0)
-        return State(advanced_successor_state, self._problem)
+        advanced_successor_state, cost = sr.get_or_create_successor_state(state._advanced_state, self._advanced_ground_action, 0.0)
+        if return_cost:
+            return State(advanced_successor_state, self._problem), cost
+        else:
+            return State(advanced_successor_state, self._problem)
 
     def __str__(self):
         """

@@ -555,6 +555,7 @@ class TestStateSpaceSampler(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         sampler = StateSpaceSampler.new(problem)
+        assert isinstance(sampler, StateSpaceSampler)
         sampler.set_seed(0)
         assert sampler is not None
         state = sampler.sample_state()
@@ -575,6 +576,7 @@ class TestStateSpaceSampler(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         sampler = StateSpaceSampler.new(problem)
+        assert isinstance(sampler, StateSpaceSampler)
         sampler.set_seed(0)
         assert sampler is not None
         state = sampler.sample_state_n_steps_from_goal(1)
@@ -596,6 +598,7 @@ class TestStateSpaceSampler(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         sampler = StateSpaceSampler.new(problem)
+        assert isinstance(sampler, StateSpaceSampler)
         sampler.set_seed(0)
         assert sampler is not None
         state = sampler.sample_state_n_steps_from_goal(2)
@@ -617,6 +620,7 @@ class TestStateSpaceSampler(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         sampler = StateSpaceSampler.new(problem)
+        assert isinstance(sampler, StateSpaceSampler)
         sampler.set_seed(0)
         assert sampler is not None
         dead_end_state = sampler.sample_dead_end_state()
