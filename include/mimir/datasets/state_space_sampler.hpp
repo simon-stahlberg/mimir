@@ -56,6 +56,10 @@ public:
 
     const StateSpace& get_state_space() const;
 
+    mimir::search::State get_state(Index index) const;
+
+    std::vector<mimir::search::State> get_states() const;
+
     size_t get_num_states() const;
 
     size_t get_num_dead_end_states() const;

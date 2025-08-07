@@ -35,8 +35,8 @@ StateSpaceSamplerImpl::StateSpaceSamplerImpl(StateSpace state_space) :
 {
     for (const auto& vertex : m_state_space->get_graph().get_vertices())
     {
-        auto state = mimir::graphs::get_state(vertex);
-        auto dead_end = mimir::graphs::is_unsolvable(vertex);
+        const auto state = mimir::graphs::get_state(vertex);
+        const auto dead_end = mimir::graphs::is_unsolvable(vertex);
         m_vertex_index_map[state.get_index()] = vertex.get_index();
 
         if (dead_end)
@@ -45,8 +45,8 @@ StateSpaceSamplerImpl::StateSpaceSamplerImpl(StateSpace state_space) :
         }
         else
         {
-            auto steps = mimir::graphs::get_unit_goal_distance(vertex);
-            auto it = m_vertex_index_map_by_steps.find(steps);
+            const auto steps = mimir::graphs::get_unit_goal_distance(vertex);
+            const auto it = m_vertex_index_map_by_steps.find(steps);
             if (it == m_vertex_index_map_by_steps.end())
             {
                 m_vertex_index_map_by_steps[steps] = std::vector<graphs::VertexIndex> { vertex.get_index() };
@@ -72,8 +72,8 @@ mimir::search::State StateSpaceSamplerImpl::sample_state()
         throw std::runtime_error("Cannot sample state from an empty state space.");
     }
 
-    auto random_vertex_index = sample_vertex_index(0, num_vertices - 1);
-    auto& random_vertex = graph.get_vertex(random_vertex_index);
+    const auto random_vertex_index = sample_vertex_index(0, num_vertices - 1);
+    const auto& random_vertex = graph.get_vertex(random_vertex_index);
     return mimir::graphs::get_state(random_vertex);
 }
 
@@ -84,18 +84,18 @@ mimir::search::State StateSpaceSamplerImpl::sample_state_n_steps_from_goal(int n
         throw std::runtime_error("No states available for sampling.");
     }
 
-    auto it = m_vertex_index_map_by_steps.find(n);
+    const auto it = m_vertex_index_map_by_steps.find(n);
     if (it == m_vertex_index_map_by_steps.end() || it->second.empty())
     {
         throw std::runtime_error("No states found with the specified number of steps from goal.");
     }
 
     const auto& vertex_indices = it->second;
-    auto random_index = sample_vertex_index(0, vertex_indices.size() - 1);
-    auto& random_vertex_index = vertex_indices[random_index];
+    const auto random_index = sample_vertex_index(0, vertex_indices.size() - 1);
+    const auto& random_vertex_index = vertex_indices[random_index];
 
-    auto& graph = m_state_space->get_graph();
-    auto& random_vertex = graph.get_vertex(random_vertex_index);
+    const auto& graph = m_state_space->get_graph();
+    const auto& random_vertex = graph.get_vertex(random_vertex_index);
     return mimir::graphs::get_state(random_vertex);
 }
 
@@ -106,12 +106,35 @@ mimir::search::State StateSpaceSamplerImpl::sample_dead_end_state()
         throw std::runtime_error("No dead-end states available for sampling.");
     }
 
-    auto random_index = sample_vertex_index(0, m_dead_end_vertices.size() - 1);
-    auto& random_vertex_index = m_dead_end_vertices[random_index];
+    const auto random_index = sample_vertex_index(0, m_dead_end_vertices.size() - 1);
+    const auto& random_vertex_index = m_dead_end_vertices[random_index];
 
-    auto& graph = m_state_space->get_graph();
-    auto& random_vertex = graph.get_vertex(random_vertex_index);
+    const auto& graph = m_state_space->get_graph();
+    const auto& random_vertex = graph.get_vertex(random_vertex_index);
     return mimir::graphs::get_state(random_vertex);
+}
+
+mimir::search::State StateSpaceSamplerImpl::get_state(Index index) const
+{
+    const auto it = m_vertex_index_map.find(index);
+    if (it != m_vertex_index_map.end())
+    {
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
+        return mimir::graphs::get_state(vertex);
+    }
+    throw std::runtime_error("State with index not found in the state space.");
+}
+
+std::vector<mimir::search::State> StateSpaceSamplerImpl::get_states() const
+{
+    std::vector<mimir::search::State> states;
+    for (const auto& vertex : m_state_space->get_graph().get_vertices())
+    {
+        const auto state = mimir::graphs::get_state(vertex);
+        states.push_back(state);
+    }
+    return states;
 }
 
 size_t StateSpaceSamplerImpl::get_num_states() const { return m_vertex_index_map.size(); }
@@ -124,11 +147,11 @@ size_t StateSpaceSamplerImpl::get_max_steps_to_goal() const { return m_max_steps
 
 bool StateSpaceSamplerImpl::is_dead_end_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& vertex = graph.get_vertex(it->second);
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
         return mimir::graphs::is_unsolvable(vertex);
     }
     throw std::runtime_error("State not found in the state space.");
@@ -136,11 +159,11 @@ bool StateSpaceSamplerImpl::is_dead_end_state(const mimir::search::State& state)
 
 bool StateSpaceSamplerImpl::is_goal_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& vertex = graph.get_vertex(it->second);
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
         return mimir::graphs::is_goal(vertex);
     }
     throw std::runtime_error("State not found in the state space.");
@@ -148,11 +171,11 @@ bool StateSpaceSamplerImpl::is_goal_state(const mimir::search::State& state) con
 
 bool StateSpaceSamplerImpl::is_initial_state(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& vertex = graph.get_vertex(it->second);
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
         return mimir::graphs::is_initial(vertex);
     }
     throw std::runtime_error("State not found in the state space.");
@@ -160,11 +183,11 @@ bool StateSpaceSamplerImpl::is_initial_state(const mimir::search::State& state) 
 
 DiscreteCost StateSpaceSamplerImpl::get_steps_to_goal(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& vertex = graph.get_vertex(it->second);
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
         return mimir::graphs::get_unit_goal_distance(vertex);
     }
     throw std::runtime_error("State not found in the state space.");
@@ -172,11 +195,11 @@ DiscreteCost StateSpaceSamplerImpl::get_steps_to_goal(const mimir::search::State
 
 ContinuousCost StateSpaceSamplerImpl::get_cost_to_goal(const mimir::search::State& state) const
 {
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& vertex = graph.get_vertex(it->second);
+        const auto& graph = m_state_space->get_graph();
+        const auto& vertex = graph.get_vertex(it->second);
         return mimir::graphs::get_action_goal_distance(vertex);
     }
     throw std::runtime_error("State not found in the state space.");
@@ -186,18 +209,18 @@ std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
 StateSpaceSamplerImpl::get_forward_transitions(const mimir::search::State& state) const
 {
     auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& source_vertex = graph.get_vertex(it->second);
-        auto forward_edges = graph.get_adjacent_edges<graphs::ForwardTag>(source_vertex.get_index());
+        const auto& graph = m_state_space->get_graph();
+        const auto& source_vertex = graph.get_vertex(it->second);
+        const auto forward_edges = graph.get_adjacent_edges<graphs::ForwardTag>(source_vertex.get_index());
         for (auto& edge : forward_edges)
         {
-            auto target_vertex_index = graph.get_target<graphs::ForwardTag>(edge.get_target());
-            auto& target_vertex = graph.get_vertex(target_vertex_index);
-            auto target_state = mimir::graphs::get_state(target_vertex);
-            auto action = mimir::graphs::get_action(edge);
+            const auto target_vertex_index = graph.get_target<graphs::ForwardTag>(edge.get_target());
+            const auto& target_vertex = graph.get_vertex(target_vertex_index);
+            const auto target_state = mimir::graphs::get_state(target_vertex);
+            const auto action = mimir::graphs::get_action(edge);
             transitions.emplace_back(action, target_state);
         }
         return transitions;
@@ -209,18 +232,18 @@ std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
 StateSpaceSamplerImpl::get_backward_transitions(const mimir::search::State& state) const
 {
     auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
-    auto it = m_vertex_index_map.find(state.get_index());
+    const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
-        auto& graph = m_state_space->get_graph();
-        auto& target_vertex = graph.get_vertex(it->second);
-        auto backward_edges = graph.get_adjacent_edges<graphs::BackwardTag>(target_vertex.get_index());
+        const auto& graph = m_state_space->get_graph();
+        const auto& target_vertex = graph.get_vertex(it->second);
+        const auto backward_edges = graph.get_adjacent_edges<graphs::BackwardTag>(target_vertex.get_index());
         for (auto& edge : backward_edges)
         {
-            auto source_vertex_index = graph.get_source<graphs::BackwardTag>(edge.get_source());
-            auto& source_vertex = graph.get_vertex(source_vertex_index);
-            auto source_state = mimir::graphs::get_state(source_vertex);
-            auto action = mimir::graphs::get_action(edge);
+            const auto source_vertex_index = graph.get_source<graphs::BackwardTag>(edge.get_source());
+            const auto& source_vertex = graph.get_vertex(source_vertex_index);
+            const auto source_state = mimir::graphs::get_state(source_vertex);
+            const auto action = mimir::graphs::get_action(edge);
             transitions.emplace_back(action, source_state);
         }
         return transitions;
