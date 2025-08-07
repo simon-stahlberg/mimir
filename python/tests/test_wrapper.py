@@ -638,10 +638,23 @@ class TestStateSpaceSampler(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         sampler = StateSpaceSampler.new(problem)
+        assert sampler is not None
         assert str(sampler) is not None
         assert repr(sampler) is not None
         assert hash(sampler) is not None
 
+    def test_get_state(self):
+        domain_path = DATA_DIR / 'spanner' / 'domain.pddl'
+        problem_path = DATA_DIR / 'spanner' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        sampler = StateSpaceSampler.new(problem)
+        assert sampler is not None
+        states = sampler.get_states()
+        for state in states:
+            expected_index = state.get_index()
+            actual_index = sampler.get_state(expected_index).get_index()
+            assert actual_index == expected_index
 
 if __name__ == '__main__':
     unittest.main()

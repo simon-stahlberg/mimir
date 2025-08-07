@@ -61,7 +61,7 @@ class StateSpaceSampler:
         self._problem = problem
 
     @staticmethod
-    def new(problem: 'Problem', max_states: int = None, symmetry_pruning: bool = None) -> 'Union[StateSpaceSampler, None]':
+    def new(problem: 'Problem', max_states: Union[int, None] = None, symmetry_pruning: Union[bool, None] = None) -> 'Union[StateSpaceSampler, None]':
         """
         Create a new state space from a given problem.
 
@@ -112,6 +112,30 @@ class StateSpaceSampler:
         if not isinstance(seed, int):
             raise ValueError("Seed must be an integer.")
         self._advanced_state_space_sampler.set_seed(seed)
+
+    def get_state(self, index: int) -> 'State':
+        """
+        Get the state with the given index in the state space.
+
+        :param index: The index of the state.
+        :type index: int
+        :return A State object with the given index.
+        :rtype State
+        """
+        assert isinstance(index, int), "Index must be an integer."
+        assert index >= 0, "Index must not be negative."
+        advanced_state = self._advanced_state_space_sampler.get_state(index)
+        return State(advanced_state, self.get_problem())
+
+    def get_states(self) -> 'list[State]':
+        """
+        Get the states in the state space.
+
+        :return A list of State objects.
+        :rtype list[State]
+        """
+        advanced_states = self._advanced_state_space_sampler.get_states()
+        return [State(advanced_state, self.get_problem()) for advanced_state in advanced_states]
 
     def get_state_label(self, state: 'State') -> 'StateLabel':
         """
