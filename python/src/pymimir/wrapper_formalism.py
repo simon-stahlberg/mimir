@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import overload, Union, Iterable, Literal as Lit
+from typing import overload, Union, Iterator, Literal as Lit
 
 from pymimir.advanced.formalism import Action as AdvancedAction
 from pymimir.advanced.formalism import ConditionalEffect as AdvancedConditionalEffect
@@ -25,6 +25,8 @@ from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.formalism import GroundConditionalEffect as AdvancedGroundConditionalEffect
 from pymimir.advanced.formalism import GroundConjunctiveCondition as AdvancedGroundConjunctiveCondition
 from pymimir.advanced.formalism import GroundConjunctiveEffect as AdvancedGroundConjunctiveEffect
+from pymimir.advanced.formalism import GroundNumericConstraint as AdvancedGroundNumericConstraint
+from pymimir.advanced.formalism import GroundNumericConstraintList as AdvancedGroundNumericConstraintList
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
@@ -46,6 +48,7 @@ from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
 from pymimir.advanced.search import SearchMode, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
+from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpression
 
 
 # -------------------------------
@@ -1069,12 +1072,12 @@ class Effect:
         """
         return [Literal(x) for x in self._advanced_conjunctive_effect.get_literals()]
 
-    def __iter__(self) -> 'Iterable[Literal]':
+    def __iter__(self) -> 'Iterator[Literal]':
         """
         Get an iterator over the literals of the effect list.
 
         :return: An iterator over the literals of the effect list.
-        :rtype: Iterable[Literal]
+        :rtype: Iterator[Literal]
         """
         return iter(self.get_literals())
 
@@ -1804,7 +1807,7 @@ class Problem:
         """
         Get the goal condition of the problem.
 
-        :return: The goal condition of the problem as a GroundConjunctiveCondition.
+        :return: The goal condition of the problem.
         :rtype: GroundConjunctiveCondition
         """
         static_goal = self._advanced_problem.get_static_goal_condition()
@@ -1812,6 +1815,16 @@ class Problem:
         derived_goal = self._advanced_problem.get_derived_goal_condition()
         advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_goal, fluent_goal, derived_goal)
         return GroundConjunctiveCondition(advanced_condition, self)
+
+    def get_numeric_goal_condition(self) -> 'ConjunctiveNumericCondition':
+        """
+        Get the numeric goal condition of the problem.
+
+        :return: The numeric goal condition of the problem.
+        :rtype: ConjunctiveNumericCondition
+        """
+        advanced_numeric_condition = self._advanced_problem.get_numeric_goal_condition()
+        return ConjunctiveNumericCondition(advanced_numeric_condition)
 
     def new_atom(self, predicate: 'Predicate', terms: 'list[Term]') -> 'Atom':
         """
@@ -2304,12 +2317,12 @@ class GroundConjunctiveCondition:
         variables.sort(key=lambda x: x.get_index())
         return ConjunctiveCondition.new(variables, lifted_literals, problem)
 
-    def __iter__(self) -> 'Iterable[GroundLiteral]':
+    def __iter__(self) -> 'Iterator[GroundLiteral]':
         """
         Iterate over all literals in the ground conjunctive condition.
 
         :return: An iterable of GroundLiteral objects representing the literals in the condition.
-        :rtype: Iterable[GroundLiteral]
+        :rtype: Iterator[GroundLiteral]
         """
         yield from self._static_ground_literals
         yield from self._fluent_ground_literals
@@ -2522,3 +2535,146 @@ class ConjunctiveCondition:
         if not isinstance(other, ConjunctiveCondition):
             return False
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition
+
+
+# class NumericConstant:
+#     def __init__(self, constant: float) -> None:
+#         self._constant = constant
+
+#     def value(self) -> float:
+#         return self._constant
+
+
+class NumericExpression:
+    def __init__(self, advanced_ground_function_expression: 'AdvancedGroundFunctionExpression') -> None:
+        self._advanced_ground_function_expression = advanced_ground_function_expression
+
+    @staticmethod
+    def _parse_expression(expression: 'AdvancedGroundFunctionExpression'):  # TODO: Add typing information.
+        raise NotImplementedError()
+
+    def get_operand(self) -> 'str':
+        raise NotImplementedError()
+
+    def get_left_expression(self):  # TODO: Add typing information.
+        raise NotImplementedError()
+
+    def get_right_expression(self):  # TODO: Add typing information.
+        raise NotImplementedError()
+
+
+class NumericCondition:
+    def __init__(self, advanced_ground_numeric_constraint: AdvancedGroundNumericConstraint) -> None:
+        assert isinstance(advanced_ground_numeric_constraint, AdvancedGroundNumericConstraint), "Invalid ground numeric constraint type."
+        self._advanced_ground_numeric_constraint = advanced_ground_numeric_constraint
+        self._comparator_names = {
+            'EQUAL': '==',
+            'GREATER': '>',
+            'GREATER_EQUAL': '>=',
+            'LESS': '<',
+            'LESS_EQUAL': '<='
+        }
+
+    def get_comparator(self) -> 'str':
+        advanced_name = self._advanced_ground_numeric_constraint.get_binary_comparator().name
+        assert advanced_name in self._comparator_names
+        return self._comparator_names[advanced_name]
+
+    def get_left_expression(self):  # TODO: Add typing information.
+        left_expression = self._advanced_ground_numeric_constraint.get_left_function_expression()
+        return NumericExpression._parse_expression(left_expression)
+
+
+    def get_right_expression(self):  # TODO: Add typing information.
+        right_expression = self._advanced_ground_numeric_constraint.get_right_function_expression()
+        return NumericExpression._parse_expression(right_expression)
+
+    def __str__(self):
+        """
+        Get a string representation of the numeric condition.
+
+        :return: A string representation of the numeric condition.
+        :rtype: str
+        """
+        return "NumericCondition(...)"
+
+    def __repr__(self):
+        """
+        Get a string representation of the conjunctive numeric condition.
+
+        :return: A string representation of the conjunctive numeric condition.
+        :rtype: str
+        """
+        return str(self)
+
+
+class ConjunctiveNumericCondition:
+    def __init__(self, advanced_ground_numeric_constraints: 'Union[AdvancedGroundNumericConstraintList, list[AdvancedGroundNumericConstraint]]') -> None:
+        assert isinstance(advanced_ground_numeric_constraints, AdvancedGroundNumericConstraintList) or isinstance(advanced_ground_numeric_constraints, list), "Invalid ground numeric constraints type."
+        assert not isinstance(advanced_ground_numeric_constraints, list) or all(isinstance(x, list) for x in advanced_ground_numeric_constraints), "Invalid ground numeric constraints type."
+        self._advanced_ground_numeric_constraints = list(advanced_ground_numeric_constraints)
+
+    def __len__(self) -> 'int':
+        """
+        Get the number of constraints in the conjunctive numeric condition.
+
+        :return: The number of constraints in the condition.
+        :rtype: int
+        """
+        return len(self._advanced_ground_numeric_constraints)
+
+    def __iter__(self) -> 'Iterator[NumericCondition]':
+        """
+        Get an iterator over the numeric conditions.
+
+        :return: An iterator over the numeric conditions.
+        :rtype: Iterator[NumericCondition]
+        """
+        return (NumericCondition(x) for x in self._advanced_ground_numeric_constraints)
+
+    def __getitem__(self, index: Union[int, slice]) -> 'Union[NumericCondition, list[NumericCondition]]':
+        if isinstance(index, int):
+            assert index < len(self._advanced_ground_numeric_constraints), "Index is out of bounds."
+            return NumericCondition(self._advanced_ground_numeric_constraints[index])
+        elif isinstance(index, slice):
+            return [NumericCondition(x) for x in self._advanced_ground_numeric_constraints[index]]
+        else:
+            raise RuntimeError("Index is not an index or a slice.")
+
+    def __str__(self):
+        """
+        Get a string representation of the conjunctive numeric condition.
+
+        :return: A string representation of the conjunctive numeric condition.
+        :rtype: str
+        """
+        return "ConjunctiveNumericCondition([" + ", ".join(str(x) for x in self.__iter__()) + "])"
+
+    def __repr__(self):
+        """
+        Get a string representation of the conjunctive numeric condition.
+
+        :return: A string representation of the conjunctive numeric condition.
+        :rtype: str
+        """
+        return str(self)
+
+
+# class AlgebraicVariable:
+#     def __init__(self) -> None:
+#         pass
+
+
+# class AlgebraicExpression:
+#     def __init__(self) -> None:
+#         pass
+
+
+# class AlgebraicCondition:
+#     def __init__(self) -> None:
+#         pass
+
+
+# class ConjunctiveAlgebraicCondition:
+#     def __init__(self) -> None:
+#         pass

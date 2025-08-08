@@ -152,6 +152,14 @@ class TestProblem(unittest.TestCase):
             assert goal_literal.get_polarity() is True
             assert str(goal_literal.get_atom()) in expected_goal_condition
 
+    def test_numeric_goal_condition(self):
+        domain_path = DATA_DIR / 'refuel' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        actual_numeric_goal_condition = problem.get_numeric_goal_condition()
+        pass
+
     def test_str_repr_hash(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
