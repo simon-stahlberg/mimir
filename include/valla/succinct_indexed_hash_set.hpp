@@ -18,13 +18,13 @@
 #ifndef VALLA_INCLUDE_SUCCINCT_INDEXED_HASH_SET_HPP_
 #define VALLA_INCLUDE_SUCCINCT_INDEXED_HASH_SET_HPP_
 
-#include "valla/declarations.hpp"
 #include "valla/succinct_flat_hash_set.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <sdsl/int_vector.hpp>
 #include <stack>
 
@@ -37,19 +37,17 @@ public:
     using value_type = T;
     using index_type = I;
 
-    static constexpr bool is_stable = true;
-
 private:
     struct IndexReferencedHash
     {
-        const sdsl::int_vector<>* vec;
+        std::shared_ptr<const sdsl::int_vector<>> vec;
         Hash hash;
 
-        IndexReferencedHash(const sdsl::int_vector<>& vec) : vec(&vec), hash() {}
+        IndexReferencedHash(std::shared_ptr<const sdsl::int_vector<>> vec) : vec(std::move(vec)), hash() {}
 
         size_t operator()(I el) const
         {
-            assert(el < vec->size());
+            assert(is_within_bounds(*vec, el));
             /* We obtain a stronger hash by decoding the slot and passing it into the Slot hash. */
             return hash(Uint64tCoder<T>::from_uint64_t(vec->operator[](el), vec->width()));
         }
@@ -57,15 +55,15 @@ private:
 
     struct IndexReferencedEqualTo
     {
-        const sdsl::int_vector<>* vec;
+        std::shared_ptr<const sdsl::int_vector<>> vec;
         EqualTo equal_to;
 
-        IndexReferencedEqualTo(const sdsl::int_vector<>& vec) : vec(&vec), equal_to() {}
+        IndexReferencedEqualTo(std::shared_ptr<const sdsl::int_vector<>> vec) : vec(std::move(vec)), equal_to() {}
 
         size_t operator()(I lhs, I rhs) const
         {
-            assert(lhs < vec->size());
-            assert(rhs < vec->size());
+            assert(is_within_bounds(*vec, lhs));
+            assert(is_within_bounds(*vec, rhs));
             return equal_to(vec->operator[](lhs), vec->operator[](rhs));
         }
     };
@@ -73,10 +71,10 @@ private:
     void resize_width(uint8_t old_width, uint8_t new_width)
     {
         /* Rebuild slots */
-        auto slots = sdsl::int_vector<>(m_capacity, 0, new_width);
+        auto slots = std::make_shared<sdsl::int_vector<>>(m_capacity, 0, new_width);
 
         for (I i = 0; i < m_size; ++i)
-            slots[i] = Uint64tCoder<T>::to_uint64_t(Uint64tCoder<T>::from_uint64_t(m_slots[i], old_width), new_width);
+            slots->operator[](i) = Uint64tCoder<T>::to_uint64_t(Uint64tCoder<T>::from_uint64_t(m_slots->operator[](i), old_width), new_width);
 
         std::swap(m_slots, slots);
 
@@ -90,7 +88,7 @@ public:
     SuccinctIndexedHashSet() :
         m_size(0),
         m_capacity(1),
-        m_slots(1, 0, 2),  // size 1, value 0, width 2
+        m_slots(std::make_shared<sdsl::int_vector<>>(1, 0, 2)),  // size 1, value 0, width 2
         m_uniqueness(IndexReferencedHash(m_slots), IndexReferencedEqualTo(m_slots))
     {
     }
@@ -106,10 +104,13 @@ public:
 
         /* Resize on insufficient capacity. */
         if (m_size == m_capacity)
-            m_slots.resize(m_capacity <<= 1);
+        {
+            m_capacity *= 2;
+            m_slots->resize(m_capacity);
+        }
 
         const auto new_width = Uint64tCoder<T>::bit_width(slot);
-        const auto old_width = m_slots.width();
+        const auto old_width = m_slots->width();
 
         /* Rebuild on insufficient width. */
         if (new_width > old_width)
@@ -117,7 +118,7 @@ public:
 
         I index = m_size++;
 
-        m_slots[index] = Uint64tCoder<T>::to_uint64_t(slot, m_slots.width());
+        m_slots->operator[](index) = Uint64tCoder<T>::to_uint64_t(slot, m_slots->width());
 
         const auto result = m_uniqueness.insert(index);
 
@@ -129,21 +130,21 @@ public:
 
     T lookup(I index) const
     {
-        assert(index < m_slots.size() && "Index out of bounds");
+        assert(index < m_slots->size() && "Index out of bounds");
 
-        return Uint64tCoder<T>::from_uint64_t(m_slots[index], m_slots.width());
+        return Uint64tCoder<T>::from_uint64_t(m_slots->operator[](index), m_slots->width());
     }
 
     size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
-    uint8_t bit_width() const { return m_slots.width(); }
-    const sdsl::int_vector<>& slots() const { return m_slots; }
+    uint8_t bit_width() const { return m_slots->width(); }
+    const sdsl::int_vector<>& slots() const { return *m_slots; }
     const succinct_flat_hash_set<I, I, IndexReferencedHash, IndexReferencedEqualTo> uniqueness() const { return m_uniqueness; }
 
     size_t mem_usage() const
     {
         size_t usage = 0;
-        usage += m_slots.capacity() / 8;
+        usage += m_slots->capacity() / 8;
         usage += m_uniqueness.mem_usage();
         return usage;
     }
@@ -151,7 +152,7 @@ public:
 private:
     size_t m_size;
     size_t m_capacity;
-    sdsl::int_vector<> m_slots;
+    std::shared_ptr<sdsl::int_vector<>> m_slots;
     succinct_flat_hash_set<I, I, IndexReferencedHash, IndexReferencedEqualTo> m_uniqueness;  // TODO: change to succinct_flat_hash_set
 };
 

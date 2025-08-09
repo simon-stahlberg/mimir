@@ -18,6 +18,8 @@
 #ifndef VALLA_INCLUDE_GROWTH_INFO_HPP_
 #define VALLA_INCLUDE_GROWTH_INFO_HPP_
 
+#include "valla/utils.hpp"
+
 #include <absl/container/internal/raw_hash_set.h>
 #include <cstddef>
 
@@ -33,7 +35,8 @@ public:
         m_max_size(m_capacity * MAX_LOAD_FACTOR),
         m_growth_left(m_max_size - m_size)
     {
-        assert(absl::container_internal::IsValidCapacity(m_capacity));
+        assert(is_power_of_two(capacity) && capacity >= absl::container_internal::Group::kWidth
+               && "capacity must be a power of two and greater or equal to Group::kWidth for wrap around.");
     }
 
     void increment_size()
@@ -43,6 +46,7 @@ public:
     }
 
     size_t capacity() const { return m_capacity; }
+    size_t mask() const { return m_capacity - 1; }
     size_t size() const { return m_size; }
     size_t max_size() const { return m_max_size; }
     size_t growth_left() const { return m_growth_left; }

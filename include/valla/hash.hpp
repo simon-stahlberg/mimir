@@ -21,11 +21,13 @@
 #include "valla/slot.hpp"
 #include "valla/uint64tcoder.hpp"
 
+#include <absl/hash/hash.h>
 #include <concepts>
 #include <utility>
 
 namespace valla
 {
+
 template<typename T>
 struct Hash
 {

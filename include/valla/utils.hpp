@@ -18,15 +18,22 @@
 #ifndef VALLA_INCLUDE_UTILS_HPP_
 #define VALLA_INCLUDE_UTILS_HPP_
 
+#include <concepts>
 #include <cstddef>
 
 namespace valla
 {
 
 template<typename Container>
-inline bool is_within_bounds(const Container& container, size_t index)
+constexpr inline bool is_within_bounds(const Container& container, size_t index)
 {
     return index < container.size();
+}
+
+template<std::unsigned_integral T>
+constexpr inline bool is_power_of_two(T n)
+{
+    return n != 0 && (n & (n - 1)) == 0;
 }
 
 }

@@ -18,10 +18,13 @@
 #ifndef VALLA_INCLUDE_HASH_ID_MAP_HPP_
 #define VALLA_INCLUDE_HASH_ID_MAP_HPP_
 
-#include "valla/declarations.hpp"
+#include "valla/concepts.hpp"
+#include "valla/equal_to.hpp"
+#include "valla/growthinfo.hpp"
+#include "valla/hash.hpp"
 #include "valla/indexed_hash_set.hpp"
+#include "valla/statistics.hpp"
 
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -39,37 +42,45 @@ template<typename Derived,
          std::unsigned_integral I,
          typename Hash = Hash<Key>,
          typename EqualTo = std::equal_to<Key>,
-         size_t InitialCapacity = 127>
+         size_t InitialCapacity = absl::container_internal::Group::kWidth>
 class HashIDMap
 {
 private:
-    static_assert(((InitialCapacity + 1) & InitialCapacity) == 0, "InitialCapacity must be 2^{InitialCapacity}-1.");
-    static_assert(InitialCapacity >= 127, "InitialCapacity must be greater than 127.");
+    static_assert(is_power_of_two(InitialCapacity) && InitialCapacity >= absl::container_internal::Group::kWidth
+                  && "InitialCapacity must be a power of two and greater or equal to Group::kWidth for wrap around.");
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
+    GrowthInfo m_growth_info;
     std::vector<Key> m_slots;
     std::vector<absl::container_internal::ctrl_t> m_controls;
-
-    GrowthInfo m_growth_info;
 
     Hash m_hash;
     EqualTo m_equal_to;
 
     HashSetStatistics m_statistics;
 
-    HashIDMap() : m_slots(), m_controls(), m_growth_info(InitialCapacity), m_hash(), m_equal_to()
+    HashIDMap(size_t capacity, Hash hash, EqualTo equal_to) :
+        m_growth_info(capacity),
+        m_slots(capacity),
+        m_controls(capacity + absl::container_internal::NumClonedBytes(), absl::container_internal::ctrl_t::kEmpty),
+        m_hash(hash),
+        m_equal_to(equal_to)
     {
-        m_slots.resize(InitialCapacity);
-
-        // Sentinel-padded rolling buffer
-        m_controls.reserve(InitialCapacity + absl::container_internal::Group::kWidth);
-        m_controls.resize(InitialCapacity, absl::container_internal::ctrl_t::kEmpty);
-        m_controls.resize(InitialCapacity + absl::container_internal::Group::kWidth, absl::container_internal::ctrl_t::kSentinel);
     }
+
+    explicit HashIDMap(size_t capacity) : HashIDMap(capacity, Hash {}, EqualTo {}) {}
+
+    HashIDMap() : HashIDMap(InitialCapacity, Hash {}, EqualTo {}) {}
+
+    // Moveable but not copieable
+    HashIDMap(const HashIDMap&) = delete;
+    HashIDMap& operator=(const HashIDMap&) = delete;
+    HashIDMap(HashIDMap&&) = default;
+    HashIDMap& operator=(HashIDMap&&) = default;
 
     I insert(const Key& slot)
     {
@@ -80,7 +91,7 @@ protected:
         size_t h = m_hash(slot);
         absl::container_internal::h2_t h2 = absl::container_internal::H2(h);
 
-        absl::container_internal::probe_seq<absl::container_internal::Group::kWidth> probe(h, capacity());
+        absl::container_internal::probe_seq<absl::container_internal::Group::kWidth> probe(h, m_growth_info.mask());
 
         while (true)
         {
@@ -104,11 +115,14 @@ protected:
 
                 m_statistics.increase_total_probe_length(i);
 
-                size_t offset = probe.offset() + i;
+                size_t offset = probe.offset(i);
                 assert(is_within_bounds(m_slots, offset));
 
                 m_slots[offset] = slot;
                 m_controls[offset] = static_cast<absl::container_internal::ctrl_t>(h2);
+                m_controls[((offset - absl::container_internal::NumClonedBytes()) & m_growth_info.mask()) + absl::container_internal::NumClonedBytes()] =
+                    static_cast<absl::container_internal::ctrl_t>(h2);
+
                 m_growth_info.increment_size();
 
                 return offset;
@@ -129,84 +143,22 @@ protected:
 };
 
 /// @brief `TreeHashIDMap` implements a HashIDMap for chains of perfectly balanced binary trees with DFS style rehash policy.
-template<std::unsigned_integral I, typename Hash = Hash<Slot<I>>, typename EqualTo = std::equal_to<Slot<I>>, size_t InitialCapacity = 127>
-class TreeHashIDMap : public HashIDMap<TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>, Slot<I>, I, Hash, EqualTo, InitialCapacity>
+template<std::unsigned_integral I,
+         typename Hash = Hash<Slot<I>>,
+         typename EqualTo = std::equal_to<Slot<I>>,
+         IsStableIndexedHashSet RootSet = IndexedHashSet<Slot<I>, I, Hash, EqualTo>,
+         size_t InitialCapacity = absl::container_internal::Group::kWidth>
+    requires std::same_as<typename RootSet::value_type, Slot<I>> && std::same_as<typename RootSet::index_type, I>
+class TreeHashIDMap : public HashIDMap<TreeHashIDMap<I, Hash, EqualTo, RootSet, InitialCapacity>, Slot<I>, I, Hash, EqualTo, InitialCapacity>
 {
 public:
     using value_type = Slot<I>;
     using index_type = I;
 
-    static constexpr bool is_stable = false;
-
 private:
-    IndexedHashSet<Slot<I>, I> m_roots;  ///< Dynamic hash ID maps require stable mapping for root nodes.
-    std::vector<bool> m_stable_leaves;
+    RootSet m_roots;
 
-    struct RehashData
-    {
-        std::vector<Slot<I>> slots;
-        std::vector<absl::container_internal::ctrl_t> controls;
-        GrowthInfo growth_info;
-
-        explicit RehashData(size_t capacity) : slots(capacity), controls(), growth_info(capacity)
-        {
-            // Sentinel-padded rolling buffer
-            controls.reserve(capacity + absl::container_internal::Group::kWidth);
-            controls.resize(capacity, absl::container_internal::ctrl_t::kEmpty);
-            controls.resize(capacity + absl::container_internal::Group::kWidth, absl::container_internal::ctrl_t::kSentinel);
-        }
-    };
-
-    I insert(const Slot<I>& slot, RehashData& tmp)
-    {
-        assert(tmp.size < tmp.capacity && "Insert failed. Rehashing to higher capacity is required.");
-
-        this->m_statistics.increment_num_probes();
-
-        size_t h = this->m_hash(slot);
-        absl::container_internal::h2_t h2 = absl::container_internal::H2(h);
-
-        absl::container_internal::probe_seq<absl::container_internal::Group::kWidth> probe(h, tmp.growth_info.capacity());
-
-        while (true)
-        {
-            absl::container_internal::Group group(&tmp.controls[probe.offset()]);
-
-            for (const auto i : group.Match(h2))
-            {
-                this->m_statistics.increase_total_probe_length(i);
-
-                size_t offset = probe.offset(i);
-                assert(is_within_bounds(tmp.slots, offset));
-
-                if (this->m_equal_to(tmp.slots[offset], slot))
-                    return offset;
-            }
-
-            auto mask_empty = group.MaskEmpty();
-            if (mask_empty)
-            {
-                int i = mask_empty.LowestBitSet();
-
-                this->m_statistics.increase_total_probe_length(i);
-
-                size_t offset = probe.offset() + i;
-                assert(is_within_bounds(tmp.slots, offset));
-
-                tmp.slots[offset] = slot;
-                tmp.controls[offset] = static_cast<absl::container_internal::ctrl_t>(h2);
-                tmp.growth_info.increment_size();
-
-                return offset;
-            }
-
-            this->m_statistics.increase_total_probe_length(absl::container_internal::Group::kWidth);
-
-            probe.next();
-        }
-    }
-
-    I rehash_recursively(I unstable_index, I size, RehashData& tmp)
+    I rehash_recursively(I unstable_index, I size, TreeHashIDMap& tmp)
     {
         /* Base case 1: skipped node creation */
         if (size == 1)
@@ -225,55 +177,32 @@ private:
         I i1 = rehash_recursively(slot.i1, mid, tmp);
         I i2 = rehash_recursively(slot.i2, size - mid, tmp);
 
-        return insert(Slot<I>(i1, i2), tmp);
+        return tmp.insert(Slot<I>(i1, i2));
     }
 
     /// @brief Depth-first rehash policy for a HashIDMap that stores a collection of perfectly balanced binary trees.
     /// @param new_capacity is the capacity after rehash.
     bool rehash_impl(size_t new_capacity)
     {
-        auto tmp = RehashData(new_capacity);
+        auto tmp = TreeHashIDMap<I, Hash, EqualTo, RootSet, InitialCapacity>(new_capacity);
 
-        /* Relocate trees underlying the stable indices */
-        m_roots.m_uniqueness.clear();
-
-        auto backup_unstable_indices = std::vector<I> { 0 };
-
-        // Relocate remaining roots.
-        for (I stable_index = 1; stable_index < this->m_roots.size(); ++stable_index)
+        /* Relocate trees */
+        for (I stable_index = 1; stable_index < this->m_roots.size(); ++stable_index)  // root 0 was already created
         {
-            Slot root = this->m_roots.m_slots[stable_index];
-            assert(root.i2 > 0);  // Ensure nonempty.
+            Slot root = this->m_roots.lookup(stable_index);
 
-            backup_unstable_indices.push_back(root.i1);
-
-            if (tmp.growth_info.growth_left() < 2 * root.i2)
-            {
-                /* Rollback rehash */
-                m_roots.m_uniqueness.clear();
-                for (I stable_index_2 = 1; stable_index_2 < backup_unstable_indices.size(); ++stable_index_2)
-                {
-                    this->m_roots.m_slots[stable_index].i1 = backup_unstable_indices[stable_index_2];
-                    this->m_roots.m_uniqueness.emplace(stable_index);
-                }
-
+            if (tmp.growth_info().growth_left() < 2 * root.i2)
                 return false;
-            }
 
-            I unstable_index = rehash_recursively(root.i1, root.i2, tmp);
-
-            this->m_roots.m_slots[stable_index] = Slot(unstable_index, root.i2);
-            this->m_roots.m_uniqueness.emplace(stable_index);
+            tmp.insert_root(Slot(rehash_recursively(root.i1, root.i2, tmp), root.i2));
         }
 
-        std::swap(this->m_slots, tmp.slots);
-        std::swap(this->m_controls, tmp.controls);
-        std::swap(this->m_growth_info, tmp.growth_info);
+        std::swap(*this, tmp);
 
         return true;
     }
 
-    using Base = HashIDMap<TreeHashIDMap<I, Hash, EqualTo, InitialCapacity>, Slot<I>, I, Hash, EqualTo, InitialCapacity>;
+    using Base = HashIDMap<TreeHashIDMap<I, Hash, EqualTo, RootSet, InitialCapacity>, Slot<I>, I, Hash, EqualTo, InitialCapacity>;
 
     friend Base;
 
@@ -283,11 +212,20 @@ public:
     using Base::size;
     using Base::statistics;
 
-    explicit TreeHashIDMap() : Base(), m_roots()
+    TreeHashIDMap(size_t capacity, Hash hash, EqualTo equal_to) : Base(capacity, hash, equal_to), m_roots()
     {
         this->m_roots.insert(get_empty_slot<I>());  // root representing empty sequence
-        this->m_stable_leaves.push_back(false);
     }
+
+    explicit TreeHashIDMap(size_t capacity) : TreeHashIDMap(capacity, Hash {}, EqualTo {}) {}
+
+    TreeHashIDMap() : TreeHashIDMap(InitialCapacity) {}
+
+    // Moveable but not copieable
+    TreeHashIDMap(const TreeHashIDMap&) = delete;
+    TreeHashIDMap& operator=(const TreeHashIDMap&) = delete;
+    TreeHashIDMap(TreeHashIDMap&&) = default;
+    TreeHashIDMap& operator=(TreeHashIDMap&&) = default;
 
     void rehash()
     {
@@ -301,8 +239,7 @@ public:
 
         while (true)
         {
-            new_capacity = (new_capacity << 1) | 1;
-            assert(absl::container_internal::IsValidCapacity(new_capacity));
+            new_capacity *= 2;
 
             if (rehash_impl(new_capacity))
                 break;

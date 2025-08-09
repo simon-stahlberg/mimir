@@ -15,29 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_DECLARATIONS_HPP_
-#define VALLA_INCLUDE_DECLARATIONS_HPP_
+#ifndef VALLA_INCLUDE_VALLA_HPP_
+#define VALLA_INCLUDE_VALLA_HPP_
 
-#include "valla/config.hpp"
-//
-#include <absl/container/flat_hash_map.h>
-#include <absl/container/flat_hash_set.h>
-#include <absl/container/node_hash_map.h>
-#include <absl/container/node_hash_set.h>
-//
+// Include all headers for easy downstream include
 #include "valla/concepts.hpp"
+#include "valla/dtdb_h.hpp"
+#include "valla/dtdb_s.hpp"
 #include "valla/equal_to.hpp"
 #include "valla/growthinfo.hpp"
 #include "valla/hash.hpp"
+#include "valla/hash_id_map.hpp"
+#include "valla/indexed_hash_set.hpp"
 #include "valla/iterator.hpp"
+#include "valla/ostream.hpp"
 #include "valla/slot.hpp"
 #include "valla/statistics.hpp"
+#include "valla/succinct_flat_hash_set.hpp"
+#include "valla/succinct_indexed_hash_set.hpp"
 #include "valla/uint64tcoder.hpp"
 #include "valla/utils.hpp"
-
-namespace valla
-{
-
-}
 
 #endif

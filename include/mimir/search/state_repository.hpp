@@ -43,6 +43,8 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
+    IndexList m_index_list;
+
     SharedObjectPool<UnpackedStateImpl> m_unpacked_state_pool;
 
 public:

@@ -18,17 +18,7 @@
 #ifndef VALLA_INCLUDE_DTDB_S_HPP_
 #define VALLA_INCLUDE_DTDB_S_HPP_
 
-#include "valla/declarations.hpp"
-#include "valla/indexed_hash_set.hpp"
-#include "valla/succinct_indexed_hash_set.hpp"
-#include "valla/unique_object_pool.hpp"
-
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <concepts>
-#include <iostream>
-#include <stack>
+#include "valla/concepts.hpp"
 
 namespace valla
 {
@@ -43,32 +33,15 @@ namespace valla
 
 template<std::ranges::input_range Range, IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
     requires AreGeneralCaseHashSets<Set1, Set2, std::ranges::range_value_t<Range>>
-inline auto insert(const Range& state, Set1& table, Set2& leaf_table);
+inline auto insert_sequence(const Range& sequence, Set1& table, Set2& leaf_table);
 
 /**
  * Read recursively
  */
 
-template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
+template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2, std::output_iterator<typename Set2::value_type> OutIterator>
     requires AreGeneralCaseHashSets<Set1, Set2>
-inline void
-read_state(const Slot<typename Set1::index_type>& root_slot, const Set1& table, const Set2& leaf_table, std::vector<typename Set2::value_type>& out_state);
-
-/**
- * ConstIterator
- */
-
-template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
-    requires AreGeneralCaseHashSets<Set1, Set2>
-inline auto begin(Slot<typename Set1::index_type> root, const Set1& table, const Set2& leaf_table);
-
-template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
-    requires AreGeneralCaseHashSets<Set1, Set2>
-inline auto end(const Set1&, const Set2&);
-
-template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
-    requires AreGeneralCaseHashSets<Set1, Set2>
-inline auto range(Slot<typename Set1::index_type> root, const Set1& table, const Set2& leaf_table);
+inline void read_sequence(const Slot<typename Set1::index_type>& root_slot, const Set1& table, const Set2& leaf_table, OutIterator out);
 
 ///////////////////////////////////////////
 /// Special case with Index range
@@ -80,27 +53,15 @@ inline auto range(Slot<typename Set1::index_type> root, const Set1& table, const
 
 template<std::ranges::input_range Range, IsStableIndexedHashSet Set>
     requires IsSpecialCaseHashSet<Set, std::ranges::range_value_t<Range>>
-inline auto insert(const Range& state, Set& table);
+inline auto insert_sequence(const Range& sequence, Set& table);
 
 /**
  * Read recursively
  */
 
-template<IsStableIndexedHashSet Set>
-inline void read_state(const Slot<typename Set::index_type>& root_slot, const Set& table, std::vector<typename Set::index_type>& out_state);
+template<IsStableIndexedHashSet Set, std::output_iterator<typename Set::index_type> OutIterator>
+inline void read_sequence(const Slot<typename Set::index_type>& root_slot, const Set& table, OutIterator out);
 
-/**
- * ConstIterator
- */
-
-template<IsStableIndexedHashSet Set>
-inline auto begin(Slot<typename Set::index_type> root, const Set& table);
-
-template<IsStableIndexedHashSet Set>
-inline auto end(const Set&);
-
-template<IsStableIndexedHashSet Set>
-inline auto range(Slot<typename Set::index_type> root, const Set& table);
 }
 
 #include "valla/dtdb_s_impl.hpp"

@@ -531,7 +531,7 @@ public:
         }
     };
 
-    const raw_wrapper raw = raw_wrapper(*this);
+    raw_wrapper raw() const { return rawwrapper(*this); }
 };
 
 //! A proxy class that acts as a reference to an integer of length \p len bits in a int_vector.
