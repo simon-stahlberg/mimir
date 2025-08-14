@@ -247,11 +247,12 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
  * Additional members
  */
 
-valla::CompactTreeHashIDMap<mimir::Index, valla::IndexedHashSet<valla::Slot<mimir::Index>, mimir::Index>>& ProblemImpl::get_index_tree_table()
+valla::CompactTreeHashIDMap<mimir::Index, valla::SuccinctIndexedHashSet<valla::Slot<mimir::Index>, mimir::Index>>& ProblemImpl::get_index_tree_table()
 {
     return m_index_tree_table;
 }
-const valla::CompactTreeHashIDMap<mimir::Index, valla::IndexedHashSet<valla::Slot<mimir::Index>, mimir::Index>>& ProblemImpl::get_index_tree_table() const
+const valla::CompactTreeHashIDMap<mimir::Index, valla::SuccinctIndexedHashSet<valla::Slot<mimir::Index>, mimir::Index>>&
+ProblemImpl::get_index_tree_table() const
 {
     return m_index_tree_table;
 }
