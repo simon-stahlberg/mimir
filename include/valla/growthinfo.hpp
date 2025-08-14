@@ -32,6 +32,7 @@ public:
     GrowthInfo(size_t capacity, size_t size = 0) :
         m_capacity(capacity),
         m_size(size),
+        m_log2_capacity(std::countr_zero(m_capacity)),
         m_max_size(m_capacity * MAX_LOAD_FACTOR),
         m_growth_left(m_max_size - m_size)
     {
@@ -46,6 +47,7 @@ public:
     }
 
     size_t capacity() const { return m_capacity; }
+    uint8_t log2_capacity() const { return m_log2_capacity; }
     size_t mask() const { return m_capacity - 1; }
     size_t size() const { return m_size; }
     size_t max_size() const { return m_max_size; }
@@ -54,6 +56,8 @@ public:
 private:
     size_t m_capacity;
     size_t m_size;
+
+    uint8_t m_log2_capacity;
 
     size_t m_max_size;
     size_t m_growth_left;

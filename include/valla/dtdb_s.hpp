@@ -23,36 +23,13 @@
 namespace valla
 {
 
-///////////////////////////////////////////
-/// General case with special leaf table
-///////////////////////////////////////////
-
 /**
  * Insert recursively
  */
 
-template<std::ranges::input_range Range, IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
-    requires AreGeneralCaseHashSets<Set1, Set2, std::ranges::range_value_t<Range>>
-inline auto insert_sequence(const Range& sequence, Set1& table, Set2& leaf_table);
-
-/**
- * Read recursively
- */
-
-template<IsStableIndexedHashSet Set1, IsStableIndexedHashSet Set2, std::output_iterator<typename Set2::value_type> OutIterator>
-    requires AreGeneralCaseHashSets<Set1, Set2>
-inline void read_sequence(const Slot<typename Set1::index_type>& root_slot, const Set1& table, const Set2& leaf_table, OutIterator out);
-
-///////////////////////////////////////////
-/// Special case with Index range
-///////////////////////////////////////////
-
-/**
- * Insert recursively
- */
-
-template<std::ranges::input_range Range, IsStableIndexedHashSet Set>
-    requires IsSpecialCaseHashSet<Set, std::ranges::range_value_t<Range>>
+template<std::ranges::forward_range Range, IsStableIndexedHashSet Set>
+    requires std::same_as<std::ranges::range_value_t<Range>, typename Set::index_type>  //
+             && std::same_as<typename Set::value_type, Slot<typename Set::index_type>>
 inline auto insert_sequence(const Range& sequence, Set& table);
 
 /**

@@ -33,11 +33,7 @@
 
 namespace valla
 {
-template<IsUint64tCodable T,
-         std::unsigned_integral I,
-         typename Hash = Hash<T>,
-         typename EqualTo = EqualTo<T>,
-         size_t InitialCapacity = absl::container_internal::Group::kWidth>
+template<IsUint64tCodable T, std::unsigned_integral I, typename Hash = Hash<T>, typename EqualTo = EqualTo<T>>
 class succinct_flat_hash_set
 {
 public:
@@ -48,9 +44,6 @@ public:
     using const_iterator_type = const_iterator;
 
 private:
-    static_assert(is_power_of_two(InitialCapacity) && InitialCapacity >= absl::container_internal::Group::kWidth
-                  && "InitialCapacity must be a power of two and greater or equal to Group::kWidth for wrap around.");
-
     GrowthInfo m_growth_info;
     sdsl::int_vector<> m_slots;
     std::vector<absl::container_internal::ctrl_t> m_controls;
@@ -64,7 +57,7 @@ private:
     std::pair<const_iterator, bool> insert_impl(const T& key)
     {
         assert(size() < capacity() && "Insert failed. Rehashing to higher capacity is required.");
-        assert(Uint64tCoder<T>::bit_width(key) <= m_slots.width() && "Insert failed. Slot width is insufficient to store the key.");
+        assert(Uint64tCoder<T>::width(key) <= m_slots.width() && "Insert failed. Slot width is insufficient to store the key.");
 
         m_statistics.increment_num_probes();
 
@@ -103,8 +96,8 @@ private:
 
                 m_slots[offset] = Uint64tCoder<T>::to_uint64_t(key, m_slots.width());
                 m_controls[offset] = static_cast<absl::container_internal::ctrl_t>(h2);
-                m_controls[((offset - absl::container_internal::NumClonedBytes()) & m_growth_info.mask()) + absl::container_internal::NumClonedBytes()] =
-                    static_cast<absl::container_internal::ctrl_t>(h2);
+                if (offset < absl::container_internal::NumClonedBytes())
+                    m_controls[capacity() + offset] = static_cast<absl::container_internal::ctrl_t>(h2);
 
                 m_growth_info.increment_size();
 
@@ -122,29 +115,31 @@ private:
         auto slots = sdsl::int_vector<>(capacity(), 0, new_width);
 
         if (size() > 0)
+        {
             for (I i = 0; i < capacity(); ++i)
-                slots[i] = Uint64tCoder<T>::to_uint64_t(Uint64tCoder<T>::from_uint64_t(m_slots[i], old_width), new_width);
+                if (static_cast<int>(m_controls[i]) >= 0)
+                    slots[i] = Uint64tCoder<T>::to_uint64_t(Uint64tCoder<T>::from_uint64_t(m_slots[i], old_width), new_width);
+        }
 
         std::swap(m_slots, slots);
     }
 
 public:
-    succinct_flat_hash_set(size_t capacity, uint8_t bit_width, Hash hash, EqualTo equal_to) :
+    succinct_flat_hash_set(size_t capacity = absl::container_internal::Group::kWidth, uint8_t width = 1, Hash hash = Hash {}, EqualTo equal_to = EqualTo {}) :
         m_growth_info(capacity),
-        m_slots(this->capacity(), 0, std::max(uint8_t(1), bit_width)),  ///< bit width must be at least one, else it is set to 64
+        m_slots(this->capacity(), 0, width),  ///< bit width must be at least one, else it is set to 64
         m_controls(this->capacity() + absl::container_internal::NumClonedBytes(), absl::container_internal::ctrl_t::kEmpty),
         m_hash(hash),
         m_equal_to(equal_to)
     {
+        assert(width > 0 && width <= 64 && "width must be in range [1,64].");
     }
 
-    succinct_flat_hash_set(Hash hash, EqualTo equal_to) : succinct_flat_hash_set(InitialCapacity, 1, hash, equal_to) {}
-
-    succinct_flat_hash_set() : succinct_flat_hash_set(Hash {}, EqualTo {}) {}
+    succinct_flat_hash_set(Hash hash, EqualTo equal_to) : succinct_flat_hash_set(absl::container_internal::Group::kWidth, 1, hash, equal_to) {}
 
     std::pair<const_iterator, bool> insert(const T& key)
     {
-        const auto new_width = Uint64tCoder<T>::bit_width(key);
+        const auto new_width = Uint64tCoder<T>::width(key);
         const auto old_width = m_slots.width();
 
         if (new_width > old_width)
@@ -158,13 +153,12 @@ public:
 
     void rehash()
     {
-        auto tmp = succinct_flat_hash_set(2 * capacity(), slots().width(), m_hash, m_equal_to);
+        auto tmp = succinct_flat_hash_set(2 * capacity(), m_slots.width(), m_hash, m_equal_to);
 
         for (size_t i = 0; i < capacity(); ++i)
-        {
             if (static_cast<int>(m_controls[i]) >= 0)
                 tmp.insert(m_slots[i]);
-        }
+
         tmp.m_statistics += m_statistics;
 
         std::swap(*this, tmp);
@@ -175,7 +169,6 @@ public:
     private:
         const succinct_flat_hash_set* m_set;
         size_t m_pos;
-        I m_value;
 
         const succinct_flat_hash_set& set() const
         {
@@ -201,7 +194,7 @@ public:
 
         const_iterator() : m_set(nullptr), m_pos(-1) {}
 
-        const_iterator(const succinct_flat_hash_set& set, bool begin) : m_set(set), m_pos(begin ? -1 : set.capacity())
+        const_iterator(const succinct_flat_hash_set& set, bool begin) : m_set(&set), m_pos(begin ? -1 : set.capacity())
         {
             if (begin)
                 advance();
@@ -238,7 +231,7 @@ public:
     const std::vector<absl::container_internal::ctrl_t>& controls() const { return m_controls; }
     size_t size() const { return m_growth_info.size(); }
     size_t capacity() const { return m_growth_info.capacity(); }
-    uint8_t bit_width() const { return m_slots.width(); }
+    uint8_t width() const { return m_slots.width(); }
 
     size_t mem_usage() const
     {

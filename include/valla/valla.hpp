@@ -19,16 +19,20 @@
 #define VALLA_INCLUDE_VALLA_HPP_
 
 // Include all headers for easy downstream include
+#include "valla/bijective_hash.hpp"
+#include "valla/compact_hash_id_map.hpp"
+#include "valla/compact_tree_hash_id_map.hpp"
 #include "valla/concepts.hpp"
 #include "valla/dtdb_h.hpp"
 #include "valla/dtdb_s.hpp"
 #include "valla/equal_to.hpp"
 #include "valla/growthinfo.hpp"
 #include "valla/hash.hpp"
-#include "valla/hash_id_map.hpp"
 #include "valla/indexed_hash_set.hpp"
-#include "valla/iterator.hpp"
 #include "valla/ostream.hpp"
+#include "valla/sequence_coder.hpp"
+#include "valla/simple_hash_id_map.hpp"
+#include "valla/simple_tree_hash_id_map.hpp"
 #include "valla/slot.hpp"
 #include "valla/statistics.hpp"
 #include "valla/succinct_flat_hash_set.hpp"

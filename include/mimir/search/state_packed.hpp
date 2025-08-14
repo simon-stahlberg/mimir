@@ -29,8 +29,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/indexed_hash_set.hpp>
-#include <valla/dtdb_s.hpp>
+#include <valla/valla.hpp>
 
 namespace mimir::search
 {
@@ -38,11 +37,11 @@ namespace mimir::search
 class PackedStateImpl
 {
 private:
-    valla::Slot<Index> m_fluent_atoms;
-    valla::Slot<Index> m_derived_atoms;
-    valla::Slot<Index> m_numeric_variables;
+    mimir::Index m_fluent_atoms;
+    mimir::Index m_derived_atoms;
+    mimir::Index m_numeric_variables;
 
-    PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables);
+    PackedStateImpl(mimir::Index fluent_atoms, mimir::Index derived_atoms, mimir::Index numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -56,11 +55,11 @@ public:
      */
 
     template<formalism::IsFluentOrDerivedTag P>
-    valla::Slot<Index> get_atoms() const;
-    valla::Slot<Index> get_numeric_variables() const;
+    mimir::Index get_atoms() const;
+    mimir::Index get_numeric_variables() const;
 };
 
-static_assert(sizeof(PackedStateImpl) == 24);
+static_assert(sizeof(PackedStateImpl) == 12);
 
 }
 
@@ -85,7 +84,7 @@ namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
 
-static_assert(sizeof(PackedStateImplMap::value_type) == 28);
+static_assert(sizeof(PackedStateImplMap::value_type) == 16);
 }
 
 #endif

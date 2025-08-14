@@ -92,11 +92,11 @@ public:
         m_uniqueness(IndexReferencedHash(m_slots), IndexReferencedEqualTo(m_slots))
     {
     }
-    // Uncopieable and unmoveable to avoid dangling references of m_slots in hash and equal_to.
+    // Moveable but not copieable
     SuccinctIndexedHashSet(const SuccinctIndexedHashSet& other) = delete;
     SuccinctIndexedHashSet& operator=(const SuccinctIndexedHashSet& other) = delete;
-    SuccinctIndexedHashSet(SuccinctIndexedHashSet&& other) = delete;
-    SuccinctIndexedHashSet& operator=(SuccinctIndexedHashSet&& other) = delete;
+    SuccinctIndexedHashSet(SuccinctIndexedHashSet&& other) = default;
+    SuccinctIndexedHashSet& operator=(SuccinctIndexedHashSet&& other) = default;
 
     I insert(T slot)
     {
@@ -109,7 +109,7 @@ public:
             m_slots->resize(m_capacity);
         }
 
-        const auto new_width = Uint64tCoder<T>::bit_width(slot);
+        const auto new_width = Uint64tCoder<T>::width(slot);
         const auto old_width = m_slots->width();
 
         /* Rebuild on insufficient width. */
@@ -137,7 +137,7 @@ public:
 
     size_t size() const { return m_size; }
     size_t capacity() const { return m_capacity; }
-    uint8_t bit_width() const { return m_slots->width(); }
+    uint8_t width() const { return m_slots->width(); }
     const sdsl::int_vector<>& slots() const { return *m_slots; }
     const succinct_flat_hash_set<I, I, IndexReferencedHash, IndexReferencedEqualTo> uniqueness() const { return m_uniqueness; }
 
@@ -153,7 +153,7 @@ private:
     size_t m_size;
     size_t m_capacity;
     std::shared_ptr<sdsl::int_vector<>> m_slots;
-    succinct_flat_hash_set<I, I, IndexReferencedHash, IndexReferencedEqualTo> m_uniqueness;  // TODO: change to succinct_flat_hash_set
+    succinct_flat_hash_set<I, I, IndexReferencedHash, IndexReferencedEqualTo> m_uniqueness;
 };
 
 static_assert(IsStableIndexedHashSet<SuccinctIndexedHashSet<Slot<uint32_t>, uint32_t>>);

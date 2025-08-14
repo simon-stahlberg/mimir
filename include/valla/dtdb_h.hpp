@@ -16,43 +16,20 @@
  */
 
 #ifndef VALLA_INCLUDE_DTDB_H_HPP_
-#define VALLA_INCLUDE_DTDS_H_HPP_
+#define VALLA_INCLUDE_DTDB_H_HPP_
 
 #include "valla/concepts.hpp"
 
 namespace valla
 {
 
-///////////////////////////////////////////
-/// General case with special leaf table
-///////////////////////////////////////////
-
 /**
  * Insert recursively
  */
 
-template<std::ranges::input_range Range, IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2>
-    requires AreGeneralCaseHashSets<Set1, Set2, std::ranges::range_value_t<Range>>
-auto insert_sequence(const Range& sequence, Set1& inner_table, Set2& leaf_table);
-
-/**
- * Read recursively
- */
-
-template<IsUnstableIndexedHashSet Set1, IsStableIndexedHashSet Set2, std::output_iterator<typename Set2::value_type> OutIterator>
-    requires AreGeneralCaseHashSets<Set1, Set2>
-inline void read_sequence(typename Set1::index_type root_index, const Set1& tree_table, const Set2& leaf_table, OutIterator out);
-
-///////////////////////////////////////////
-/// Special case with Index range
-///////////////////////////////////////////
-
-/**
- * Insert recursively
- */
-
-template<std::ranges::input_range Range, IsUnstableIndexedHashSet Set>
-    requires IsSpecialCaseHashSet<Set, std::ranges::range_value_t<Range>>
+template<std::ranges::forward_range Range, IsUnstableIndexedHashSet Set>
+    requires std::same_as<std::ranges::range_value_t<Range>, typename Set::index_type>  //
+             && std::same_as<typename Set::value_type, Slot<typename Set::index_type>>
 auto insert_sequence(const Range& sequence, Set& table);
 
 /**

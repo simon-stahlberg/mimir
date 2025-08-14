@@ -28,8 +28,7 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
-#include <valla/dtdb_s.hpp>
-#include <valla/indexed_hash_set.hpp>
+#include <valla/valla.hpp>
 
 using namespace mimir::formalism;
 
@@ -95,16 +94,18 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_derived_atoms.unset_all();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::Slot<Index>();
-    auto state_derived_atoms_slot = valla::Slot<Index>();
-    auto state_numeric_variables = valla::Slot<Index>();
+    auto state_fluent_atoms_slot = mimir::Index(0);
+    auto state_derived_atoms_slot = mimir::Index(0);
+    auto state_numeric_variables = mimir::Index(0);
 
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    state_numeric_variables = valla::insert_sequence(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
+    m_index_list.clear();
+    valla::encode_as_unsigned_integrals(dense_fluent_numeric_variables, double_leaf_table, std::back_inserter(m_index_list));
+    state_numeric_variables = valla::insert_sequence(m_index_list, index_tree_table);
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -287,9 +288,9 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = valla::Slot<Index>();
-    auto state_derived_atoms_slot = valla::Slot<Index>();
-    auto state_numeric_variables = valla::Slot<Index>();
+    auto state_fluent_atoms_slot = mimir::Index(0);
+    auto state_derived_atoms_slot = mimir::Index(0);
+    auto state_numeric_variables = mimir::Index(0);
 
     auto successor_state_metric_value = state_metric_value;
 
@@ -309,7 +310,9 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    state_numeric_variables = valla::insert_sequence(dense_fluent_numeric_variables, index_tree_table, double_leaf_table);
+    m_index_list.clear();
+    valla::encode_as_unsigned_integrals(dense_fluent_numeric_variables, double_leaf_table, std::back_inserter(m_index_list));
+    state_numeric_variables = valla::insert_sequence(m_index_list, index_tree_table);
 
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
@@ -372,11 +375,10 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
         dense_derived_atoms.set(index);
     }
 
+    m_index_list.clear();
+    valla::read_sequence(state.get_numeric_variables(), problem.get_index_tree_table(), std::back_inserter(m_index_list));
     dense_fluent_numeric_variables.clear();
-    valla::read_sequence(state.get_numeric_variables(),
-                         problem.get_index_tree_table(),
-                         problem.get_double_leaf_table(),
-                         std::back_inserter(dense_fluent_numeric_variables));
+    valla::decode_from_unsigned_integrals(m_index_list, problem.get_double_leaf_table(), std::back_inserter(dense_fluent_numeric_variables));
 
     return State(m_states.at(state), &state, std::move(unpacked_state), shared_from_this());
 }

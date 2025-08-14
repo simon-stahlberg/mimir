@@ -10,36 +10,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_ITERATOR_HPP_
-#define VALLA_INCLUDE_ITERATOR_HPP_
+#ifndef VALLA_INCLUDE_DEBUG_HPP_
+#define VALLA_INCLUDE_DEBUG_HPP_
 
-#include <concepts>
-#include <vector>
+// Some further references:
+// - https://arxiv.org/pdf/2109.04548
+// - https://arxiv.org/pdf/cs/0512081
+// - https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b7620871f53d759a15cf9e820584b89f984f74c1
+// - https://en.wikipedia.org/wiki/Quotient_filter
 
-namespace valla
-{
-
-template<std::unsigned_integral I>
-struct Entry
-{
-    I m_index;
-    I m_size;
-
-    Entry(I index, I size) : m_index(index), m_size(size) {}
-};
-
-template<typename T>
-inline void copy_object(const std::vector<T>& src, std::vector<T>& dst)
-{
-    dst.clear();
-    dst.insert(dst.end(), src.begin(), src.end());
-}
-
-}
+#ifdef VERBOSE
+#define DEBUG_LOG(x) std::cout << x << std::endl;
+#else
+#define DEBUG_LOG(x)
+#endif
 
 #endif

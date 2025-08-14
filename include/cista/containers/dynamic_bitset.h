@@ -39,7 +39,7 @@ struct basic_dynamic_bitset
     // 011...
     static constexpr Block block_msb_zero = block_ones & (~block_msb_one);
     // 111...
-    static constexpr std::size_t no_position = std::size_t(-1);
+    static constexpr size_t no_position = size_t(-1);
 
     static constexpr size_t get_index(size_t position) noexcept { return position >> block_size_log2; }
 
@@ -163,7 +163,7 @@ struct basic_dynamic_bitset
             }
         }
 
-        constexpr size_t operator*() const { return current_pos_; }
+        constexpr value_type operator*() const { return static_cast<value_type>(current_pos_); }
         constexpr const_iterator& operator++()
         {
             if (current_pos_ != no_position)

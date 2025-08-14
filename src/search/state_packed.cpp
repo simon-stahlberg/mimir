@@ -16,14 +16,13 @@
  */
 
 #include "mimir/search/state_packed.hpp"
-#include <valla/hash.hpp>
 
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
 
-PackedStateImpl::PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables) :
+PackedStateImpl::PackedStateImpl(mimir::Index fluent_atoms, mimir::Index derived_atoms, mimir::Index numeric_variables) :
     m_fluent_atoms(fluent_atoms),
     m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
@@ -31,7 +30,7 @@ PackedStateImpl::PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<In
 }
 
 template<IsFluentOrDerivedTag P>
-valla::Slot<Index> PackedStateImpl::get_atoms() const
+mimir::Index PackedStateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, FluentTag>)
     {
@@ -47,10 +46,10 @@ valla::Slot<Index> PackedStateImpl::get_atoms() const
     }
 }
 
-template valla::Slot<Index> PackedStateImpl::get_atoms<FluentTag>() const;
-template valla::Slot<Index> PackedStateImpl::get_atoms<DerivedTag>() const;
+template mimir::Index PackedStateImpl::get_atoms<FluentTag>() const;
+template mimir::Index PackedStateImpl::get_atoms<DerivedTag>() const;
 
-valla::Slot<Index> PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
+mimir::Index PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
 }
 
