@@ -208,16 +208,16 @@ ContinuousCost StateSpaceSamplerImpl::get_cost_to_goal(const mimir::search::Stat
 std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
 StateSpaceSamplerImpl::get_forward_transitions(const mimir::search::State& state) const
 {
-    auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
     const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
+        auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
+        const auto source_vertex_index = it->second;
         const auto& graph = m_state_space->get_graph();
-        const auto& source_vertex = graph.get_vertex(it->second);
-        const auto forward_edges = graph.get_adjacent_edges<graphs::ForwardTag>(source_vertex.get_index());
+        const auto forward_edges = graph.get_adjacent_edges<graphs::ForwardTag>(source_vertex_index);
         for (auto& edge : forward_edges)
         {
-            const auto target_vertex_index = graph.get_target<graphs::ForwardTag>(edge.get_target());
+            const auto target_vertex_index = graph.get_target<graphs::ForwardTag>(edge.get_index());
             const auto& target_vertex = graph.get_vertex(target_vertex_index);
             const auto target_state = mimir::graphs::get_state(target_vertex);
             const auto action = mimir::graphs::get_action(edge);
@@ -231,16 +231,16 @@ StateSpaceSamplerImpl::get_forward_transitions(const mimir::search::State& state
 std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>
 StateSpaceSamplerImpl::get_backward_transitions(const mimir::search::State& state) const
 {
-    auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
     const auto it = m_vertex_index_map.find(state.get_index());
     if (it != m_vertex_index_map.end())
     {
+        auto transitions = std::vector<std::pair<mimir::formalism::GroundAction, mimir::search::State>>();
+        const auto target_vertex_index = it->second;
         const auto& graph = m_state_space->get_graph();
-        const auto& target_vertex = graph.get_vertex(it->second);
-        const auto backward_edges = graph.get_adjacent_edges<graphs::BackwardTag>(target_vertex.get_index());
+        const auto backward_edges = graph.get_adjacent_edges<graphs::BackwardTag>(target_vertex_index);
         for (auto& edge : backward_edges)
         {
-            const auto source_vertex_index = graph.get_source<graphs::BackwardTag>(edge.get_source());
+            const auto source_vertex_index = graph.get_source<graphs::BackwardTag>(edge.get_index());
             const auto& source_vertex = graph.get_vertex(source_vertex_index);
             const auto source_state = mimir::graphs::get_state(source_vertex);
             const auto action = mimir::graphs::get_action(edge);

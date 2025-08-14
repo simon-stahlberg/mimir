@@ -594,11 +594,12 @@ class TestStateSpaceSampler(unittest.TestCase):
         assert state_label.steps_to_goal == 1
         forward_transitions = list(sampler.get_forward_transitions(state))
         assert len(forward_transitions) > 0
-        for ground_action, successor_state in forward_transitions:
-            assert isinstance(ground_action, GroundAction)
+        for action, successor_state in forward_transitions:
+            assert isinstance(action, GroundAction)
             assert isinstance(successor_state, State)
-            assert ground_action.get_index() is not None
+            assert action.get_index() is not None
             assert successor_state.get_index() is not None
+            assert action.apply(state) == successor_state
 
     def test_backward_transitions(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -616,11 +617,12 @@ class TestStateSpaceSampler(unittest.TestCase):
         assert state_label.steps_to_goal == 2
         backward_transitions = list(sampler.get_backward_transitions(state))
         assert len(backward_transitions) > 0
-        for ground_action, predecessor_state in backward_transitions:
-            assert isinstance(ground_action, GroundAction)
+        for action, predecessor_state in backward_transitions:
+            assert isinstance(action, GroundAction)
             assert isinstance(predecessor_state, State)
-            assert ground_action.get_index() is not None
+            assert action.get_index() is not None
             assert predecessor_state.get_index() is not None
+            assert action.apply(predecessor_state) == state
 
     def test_sample_dead_end_state(self):
         domain_path = DATA_DIR / 'spanner' / 'domain.pddl'
