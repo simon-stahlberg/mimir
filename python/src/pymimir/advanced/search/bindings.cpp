@@ -346,7 +346,7 @@ void bind_module_definitions(nb::module_& m)
 
     /* PackedState */
     nb::class_<PackedStateImpl>(m, "PackedState")
-        .def("__hash__", [](const PackedStateImpl& self) { return loki::Hash<PackedStateImpl> {}(self); })
+        .def("__hash__", [](const PackedStateImpl& self) { return std::hash<const void*> {}(std::addressof(self)); })
         .def("__eq__", [](const PackedStateImpl& lhs, const PackedStateImpl& rhs) { return loki::EqualTo<PackedStateImpl> {}(lhs, rhs); });
 
     /* State */

@@ -56,10 +56,41 @@ mimir::Index PackedStateImpl::get_numeric_variables() const { return m_numeric_v
 namespace loki
 {
 
+Hash<mimir::search::PackedStateImpl>::Hash(const mimir::formalism::ProblemImpl& problem) : problem(problem) {}
+
+struct PackedStateHashData
+{
+    size_t fluent_index = 0;
+    size_t num_fluents = 0;
+    size_t numeric_index = 0;
+    size_t num_numeric = 0;
+
+    template<typename H>
+    friend H AbslHashValue(H h, const PackedStateHashData& s)
+    {
+        if (s.num_fluents > 0)
+        {
+            h = H::combine(std::move(h), s.fluent_index, s.num_fluents);
+        }
+        if (s.num_numeric > 0)
+        {
+            h = H::combine(std::move(h), s.numeric_index, s.num_numeric);
+        }
+        return h;
+    }
+};
+
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::Hash<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
-                              valla::Hash<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
+    size_t fluent_index = el.get_atoms<FluentTag>();
+    size_t num_fluents = problem.get_index_tree_table().lookup_root(el.get_atoms<FluentTag>()).i2;
+
+    size_t numeric_index = el.get_numeric_variables();
+    size_t num_numeric = problem.get_index_tree_table().lookup_root(el.get_numeric_variables()).i2;
+
+    PackedStateHashData data { .fluent_index = fluent_index, .num_fluents = num_fluents, .numeric_index = numeric_index, .num_numeric = num_numeric };
+
+    return absl::HashOf(data);
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const
