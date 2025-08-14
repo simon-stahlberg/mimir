@@ -22,7 +22,7 @@ if (NOT fmt_FOUND)
     ExternalProject_Add(
             fmt
             GIT_REPOSITORY https://github.com/fmtlib/fmt
-            GIT_TAG 11.0.2
+            GIT_TAG 11.2.0
             PREFIX ${CMAKE_BINARY_DIR}/fmt
             CMAKE_ARGS ${CMAKE_ARGS}
     )
