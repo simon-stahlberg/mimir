@@ -13,8 +13,14 @@ from pymimir.advanced.search import SetAddHeuristic as AdvancedSetAddHeuristic
 from pymimir.advanced.search import State as AdvancedState
 
 from pymimir.advanced.search import find_solution_astar_eager as advanced_astar_eager
+from pymimir.advanced.search import find_solution_iw as advanced_iw
+
 from pymimir.advanced.search import AStarEagerOptions as AdvancedAStarEagerOptions
+from pymimir.advanced.search import IWOptions as AdvancedIWOptions
+
 from pymimir.advanced.search import IAStarEagerEventHandler as AdvancedAStarEagerEventHandler
+from pymimir.advanced.search import IBrFSEventHandler as AdvancedBrFSEventHandler
+from pymimir.advanced.search import BrFSStatistics as AdvancedBrFSStatistics
 
 from .wrapper_formalism import GroundAction, Problem, State
 
@@ -242,18 +248,16 @@ class SearchResult:
         self.goal_state = goal_state
 
 
-def astar_eager(
-    problem: 'Problem',
-    start_state: 'State',
-    heuristic: 'Heuristic',
-    max_time_seconds: float = -1,
-    max_num_states: int = -1,
-    on_expand_state: 'Union[Callable[[State], None], None]' = None,
-    on_expand_goal_state: 'Union[Callable[[State], None], None]' = None,
-    on_generate_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None,
-    on_prune_state: 'Union[Callable[[State], None], None]' = None,
-    on_finish_f_layer: 'Union[Callable[[float], None], None]' = None
-    ) -> 'SearchResult':
+def astar_eager(problem: 'Problem',
+                start_state: 'State',
+                heuristic: 'Heuristic',
+                max_time_seconds: float = -1,
+                max_num_states: int = -1,
+                on_expand_state: 'Union[Callable[[State], None], None]' = None,
+                on_expand_goal_state: 'Union[Callable[[State], None], None]' = None,
+                on_generate_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None,
+                on_prune_state: 'Union[Callable[[State], None], None]' = None,
+                on_finish_f_layer: 'Union[Callable[[float], None], None]' = None) -> 'SearchResult':
     """
     A* search algorithm with eager evaluation.
 
@@ -285,32 +289,28 @@ def astar_eager(
     assert isinstance(heuristic, Heuristic), "Heuristic must be an instance of Heuristic."
     assert isinstance(max_time_seconds, (int, float)), "max_time_seconds must be an int or float."
     assert isinstance(max_num_states, int), "max_num_states must be an int."
-    # Define the event handler with the provided callbacks
+    # Define the event handler with the provided callback functions.
     class EventHandler(AdvancedAStarEagerEventHandler):
-        def on_close_state(self, arg0):
-            pass # Ignored
-        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5):
-            pass  # Ignored
-        def on_exhausted(self):
-            pass  # Ignored
+        def __init__(self) -> None:
+            super().__init__()
+
         def on_expand_goal_state(self, advanced_state: 'AdvancedState'):
             nonlocal problem, on_expand_goal_state
             if on_expand_goal_state:
                 state = State(advanced_state, problem)
                 on_expand_goal_state(state)
+
         def on_expand_state(self, advanced_state: 'AdvancedState'):
             nonlocal problem, on_expand_state
             if on_expand_state:
                 state = State(advanced_state, problem)
                 on_expand_state(state)
+
         def on_finish_f_layer(self, arg):
             nonlocal problem, on_finish_f_layer
             if on_finish_f_layer:
                 on_finish_f_layer(arg)
-        def on_generate_state_not_relaxed(self, arg0, arg1, arg2, arg3):
-            pass  # Ignored
-        def on_generate_state_relaxed(self, arg0, arg1, arg2, arg3):
-            pass  # Ignored
+
         def on_generate_state(self, advanced_state: 'AdvancedState', advanced_action: 'AdvancedGroundAction', action_cost: float, advanced_successor_state: 'AdvancedState'):
             nonlocal problem, on_generate_state
             if on_generate_state:
@@ -318,17 +318,23 @@ def astar_eager(
                 action = GroundAction(advanced_action, problem)
                 successor_state = State(advanced_successor_state, problem)
                 on_generate_state(state, action, action_cost, successor_state)
+
         def on_prune_state(self, advanced_state: 'AdvancedState'):
             nonlocal problem, on_prune_state
             if on_prune_state:
                 state = State(advanced_state, problem)
                 on_prune_state(state)
-        def on_solved(self, arg):
-            pass  # Ignored
-        def on_start_search(self, arg0, arg1, arg2):
-            pass  # Ignored
-        def on_unsolvable(self):
-            pass  # Ignored
+
+        # The following events are ignored in this interface.
+        def on_close_state(self, arg0): pass
+        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5): pass
+        def on_exhausted(self): pass
+        def on_generate_state_not_relaxed(self, arg0, arg1, arg2, arg3): pass
+        def on_generate_state_relaxed(self, arg0, arg1, arg2, arg3): pass
+        def on_solved(self, arg): pass
+        def on_start_search(self, arg0, arg1, arg2): pass
+        def on_unsolvable(self): pass
+
     # Create options for the A* search
     advanced_options = AdvancedAStarEagerOptions()
     if max_time_seconds > 0: advanced_options.max_time_in_ms = int(max_time_seconds * 1000)
@@ -344,6 +350,81 @@ def astar_eager(
         raise TypeError("Heuristic must be an instance of Heuristic.")
     # Invoke the A* search algorithm
     result = advanced_astar_eager(problem._search_context, advanced_heuristic, advanced_options)
+    status = result.status.name.lower()
+    solution = [GroundAction(x, problem) for x in result.plan.get_actions()] if result.plan else None
+    solution_cost = result.plan.get_cost() if result.plan else None
+    goal_state = State(result.goal_state, problem) if result.goal_state else None
+    return SearchResult(status, solution, solution_cost, goal_state)
+
+
+def iw(problem: 'Problem',
+       start_state: 'State',
+       max_arity: int,
+       on_expand_state: 'Union[Callable[[State], None], None]' = None,
+       on_expand_goal_state: 'Union[Callable[[State], None], None]' = None,
+       on_generate_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None,
+       on_generate_new_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None,
+       on_prune_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None) -> 'SearchResult':
+    assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+    assert isinstance(start_state, State), "Start state must be an instance of State."
+    assert isinstance(max_arity, int), "Max arity must be an integer."
+    assert max_arity > 0, "Max arity must be positive."
+    # Define the event handler with the provided callback functions.
+    class EventHandler(AdvancedBrFSEventHandler):
+        def __init__(self) -> None:
+            super().__init__()
+
+        def on_expand_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_expand_state
+            if on_expand_state:
+                state = State(advanced_state, problem)
+                on_expand_state(state)
+
+        def on_expand_goal_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_expand_goal_state
+            if on_expand_goal_state:
+                state = State(advanced_state, problem)
+                on_expand_goal_state(state)
+
+        def on_generate_state(self, advanced_state: 'AdvancedState', advanced_action: 'AdvancedGroundAction', action_cost: float, advanced_successor_state: 'AdvancedState'):
+            nonlocal problem, on_generate_state
+            if on_generate_state:
+                state = State(advanced_state, problem)
+                action = GroundAction(advanced_action, problem)
+                successor_state = State(advanced_successor_state, problem)
+                on_generate_state(state, action, action_cost, successor_state)
+
+        def on_generate_state_in_search_tree(self, advanced_state: 'AdvancedState', advanced_action: 'AdvancedGroundAction', action_cost: float, advanced_successor_state: 'AdvancedState'):
+            nonlocal problem, on_generate_new_state
+            if on_generate_new_state:
+                state = State(advanced_state, problem)
+                action = GroundAction(advanced_action, problem)
+                successor_state = State(advanced_successor_state, problem)
+                on_generate_new_state(state, action, action_cost, successor_state)
+
+        def on_generate_state_not_in_search_tree(self, advanced_state: 'AdvancedState', advanced_action: 'AdvancedGroundAction', action_cost: float, advanced_successor_state: 'AdvancedState'):
+            nonlocal problem, on_prune_state
+            if on_prune_state:
+                state = State(advanced_state, problem)
+                action = GroundAction(advanced_action, problem)
+                successor_state = State(advanced_successor_state, problem)
+                on_prune_state(state, action, action_cost, successor_state)
+
+        # The following events are ignored in this interface.
+        def on_finish_g_layer(self, value: int): pass
+        def on_start_search(self, arg: 'AdvancedState'): pass
+        def on_end_search(self, arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int): pass
+        def on_solved(self, arg): pass
+        def on_unsolvable(self): pass
+        def on_exhausted(self): pass
+        def get_statistics(self) -> 'AdvancedBrFSStatistics':
+            return AdvancedBrFSStatistics()
+
+    advanced_options = AdvancedIWOptions()
+    advanced_options.start_state = start_state._advanced_state
+    advanced_options.brfs_event_handler = EventHandler()
+    advanced_options.max_arity = max_arity
+    result = advanced_iw(problem._search_context, advanced_options)
     status = result.status.name.lower()
     solution = [GroundAction(x, problem) for x in result.plan.get_actions()] if result.plan else None
     solution_cost = result.plan.get_cost() if result.plan else None

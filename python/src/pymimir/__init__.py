@@ -30,7 +30,8 @@ from .wrapper_search import (
     SetAddHeuristic,
     SearchResult,
     FFHeuristic,
-    astar_eager
+    astar_eager,
+    iw
 )
 
 from .wrapper_datasets import (

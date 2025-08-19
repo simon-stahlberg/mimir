@@ -545,6 +545,43 @@ class TestSearchAlgorithms(unittest.TestCase):
         assert heuristic.compute_value(initial_state, False) == 4.0
         assert len(heuristic.get_preferred_actions()) == 2
 
+    def test_iw(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        result = iw(problem, initial_state, 1)
+        assert result.status == "failed"
+        assert result.solution is None
+        assert result.solution_cost is None
+        assert result.goal_state is None
+
+    def test_iw_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        expanded_states = []
+        expanded_goal_states = []
+        generated_states = []
+        generated_new_states = []
+        pruned_states = []
+        _ = iw(problem,
+               initial_state,
+               1,
+               on_expand_state=lambda state: expanded_states.append(state),
+               on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+               on_generate_state=lambda state, action, cost, successor_state: generated_states.append((state, action, cost, successor_state)),
+               on_generate_new_state=lambda state, action, cost, successor_state: generated_new_states.append((state, action, cost, successor_state)),
+               on_prune_state=lambda state, action, cost, successor_state: pruned_states.append((state, action, cost, successor_state)))
+        assert len(expanded_states) == 7
+        assert len(expanded_goal_states) == 0
+        assert len(generated_states) == 20
+        assert len(generated_new_states) == 5
+        assert len(pruned_states) == 15
+
     def test_str_repr_hash(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
