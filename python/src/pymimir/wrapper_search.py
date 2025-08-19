@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
@@ -88,7 +88,7 @@ class BlindHeuristic(Heuristic):
         return self._problem
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
-        self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -212,30 +212,29 @@ class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
     def get_problem(self) -> 'Problem':
         return self._problem
 
-    def compute_heuristic(self, advanced_state: 'AdvancedState', is_goal_state: bool) -> float:
-        state = State(advanced_state, self._problem)
-        return self._heuristic.compute_value(state, is_goal_state)
+    def compute_heuristic(self, state: 'AdvancedState', is_goal_state: bool) -> float:
+        wrapped_state = State(state, self._problem)
+        return self._heuristic.compute_value(wrapped_state, is_goal_state)
 
-    def get_preferred_actions(self, advanced_state: 'AdvancedState') -> AdvancedPreferredActions:
-        state = State(advanced_state, self._problem)
+    def get_preferred_actions(self) -> AdvancedPreferredActions:
         preferred_actions = AdvancedPreferredActions()
-        preferred_actions.data = { action._advanced_ground_action for action in self._heuristic.get_preferred_actions(state) }
+        preferred_actions.data = { action._advanced_ground_action for action in self._heuristic.get_preferred_actions() }
         return preferred_actions
 
 
 class SearchResult:
-    def __init__(self, status, solution: 'list[GroundAction]', solution_cost: float, goal_state: 'State') -> None:
+    def __init__(self, status, solution: 'Union[list[GroundAction], None]', solution_cost: 'Union[float, None]', goal_state: 'Union[State, None]') -> None:
         """
         A class to encapsulate the result of a search operation.
 
         :param status: The status of the search operation (e.g., 'solved', 'unsolvable').
         :type status: str
         :param solution: A list of GroundAction representing the solution path.
-        :type solution: list[GroundAction]
+        :type solution: list[GroundAction] or None
         :param solution_cost: The total cost of the solution.
-        :type solution_cost: float
+        :type solution_cost: float or None
         :param goal_state: The final state reached by the search.
-        :type goal_state: State
+        :type goal_state: State or None
         """
         self.status = status
         self.solution = solution
@@ -249,12 +248,12 @@ def astar_eager(
     heuristic: 'Heuristic',
     max_time_seconds: float = -1,
     max_num_states: int = -1,
-    on_expand_state: Callable[['AdvancedState'], None] = None,
-    on_expand_goal_state: Callable[['AdvancedState'], None] = None,
-    on_generate_state: Callable[['AdvancedState', 'AdvancedGroundAction', float, 'AdvancedState'], None] = None,
-    on_prune_state: Callable[['AdvancedState'], None] = None,
-    on_finish_f_layer: Callable[['float'], None] = None
-    ) -> SearchResult:
+    on_expand_state: 'Union[Callable[[State], None], None]' = None,
+    on_expand_goal_state: 'Union[Callable[[State], None], None]' = None,
+    on_generate_state: 'Union[Callable[[State, GroundAction, float, State], None], None]' = None,
+    on_prune_state: 'Union[Callable[[State], None], None]' = None,
+    on_finish_f_layer: 'Union[Callable[[float], None], None]' = None
+    ) -> 'SearchResult':
     """
     A* search algorithm with eager evaluation.
 
@@ -269,13 +268,13 @@ def astar_eager(
     :param max_num_states: Maximum number of states to explore. Default is -1 (no limit).
     :type max_num_states: int
     :param on_expand_state: Callback function called when a state is expanded.
-    :type on_expand_state: Callable[[AdvancedState], None]
+    :type on_expand_state: Callable[[State], None]
     :param on_expand_goal_state: Callback function called when a goal state is expanded.
-    :type on_expand_goal_state: Callable[[AdvancedState], None]
+    :type on_expand_goal_state: Callable[[State], None]
     :param on_generate_state: Callback function called when a new state is generated.
-    :type on_generate_state: Callable[[AdvancedState, AdvancedGroundAction, float, AdvancedState], None]
+    :type on_generate_state: Callable[[State, GroundAction, float, State], None]
     :param on_prune_state: Callback function called when a state is pruned.
-    :type on_prune_state: Callable[[AdvancedState], None]
+    :type on_prune_state: Callable[[State], None]
     :param on_finish_f_layer: Callback function called when a layer of states is finished.
     :type on_finish_f_layer: Callable[[float], None]
     :return: A SearchResult object containing the status, solution, solution cost, and goal state.
@@ -337,8 +336,8 @@ def astar_eager(
     advanced_options.start_state = start_state._advanced_state
     advanced_options.event_handler = EventHandler()
     # The A* search algorithm expects an advanced heuristic: get the internal one, or create a proxy
-    if hasattr(heuristic, '_advanced_heuristic') and isinstance(heuristic._advanced_heuristic, AdvancedHeuristicBase):
-        advanced_heuristic = heuristic._advanced_heuristic
+    if hasattr(heuristic, '_advanced_heuristic') and isinstance(heuristic._advanced_heuristic, AdvancedHeuristicBase):  # type: ignore
+        advanced_heuristic = heuristic._advanced_heuristic  # type: ignore
     elif isinstance(heuristic, Heuristic):
         advanced_heuristic = AdvancedHeuristicAdapter(heuristic, problem)
     else:
