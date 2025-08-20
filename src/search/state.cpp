@@ -58,7 +58,7 @@ const ProblemImpl& State::get_problem() const { return m_unpacked->get_problem()
 template<IsFluentOrDerivedTag P>
 bool State::literal_holds(GroundLiteral<P> literal) const
 {
-    return (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_index()) != get_atoms<P>().end()) == literal->get_polarity();
+    return (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_atom()->get_index()) != get_atoms<P>().end()) == literal->get_polarity();
 }
 
 template bool State::literal_holds(GroundLiteral<FluentTag> literal) const;

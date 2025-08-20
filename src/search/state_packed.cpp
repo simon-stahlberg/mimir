@@ -55,7 +55,7 @@ template<IsFluentOrDerivedTag P>
 bool PackedStateImpl::literal_holds(GroundLiteral<P> literal, const ProblemImpl& problem) const
 {
     auto atoms = get_atoms<P>(problem);
-    return (std::find(atoms.begin(), atoms.end(), literal->get_index()) != atoms.end()) == literal->get_polarity();
+    return (std::find(atoms.begin(), atoms.end(), literal->get_atom()->get_index()) != atoms.end()) == literal->get_polarity();
 }
 
 template bool PackedStateImpl::literal_holds(GroundLiteral<FluentTag> literal, const ProblemImpl& problem) const;
