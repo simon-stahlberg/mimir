@@ -387,6 +387,8 @@ class Predicate:
         """
         if not isinstance(other, Predicate):
             return False
+        if type(self._advanced_predicate) != type(other._advanced_predicate):
+            return False
         return self._advanced_predicate == other._advanced_predicate
 
 
@@ -522,6 +524,8 @@ class GroundAtom:
         """
         if not isinstance(other, GroundAtom):
             return False
+        if type(self._advanced_ground_atom) != type(other._advanced_ground_atom):
+            return False
         return self._advanced_ground_atom == other._advanced_ground_atom
 
 
@@ -555,6 +559,33 @@ class Atom:
         :rtype: Atom
         """
         return problem.new_atom(predicate, terms)
+
+    def is_static(self) -> 'bool':
+        """
+        Get whether the atom is static.
+
+        :return: True if the atom is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_atom, AdvancedStaticAtom)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the atom is static.
+
+        :return: True if the atom is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_atom, AdvancedFluentAtom)
+
+    def is_derived(self) -> 'bool':
+        """
+        Get whether the atom is static.
+
+        :return: True if the atom is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_atom, AdvancedDerivedAtom)
 
     def get_index(self) -> 'int':
         """
@@ -639,6 +670,8 @@ class Atom:
         """
         if not isinstance(other, Atom):
             return False
+        if type(self._advanced_atom) != type(other._advanced_atom):
+            return False
         return self._advanced_atom == other._advanced_atom
 
 
@@ -672,6 +705,33 @@ class GroundLiteral:
         :rtype: GroundLiteral
         """
         return problem.new_ground_literal(ground_atom, polarity)
+
+    def is_static(self) -> 'bool':
+        """
+        Get whether the ground literal is static.
+
+        :return: True if the ground literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_literal, AdvancedStaticGroundLiteral)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the ground literal is static.
+
+        :return: True if the ground literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_literal, AdvancedFluentGroundLiteral)
+
+    def is_derived(self) -> 'bool':
+        """
+        Get whether the ground literal is static.
+
+        :return: True if the ground literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_literal, AdvancedDerivedGroundLiteral)
 
     def get_index(self) -> 'int':
         """
@@ -738,6 +798,8 @@ class GroundLiteral:
         """
         if not isinstance(other, GroundLiteral):
             return False
+        if type(self._advanced_ground_literal) != type(other._advanced_ground_literal):
+            return False
         return self._advanced_ground_literal == other._advanced_ground_literal
 
 
@@ -771,6 +833,33 @@ class Literal:
         :rtype: Literal
         """
         return problem.new_literal(atom, polarity)
+
+    def is_static(self) -> 'bool':
+        """
+        Get whether the literal is static.
+
+        :return: True if the literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_literal, AdvancedStaticLiteral)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the literal is static.
+
+        :return: True if the literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_literal, AdvancedFluentLiteral)
+
+    def is_derived(self) -> 'bool':
+        """
+        Get whether the literal is static.
+
+        :return: True if the literal is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_literal, AdvancedDerivedLiteral)
 
     def get_index(self) -> 'int':
         """
@@ -836,6 +925,8 @@ class Literal:
         :rtype: bool
         """
         if not isinstance(other, Literal):
+            return False
+        if type(self._advanced_literal) != type(other._advanced_literal):
             return False
         return self._advanced_literal == other._advanced_literal
 
