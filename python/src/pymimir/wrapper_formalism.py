@@ -389,7 +389,7 @@ class Predicate:
             return False
         if type(self._advanced_predicate) != type(other._advanced_predicate):
             return False
-        return self._advanced_predicate == other._advanced_predicate
+        return self._advanced_predicate == other._advanced_predicate  # type: ignore
 
 
 class GroundAtom:
@@ -526,7 +526,7 @@ class GroundAtom:
             return False
         if type(self._advanced_ground_atom) != type(other._advanced_ground_atom):
             return False
-        return self._advanced_ground_atom == other._advanced_ground_atom
+        return self._advanced_ground_atom == other._advanced_ground_atom  # type: ignore
 
 
 class Atom:
@@ -612,7 +612,7 @@ class Atom:
         :return: A list of terms representing the terms of the atom, which can be a mix of Objects and Variables.
         :rtype: list[Union[Object, Variable]]
         """
-        return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_atom.get_terms()]
+        return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_atom.get_terms()]  # type: ignore
 
     def get_variables(self) -> 'list[Variable]':
         """
@@ -672,7 +672,7 @@ class Atom:
             return False
         if type(self._advanced_atom) != type(other._advanced_atom):
             return False
-        return self._advanced_atom == other._advanced_atom
+        return self._advanced_atom == other._advanced_atom  # type: ignore
 
 
 class GroundLiteral:
@@ -800,7 +800,7 @@ class GroundLiteral:
             return False
         if type(self._advanced_ground_literal) != type(other._advanced_ground_literal):
             return False
-        return self._advanced_ground_literal == other._advanced_ground_literal
+        return self._advanced_ground_literal == other._advanced_ground_literal  # type: ignore
 
 
 class Literal:
@@ -928,7 +928,7 @@ class Literal:
             return False
         if type(self._advanced_literal) != type(other._advanced_literal):
             return False
-        return self._advanced_literal == other._advanced_literal
+        return self._advanced_literal == other._advanced_literal  # type: ignore
 
 
 class GroundEffect:
@@ -974,7 +974,7 @@ class GroundEffect:
         :rtype: list[GroundAtom]
         """
         repositories = self._problem._advanced_problem.get_repositories()
-        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_positive_effects())
+        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_ground_effect.get_positive_effects()))
         return [GroundAtom(x) for x in advanced_ground_atoms]
 
     def get_delete_list(self) -> 'list[GroundAtom]':
@@ -985,7 +985,7 @@ class GroundEffect:
         :rtype: list[GroundAtom]
         """
         repositories = self._problem._advanced_problem.get_repositories()
-        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_negative_effects())
+        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_ground_effect.get_negative_effects()))
         return [GroundAtom(x) for x in advanced_ground_atoms]
 
     def __str__(self):
@@ -1464,24 +1464,6 @@ class GroundAction:
         """
         return GroundConjunctiveCondition(self._advanced_ground_action.get_conjunctive_condition(), self._problem)
 
-    def get_effect(self) -> 'tuple[GroundEffect, list[GroundConditionalEffect]]':
-        """
-        Get both the unconditional and conditional effects of the ground action.
-
-        :return: A tuple containing the unconditional effect and a list of conditional effects of the ground action.
-        :rtype: tuple[GroundEffect, list[GroundConditionalEffect]]
-        """
-        return self.get_unconditional_effect(), self.get_conditional_effect()
-
-    def get_unconditional_effect(self) -> 'GroundEffect':
-        """
-        Get the effect list of the ground action.
-
-        :return: The unconditional effect of the ground action.
-        :rtype: GroundEffect
-        """
-        return GroundEffect(advanced_effect=self._advanced_ground_action.get_conjunctive_effect())
-
     def get_conditional_effect(self) -> 'list[GroundConditionalEffect]':
         """
         Get the conditional effect of the ground action.
@@ -1489,7 +1471,7 @@ class GroundAction:
         :return: A list of conditional effects of the ground action.
         :rtype: list[GroundConditionalEffect]
         """
-        return [GroundConditionalEffect(x) for x in self._advanced_ground_action.get_conditional_effects()]
+        return [GroundConditionalEffect(x, self._problem) for x in self._advanced_ground_action.get_conditional_effects()]
 
     def is_applicable(self, state: 'State') -> 'bool':
         """
@@ -2192,7 +2174,7 @@ class State:
         if isinstance(literal._advanced_ground_literal, AdvancedStaticGroundLiteral):
             atom_is_in_state = (literal.get_atom().get_index() in self._problem._static_ground_atom_indices)
             return literal.get_polarity() == atom_is_in_state
-        return self._advanced_state.literal_holds(literal)
+        return self._advanced_state.literal_holds(literal._advanced_ground_literal)
 
     def _literals_hold_static(self, literals: 'AdvancedStaticGroundLiteralList') -> bool:
         if len(literals) == 0:
@@ -2358,9 +2340,7 @@ class GroundConjunctiveCondition:
         :rtype: bool
         """
         assert isinstance(state, State), "Invalid state type."
-        holds_positive = state.contains_all(self._static_pos_advanced_ground_atoms) and state.contains_all(self._fluent_pos_advanced_ground_atoms) and state.contains_all(self._derived_pos_advanced_ground_atoms)
-        holds_negative = state.contains_none(self._static_neg_advanced_ground_atoms) and state.contains_none(self._fluent_neg_advanced_ground_atoms) and state.contains_none(self._derived_neg_advanced_ground_atoms)
-        return holds_positive and holds_negative
+        return not any(not state.literal_holds(literal) for literal in self)
 
     def lift(self, add_inequalities: bool = False) -> 'ConjunctiveCondition':
         """
@@ -2545,7 +2525,7 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
-    def ground(self, state: 'State', max_groundings: int = -1, blacklist: 'list[Predicate]' = None) -> 'list[GroundConjunctiveCondition]':
+    def ground(self, state: 'State', max_groundings: int = -1, blacklist: 'Union[list[Predicate], None]' = None) -> 'list[GroundConjunctiveCondition]':
         """
         Ground the conjunctive condition.
 
