@@ -67,7 +67,7 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
 
 static bool must_precede(const ProblemImpl& problem, const State& lhs_state, GroundAction lhs_action, const State& rhs_state, GroundAction rhs_action)
 {
-    if (!lhs_state.get_atoms<DerivedTag>().count() || !rhs_state.get_atoms<DerivedTag>().count())
+    if (lhs_state.get_atoms<DerivedTag>().count() || rhs_state.get_atoms<DerivedTag>().count())
     {
         throw std::runtime_error("must_precede(problem, lhs_state, lhs_action, rhs_state, rhs_action): Derived atoms not supported yet.");
     }
