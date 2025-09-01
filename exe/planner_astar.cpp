@@ -233,6 +233,8 @@ int main(int argc, char** argv)
         }
         plan_file << result.plan.value();
         plan_file.close();
+
+        std::cout << search::PartiallyOrderedPlan(result.plan.value()) << std::endl;
     }
 
     return 0;

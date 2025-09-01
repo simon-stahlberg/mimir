@@ -120,6 +120,8 @@ PartiallyOrderedPlan::PartiallyOrderedPlan(Plan t_o_plan) : m_t_o_plan(std::move
         }
     }
 
+    // TODO https://en.wikipedia.org/wiki/Transitive_reduction
+
     auto transitive_edges = graphs::EdgeIndexSet {};
     for (const auto& [edge_i_idx, edge_i] : m_graph.get_edges())
     {
