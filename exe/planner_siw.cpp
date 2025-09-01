@@ -107,10 +107,10 @@ int main(int argc, char** argv)
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
 
-    auto brfs_event_handler = (verbosity > 1) ? brfs::EventHandler { brfs::DebugEventHandlerImpl::create(problem) } :
-                                                brfs::EventHandler { brfs::DefaultEventHandlerImpl::create(problem) };
+    auto brfs_event_handler = (verbosity > 1) ? brfs::EventHandler { brfs::DebugEventHandlerImpl::create(problem, false) } :
+                                                brfs::EventHandler { brfs::DefaultEventHandlerImpl::create(problem, false) };
 
-    auto iw_event_handler = iw::DefaultEventHandlerImpl::create(problem);
+    auto iw_event_handler = iw::DefaultEventHandlerImpl::create(problem, false);
 
     auto siw_event_handler = siw::DefaultEventHandlerImpl::create(problem, false);
 

@@ -37,7 +37,7 @@ private:
 public:
     explicit ArityZeroNoveltyPruningStrategyImpl(State initial_state);
 
-    static ArityZeroNoveltyPruningStrategy create(State initial_state);
+    static PruningStrategy create(State initial_state);
 
     bool test_prune_initial_state(const State& state) override;
     bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;
@@ -53,7 +53,7 @@ private:
 public:
     ArityKNoveltyPruningStrategyImpl(size_t arity, size_t num_atoms);
 
-    static ArityKNoveltyPruningStrategy create(size_t arity, size_t num_atoms);
+    static PruningStrategy create(size_t arity, size_t num_atoms);
 
     bool test_prune_initial_state(const State& state) override;
     bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;

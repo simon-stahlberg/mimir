@@ -857,7 +857,7 @@ const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { re
 
 ArityZeroNoveltyPruningStrategyImpl::ArityZeroNoveltyPruningStrategyImpl(State initial_state) : m_initial_state(std::move(initial_state)) {}
 
-ArityZeroNoveltyPruningStrategy ArityZeroNoveltyPruningStrategyImpl::create(State initial_state)
+PruningStrategy ArityZeroNoveltyPruningStrategyImpl::create(State initial_state)
 {
     return std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(std::move(initial_state));
 }
@@ -871,7 +871,7 @@ bool ArityZeroNoveltyPruningStrategyImpl::test_prune_successor_state(const State
 
 ArityKNoveltyPruningStrategyImpl::ArityKNoveltyPruningStrategyImpl(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
 
-ArityKNoveltyPruningStrategy ArityKNoveltyPruningStrategyImpl::create(size_t arity, size_t num_atoms)
+PruningStrategy ArityKNoveltyPruningStrategyImpl::create(size_t arity, size_t num_atoms)
 {
     return std::make_shared<ArityKNoveltyPruningStrategyImpl>(arity, num_atoms);
 }
@@ -937,16 +937,10 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
         options_i.start_state = start_state;
         options_i.event_handler = brfs_event_handler;
         options_i.goal_strategy = goal_strategy;
-        if (cur_arity > 0)
-        {
-            options_i.pruning_strategy = std::make_shared<ArityKNoveltyPruningStrategyImpl>(cur_arity, INITIAL_TABLE_ATOMS);
-        }
-        else
-        {
-            options_i.pruning_strategy = std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(start_state);
-        }
+        options_i.pruning_strategy = (cur_arity > 0) ? ArityKNoveltyPruningStrategyImpl::create(cur_arity, INITIAL_TABLE_ATOMS) :
+                                                       ArityZeroNoveltyPruningStrategyImpl::create(start_state);
 
-        const auto result = find_solution(context, options_i);
+        const auto result = brfs::find_solution(context, options_i);
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 
