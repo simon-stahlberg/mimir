@@ -120,26 +120,43 @@ PartiallyOrderedPlan::PartiallyOrderedPlan(Plan t_o_plan) : m_t_o_plan(std::move
         }
     }
 
-    // TODO https://en.wikipedia.org/wiki/Transitive_reduction
+    /* https://en.wikipedia.org/wiki/Transitive_reduction
+       Perhaps we want to make this a general graph algorithm.
+    */
+
+    auto R = IndexMap<IndexSet> {};
+    auto rank_to_vertex = graphs::bgl::topological_sort(graphs::DirectionTaggedType(m_graph, graphs::ForwardTag {}));
+    auto vertex_to_rank = IndexList(rank_to_vertex.size());
+    Index rank = 0;
+    for (const auto& v : rank_to_vertex)
+        vertex_to_rank[v] = rank++;
 
     auto transitive_edges = graphs::EdgeIndexSet {};
-    for (const auto& [edge_i_idx, edge_i] : m_graph.get_edges())
+
+    for (const auto& v : rank_to_vertex)
     {
-        for (const auto& edge_j : m_graph.get_adjacent_edges<graphs::ForwardTag>(edge_i.get_target()))
+        R[v].insert(v);
+
+        auto edges =
+            std::vector<graphs::EmptyEdge>(m_graph.get_adjacent_edges<graphs::ForwardTag>(v).begin(), m_graph.get_adjacent_edges<graphs::ForwardTag>(v).end());
+
+        std::sort(edges.begin(),
+                  edges.end(),
+                  [&](auto&& lhs, auto&& rhs) { return vertex_to_rank.at(lhs.get_target()) > vertex_to_rank.at(rhs.get_target()); });
+
+        for (const auto& e : edges)
         {
-            for (const auto& edge_k : m_graph.get_adjacent_edges<graphs::ForwardTag>(edge_i.get_source()))
-            {
-                if (edge_k.get_target() == edge_j.get_target())
-                {
-                    transitive_edges.insert(edge_k.get_index());
-                }
-            }
+            const auto w = e.get_target();
+
+            if (R[v].contains(w))
+                transitive_edges.insert(e.get_index());
+            else
+                R[v].insert(R[w].begin(), R[w].end());
         }
     }
+
     for (const auto& e_idx : transitive_edges)
-    {
         m_graph.remove_edge(e_idx);
-    }
 }
 
 std::pair<Plan, IndexList> PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan() const
