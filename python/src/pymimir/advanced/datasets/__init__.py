@@ -73,44 +73,36 @@ from pymimir.pymimir.advanced.datasets import (
 
 __all__ = [
     # StateSpace
-    ProblemVertex,
-    ProblemEdge,
-    StaticProblemGraph,
-    ImmutableStaticProblemGraph,
-    ForwardStaticProblemGraph,
-    BidirectionalStaticProblemGraph,
-
-    StateSpace,
-    StateSpaceOptions,
-
+    "ProblemVertex",
+    "ProblemEdge",
+    "StaticProblemGraph",
+    "ImmutableStaticProblemGraph",
+    "ForwardStaticProblemGraph",
+    "BidirectionalStaticProblemGraph",
+    "StateSpace",
+    "StateSpaceOptions",
     # GeneralizedStateSpace
-    ClassVertex,
-    ClassEdge,
-    StaticClassGraph,
-    ImmutableStaticClassGraph,
-    ForwardStaticClassGraph,
-    BidirectionalStaticClassGraph,
-
-    GeneralizedStateSpace,
-    GeneralizedStateSpaceOptions,
-
+    "ClassVertex",
+    "ClassEdge",
+    "StaticClassGraph",
+    "ImmutableStaticClassGraph",
+    "ForwardStaticClassGraph",
+    "BidirectionalStaticClassGraph",
+    "GeneralizedStateSpace",
+    "GeneralizedStateSpaceOptions",
     # StateSpaceSampler
-    StateSpaceSampler,
-
+    "StateSpaceSampler",
     # TupleGraph
-    TupleGraphVertex,
-    StaticTupleGraph,
-    ImmutableStaticTupleGraph,
-    ForwardStaticTupleGraph,
-    BidirectionalStaticTupleGraph,
-
-    TupleGraphOptions,
-    TupleGraph,
-
+    "TupleGraphVertex",
+    "StaticTupleGraph",
+    "ImmutableStaticTupleGraph",
+    "ForwardStaticTupleGraph",
+    "BidirectionalStaticTupleGraph",
+    "TupleGraphOptions",
+    "TupleGraph",
     # KnowledgeBase
-    KnowledgeBase,
-    KnowledgeBaseOptions,
-
+    "KnowledgeBase",
+    "KnowledgeBaseOptions",
     # ObjectGraph
-    create_object_graph
+    "create_object_graph",
 ]
