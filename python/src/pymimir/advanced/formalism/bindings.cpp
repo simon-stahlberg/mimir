@@ -796,8 +796,22 @@ void bind_module_definitions(nb::module_& m)
         .def("get_fluent_initial_literals", &ProblemImpl::get_initial_literals<FluentTag>, nb::rv_policy::copy)
         .def("get_static_function_values", &ProblemImpl::get_initial_function_values<StaticTag>, nb::rv_policy::copy)
         .def("get_fluent_function_values", &ProblemImpl::get_initial_function_values<FluentTag>, nb::rv_policy::copy)
-        .def("get_auxiliary_function_value", &ProblemImpl::get_auxiliary_function_value, nb::rv_policy::copy)
-        .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, nb::rv_policy::copy)
+        .def(
+            "get_auxiliary_function_value",
+            [](const ProblemImpl& self)
+            {
+                auto element = self.get_auxiliary_function_value();
+                return element.value_or(nullptr);
+            },
+            nb::rv_policy::reference_internal)
+        .def(
+            "get_optimization_metric",
+            [](const ProblemImpl& self)
+            {
+                auto element = self.get_optimization_metric();
+                return element.value_or(nullptr);
+            },
+            nb::rv_policy::reference_internal)
         .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<StaticTag>, nb::rv_policy::copy)
         .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<FluentTag>, nb::rv_policy::copy)
         .def("get_derived_goal_condition", &ProblemImpl::get_goal_condition<DerivedTag>, nb::rv_policy::copy)
