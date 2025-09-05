@@ -76,6 +76,7 @@ from pymimir.pymimir.advanced.formalism import (
     StaticFunctionSkeletonList,
     StaticGroundFunctionExpressionFunction,
     StaticNumericAssignmentSet,
+    StaticFunctionExpressionFunction,
 )
 
 from pymimir.pymimir.advanced.formalism import (
