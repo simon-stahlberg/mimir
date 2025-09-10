@@ -124,9 +124,9 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
         const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
-        EXPECT_EQ(role_statistics.num_generated, 38);
+        EXPECT_EQ(role_statistics.num_generated, 42);
         EXPECT_EQ(role_statistics.num_kept, 9);
-        EXPECT_EQ(role_statistics.num_pruned, 29);
+        EXPECT_EQ(role_statistics.num_pruned, 33);
 
         const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
 
