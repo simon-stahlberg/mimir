@@ -73,7 +73,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Au
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

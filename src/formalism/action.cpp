@@ -75,7 +75,7 @@ std::ostream& operator<<(std::ostream& out, const ActionImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Action element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

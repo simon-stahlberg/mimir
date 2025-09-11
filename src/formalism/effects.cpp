@@ -152,7 +152,7 @@ std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element
 template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
@@ -161,13 +161,13 @@ template std::ostream& operator<<(std::ostream& out, NumericEffect<AuxiliaryTag>
 
 std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, ConditionalEffect element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

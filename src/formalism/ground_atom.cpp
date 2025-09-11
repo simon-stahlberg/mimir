@@ -114,7 +114,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derive
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

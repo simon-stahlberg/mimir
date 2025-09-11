@@ -64,7 +64,7 @@ template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTa
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Literal<P> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

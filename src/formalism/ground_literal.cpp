@@ -124,7 +124,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Der
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

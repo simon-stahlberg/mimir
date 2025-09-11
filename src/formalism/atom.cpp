@@ -87,7 +87,7 @@ template std::ostream& operator<<(std::ostream& out, const AtomImpl<DerivedTag>&
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Atom<P> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

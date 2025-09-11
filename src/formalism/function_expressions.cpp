@@ -171,32 +171,32 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& elemen
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

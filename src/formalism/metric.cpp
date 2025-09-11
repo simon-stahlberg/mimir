@@ -47,7 +47,7 @@ std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& elemen
 
 std::ostream& operator<<(std::ostream& out, OptimizationMetric element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

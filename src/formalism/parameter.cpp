@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& out, const ParameterImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Parameter element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

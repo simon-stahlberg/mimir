@@ -75,7 +75,7 @@ template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Predicate<P> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

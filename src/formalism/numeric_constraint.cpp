@@ -53,7 +53,7 @@ std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element
 
 std::ostream& operator<<(std::ostream& out, NumericConstraint element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

@@ -56,7 +56,7 @@ std::ostream& operator<<(std::ostream& out, const AxiomImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Axiom element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

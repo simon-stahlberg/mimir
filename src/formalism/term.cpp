@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& out, const TermImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Term element)
 {
-    write_typed(*element, AddressFormatter(), out);
+    write_typed(*element, StringFormatter(), out);
     return out;
 }
 

@@ -203,7 +203,7 @@ std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Domain element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

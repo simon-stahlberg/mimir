@@ -74,7 +74,7 @@ template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Auxiliar
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, Function<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

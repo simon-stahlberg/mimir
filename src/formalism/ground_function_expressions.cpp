@@ -231,32 +231,32 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpress
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

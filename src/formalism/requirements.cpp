@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element)
 
 std::ostream& operator<<(std::ostream& out, Requirements element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

@@ -98,7 +98,7 @@ std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& e
 
 std::ostream& operator<<(std::ostream& out, GroundNumericConstraint element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

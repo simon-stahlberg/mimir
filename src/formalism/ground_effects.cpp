@@ -159,7 +159,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectIm
 template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
 {
-    write(*element, AddressFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 
