@@ -36,6 +36,8 @@ private:
     friend class loki::IndexedHashSet;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     TypeImpl(const TypeImpl& other) = delete;
     TypeImpl& operator=(const TypeImpl& other) = delete;

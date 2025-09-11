@@ -117,8 +117,9 @@ private:
         return element.has_value() ? this->translate_common(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
     StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(loki::FunctionSkeleton function_skeleton, Repositories& repositories);
+    Type translate_common(loki::Type type, Repositories& repositories);
     Object translate_common(loki::Object object, Repositories& repositories);
-    Variable translate_common(loki::Parameter parameter, Repositories& repositories);
+    Parameter translate_common(loki::Parameter parameter, Repositories& repositories);
     StaticOrFluentOrDerivedPredicate translate_common(loki::Predicate predicate, Repositories& repositories);
     Requirements translate_common(loki::Requirements requirements, Repositories& repositories);
     Variable translate_common(loki::Variable variable, Repositories& repositories);
@@ -148,8 +149,8 @@ private:
     FunctionExpression translate_lifted(loki::FunctionExpression function_expression, Repositories& repositories);
     StaticOrFluentOrAuxiliaryFunction translate_lifted(loki::Function function, Repositories& repositories);
     NumericConstraint translate_lifted(loki::ConditionNumericConstraint condition, Repositories& repositories);
-    ConjunctiveCondition translate_lifted(loki::Condition condition, const VariableList& parameters, Repositories& repositories);
-    ConditionalEffectList translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories);
+    ConjunctiveCondition translate_lifted(loki::Condition condition, const ParameterList& parameters, Repositories& repositories);
+    ConditionalEffectList translate_lifted(loki::Effect effect, const ParameterList& parameters, Repositories& repositories);
     Action translate_lifted(loki::Action action, Repositories& repositories);
     Axiom translate_lifted(loki::Axiom axiom, Repositories& repositories);
 

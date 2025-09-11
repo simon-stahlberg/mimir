@@ -76,7 +76,7 @@ ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(Conditional
     const auto start_index = m_variable_to_parameter_index.size();
     for (size_t i = 0; i < effect->get_arity(); ++i)
     {
-        m_variable_to_parameter_index[effect->get_conjunctive_condition()->get_parameters()[i]] = start_index + i;
+        m_variable_to_parameter_index[effect->get_conjunctive_condition()->get_parameters()[i]->get_variable()] = start_index + i;
     }
 
     // Ensure in order translation
@@ -87,7 +87,7 @@ ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(Conditional
     // Erase for next universal effect
     for (size_t i = 0; i < effect->get_arity(); ++i)
     {
-        m_variable_to_parameter_index.erase(effect->get_conjunctive_condition()->get_parameters()[i]);
+        m_variable_to_parameter_index.erase(effect->get_conjunctive_condition()->get_parameters()[i]->get_variable());
     }
 
     return translated_conditional_effect;
@@ -100,7 +100,7 @@ Axiom EncodeParameterIndexInVariables::translate_level_2(Axiom axiom, Repositori
     // Determine variable parameter indices
     for (size_t i = 0; i < axiom->get_arity(); ++i)
     {
-        m_variable_to_parameter_index[axiom->get_parameters()[i]] = i;
+        m_variable_to_parameter_index[axiom->get_parameters()[i]->get_variable()] = i;
     }
 
     // Ensure in order translation
@@ -121,7 +121,7 @@ Action EncodeParameterIndexInVariables::translate_level_2(Action action, Reposit
     // Determine variable parameter indices
     for (size_t i = 0; i < action->get_arity(); ++i)
     {
-        m_variable_to_parameter_index[action->get_parameters()[i]] = i;
+        m_variable_to_parameter_index[action->get_parameters()[i]->get_variable()] = i;
     }
 
     // Ensure in order translation

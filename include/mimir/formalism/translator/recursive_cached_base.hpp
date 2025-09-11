@@ -51,8 +51,10 @@ protected:
     using TranslatorCache = boost::hana::pair<boost::hana::type<T>, std::unordered_map<T, T, loki::Hash<T>, loki::EqualTo<T>>>;
 
     using TranslatorCaches = boost::hana::map<TranslatorCache<Requirements>,
+                                              TranslatorCache<Type>,
                                               TranslatorCache<Object>,
                                               TranslatorCache<Variable>,
+                                              TranslatorCache<Parameter>,
                                               TranslatorCache<Term>,
                                               TranslatorCache<Predicate<StaticTag>>,
                                               TranslatorCache<Predicate<FluentTag>>,
@@ -142,8 +144,14 @@ protected:
     }
 
     void prepare_level_2(Requirements requirements) {}
+    void prepare_level_2(Type type) { this->prepare_level_0(type->get_bases()); }
     void prepare_level_2(Object object) {}
     void prepare_level_2(Variable variable) {}
+    void prepare_level_2(Parameter parameter)
+    {
+        this->prepare_level_0(parameter->get_variable());
+        this->prepare_level_0(parameter->get_bases());
+    }
     void prepare_level_2(Term term)
     {
         std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, term->get_variant());
@@ -378,10 +386,22 @@ protected:
     {
         return repositories.get_or_create_requirements(requirements->get_requirements());
     }
-    Object translate_level_2(Object object, Repositories& repositories) { return repositories.get_or_create_object(object->get_name()); }
+    Type translate_level_2(Type type, Repositories& repositories)
+    {
+        return repositories.get_or_create_type(type->get_name(), this->translate_level_0(type->get_bases(), repositories));
+    }
+    Object translate_level_2(Object object, Repositories& repositories)
+    {
+        return repositories.get_or_create_object(object->get_name(), this->translate_level_0(object->get_bases(), repositories));
+    }
     Variable translate_level_2(Variable variable, Repositories& repositories)
     {
         return repositories.get_or_create_variable(variable->get_name(), variable->get_parameter_index());
+    }
+    Parameter translate_level_2(Parameter parameter, Repositories& repositories)
+    {
+        return repositories.get_or_create_parameter(this->translate_level_0(parameter->get_variable(), repositories),
+                                                    this->translate_level_0(parameter->get_bases(), repositories));
     }
     Term translate_level_2(Term term, Repositories& repositories)
     {

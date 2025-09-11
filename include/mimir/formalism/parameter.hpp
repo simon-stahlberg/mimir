@@ -37,6 +37,8 @@ private:
     friend class loki::IndexedHashSet;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     ParameterImpl(const ParameterImpl& other) = delete;
     ParameterImpl& operator=(const ParameterImpl& other) = delete;

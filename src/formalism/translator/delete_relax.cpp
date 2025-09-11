@@ -129,10 +129,10 @@ ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect eff
 
 ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect effect, Repositories& repositories)
 {
-    auto translated__conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
-    auto translated__conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
+    auto translated_conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
+    auto translated_conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
 
-    return repositories.get_or_create_conditional_effect(translated__conjunctive_condition, translated__conjunctive_effect);
+    return repositories.get_or_create_conditional_effect(translated_conjunctive_condition, translated_conjunctive_effect);
 }
 
 Action DeleteRelaxTranslator::translate_level_2(Action action, Repositories& repositories)

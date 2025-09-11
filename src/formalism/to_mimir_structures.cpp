@@ -266,9 +266,10 @@ StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(lo
     }
 }
 
-Variable ToMimirStructures::translate_common(loki::Parameter parameter, Repositories& repositories)
+Parameter ToMimirStructures::translate_common(loki::Parameter parameter, Repositories& repositories)
 {
-    return translate_common(parameter->get_variable(), repositories);
+    return repositories.get_or_create_parameter(translate_common(parameter->get_variable(), repositories),
+                                                translate_common(parameter->get_bases(), repositories));
 }
 
 Requirements ToMimirStructures::translate_common(loki::Requirements requirements, Repositories& repositories)
@@ -281,10 +282,15 @@ Variable ToMimirStructures::translate_common(loki::Variable variable, Repositori
     return repositories.get_or_create_variable(variable->get_name(), 0);
 }
 
+Type ToMimirStructures::translate_common(loki::Type type, Repositories& repositories)
+{
+    return repositories.get_or_create_type(type->get_name(), translate_common(type->get_bases(), repositories));
+}
+
 Object ToMimirStructures::translate_common(loki::Object object, Repositories& repositories)
 {
     assert(object->get_bases().empty());
-    return repositories.get_or_create_object(object->get_name());
+    return repositories.get_or_create_object(object->get_name(), translate_common(object->get_bases(), repositories));
 }
 
 StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predicate predicate, Repositories& repositories)
@@ -404,7 +410,7 @@ StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Func
                       translate_common(function->get_function_skeleton(), repositories));
 }
 
-ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const VariableList& parameters, Repositories& repositories)
+ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const ParameterList& parameters, Repositories& repositories)
 {
     const auto func_insert_literal =
         [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal, LiteralLists<StaticTag, FluentTag, DerivedTag>& ref_literals)
@@ -464,7 +470,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-ConditionalEffectList ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories)
+ConditionalEffectList ToMimirStructures::translate_lifted(loki::Effect effect, const ParameterList& parameters, Repositories& repositories)
 {
     using ConditionalEffectData =
         std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<FluentTag>, NumericEffectList<FluentTag>, std::optional<NumericEffect<AuxiliaryTag>>>>;
@@ -474,7 +480,7 @@ ConditionalEffectList ToMimirStructures::translate_lifted(loki::Effect effect, c
         auto tmp_effect = effect;
 
         /* 1. Parse universal part. */
-        auto parameters = VariableList {};
+        auto parameters = ParameterList {};
         if (const auto& tmp_effect_forall = std::get_if<loki::EffectCompositeForall>(&tmp_effect->get_effect()))
         {
             parameters = translate_common((*tmp_effect_forall)->get_parameters(), repositories);
@@ -494,7 +500,7 @@ ConditionalEffectList ToMimirStructures::translate_lifted(loki::Effect effect, c
         {
             // Create empty conjunctive condition for unconditional effects
             conjunctive_condition =
-                repositories.get_or_create_conjunctive_condition(VariableList {}, LiteralLists<StaticTag, FluentTag, DerivedTag> {}, NumericConstraintList {});
+                repositories.get_or_create_conjunctive_condition(ParameterList {}, LiteralLists<StaticTag, FluentTag, DerivedTag> {}, NumericConstraintList {});
         }
 
         // Fetch container to store the effects
