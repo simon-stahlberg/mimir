@@ -262,7 +262,7 @@ public:
                                                        FunctionExpression right_function_expression,
                                                        TermList terms);
 
-    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
+    ConjunctiveCondition get_or_create_conjunctive_condition(ParameterList parameters,
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 

@@ -25,7 +25,7 @@ namespace mimir::formalism
 {
 
 template<IsStaticOrFluentOrDerivedTag P>
-PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList parameters) :
+PredicateImpl<P>::PredicateImpl(Index index, std::string name, ParameterList parameters) :
     m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
@@ -46,7 +46,7 @@ const std::string& PredicateImpl<P>::get_name() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-const VariableList& PredicateImpl<P>::get_parameters() const
+const ParameterList& PredicateImpl<P>::get_parameters() const
 {
     return m_parameters;
 }

@@ -51,7 +51,7 @@ public:
     Index get_index() const;
     const std::string& get_name() const;
     size_t get_original_arity() const;
-    const VariableList& get_parameters() const;
+    const ParameterList& get_parameters() const;
     ConjunctiveCondition get_conjunctive_condition() const;
     const ConditionalEffectList& get_conditional_effects() const;
 

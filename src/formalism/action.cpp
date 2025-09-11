@@ -59,7 +59,7 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 
 size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
-const VariableList& ActionImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
+const ParameterList& ActionImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
 ConjunctiveCondition ActionImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 

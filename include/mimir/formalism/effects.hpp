@@ -67,7 +67,7 @@ class ConjunctiveEffectImpl
 {
 private:
     Index m_index;
-    VariableList m_parameters;
+    ParameterList m_parameters;
     LiteralList<FluentTag> m_literals;
     NumericEffectList<FluentTag> m_fluent_numeric_effects;
     std::optional<NumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
@@ -75,7 +75,7 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     ConjunctiveEffectImpl(Index index,
-                          VariableList parameters,
+                          ParameterList parameters,
                           LiteralList<FluentTag> literals,
                           NumericEffectList<FluentTag> fluent_numeric_effects,
                           std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
@@ -94,7 +94,7 @@ public:
     ConjunctiveEffectImpl& operator=(ConjunctiveEffectImpl&& other) = default;
 
     Index get_index() const;
-    const VariableList& get_parameters() const;
+    const ParameterList& get_parameters() const;
     const LiteralList<FluentTag>& get_literals() const;
     const NumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<NumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;

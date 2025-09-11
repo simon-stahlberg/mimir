@@ -264,7 +264,7 @@ void write(const AtomImpl<P>& element, T formatter, std::ostream& out)
     for (size_t i = 0; i < element.get_terms().size(); ++i)
     {
         out << " ";
-        write(*element.get_terms()[i], formatter, out);
+        write_untyped(*element.get_terms()[i], formatter, out);
     }
     out << ")";
 }
@@ -333,11 +333,31 @@ void write(const DomainImpl& element, T formatter, std::ostream& out)
     if (!element.get_constants().empty())
     {
         out << std::string(formatter.indent, ' ') << "(:constants ";
-        for (size_t i = 0; i < element.get_constants().size(); ++i)
+        std::unordered_map<TypeList, ObjectList, loki::Hash<TypeList>> constants_by_types;
+        for (const auto& constant : element.get_constants())
         {
-            if (i != 0)
-                out << " ";
-            write(*element.get_constants()[i], formatter, out);
+            constants_by_types[constant->get_bases()].push_back(constant);
+        }
+        size_t j = 0;
+        for (const auto& pair : constants_by_types)
+        {
+            if (j != 0)
+                out << "\n" << std::string(formatter.indent, ' ');
+            const auto& constants = pair.second;
+            for (size_t i = 0; i < constants.size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                if (i < constants.size() - 1 || !element.get_requirements()->test(loki::RequirementEnum::TYPING))
+                {
+                    write_untyped<T>(*constants[i], formatter, out);
+                }
+                else
+                {
+                    write_typed<T>(*constants[i], formatter, out);
+                }
+            }
+            ++j;
         }
         out << ")\n";
     }
@@ -613,7 +633,7 @@ void write(const FunctionImpl<F>& element, T formatter, std::ostream& out)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_terms()[i], formatter, out);
+            write_untyped(*element.get_terms()[i], formatter, out);
         }
         out << "))";
     }
@@ -729,7 +749,7 @@ void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_objects()[i], formatter, out);
+            write_untyped(*element.get_objects()[i], formatter, out);
         }
         out << "))";
     }
@@ -841,7 +861,7 @@ template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, Addres
 template<Formatter T>
 void write(const ParameterImpl& element, T formatter, std::ostream& out)
 {
-    write<T>(*element.get_variable(), formatter, out);
+    write_untyped<T>(*element.get_variable(), formatter, out);
     if (!element.get_bases().empty())
     {
         out << " - ";
@@ -852,13 +872,13 @@ void write(const ParameterImpl& element, T formatter, std::ostream& out)
             {
                 if (i != 0)
                     out << " ";
-                write<T>(*element.get_bases()[i], formatter, out);
+                write_untyped<T>(*element.get_bases()[i], formatter, out);
             }
             out << ")";
         }
         else if (element.get_bases().size() == 1)
         {
-            write<T>(*element.get_bases().front(), formatter, out);
+            write_untyped<T>(*element.get_bases().front(), formatter, out);
         }
     }
 }
@@ -902,13 +922,35 @@ void write(const ProblemImpl& element, T formatter, std::ostream& out)
 
     if (!element.get_objects().empty())
     {
-        out << std::string(formatter.indent, ' ') << "(:objects";
+        out << std::string(formatter.indent, ' ') << "(:objects ";
+        std::unordered_map<TypeList, ObjectList, loki::Hash<TypeList>> objects_by_types;
         for (const auto& object : element.get_objects())
         {
-            out << " ";
-            write(*object, formatter, out);
+            objects_by_types[object->get_bases()].push_back(object);
         }
-        out << ")" << std::endl;
+        size_t j = 0;
+        for (const auto& [types, objects] : objects_by_types)
+        {
+            if (j != 0)
+                out << "\n" << std::string(formatter.indent, ' ');
+            for (size_t i = 0; i < objects.size(); ++i)
+            {
+                if (i != 0)
+                {
+                    out << " ";
+                }
+                if (i < objects.size() - 1 || !element.get_domain()->get_requirements()->test(loki::RequirementEnum::TYPING))
+                {
+                    write_untyped<T>(*objects[i], formatter, out);
+                }
+                else
+                {
+                    write_typed<T>(*objects[i], formatter, out);
+                }
+            }
+            ++j;
+        }
+        out << ")\n";
     }
 
     if (!element.get_derived_predicates().empty())
@@ -1057,7 +1099,7 @@ template void write_untyped<StringFormatter>(const TypeImpl& element, StringForm
 template<Formatter T>
 void write_untyped(const TermImpl& element, T formatter, std::ostream& out)
 {
-    std::visit([&](const auto& arg) { write_untyped<T>(*arg, formatter, out); }, element.get_object_or_variable());
+    std::visit([&](const auto& arg) { write_untyped<T>(*arg, formatter, out); }, element.get_variant());
 }
 
 template void write_untyped<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);
@@ -1109,7 +1151,7 @@ template void write_typed<StringFormatter>(const TypeImpl& element, StringFormat
 template<Formatter T>
 void write_typed(const TermImpl& element, T formatter, std::ostream& out)
 {
-    std::visit([&](const auto& arg) { write_typed<T>(*arg, formatter, out); }, element.get_object_or_variable());
+    std::visit([&](const auto& arg) { write_typed<T>(*arg, formatter, out); }, element.get_variant());
 }
 
 template void write_typed<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);

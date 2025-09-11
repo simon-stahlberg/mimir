@@ -28,10 +28,11 @@ class ObjectImpl
 private:
     Index m_index;
     std::string m_name;
+    TypeList m_types;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ObjectImpl(Index index, std::string name);
+    ObjectImpl(Index index, std::string name, TypeList types);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -48,11 +49,12 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
+    const TypeList& get_bases() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(std::cref(get_name())); }
+    auto identifying_members() const { return std::tuple(std::cref(get_name()), std::cref(get_bases())); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);

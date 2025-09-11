@@ -26,7 +26,7 @@ class ConjunctiveConditionImpl
 {
 private:
     Index m_index;
-    VariableList m_parameters;
+    ParameterList m_parameters;
     LiteralLists<StaticTag, FluentTag, DerivedTag> m_literals;
     GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_nullary_ground_literals;
     NumericConstraintList m_numeric_constraints;
@@ -34,7 +34,7 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     ConjunctiveConditionImpl(Index index,
-                             VariableList parameters,
+                             ParameterList parameters,
                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                              GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
                              NumericConstraintList numeric_constraints);
@@ -53,7 +53,7 @@ public:
     ConjunctiveConditionImpl& operator=(ConjunctiveConditionImpl&& other) = default;
 
     Index get_index() const;
-    const VariableList& get_parameters() const;
+    const ParameterList& get_parameters() const;
     template<IsStaticOrFluentOrDerivedTag P>
     const LiteralList<P>& get_literals() const;
     const LiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_literals() const;

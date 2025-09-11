@@ -1124,7 +1124,7 @@ NumericConstraint ProblemImpl::get_or_create_numeric_constraint(loki::BinaryComp
     return m_repositories.get_or_create_numeric_constraint(binary_comparator, left_function_expression, right_function_expression, std::move(terms));
 }
 
-ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(VariableList parameters,
+ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(ParameterList parameters,
                                                                       LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                                       NumericConstraintList numeric_constraints)
 {

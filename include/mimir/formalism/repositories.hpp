@@ -40,9 +40,11 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/object.hpp"
+#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
+#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <boost/hana.hpp>
@@ -53,7 +55,9 @@ namespace mimir::formalism
 {
 
 using RequirementsRepository = loki::IndexedHashSet<RequirementsImpl>;
+using TypeRepository = loki::IndexedHashSet<TypeImpl>;
 using VariableRepository = loki::IndexedHashSet<VariableImpl>;
+using ParameterRepository = loki::IndexedHashSet<ParameterImpl>;
 using TermRepository = loki::IndexedHashSet<TermImpl>;
 using ObjectRepository = loki::IndexedHashSet<ObjectImpl>;
 template<IsStaticOrFluentOrDerivedTag P>
@@ -108,7 +112,9 @@ using OptimizationMetricRepository = loki::IndexedHashSet<OptimizationMetricImpl
 
 using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
+    boost::hana::pair<boost::hana::type<TypeImpl>, TypeRepository>,
     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
+    boost::hana::pair<boost::hana::type<ParameterImpl>, ParameterRepository>,
     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
     boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
     boost::hana::pair<boost::hana::type<AtomImpl<StaticTag>>, AtomRepository<StaticTag>>,
@@ -197,15 +203,21 @@ public:
     /// @brief Get or create requriements for the given parameters.
     Requirements get_or_create_requirements(loki::RequirementEnumSet requirement_set);
 
+    /// @brief Get or create a type for the given parameters.
+    Type get_or_create_type(std::string name, TypeList bases);
+
     /// @brief Get or create a variable for the given parameters.
     Variable get_or_create_variable(std::string name, size_t parameter_index);
+
+    /// @brief Get or create a parameter for the given parameters.
+    Parameter get_or_create_parameter(Variable variable, TypeList types);
 
     /// @brief Get or create a variable term for the given parameters.
     Term get_or_create_term(Variable variable);
     Term get_or_create_term(Object object);
 
     /// @brief Get or create an object for the given parameters.
-    Object get_or_create_object(std::string name);
+    Object get_or_create_object(std::string name, TypeList types);
 
     template<IsStaticOrFluentOrDerivedTag P>
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
@@ -220,7 +232,7 @@ public:
     GroundLiteral<P> get_or_create_ground_literal(bool polarity, GroundAtom<P> atom);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);
+    Predicate<P> get_or_create_predicate(std::string name, ParameterList parameters);
 
     /// @brief Get or create a number function expression for the given parameters.
     FunctionExpressionNumber get_or_create_function_expression_number(double number);
@@ -286,7 +298,7 @@ public:
 
     /// @brief Get or create a function skeleton for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    FunctionSkeleton<F> get_or_create_function_skeleton(std::string name, VariableList parameters);
+    FunctionSkeleton<F> get_or_create_function_skeleton(std::string name, ParameterList parameters);
 
     /// @brief Get or create a numeric effect for the given parameters.
     template<IsFluentOrAuxiliaryTag F>
@@ -297,7 +309,7 @@ public:
     get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
     /// @brief Get or create a universally quantified conjunctive effect for the given parameters.
-    ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
+    ConjunctiveEffect get_or_create_conjunctive_effect(ParameterList parameters,
                                                        LiteralList<FluentTag> effects,
                                                        NumericEffectList<FluentTag> fluent_numeric_effects,
                                                        std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
@@ -326,7 +338,7 @@ public:
                                                                     GroundFunctionExpression right_function_expression);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
-    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
+    ConjunctiveCondition get_or_create_conjunctive_condition(ParameterList parameters,
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 

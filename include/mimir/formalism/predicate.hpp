@@ -29,11 +29,11 @@ class PredicateImpl
 private:
     Index m_index;
     std::string m_name;
-    VariableList m_parameters;
+    ParameterList m_parameters;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    PredicateImpl(Index index, std::string name, VariableList parameters);
+    PredicateImpl(Index index, std::string name, ParameterList parameters);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -51,7 +51,7 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
-    const VariableList& get_parameters() const;
+    const ParameterList& get_parameters() const;
     size_t get_arity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

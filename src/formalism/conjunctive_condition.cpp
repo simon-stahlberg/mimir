@@ -29,7 +29,7 @@
 namespace mimir::formalism
 {
 ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
-                                                   VariableList parameters,
+                                                   ParameterList parameters,
                                                    LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
                                                    NumericConstraintList numeric_constraints) :
@@ -73,7 +73,7 @@ ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
 
 Index ConjunctiveConditionImpl::get_index() const { return m_index; }
 
-const VariableList& ConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
+const ParameterList& ConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
 
 template<IsStaticOrFluentOrDerivedTag P>
 const LiteralList<P>& ConjunctiveConditionImpl::get_literals() const

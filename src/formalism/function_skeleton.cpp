@@ -23,7 +23,7 @@
 namespace mimir::formalism
 {
 template<IsStaticOrFluentOrAuxiliaryTag F>
-FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
+FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, ParameterList parameters) :
     m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
@@ -43,7 +43,7 @@ const std::string& FunctionSkeletonImpl<F>::get_name() const
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
+const ParameterList& FunctionSkeletonImpl<F>::get_parameters() const
 {
     return m_parameters;
 }

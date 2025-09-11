@@ -67,9 +67,23 @@ Requirements Repositories::get_or_create_requirements(loki::RequirementEnumSet r
     return boost::hana::at_key(m_repositories, boost::hana::type<RequirementsImpl> {}).get_or_create(std::move(requirement_set));
 }
 
+Type Repositories::get_or_create_type(std::string name, TypeList bases)
+{
+    std::sort(bases.begin(), bases.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_name() < rhs->get_name(); });
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<TypeImpl> {}).get_or_create(std::move(name), std::move(bases));
+}
+
 Variable Repositories::get_or_create_variable(std::string name, size_t parameter_index)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<VariableImpl> {}).get_or_create(std::move(name), std::move(parameter_index));
+}
+
+Parameter Repositories::get_or_create_parameter(Variable variable, TypeList types)
+{
+    std::sort(types.begin(), types.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_name() < rhs->get_name(); });
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<ParameterImpl> {}).get_or_create(std::move(variable), std::move(types));
 }
 
 Term Repositories::get_or_create_term(Variable variable)
@@ -82,9 +96,11 @@ Term Repositories::get_or_create_term(Object object)
     return boost::hana::at_key(m_repositories, boost::hana::type<TermImpl> {}).get_or_create(std::move(object));
 }
 
-Object Repositories::get_or_create_object(std::string name)
+Object Repositories::get_or_create_object(std::string name, TypeList types)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).get_or_create(std::move(name));
+    std::sort(types.begin(), types.end(), [](const auto& lhs, const auto& rhs) { return lhs->get_name() < rhs->get_name(); });
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).get_or_create(std::move(name), std::move(types));
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -128,14 +144,14 @@ template GroundLiteral<FluentTag> Repositories::get_or_create_ground_literal(boo
 template GroundLiteral<DerivedTag> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<DerivedTag> atom);
 
 template<IsStaticOrFluentOrDerivedTag P>
-Predicate<P> Repositories::get_or_create_predicate(std::string name, VariableList parameters)
+Predicate<P> Repositories::get_or_create_predicate(std::string name, ParameterList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PredicateImpl<P>> {}).get_or_create(name, std::move(parameters));
 }
 
-template Predicate<StaticTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<FluentTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<DerivedTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<StaticTag> Repositories::get_or_create_predicate(std::string name, ParameterList parameters);
+template Predicate<FluentTag> Repositories::get_or_create_predicate(std::string name, ParameterList parameters);
+template Predicate<DerivedTag> Repositories::get_or_create_predicate(std::string name, ParameterList parameters);
 
 FunctionExpressionNumber Repositories::get_or_create_function_expression_number(double number)
 {
@@ -309,14 +325,14 @@ template GroundFunction<FluentTag> Repositories::get_or_create_ground_function(F
 template GroundFunction<AuxiliaryTag> Repositories::get_or_create_ground_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, ObjectList objects);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-FunctionSkeleton<F> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters)
+FunctionSkeleton<F> Repositories::get_or_create_function_skeleton(std::string name, ParameterList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl<F>> {}).get_or_create(std::move(name), std::move(parameters));
 }
 
-template FunctionSkeleton<StaticTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
-template FunctionSkeleton<FluentTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
-template FunctionSkeleton<AuxiliaryTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
+template FunctionSkeleton<StaticTag> Repositories::get_or_create_function_skeleton(std::string name, ParameterList parameters);
+template FunctionSkeleton<FluentTag> Repositories::get_or_create_function_skeleton(std::string name, ParameterList parameters);
+template FunctionSkeleton<AuxiliaryTag> Repositories::get_or_create_function_skeleton(std::string name, ParameterList parameters);
 
 template<IsFluentOrAuxiliaryTag F>
 NumericEffect<F>
@@ -347,7 +363,7 @@ template GroundNumericEffect<AuxiliaryTag> Repositories::get_or_create_ground_nu
                                                                                              GroundFunction<AuxiliaryTag> function,
                                                                                              GroundFunctionExpression function_expression);
 
-ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList parameters,
+ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(ParameterList parameters,
                                                                  LiteralList<FluentTag> effects,
                                                                  NumericEffectList<FluentTag> fluent_numeric_effects,
                                                                  std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
@@ -400,7 +416,7 @@ GroundNumericConstraint Repositories::get_or_create_ground_numeric_constraint(lo
         .get_or_create(binary_comparator, left_function_expression, right_function_expression);
 }
 
-ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableList parameters,
+ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(ParameterList parameters,
                                                                        LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                                        NumericConstraintList numeric_constraints)
 {

@@ -47,7 +47,7 @@ public:
     AxiomImpl& operator=(AxiomImpl&& other) = default;
 
     Index get_index() const;
-    const VariableList& get_parameters() const;
+    const ParameterList& get_parameters() const;
     ConjunctiveCondition get_conjunctive_condition() const;
     Literal<DerivedTag> get_literal() const;
 

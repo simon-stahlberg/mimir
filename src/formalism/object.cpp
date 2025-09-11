@@ -21,11 +21,13 @@
 
 namespace mimir::formalism
 {
-ObjectImpl::ObjectImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)) {}
+ObjectImpl::ObjectImpl(Index index, std::string name, TypeList types) : m_index(index), m_name(std::move(name)), m_types(std::move(types)) {}
 
 Index ObjectImpl::get_index() const { return m_index; }
 
 const std::string& ObjectImpl::get_name() const { return m_name; }
+
+const TypeList& ObjectImpl::get_bases() const { return m_types; }
 
 std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
 {

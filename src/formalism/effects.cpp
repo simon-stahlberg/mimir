@@ -79,7 +79,7 @@ template class NumericEffectImpl<AuxiliaryTag>;
  */
 
 ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
-                                             VariableList parameters,
+                                             ParameterList parameters,
                                              LiteralList<FluentTag> effects,
                                              NumericEffectList<FluentTag> fluent_numeric_effects,
                                              std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
@@ -98,7 +98,7 @@ ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
 
 Index ConjunctiveEffectImpl::get_index() const { return m_index; }
 
-const VariableList& ConjunctiveEffectImpl::get_parameters() const { return m_parameters; }
+const ParameterList& ConjunctiveEffectImpl::get_parameters() const { return m_parameters; }
 
 const LiteralList<FluentTag>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
 

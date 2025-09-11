@@ -40,7 +40,7 @@ AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Li
 
 Index AxiomImpl::get_index() const { return m_index; }
 
-const VariableList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
+const ParameterList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
 Literal<DerivedTag> AxiomImpl::get_literal() const { return m_literal; }
 
