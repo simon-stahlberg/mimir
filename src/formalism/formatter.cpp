@@ -37,10 +37,12 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/object.hpp"
+#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
+#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
@@ -48,6 +50,88 @@
 
 namespace mimir::formalism
 {
+
+/**
+ * Explicit templates
+ */
+
+template<>
+void write_untyped<AddressFormatter>(const TypeImpl& element, AddressFormatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+}
+
+template<>
+void write_untyped<AddressFormatter>(const ObjectImpl& element, AddressFormatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+}
+
+template<>
+void write_untyped<AddressFormatter>(const VariableImpl& element, AddressFormatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+}
+
+template<>
+void write_typed<AddressFormatter>(const TypeImpl& element, AddressFormatter formatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+    if (!element.get_bases().empty())
+    {
+        out << " - ";
+        if (element.get_bases().size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < element.get_bases().size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                write_untyped<AddressFormatter>(*element.get_bases()[i], formatter, out);
+            }
+            out << ")";
+        }
+        else if (element.get_bases().size() == 1)
+        {
+            write_untyped<AddressFormatter>(*element.get_bases().front(), formatter, out);
+        }
+    }
+}
+
+template<>
+void write_typed<AddressFormatter>(const ObjectImpl& element, AddressFormatter formatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+    if (!element.get_bases().empty())
+    {
+        out << " - ";
+        if (element.get_bases().size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < element.get_bases().size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                write_untyped<AddressFormatter>(*element.get_bases()[i], formatter, out);
+            }
+            out << ")";
+        }
+        else if (element.get_bases().size() == 1)
+        {
+            write_untyped<AddressFormatter>(*element.get_bases().front(), formatter, out);
+        }
+    }
+}
+
+template<>
+void write_typed<AddressFormatter>(const VariableImpl& element, AddressFormatter, std::ostream& out)
+{
+    out << reinterpret_cast<uintptr_t>(&element);
+}
+
+/**
+ * Generic templates
+ */
 
 template<Formatter T>
 void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& out)
@@ -755,13 +839,32 @@ template void write(const GroundFunctionValueImpl<FluentTag>& element, AddressFo
 template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
-void write(const ObjectImpl& element, T formatter, std::ostream& out)
+void write(const ParameterImpl& element, T formatter, std::ostream& out)
 {
-    out << element.get_name();
+    write<T>(*element.get_variable(), formatter, out);
+    if (!element.get_bases().empty())
+    {
+        out << " - ";
+        if (element.get_bases().size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < element.get_bases().size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                write<T>(*element.get_bases()[i], formatter, out);
+            }
+            out << ")";
+        }
+        else if (element.get_bases().size() == 1)
+        {
+            write<T>(*element.get_bases().front(), formatter, out);
+        }
+    }
 }
 
-template void write(const ObjectImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ObjectImpl& element, AddressFormatter formatter, std::ostream& out);
+template void write<StringFormatter>(const ParameterImpl& element, StringFormatter formatter, std::ostream& out);
+template void write<AddressFormatter>(const ParameterImpl& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const PredicateImpl<P>& element, T formatter, std::ostream& out)
@@ -944,21 +1047,107 @@ template void write(const RequirementsImpl& element, StringFormatter formatter, 
 template void write(const RequirementsImpl& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
-void write(const TermImpl& element, T formatter, std::ostream& out)
-{
-    std::visit([&](auto&& arg) { write(*arg, formatter, out); }, element.get_variant());
-}
-
-template void write(const TermImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const TermImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const VariableImpl& element, T formatter, std::ostream& out)
+void write_untyped(const TypeImpl& element, T, std::ostream& out)
 {
     out << element.get_name();
 }
 
-template void write(const VariableImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const VariableImpl& element, AddressFormatter formatter, std::ostream& out);
+template void write_untyped<StringFormatter>(const TypeImpl& element, StringFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_untyped(const TermImpl& element, T formatter, std::ostream& out)
+{
+    std::visit([&](const auto& arg) { write_untyped<T>(*arg, formatter, out); }, element.get_object_or_variable());
+}
+
+template void write_untyped<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);
+template void write_untyped<AddressFormatter>(const TermImpl& element, AddressFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_untyped(const ObjectImpl& element, T, std::ostream& out)
+{
+    out << element.get_name();
+}
+
+template void write_untyped<StringFormatter>(const ObjectImpl& element, StringFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_untyped(const VariableImpl& element, T, std::ostream& out)
+{
+    out << element.get_name();
+}
+
+template void write_untyped<StringFormatter>(const VariableImpl& element, StringFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_typed(const TypeImpl& element, T formatter, std::ostream& out)
+{
+    out << element.get_name();
+    if (!element.get_bases().empty())
+    {
+        out << " - ";
+        if (element.get_bases().size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < element.get_bases().size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                write_untyped<T>(*element.get_bases()[i], formatter, out);
+            }
+            out << ")";
+        }
+        else if (element.get_bases().size() == 1)
+        {
+            write_untyped<T>(*element.get_bases().front(), formatter, out);
+        }
+    }
+}
+
+template void write_typed<StringFormatter>(const TypeImpl& element, StringFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_typed(const TermImpl& element, T formatter, std::ostream& out)
+{
+    std::visit([&](const auto& arg) { write_typed<T>(*arg, formatter, out); }, element.get_object_or_variable());
+}
+
+template void write_typed<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);
+template void write_typed<AddressFormatter>(const TermImpl& element, AddressFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_typed(const ObjectImpl& element, T formatter, std::ostream& out)
+{
+    out << element.get_name();
+    if (!element.get_bases().empty())
+    {
+        out << " - ";
+        if (element.get_bases().size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < element.get_bases().size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                write_untyped<T>(*element.get_bases()[i], formatter, out);
+            }
+            out << ")";
+        }
+        else if (element.get_bases().size() == 1)
+        {
+            write_untyped<T>(*element.get_bases().front(), formatter, out);
+        }
+    }
+}
+
+template void write_typed<StringFormatter>(const ObjectImpl& element, StringFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write_typed(const VariableImpl& element, T, std::ostream& out)
+{
+    out << element.get_name();
+}
+
+template void write_typed<StringFormatter>(const VariableImpl& element, StringFormatter formatter, std::ostream& out);
 
 }

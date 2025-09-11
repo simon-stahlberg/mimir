@@ -14,28 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/type.hpp"
 
 #include "formatter.hpp"
 
 namespace mimir::formalism
 {
-ObjectImpl::ObjectImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)) {}
+TypeImpl::TypeImpl(Index index, std::string name, TypeList bases) : m_index(index), m_name(std::move(name)), m_bases(std::move(bases)) {}
 
-Index ObjectImpl::get_index() const { return m_index; }
+Index TypeImpl::get_index() const { return m_index; }
 
-const std::string& ObjectImpl::get_name() const { return m_name; }
+const std::string& TypeImpl::get_name() const { return m_name; }
 
-std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
+const TypeList& TypeImpl::get_bases() const { return m_bases; }
+
+std::ostream& operator<<(std::ostream& out, const TypeImpl& element)
 {
     write_typed(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, Object element)
+std::ostream& operator<<(std::ostream& out, Type element)
 {
     write_typed(*element, AddressFormatter(), out);
     return out;
 }
+
 }

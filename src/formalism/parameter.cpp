@@ -15,27 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/parameter.hpp"
 
 #include "formatter.hpp"
 
+#include <cassert>
+
 namespace mimir::formalism
 {
-ObjectImpl::ObjectImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)) {}
+ParameterImpl::ParameterImpl(Index index, Variable variable, TypeList types) : m_index(index), m_variable(std::move(variable)), m_types(std::move(types)) {}
 
-Index ObjectImpl::get_index() const { return m_index; }
+Index ParameterImpl::get_index() const { return m_index; }
 
-const std::string& ObjectImpl::get_name() const { return m_name; }
+Variable ParameterImpl::get_variable() const { return m_variable; }
 
-std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
+const TypeList& ParameterImpl::get_bases() const { return m_types; }
+
+std::ostream& operator<<(std::ostream& out, const ParameterImpl& element)
 {
-    write_typed(element, StringFormatter(), out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, Object element)
+std::ostream& operator<<(std::ostream& out, Parameter element)
 {
-    write_typed(*element, AddressFormatter(), out);
+    write(*element, AddressFormatter(), out);
     return out;
 }
+
 }
