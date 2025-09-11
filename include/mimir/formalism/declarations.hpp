@@ -265,10 +265,21 @@ class ProblemBuilder;
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
 
+class TypeImpl;
+using Type = const TypeImpl*;
+using TypeList = std::vector<Type>;
+using TypeSet = std::unordered_set<Type>;
+using TypeMap = std::unordered_map<Type, Type>;
+
 class VariableImpl;
 using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
+
+class ParameterImpl;
+using Parameter = const ParameterImpl*;
+using ParameterList = std::vector<Parameter>;
+using ParameterAssignment = std::unordered_map<Parameter, Object>;
 
 class ConjunctiveConditionImpl;
 using ConjunctiveCondition = const ConjunctiveConditionImpl*;
