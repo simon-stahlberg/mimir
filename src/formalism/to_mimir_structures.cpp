@@ -289,7 +289,6 @@ Type ToMimirStructures::translate_common(loki::Type type, Repositories& reposito
 
 Object ToMimirStructures::translate_common(loki::Object object, Repositories& repositories)
 {
-    assert(object->get_bases().empty());
     return repositories.get_or_create_object(object->get_name(), translate_common(object->get_bases(), repositories));
 }
 
