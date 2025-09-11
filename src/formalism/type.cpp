@@ -32,6 +32,33 @@ TypesHierarchy::TypesHierarchy(TypeList types) : m_types(std::move(types)) {}
 
 const TypeList& TypesHierarchy::get_types() const { return m_types; }
 
+bool is_subtypeeq(Type lhs, Type rhs)
+{
+    if (lhs == rhs)
+        return true;
+
+    for (const auto& base : lhs->get_bases())
+    {
+        if (is_subtypeeq(base, rhs))
+            return true;
+    }
+
+    return false;
+}
+
+bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs)
+{
+    for (const auto& l : lhs)
+    {
+        for (const auto& r : rhs)
+        {
+            if (is_subtypeeq(l, r))
+                return true;
+        }
+    }
+    return false;
+}
+
 std::ostream& operator<<(std::ostream& out, const TypeImpl& element)
 {
     write_typed(element, StringFormatter(), out);

@@ -23,6 +23,11 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set_utils.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/type.hpp"
 
 #include <cassert>
 #include <limits>
@@ -32,29 +37,47 @@
 namespace mimir::formalism
 {
 
-template<IsStaticOrFluentOrDerivedTag P>
-class PredicateAssignmentSet
+struct PerfectAssignmentHash
 {
-private:
-    Problem m_problem;
-    Predicate m_predicate;
-
-    size_t m_num_vertex_assignments;                 ///< The number of vertices in the predicate
-    std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to o in O(p, i)
+    size_t m_num_assignments;                        ///< The number of type legal [i/o] including a sentinel for each i
+    std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to index for each type legal [i/o]
     std::vector<size_t> m_offsets;                   ///< The offsets of i
-    std::vector<bool> m_set;
 
-public:
-    PredicateAssignmentSet(Problem problem, Predicate predicate) :
-        m_problem(problem),
-        m_predicate(predicate),
-        m_num_vertex_assignments(0),
-        m_remapping(),
-        m_offsets(),
-        m_set()
+    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) : m_num_assignments(0), m_remapping(), m_offsets()
     {
-        // TODO: initialize m_remapping, m_offsets, m_set
+        const auto num_parameters = parameters.size();
+        const auto num_objects = objects.size();
+
+        /* Compute the remapping */
+        m_remapping.resize(num_parameters + 1);
+
+        m_remapping[0].resize(1, MAX_INDEX);
+        m_remapping[0][0] = 0;  // sentinel
+
+        for (Index i = 0; i < num_parameters; ++i)
+        {
+            const auto& parameter = parameters[i];
+            m_remapping[i + 1].resize(num_objects + 1, MAX_INDEX);
+            m_remapping[i + 1][0] = 0;  // sentinel
+
+            auto new_index = Index { 1 };
+            for (const auto& object : objects)
+                if (is_subtypeeq(object->get_bases(), parameter->get_bases()))
+                    m_remapping[i + 1][object->get_index() + 1] = new_index++;
+        }
+
+        /* Compute the offsets and num_assignments */
+        m_offsets.resize(num_parameters + 1);
+        for (Index i = 0; i < num_parameters + 1; ++i)
+        {
+            m_offsets[i] = m_num_assignments;
+            m_num_assignments += std::count_if(m_remapping[i].begin(), m_remapping[i].end(), [](auto&& index) { return index != MAX_INDEX; });
+        }
+
+        assert(m_num_assignments > 0);
     }
+
+    size_t get_empty_assignment_rank() const { return 0; }
 
     size_t get_assignment_rank(VertexAssignment assignment) const
     {
@@ -73,12 +96,32 @@ public:
         const auto j1 = m_offsets[assignment.first_index + 1] + o1;
         const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
-        const auto result = j1 * m_num_vertex_assignments + j2;
+        const auto result = j1 * m_num_assignments + j2;
 
         return result;
     }
 
-    size_t get_num_assignments() const { return m_num_vertex_assignments * m_num_vertex_assignments; }
+    size_t get_num_assignments() const { return m_num_assignments * m_num_assignments; }
+};
+
+template<IsStaticOrFluentOrDerivedTag P>
+class PredicateAssignmentSet
+{
+private:
+    Problem m_problem;
+    Predicate m_predicate;
+
+    PerfectAssignmentHash m_hash;
+    std::vector<bool> m_set;
+
+public:
+    PredicateAssignmentSet(Problem problem, Predicate predicate) :
+        m_problem(problem),
+        m_predicate(predicate),
+        m_hash(PerfectAssignmentHash(predicate->get_parameters(), problem->get_problem_and_domain_objects())),
+        m_set(m_hash.get_num_assignments(), false)
+    {
+    }
 
     void reset();
 
@@ -112,39 +155,19 @@ private:
     Problem m_problem;
     FunctionSkeleton m_function_skeleton;
 
-    size_t m_num_vertex_assignments;                 ///< The number of vertices in the predicate
-    std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to o in O(p, i)
-    std::vector<size_t> m_offsets;                   ///< The offsets of i
+    PerfectAssignmentHash m_hash;
     std::vector<Bounds<ContinuousCost>> m_set;
 
 public:
     FunctionSkeletonAssignmentSet() = default;
 
-    FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton function_skeleton) : m_problem(problem), m_function_skeleton(function_skeleton) {}
-
-    size_t get_assignment_rank(VertexAssignment assignment) const
+    FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton function_skeleton) :
+        m_problem(problem),
+        m_function_skeleton(function_skeleton),
+        m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), problem->get_problem_and_domain_objects())),
+        m_set(m_hash.get_num_assignments(), Bounds<ContinuousCost>::unbounded)
     {
-        const auto o = m_remapping[assignment.index + 1][assignment.object + 1];
-
-        const auto result = m_offsets[assignment.index + 1] + o;
-
-        return result;
     }
-
-    size_t get_assignment_rank(EdgeAssignment assignment) const
-    {
-        const auto o1 = m_remapping[assignment.first_index + 1][assignment.first_object + 1];
-        const auto o2 = m_remapping[assignment.second_index + 1][assignment.second_object + 1];
-
-        const auto j1 = m_offsets[assignment.first_index + 1] + o1;
-        const auto j2 = m_offsets[assignment.second_index + 1] + o2;
-
-        const auto result = j1 * m_num_vertex_assignments + j2;
-
-        return result;
-    }
-
-    size_t get_num_assignments() const { return m_num_vertex_assignments * m_num_vertex_assignments; }
 
     void reset();
 

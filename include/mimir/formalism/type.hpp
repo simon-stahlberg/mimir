@@ -62,6 +62,10 @@ public:
     const TypeList& get_types() const;
 };
 
+extern bool is_subtypeeq(Type lhs, Type rhs);
+
+extern bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs);
+
 extern std::ostream& operator<<(std::ostream& out, const TypeImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, Type element);
