@@ -51,6 +51,17 @@ public:
     auto identifying_members() const { return std::tuple(std::cref(get_name()), std::cref(get_bases())); }
 };
 
+class TypesHierarchy
+{
+private:
+    TypeList m_types;
+
+public:
+    explicit TypesHierarchy(TypeList types);
+
+    const TypeList& get_types() const;
+};
+
 extern std::ostream& operator<<(std::ostream& out, const TypeImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, Type element);

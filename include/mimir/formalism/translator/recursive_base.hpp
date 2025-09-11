@@ -504,6 +504,7 @@ protected:
         builder.get_name() = domain->get_name();
         builder.get_filepath() = domain->get_filepath();
         builder.get_requirements() = this->translate_level_0(domain->get_requirements(), repositories);
+        builder.get_types() = this->translate_level_0(domain->get_types(), repositories);
         builder.get_constants() = this->translate_level_0(domain->get_constants(), repositories);
         builder.get_predicates<StaticTag>() = this->translate_level_0(domain->get_predicates<StaticTag>(), repositories);
         builder.get_predicates<FluentTag>() = this->translate_level_0(domain->get_predicates<FluentTag>(), repositories);

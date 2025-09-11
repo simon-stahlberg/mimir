@@ -135,6 +135,10 @@ from pymimir.pymimir.advanced.formalism import (
     Requirements,
     Term,
     TermList,
+    Type,
+    TypeList,
     Variable,
     VariableList,
+    Parameter,
+    ParameterList,
 )

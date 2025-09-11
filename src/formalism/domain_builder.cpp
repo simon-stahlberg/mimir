@@ -39,6 +39,7 @@ DomainBuilder::DomainBuilder() :
     m_filepath(std::nullopt),
     m_name(""),
     m_requirements(nullptr),
+    m_types(),
     m_constants(),
     m_predicates(),
     m_function_skeletons(),
@@ -90,6 +91,7 @@ Domain DomainBuilder::get_result()
                                                             std::move(m_filepath),
                                                             std::move(m_name),
                                                             std::move(m_requirements),
+                                                            std::move(m_types),
                                                             std::move(m_constants),
                                                             std::move(m_predicates),
                                                             std::move(m_function_skeletons),
@@ -102,6 +104,7 @@ Repositories& DomainBuilder::get_repositories() { return m_repositories; }
 std::optional<fs::path>& DomainBuilder::get_filepath() { return m_filepath; }
 std::string& DomainBuilder::get_name() { return m_name; }
 Requirements& DomainBuilder::get_requirements() { return m_requirements; }
+TypeList& DomainBuilder::get_types() { return m_types; }
 ObjectList& DomainBuilder::get_constants() { return m_constants; }
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateList<P>& DomainBuilder::get_predicates()

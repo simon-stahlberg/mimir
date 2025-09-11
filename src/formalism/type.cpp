@@ -28,6 +28,10 @@ const std::string& TypeImpl::get_name() const { return m_name; }
 
 const TypeList& TypeImpl::get_bases() const { return m_bases; }
 
+TypesHierarchy::TypesHierarchy(TypeList types) : m_types(std::move(types)) {}
+
+const TypeList& TypesHierarchy::get_types() const { return m_types; }
+
 std::ostream& operator<<(std::ostream& out, const TypeImpl& element)
 {
     write_typed(element, StringFormatter(), out);

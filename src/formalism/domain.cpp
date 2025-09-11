@@ -41,6 +41,7 @@ DomainImpl::DomainImpl(Repositories repositories,
                        std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
+                       TypeList types,
                        ObjectList constants,
                        PredicateLists<StaticTag, FluentTag, DerivedTag> predicates,
                        FunctionSkeletonLists<StaticTag, FluentTag> function_skeletons,
@@ -51,6 +52,7 @@ DomainImpl::DomainImpl(Repositories repositories,
     m_filepath(std::move(filepath)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
+    m_types(std::move(types)),
     m_constants(std::move(constants)),
     m_predicates(std::move(predicates)),
     m_function_skeletons(std::move(function_skeletons)),
@@ -99,6 +101,8 @@ const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filep
 const std::string& DomainImpl::get_name() const { return m_name; }
 
 Requirements DomainImpl::get_requirements() const { return m_requirements; }
+
+const TypeList& DomainImpl::get_types() const { return m_types; }
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 

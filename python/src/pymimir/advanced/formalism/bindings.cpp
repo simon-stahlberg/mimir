@@ -73,13 +73,24 @@ void bind_module_definitions(nb::module_& m)
         .def("get_index", &RequirementsImpl::get_index, nb::rv_policy::copy)
         .def("get_requirements", &RequirementsImpl::get_requirements, nb::rv_policy::copy);
 
+    nb::class_<TypeImpl>(m, "Type")
+        .def("__str__", [](const TypeImpl& self) { return to_string(self); })
+        .def("__eq__", [](const TypeImpl& lhs, const TypeImpl& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const TypeImpl& lhs, const TypeImpl& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const TypeImpl& self) { return std::hash<Type> {}(&self); })
+        .def("get_index", &TypeImpl::get_index, nb::rv_policy::copy)
+        .def("get_name", &TypeImpl::get_name, nb::rv_policy::copy)
+        .def("get_bases", &TypeImpl::get_bases, nb::rv_policy::copy);
+    nb::bind_vector<TypeList>(m, "TypeList");
+
     nb::class_<ObjectImpl>(m, "Object")  //
         .def("__str__", [](const ObjectImpl& self) { return to_string(self); })
         .def("__eq__", [](const ObjectImpl& lhs, const ObjectImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const ObjectImpl& lhs, const ObjectImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ObjectImpl& self) { return std::hash<Object> {}(&self); })
         .def("get_index", &ObjectImpl::get_index, nb::rv_policy::copy)
-        .def("get_name", &ObjectImpl::get_name, nb::rv_policy::copy);
+        .def("get_name", &ObjectImpl::get_name, nb::rv_policy::copy)
+        .def("get_bases", &ObjectImpl::get_bases, nb::rv_policy::copy);
     nb::bind_vector<ObjectList>(m, "ObjectList");
 
     nb::class_<VariableImpl>(m, "Variable")  //
@@ -91,7 +102,17 @@ void bind_module_definitions(nb::module_& m)
         .def("get_name", &VariableImpl::get_name, nb::rv_policy::copy);
     nb::bind_vector<VariableList>(m, "VariableList");
 
-    nb::class_<TermImpl>(m, "Term")  //
+    nb::class_<ParameterImpl>(m, "Parameter")
+        .def("__str__", [](const ParameterImpl& self) { return to_string(self); })
+        .def("__eq__", [](const ParameterImpl& lhs, const ParameterImpl& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ParameterImpl& lhs, const ParameterImpl& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const ParameterImpl& self) { return std::hash<Parameter> {}(&self); })
+        .def("get_index", &ParameterImpl::get_index, nb::rv_policy::copy)
+        .def("get_variable", &ParameterImpl::get_variable, nb::rv_policy::reference_internal)
+        .def("get_bases", &ParameterImpl::get_bases, nb::rv_policy::copy);
+    nb::bind_vector<ParameterList>(m, "ParameterList");
+
+    nb::class_<TermImpl>(m, "Term")
         .def("__str__", [](const TermImpl& self) { return to_string(self); })
         .def("__eq__", [](const TermImpl& lhs, const TermImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const TermImpl& lhs, const TermImpl& rhs) { return &lhs != &rhs; })
@@ -762,6 +783,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_auxiliary_function", &DomainImpl::get_auxiliary_function_skeleton, nb::rv_policy::copy)
         .def("get_actions", &DomainImpl::get_actions, nb::rv_policy::copy)
         .def("get_requirements", &DomainImpl::get_requirements, nb::rv_policy::reference_internal)
+        .def("get_types", &DomainImpl::get_types, nb::rv_policy::copy)
         .def("get_constant", &DomainImpl::get_constant, nb::rv_policy::reference_internal)
         .def("get_name_to_constant", &DomainImpl::get_name_to_constant, nb::rv_policy::copy)
         .def("get_static_predicate", &DomainImpl::get_predicate<StaticTag>, nb::rv_policy::reference_internal)
@@ -980,7 +1002,7 @@ void bind_module_definitions(nb::module_& m)
         .def(
             "get_or_create_conjunctive_condition",
             [](ProblemImpl& self,
-               VariableList parameters,
+               ParameterList parameters,
                LiteralList<StaticTag> static_literals,
                LiteralList<FluentTag> fluent_literals,
                LiteralList<DerivedTag> derived_literals,

@@ -95,7 +95,9 @@ NB_MAKE_OPAQUE(mm::formalism::ToPredicateMap<std::string, mm::formalism::StaticT
 NB_MAKE_OPAQUE(mm::formalism::ToPredicateMap<std::string, mm::formalism::FluentTag>);
 NB_MAKE_OPAQUE(mm::formalism::ToPredicateMap<std::string, mm::formalism::DerivedTag>);
 NB_MAKE_OPAQUE(mm::formalism::ProblemList);
+NB_MAKE_OPAQUE(mm::formalism::TypeList);
 NB_MAKE_OPAQUE(mm::formalism::VariableList);
+NB_MAKE_OPAQUE(mm::formalism::ParameterList);
 NB_MAKE_OPAQUE(mm::formalism::TermList);
 // Search
 NB_MAKE_OPAQUE(mm::search::StateList);

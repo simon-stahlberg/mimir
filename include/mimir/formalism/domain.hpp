@@ -32,6 +32,7 @@ private:
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
+    TypeList m_types;
     ObjectList m_constants;
     PredicateLists<StaticTag, FluentTag, DerivedTag> m_predicates;
     FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons;
@@ -47,6 +48,7 @@ private:
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
+               TypeList types,
                ObjectList constants,
                PredicateLists<StaticTag, FluentTag, DerivedTag> predicates,
                FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons,
@@ -70,6 +72,7 @@ public:
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     Requirements get_requirements() const;
+    const TypeList& get_types() const;
     const ObjectList& get_constants() const;
     template<IsStaticOrFluentOrDerivedTag P>
     const PredicateList<P>& get_predicates() const;
