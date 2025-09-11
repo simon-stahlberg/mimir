@@ -188,7 +188,6 @@ var menudata={children:[
 {text:"o",url:"functions_rela_o.html#index_o"},
 {text:"p",url:"functions_rela_p.html#index_p"},
 {text:"r",url:"functions_rela_r.html#index_r"},
-{text:"s",url:"functions_rela_s.html#index_s"},
-{text:"u",url:"functions_rela_u.html#index_u"}]}]}]},
+{text:"s",url:"functions_rela_s.html#index_s"}]}]}]},
 {text:"Files",url:"files.html",children:[
 {text:"File List",url:"files.html"}]}]}

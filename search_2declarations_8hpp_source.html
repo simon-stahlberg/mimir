@@ -97,7 +97,7 @@ $(function() {
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define MIMIR_SEARCH_DECLARATIONS_HPP_</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// Do not include headers with transitive dependencies.</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="shared__object__pool_8hpp.html">mimir/algorithms/shared_object_pool.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;mimir/algorithms/shared_object_pool.hpp&quot;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="common_2types_8hpp.html">mimir/common/types.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;mimir/formalism/concepts.hpp&quot;</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
@@ -127,7 +127,7 @@ $(function() {
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment">// UnpackedStateImpl</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">class </span>UnpackedStateImpl;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespacemimir_1_1search.html#ae9c8c2782a43712c38169b3152ee5c6e">   52</a></span><span class="keyword">using </span><a class="code hl_class" href="classmimir_1_1SharedObjectPoolPtr.html">UnpackedState</a> = <a class="code hl_class" href="classmimir_1_1SharedObjectPoolPtr.html">SharedObjectPoolPtr&lt;UnpackedStateImpl&gt;</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespacemimir_1_1search.html#ae9c8c2782a43712c38169b3152ee5c6e">   52</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespacemimir_1_1search.html#ae9c8c2782a43712c38169b3152ee5c6e">UnpackedState</a> = SharedObjectPoolPtr&lt;UnpackedStateImpl&gt;;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">// State</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">class </span>State;</div>
@@ -324,7 +324,6 @@ $(function() {
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>}</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassmimir_1_1SharedObjectPoolPtr_html"><div class="ttname"><a href="classmimir_1_1SharedObjectPoolPtr.html">mimir::SharedObjectPoolPtr</a></div><div class="ttdef"><b>Definition:</b> shared_object_pool.hpp:36</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1ActionSatisficingBindingGenerator_html"><div class="ttname"><a href="classmimir_1_1search_1_1ActionSatisficingBindingGenerator.html">mimir::search::ActionSatisficingBindingGenerator</a></div><div class="ttdef"><b>Definition:</b> action.hpp:28</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1AddHeuristicImpl_html"><div class="ttname"><a href="classmimir_1_1search_1_1AddHeuristicImpl.html">mimir::search::AddHeuristicImpl</a></div><div class="ttdef"><b>Definition:</b> add.hpp:27</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1AxiomSatisficingBindingGenerator_html"><div class="ttname"><a href="classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html">mimir::search::AxiomSatisficingBindingGenerator</a></div><div class="ttdef"><b>Definition:</b> axiom.hpp:28</div></div>
@@ -431,9 +430,9 @@ $(function() {
 <div class="ttc" id="anamespacemimir_1_1search_html_acd66425d00784f4595cdb9be59ae2bbe"><div class="ttname"><a href="namespacemimir_1_1search.html#acd66425d00784f4595cdb9be59ae2bbe">mimir::search::Heuristic</a></div><div class="ttdeci">std::shared_ptr&lt; IHeuristic &gt; Heuristic</div><div class="ttdef"><b>Definition:</b> declarations.hpp:134</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html_ad0abd467d13ad53c78adb6587fa041a6"><div class="ttname"><a href="namespacemimir_1_1search.html#ad0abd467d13ad53c78adb6587fa041a6">mimir::search::DuplicatePruningStrategy</a></div><div class="ttdeci">std::shared_ptr&lt; DuplicatePruningStrategyImpl &gt; DuplicatePruningStrategy</div><div class="ttdef"><b>Definition:</b> declarations.hpp:154</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html_ad2411f3900c74e698517dd5262b19855"><div class="ttname"><a href="namespacemimir_1_1search.html#ad2411f3900c74e698517dd5262b19855">mimir::search::PerfectHeuristic</a></div><div class="ttdeci">std::shared_ptr&lt; PerfectHeuristicImpl &gt; PerfectHeuristic</div><div class="ttdef"><b>Definition:</b> declarations.hpp:136</div></div>
+<div class="ttc" id="anamespacemimir_1_1search_html_ae9c8c2782a43712c38169b3152ee5c6e"><div class="ttname"><a href="namespacemimir_1_1search.html#ae9c8c2782a43712c38169b3152ee5c6e">mimir::search::UnpackedState</a></div><div class="ttdeci">SharedObjectPoolPtr&lt; UnpackedStateImpl &gt; UnpackedState</div><div class="ttdef"><b>Definition:</b> declarations.hpp:52</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html_aee5566af89cb1a262ac53ee968c93e7c"><div class="ttname"><a href="namespacemimir_1_1search.html#aee5566af89cb1a262ac53ee968c93e7c">mimir::search::ExplorationStategy</a></div><div class="ttdeci">std::shared_ptr&lt; IExplorationStrategy &gt; ExplorationStategy</div><div class="ttdef"><b>Definition:</b> declarations.hpp:168</div></div>
 <div class="ttc" id="anamespacemimir_html_aee46b4137604f4323c701f026b7c4780"><div class="ttname"><a href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">mimir::UnorderedMap</a></div><div class="ttdeci">std::unordered_map&lt; Key, Value, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt; UnorderedMap</div><div class="ttdef"><b>Definition:</b> types.hpp:80</div></div>
-<div class="ttc" id="ashared__object__pool_8hpp_html"><div class="ttname"><a href="shared__object__pool_8hpp.html">shared_object_pool.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
