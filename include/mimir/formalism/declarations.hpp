@@ -52,10 +52,6 @@ template<IsStaticOrFluentOrDerivedTag P>
 class PredicateAssignmentSets;
 template<IsStaticOrFluentTag F>
 class FunctionSkeletonAssignmentSets;
-template<IsStaticOrFluentOrDerivedTag P>
-class AssignmentSet;
-template<IsStaticOrFluentTag F>
-class NumericAssignmentSet;
 
 class ActionImpl;
 using Action = const ActionImpl*;

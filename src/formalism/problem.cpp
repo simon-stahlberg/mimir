@@ -326,13 +326,6 @@ const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() co
     return m_details.initial.positive_static_initial_atoms_indices;
 }
 
-const AssignmentSet<StaticTag>& ProblemImpl::get_static_assignment_set() const { return m_details.initial.positive_static_initial_assignment_set; }
-
-const NumericAssignmentSet<StaticTag>& ProblemImpl::get_static_initial_numeric_assignment_set() const
-{
-    return m_details.initial.static_initial_numeric_assignment_set;
-}
-
 const PredicateAssignmentSets<StaticTag>& ProblemImpl::get_positive_static_initial_predicate_assignment_sets() const
 {
     return m_details.initial.positive_static_initial_predicate_assignment_sets;
@@ -1264,10 +1257,6 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
     positive_static_initial_atoms(to_ground_atoms(problem.get_initial_literals<StaticTag>())),
     positive_static_initial_atoms_bitset(),
     positive_static_initial_atoms_indices(),
-    positive_static_initial_assignment_set(
-        AssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_predicates<StaticTag>())),
-    static_initial_numeric_assignment_set(
-        NumericAssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_function_skeletons<StaticTag>())),
     positive_static_initial_predicate_assignment_sets(
         PredicateAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>())),
     static_initial_function_skeleton_assignment_sets(
@@ -1288,7 +1277,6 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
                    std::back_inserter(positive_static_initial_atoms_indices),
                    [](unsigned long val) { return static_cast<Index>(val); });
 
-    positive_static_initial_assignment_set.insert_ground_atoms(positive_static_initial_atoms);
     positive_static_initial_predicate_assignment_sets.insert_ground_atoms(positive_static_initial_atoms);
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
@@ -1329,7 +1317,6 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
 
     const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<StaticTag> {});
 
-    static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, static_function_to_values);
     static_initial_function_skeleton_assignment_sets.insert_ground_function_values(static_functions, static_function_to_values);
 }
 

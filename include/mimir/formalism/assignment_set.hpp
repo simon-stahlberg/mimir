@@ -24,6 +24,7 @@
 #include "mimir/formalism/assignment_set_utils.hpp"
 #include "mimir/formalism/declarations.hpp"
 
+#include <boost/dynamic_bitset.hpp>
 #include <cassert>
 #include <limits>
 #include <tuple>
@@ -32,89 +33,112 @@
 namespace mimir::formalism
 {
 
-/// @brief `AssignmentSet` is a helper class representing a set of functions
-/// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
-///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j,...)
-///   2. f(p,i,o,-1,-1) = true iff there exists an atom p(...,o_i,...)
-/// with respective meanings
-///   1. the assignment [i/o], [j/o'] is consistent
-///   2. the assignment [i/o] is consistent
-///
-/// We say that an assignment set is static if all atoms it considers are static.
+struct PerfectAssignmentHash
+{
+    size_t m_num_assignments;                        ///< The number of type legal [i/o] including a sentinel for each i
+    std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to index for each type legal [i/o]
+    std::vector<size_t> m_offsets;                   ///< The offsets of i
+
+    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
+
+    size_t get_empty_assignment_rank() const;
+
+    size_t get_assignment_rank(const VertexAssignment& assignment) const;
+
+    size_t get_assignment_rank(const EdgeAssignment& assignment) const;
+
+    size_t get_num_assignments() const;
+};
+
 template<IsStaticOrFluentOrDerivedTag P>
-class AssignmentSet
+class PredicateAssignmentSet
 {
 private:
-    size_t m_num_objects;
+    Predicate<P> m_predicate;
 
-    // The underlying function
-    std::vector<std::vector<bool>> m_per_predicate_assignment_set;
+    PerfectAssignmentHash m_hash;
+    boost::dynamic_bitset<> m_set;
 
 public:
-    AssignmentSet();
+    PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate);
 
-    /// @brief Construct from a given set of ground atoms.
-    AssignmentSet(size_t num_objects, const PredicateList<P>& predicates);
-
-    /// @brief Clears all ground atoms from the assignment set.
     void reset();
 
-    /// @brief Insert ground atoms into the assignment set.
-    void insert_ground_atoms(const GroundAtomList<P>& ground_atoms);
-
-    /// @brief Insert a ground atom into the assignment set.
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    /**
-     * Getters
-     */
+    bool operator[](const VertexAssignment& assignment) const;
+    bool operator[](const EdgeAssignment& assignment) const;
 
-    size_t get_num_objects() const { return m_num_objects; }
-    const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return m_per_predicate_assignment_set; }
     size_t size() const;
 };
 
-/// @brief `NumericAssignmentSet` is a helper class representing a set of functions
-/// f : FunctionSkeleton x Params(A) x Object x Params(A) x Object -> Bounds<ContinuousCost> where
-///   1. f(p,i,o,j,o') = [l,r] iff min_{...} h(...,o_i,...,o'_j,...) = l and max_{...} h(...,o_i,...,o'_j,...) = r
-///   2. f(p,i,o,-1,-1) = [l,r] iff min_{...} h(...,o_i,...) = l and max_{...} h(...,o_i,...) = r
-///   3. for all others, we have f(p,i,o,j,o') = [inf,-inf] and f(p,i,o,-1,-1) = [inf,-inf]
-/// with respective meanings
-///   1. the assignment [i/o], [j/o'] results in partial function evaluation [l,r]
-///   2. the assignment [i/o] results in partial function evaluation [l,r]
-/// Using the `NumericAssignmentSet` we can efficiently evaluate numeric constraints partially.
-
-template<IsStaticOrFluentTag F>
-class NumericAssignmentSet
+template<IsStaticOrFluentOrDerivedTag P>
+class PredicateAssignmentSets
 {
 private:
-    size_t m_num_objects;
-    std::vector<std::vector<Bounds<ContinuousCost>>> m_per_function_skeleton_bounds_set;
+    std::vector<PredicateAssignmentSet<P>> m_sets;
 
-    /* temporaries for reuse */
+public:
+    PredicateAssignmentSets() = default;
+
+    PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates);
+
+    void reset();
+
+    void insert_ground_atoms(const GroundAtomList<P>& ground_atoms);
+
+    void insert_ground_atom(GroundAtom<P> ground_atom);
+
+    const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const;
+
+    size_t size() const;
+};
+
+template<IsStaticOrFluentTag F>
+class FunctionSkeletonAssignmentSet
+{
+private:
+    FunctionSkeleton<F> m_function_skeleton;
+
+    PerfectAssignmentHash m_hash;
+    std::vector<Bounds<ContinuousCost>> m_set;
+
+public:
+    FunctionSkeletonAssignmentSet() = default;
+
+    FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton);
+
+    void reset();
+
+    void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
+
+    Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const;
+    Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const;
+
+    size_t size() const;
+};
+
+template<IsStaticOrFluentTag F>
+class FunctionSkeletonAssignmentSets
+{
+private:
+    std::vector<FunctionSkeletonAssignmentSet<F>> m_sets;
 
     // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
     // followed by computing lower and upper bounds using minimization and maximization.
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
 
 public:
-    NumericAssignmentSet();
+    FunctionSkeletonAssignmentSets() = default;
 
-    /// @brief Construct from a given set of ground atoms.
-    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons);
+    FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons);
 
-    /// @brief Resets all function skeleton bounds to unrestricted, i.e., [inf,-inf].
     void reset();
 
-    /// @brief Insert fluent ground function values into the assignment set.
     void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
-    /**
-     * Getters
-     */
+    const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const;
 
-    size_t get_num_objects() const { return m_num_objects; }
-    const std::vector<std::vector<Bounds<ContinuousCost>>>& get_per_function_skeleton_bounds_set() const { return m_per_function_skeleton_bounds_set; }
     size_t size() const;
 };
 

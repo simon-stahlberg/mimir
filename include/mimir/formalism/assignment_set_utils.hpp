@@ -100,7 +100,8 @@ struct EdgeAssignment
             second_object = MAX_INDEX;
         }
 
-        if (first_index > second_index)
+        if (first_index > second_index)  // TODO: the swap seems redundant in the new design of the assignment set insert where partially assigned edges are
+                                         // properly initialized
         {
             std::swap(first_index, second_index);
             std::swap(first_object, second_object);
@@ -114,47 +115,6 @@ struct EdgeAssignment
                && (second_object != MAX_INDEX);
     }
 };
-
-/**
- * Joint ranking function between Vertex and Edge.
- */
-
-inline size_t get_empty_assignment_rank() { return 0; }
-
-inline size_t get_assignment_rank(const VertexAssignment& assignment, size_t arity, size_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto rank = (first * (assignment.index + 1))  //
-                      + (second * (assignment.object + 1));
-    return rank;
-}
-
-inline size_t get_assignment_rank(const EdgeAssignment& assignment, size_t arity, size_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto third = second * (num_objects + 1);
-    const auto fourth = third * (arity + 1);
-    const auto rank = (first * (assignment.first_index + 1))      //
-                      + (second * (assignment.first_object + 1))  //
-                      + (third * (assignment.second_index + 1))   //
-                      + (fourth * (assignment.second_object + 1));
-    return rank;
-}
-
-inline size_t num_assignments(size_t arity, size_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto third = second * (num_objects + 1);
-    const auto fourth = third * (arity + 1);
-    const auto max = (first * arity)           //
-                     + (second * num_objects)  //
-                     + (third * arity)         //
-                     + (fourth * num_objects);
-    return max + 1;
-}
 
 inline std::ostream& operator<<(std::ostream& os, const VertexAssignment& assignment)
 {

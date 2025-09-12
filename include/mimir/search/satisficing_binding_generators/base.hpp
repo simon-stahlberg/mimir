@@ -21,7 +21,6 @@
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/assignment_set2.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
@@ -50,10 +49,6 @@ public:
 
     mimir::generator<formalism::ObjectList>
     create_binding_generator(const State& state,
-                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
-                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set,
                              const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                              const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
@@ -61,10 +56,6 @@ public:
 
     mimir::generator<formalism::ObjectList>
     create_binding_generator(const UnpackedStateImpl& unpacked_state,
-                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
-                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set,
                              const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                              const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
@@ -102,9 +93,6 @@ protected:
     formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
     formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
     formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
-    formalism::AssignmentSet<formalism::FluentTag> m_fluent_assignment_set;
-    formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
-    formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
     formalism::PredicateAssignmentSets<formalism::FluentTag> m_fluent_predicate_assignment_sets;
     formalism::PredicateAssignmentSets<formalism::DerivedTag> m_derived_predicate_assignment_sets;
     formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag> m_fluent_function_skeleton_assignment_sets;
@@ -131,10 +119,6 @@ protected:
 
     mimir::generator<formalism::ObjectList>
     unary_case(const UnpackedStateImpl& unpacked_state,
-               const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
-               const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
-               const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-               const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set,
                const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
@@ -142,10 +126,6 @@ protected:
 
     mimir::generator<formalism::ObjectList>
     general_case(const UnpackedStateImpl& unpacked_state,
-                 const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
-                 const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
-                 const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-                 const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set,
                  const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                  const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                  const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,

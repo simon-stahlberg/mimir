@@ -50,9 +50,6 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<FluentTag>()),
-    m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>()),
     m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
     m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
     m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
@@ -66,13 +63,6 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
         assert(action->get_index() == i);
         m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem));
     }
-
-    std::cout << "[LiftedApplicableActionGenerator] Fluent AssignmentSet size: " << m_fluent_assignment_set.size() << " "
-              << m_fluent_predicate_assignment_sets.size() << "\n";
-    std::cout << "[LiftedApplicableActionGenerator] Derived AssignmentSet size: " << m_derived_assignment_set.size() << " "
-              << m_derived_predicate_assignment_sets.size() << "\n";
-    std::cout << "[LiftedApplicableActionGenerator] Numeric AssignmentSet size: " << m_numeric_assignment_set.size() << " "
-              << m_fluent_function_skeleton_assignment_sets.size() << "\n";
 }
 
 LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler)
@@ -91,24 +81,17 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
     const auto& pddl_repositories = problem.get_repositories();
 
     pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_assignment_set.reset();
     m_fluent_predicate_assignment_sets.reset();
-    m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
     m_fluent_predicate_assignment_sets.insert_ground_atoms(m_fluent_atoms);
 
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_assignment_set.reset();
     m_derived_predicate_assignment_sets.reset();
-    m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
     m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
 
-    m_numeric_assignment_set.reset();
-    m_fluent_function_skeleton_assignment_sets.reset();
     pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
-    m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+    m_fluent_function_skeleton_assignment_sets.reset();
     m_fluent_function_skeleton_assignment_sets.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
-    const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
     const auto& static_function_skeleton_assignment_sets = problem.get_static_initial_function_skeleton_assignment_sets();
 
     /* Generate applicable actions */
@@ -126,10 +109,6 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
         }
 
         for (auto&& binding : condition_grounder.create_binding_generator(state,
-                                                                          m_fluent_assignment_set,
-                                                                          m_derived_assignment_set,
-                                                                          static_numeric_assignment_set,
-                                                                          m_numeric_assignment_set,
                                                                           m_fluent_predicate_assignment_sets,
                                                                           m_derived_predicate_assignment_sets,
                                                                           static_function_skeleton_assignment_sets,

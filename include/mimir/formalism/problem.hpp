@@ -161,8 +161,6 @@ public:
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
     const FlatBitset& get_static_initial_positive_atoms_bitset() const;
     const FlatIndexList& get_static_initial_positive_atoms_indices() const;
-    const AssignmentSet<StaticTag>& get_static_assignment_set() const;
-    const NumericAssignmentSet<StaticTag>& get_static_initial_numeric_assignment_set() const;
     const PredicateAssignmentSets<StaticTag>& get_positive_static_initial_predicate_assignment_sets() const;
     const FunctionSkeletonAssignmentSets<StaticTag>& get_static_initial_function_skeleton_assignment_sets() const;
 

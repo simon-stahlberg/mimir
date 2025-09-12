@@ -21,7 +21,6 @@
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/assignment_set2.hpp"
 #include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
@@ -68,8 +67,7 @@ struct InitialDetails
     GroundAtomList<StaticTag> positive_static_initial_atoms;
     FlatBitset positive_static_initial_atoms_bitset;
     FlatIndexList positive_static_initial_atoms_indices;
-    AssignmentSet<StaticTag> positive_static_initial_assignment_set;
-    NumericAssignmentSet<StaticTag> static_initial_numeric_assignment_set;
+
     PredicateAssignmentSets<StaticTag> positive_static_initial_predicate_assignment_sets;
     FunctionSkeletonAssignmentSets<StaticTag> static_initial_function_skeleton_assignment_sets;
 
