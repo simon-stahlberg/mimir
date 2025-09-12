@@ -81,7 +81,6 @@ size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignme
     const auto j1 = m_offsets[assignment.first_index + 1] + o1;
     const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
-    // The second assignment defines the multiplier to work in cases where it is unused.
     const auto result = j2 * m_num_assignments + j1;
 
     assert(result < get_num_assignments());
@@ -117,6 +116,10 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     {
         const auto& first_object = objects[first_index];
         m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
+
+        // For partial assigned edges.
+        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX)));
+        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index())));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
@@ -232,6 +235,10 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
                                                                                                         std::min(single_assignment_bound.get_lower(), value),
             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
                                                                                                        std::max(single_assignment_bound.get_upper(), value));
+
+        // For partial assigned edges.
+        m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX))] = single_assignment_bound;
+        m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))] = single_assignment_bound;
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
