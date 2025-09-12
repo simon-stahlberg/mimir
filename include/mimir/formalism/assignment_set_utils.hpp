@@ -156,6 +156,17 @@ inline size_t num_assignments(size_t arity, size_t num_objects)
     return max + 1;
 }
 
+inline std::ostream& operator<<(std::ostream& os, const VertexAssignment& assignment)
+{
+    os << "[" << assignment.index << "/" << assignment.object << "]";
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const EdgeAssignment& assignment)
+{
+    os << "[" << assignment.first_index << "/" << assignment.first_object << ", " << assignment.second_index << "/" << assignment.second_object << "]";
+    return os;
+}
 }
 
 #endif

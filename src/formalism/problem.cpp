@@ -333,6 +333,16 @@ const NumericAssignmentSet<StaticTag>& ProblemImpl::get_static_initial_numeric_a
     return m_details.initial.static_initial_numeric_assignment_set;
 }
 
+const PredicateAssignmentSets<StaticTag>& ProblemImpl::get_positive_static_initial_predicate_assignment_sets() const
+{
+    return m_details.initial.positive_static_initial_predicate_assignment_sets;
+}
+
+const FunctionSkeletonAssignmentSets<StaticTag>& ProblemImpl::get_static_initial_function_skeleton_assignment_sets() const
+{
+    return m_details.initial.static_initial_function_skeleton_assignment_sets;
+}
+
 const GroundAtomList<FluentTag>& ProblemImpl::get_fluent_initial_atoms() const { return m_details.initial.positive_fluent_initial_atoms; }
 
 template<IsStaticOrFluentTag F>
@@ -1258,6 +1268,10 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
         AssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_predicates<StaticTag>())),
     static_initial_numeric_assignment_set(
         NumericAssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_function_skeletons<StaticTag>())),
+    positive_static_initial_predicate_assignment_sets(
+        PredicateAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>())),
+    static_initial_function_skeleton_assignment_sets(
+        FunctionSkeletonAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<StaticTag>())),
     positive_fluent_initial_atoms(to_ground_atoms(problem.get_initial_literals<FluentTag>())),
     initial_function_to_value()
 {
@@ -1275,6 +1289,7 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
                    [](unsigned long val) { return static_cast<Index>(val); });
 
     positive_static_initial_assignment_set.insert_ground_atoms(positive_static_initial_atoms);
+    positive_static_initial_predicate_assignment_sets.insert_ground_atoms(positive_static_initial_atoms);
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
@@ -1315,6 +1330,7 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
     const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<StaticTag> {});
 
     static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, static_function_to_values);
+    static_initial_function_skeleton_assignment_sets.insert_ground_function_values(static_functions, static_function_to_values);
 }
 
 problem::GoalDetails::GoalDetails() : parent(nullptr) {}

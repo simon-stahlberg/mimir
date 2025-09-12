@@ -44,7 +44,11 @@ LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler
     m_fluent_functions(),
     m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<FluentTag>()),
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>())
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>()),
+    m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
+    m_derived_predicate_assignment_sets_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
+                                               m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>())
 {
     /* 3. Initialize condition grounders */
     const auto& axioms = m_problem->get_problem_and_domain_axioms();
@@ -77,17 +81,24 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
 
     pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
+    m_fluent_predicate_assignment_sets.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
+    m_fluent_predicate_assignment_sets.insert_ground_atoms(m_fluent_atoms);
 
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
+    m_derived_predicate_assignment_sets_sets.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
+    m_derived_predicate_assignment_sets_sets.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
+    m_fluent_function_skeleton_assignment_sets.reset();
     pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
     m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+    m_fluent_function_skeleton_assignment_sets.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
     const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
+    const auto& static_function_skeleton_assignment_sets = problem.get_static_initial_function_skeleton_assignment_sets();
 
     /* 2. Fixed point computation */
 
@@ -126,7 +137,11 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
                                                                                   m_fluent_assignment_set,
                                                                                   m_derived_assignment_set,
                                                                                   static_numeric_assignment_set,
-                                                                                  m_numeric_assignment_set))
+                                                                                  m_numeric_assignment_set,
+                                                                                  m_fluent_predicate_assignment_sets,
+                                                                                  m_derived_predicate_assignment_sets_sets,
+                                                                                  static_function_skeleton_assignment_sets,
+                                                                                  m_fluent_function_skeleton_assignment_sets))
                 {
                     const auto num_ground_axioms = ground_axiom_repository.size();
 
@@ -161,6 +176,8 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
 
                     // Update the assignment set
                     m_derived_assignment_set.insert_ground_atom(new_ground_atom);
+                    m_derived_predicate_assignment_sets_sets.insert_ground_atom(new_ground_atom);
+                    // Update the state
                     dense_derived_atoms.set(grounded_atom_index);
 
                     // Retrieve relevant axioms

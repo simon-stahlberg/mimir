@@ -43,9 +43,9 @@ struct PerfectAssignmentHash
 
     size_t get_empty_assignment_rank() const;
 
-    size_t get_assignment_rank(VertexAssignment assignment) const;
+    size_t get_assignment_rank(const VertexAssignment& assignment) const;
 
-    size_t get_assignment_rank(EdgeAssignment assignment) const;
+    size_t get_assignment_rank(const EdgeAssignment& assignment) const;
 
     size_t get_num_assignments() const;
 };
@@ -54,18 +54,20 @@ template<IsStaticOrFluentOrDerivedTag P>
 class PredicateAssignmentSet
 {
 private:
-    Problem m_problem;
     Predicate<P> m_predicate;
 
     PerfectAssignmentHash m_hash;
     boost::dynamic_bitset<> m_set;
 
 public:
-    PredicateAssignmentSet(Problem problem, Predicate<P> predicate);
+    PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate);
 
     void reset();
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
+
+    bool operator[](const VertexAssignment& assignment) const;
+    bool operator[](const EdgeAssignment& assignment) const;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -77,7 +79,7 @@ private:
 public:
     PredicateAssignmentSets() = default;
 
-    PredicateAssignmentSets(Problem problem, const PredicateList<P>& predicates);
+    PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates);
 
     void reset();
 
@@ -92,7 +94,6 @@ template<IsStaticOrFluentTag F>
 class FunctionSkeletonAssignmentSet
 {
 private:
-    Problem m_problem;
     FunctionSkeleton<F> m_function_skeleton;
 
     PerfectAssignmentHash m_hash;
@@ -101,7 +102,7 @@ private:
 public:
     FunctionSkeletonAssignmentSet() = default;
 
-    FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton<F> function_skeleton);
+    FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton);
 
     void reset();
 
@@ -121,7 +122,7 @@ private:
 public:
     FunctionSkeletonAssignmentSets() = default;
 
-    FunctionSkeletonAssignmentSets(Problem problem, const FunctionSkeletonList<F>& function_skeletons);
+    FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons);
 
     void reset();
 

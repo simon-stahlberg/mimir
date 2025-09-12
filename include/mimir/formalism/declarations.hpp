@@ -49,6 +49,10 @@ template<typename... Ts>
 using FlatDoubleLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatDoubleList>...>;
 
 template<IsStaticOrFluentOrDerivedTag P>
+class PredicateAssignmentSets;
+template<IsStaticOrFluentTag F>
+class FunctionSkeletonAssignmentSets;
+template<IsStaticOrFluentOrDerivedTag P>
 class AssignmentSet;
 template<IsStaticOrFluentTag F>
 class NumericAssignmentSet;

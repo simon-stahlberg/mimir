@@ -58,11 +58,15 @@ public:
         ///
         /// The meaning of the result being true is that the edge remains consistent.
         template<IsStaticOrFluentOrDerivedTag P>
-        bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+        bool consistent_literals(const LiteralList<P>& literals,
+                                 const AssignmentSet<P>& assignment_set,
+                                 const PredicateAssignmentSets<P>& predicate_assignment_sets) const;
 
         bool consistent_literals(const NumericConstraintList& numeric_constraints,
                                  const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
-                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set) const;
+                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set,
+                                 const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
+                                 const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const;
 
         Index get_object_if_overlap(const Term& term) const;
 
@@ -93,11 +97,15 @@ public:
         /// @param consistent_vertex
         /// @return
         template<IsStaticOrFluentOrDerivedTag P>
-        bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+        bool consistent_literals(const LiteralList<P>& literals,
+                                 const AssignmentSet<P>& assignment_set,
+                                 const PredicateAssignmentSets<P>& predicate_assignment_sets) const;
 
         bool consistent_literals(const NumericConstraintList& numeric_constraints,
                                  const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
-                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set) const;
+                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set,
+                                 const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
+                                 const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const;
 
         Index get_object_if_overlap(const Term& term) const;
 

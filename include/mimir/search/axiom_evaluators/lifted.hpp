@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_LIFTED_HPP_
 
 #include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/assignment_set2.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
@@ -77,6 +78,9 @@ private:
     formalism::AssignmentSet<formalism::FluentTag> m_fluent_assignment_set;
     formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
     formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
+    formalism::PredicateAssignmentSets<formalism::FluentTag> m_fluent_predicate_assignment_sets;
+    formalism::PredicateAssignmentSets<formalism::DerivedTag> m_derived_predicate_assignment_sets_sets;
+    formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag> m_fluent_function_skeleton_assignment_sets;
 };
 
 }  // namespace mimir

@@ -36,19 +36,19 @@ PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, co
     /* Compute the remapping */
     m_remapping.resize(num_parameters + 1);
 
-    m_remapping[0].resize(1, MAX_INDEX);
-    m_remapping[0][0] = 0;  // sentinel
+    m_remapping[0].resize(1, 0);  // 0 is sentinel to map to 0
 
     for (Index i = 0; i < num_parameters; ++i)
     {
         const auto& parameter = parameters[i];
-        m_remapping[i + 1].resize(num_objects + 1, MAX_INDEX);
-        m_remapping[i + 1][0] = 0;  // sentinel
+        m_remapping[i + 1].resize(num_objects + 1, 0);  // 0 is sentinel to map to 0
 
         auto new_index = Index { 1 };
         for (const auto& object : objects)
+        {
             if (is_subtypeeq(object->get_bases(), parameter->get_bases()))
                 m_remapping[i + 1][object->get_index() + 1] = new_index++;
+        }
     }
 
     /* Compute the offsets and num_assignments */
@@ -56,24 +56,24 @@ PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, co
     for (Index i = 0; i < num_parameters + 1; ++i)
     {
         m_offsets[i] = m_num_assignments;
-        m_num_assignments += std::count_if(m_remapping[i].begin(), m_remapping[i].end(), [](auto&& index) { return index != MAX_INDEX; });
+        m_num_assignments += std::count_if(m_remapping[i].begin(), m_remapping[i].end(), [](auto&& index) { return index != 0; }) + 1;
     }
-
-    assert(m_num_assignments > 0);
 }
 
 size_t PerfectAssignmentHash::get_empty_assignment_rank() const { return 0; }
 
-size_t PerfectAssignmentHash::get_assignment_rank(VertexAssignment assignment) const
+size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const
 {
     const auto o = m_remapping[assignment.index + 1][assignment.object + 1];
 
     const auto result = m_offsets[assignment.index + 1] + o;
 
+    assert(result < m_num_assignments);
+
     return result;
 }
 
-size_t PerfectAssignmentHash::get_assignment_rank(EdgeAssignment assignment) const
+size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const
 {
     const auto o1 = m_remapping[assignment.first_index + 1][assignment.first_object + 1];
     const auto o2 = m_remapping[assignment.second_index + 1][assignment.second_object + 1];
@@ -83,16 +83,17 @@ size_t PerfectAssignmentHash::get_assignment_rank(EdgeAssignment assignment) con
 
     const auto result = j1 * m_num_assignments + j2;
 
+    assert(result < get_num_assignments());
+
     return result;
 }
 
 size_t PerfectAssignmentHash::get_num_assignments() const { return m_num_assignments * m_num_assignments; }
 
 template<IsStaticOrFluentOrDerivedTag P>
-PredicateAssignmentSet<P>::PredicateAssignmentSet(Problem problem, Predicate<P> predicate) :
-    m_problem(problem),
+PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate) :
     m_predicate(predicate),
-    m_hash(PerfectAssignmentHash(predicate->get_parameters(), problem->get_problem_and_domain_objects())),
+    m_hash(PerfectAssignmentHash(predicate->get_parameters(), objects)),
     m_set(m_hash.get_num_assignments(), false)
 {
 }
@@ -124,12 +125,24 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     }
 }
 
+template<IsStaticOrFluentOrDerivedTag P>
+bool PredicateAssignmentSet<P>::operator[](const VertexAssignment& assignment) const
+{
+    return m_set[m_hash.get_assignment_rank(assignment)];
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+bool PredicateAssignmentSet<P>::operator[](const EdgeAssignment& assignment) const
+{
+    return m_set[m_hash.get_assignment_rank(assignment)];
+}
+
 template class PredicateAssignmentSet<StaticTag>;
 template class PredicateAssignmentSet<FluentTag>;
 template class PredicateAssignmentSet<DerivedTag>;
 
 template<IsStaticOrFluentOrDerivedTag P>
-PredicateAssignmentSets<P>::PredicateAssignmentSets(Problem problem, const PredicateList<P>& predicates)
+PredicateAssignmentSets<P>::PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates)
 {
     /* Validate inputs. */
     for (Index i = 0; i < predicates.size(); ++i)
@@ -137,7 +150,7 @@ PredicateAssignmentSets<P>::PredicateAssignmentSets(Problem problem, const Predi
 
     /* Initialize sets. */
     for (const auto& predicate : predicates)
-        m_sets.emplace_back(PredicateAssignmentSet<P>(problem, predicate));
+        m_sets.emplace_back(PredicateAssignmentSet<P>(objects, predicate));
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -171,10 +184,9 @@ template class PredicateAssignmentSets<FluentTag>;
 template class PredicateAssignmentSets<DerivedTag>;
 
 template<IsStaticOrFluentTag F>
-FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton<F> function_skeleton) :
-    m_problem(problem),
+FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
     m_function_skeleton(function_skeleton),
-    m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), problem->get_problem_and_domain_objects())),
+    m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), objects)),
     m_set(m_hash.get_num_assignments(), Bounds<ContinuousCost>::unbounded)
 {
 }
@@ -229,10 +241,10 @@ template class FunctionSkeletonAssignmentSet<StaticTag>;
 template class FunctionSkeletonAssignmentSet<FluentTag>;
 
 template<IsStaticOrFluentTag F>
-FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(Problem problem, const FunctionSkeletonList<F>& function_skeletons)
+FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons)
 {
     for (const auto& function_skeleton : function_skeletons)
-        m_sets.emplace_back(FunctionSkeletonAssignmentSet<F>(problem, function_skeleton));
+        m_sets.emplace_back(FunctionSkeletonAssignmentSet<F>(objects, function_skeleton));
 }
 
 template<IsStaticOrFluentTag F>
