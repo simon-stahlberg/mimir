@@ -46,7 +46,7 @@ LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>()),
     m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
     m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
                                                m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>())
 {
@@ -58,6 +58,13 @@ LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler
         assert(axiom->get_index() == i);
         m_condition_grounders.emplace_back(AxiomSatisficingBindingGenerator(axiom, m_problem));
     }
+
+    std::cout << "[LiftedAxiomEvaluator] Fluent AssignmentSet size: " << m_fluent_assignment_set.size() << " " << m_fluent_predicate_assignment_sets.size()
+              << "\n";
+    std::cout << "[LiftedAxiomEvaluator] Derived AssignmentSet size: " << m_derived_assignment_set.size() << " " << m_derived_predicate_assignment_sets.size()
+              << "\n";
+    std::cout << "[LiftedAxiomEvaluator] Numeric AssignmentSet size: " << m_numeric_assignment_set.size() << " "
+              << m_fluent_function_skeleton_assignment_sets.size() << "\n";
 }
 
 LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler)
@@ -87,9 +94,9 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
 
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
-    m_derived_predicate_assignment_sets_sets.reset();
+    m_derived_predicate_assignment_sets.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
-    m_derived_predicate_assignment_sets_sets.insert_ground_atoms(m_derived_atoms);
+    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
     m_fluent_function_skeleton_assignment_sets.reset();
@@ -139,7 +146,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
                                                                                   static_numeric_assignment_set,
                                                                                   m_numeric_assignment_set,
                                                                                   m_fluent_predicate_assignment_sets,
-                                                                                  m_derived_predicate_assignment_sets_sets,
+                                                                                  m_derived_predicate_assignment_sets,
                                                                                   static_function_skeleton_assignment_sets,
                                                                                   m_fluent_function_skeleton_assignment_sets))
                 {
@@ -176,7 +183,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpa
 
                     // Update the assignment set
                     m_derived_assignment_set.insert_ground_atom(new_ground_atom);
-                    m_derived_predicate_assignment_sets_sets.insert_ground_atom(new_ground_atom);
+                    m_derived_predicate_assignment_sets.insert_ground_atom(new_ground_atom);
                     // Update the state
                     dense_derived_atoms.set(grounded_atom_index);
 

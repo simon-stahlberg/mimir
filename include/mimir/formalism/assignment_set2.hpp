@@ -68,6 +68,8 @@ public:
 
     bool operator[](const VertexAssignment& assignment) const;
     bool operator[](const EdgeAssignment& assignment) const;
+
+    size_t size() const;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -88,6 +90,8 @@ public:
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
     const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const;
+
+    size_t size() const;
 };
 
 template<IsStaticOrFluentTag F>
@@ -107,6 +111,11 @@ public:
     void reset();
 
     void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
+
+    Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const;
+    Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const;
+
+    size_t size() const;
 };
 
 template<IsStaticOrFluentTag F>
@@ -129,6 +138,8 @@ public:
     void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
     const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const;
+
+    size_t size() const;
 };
 
 }

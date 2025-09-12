@@ -297,12 +297,18 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
     m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
     m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
                                                m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_consistent_vertices(m_static_consistency_graph.get_vertices().size())
 {
+    std::cout << "[SatisficingBindingGenerator] Fluent AssignmentSet size: " << m_fluent_assignment_set.size() << " "
+              << m_fluent_predicate_assignment_sets.size() << "\n";
+    std::cout << "[SatisficingBindingGenerator] Derived AssignmentSet size: " << m_derived_assignment_set.size() << " "
+              << m_derived_predicate_assignment_sets.size() << "\n";
+    std::cout << "[SatisficingBindingGenerator] Numeric AssignmentSet size: " << m_numeric_assignment_set.size() << " "
+              << m_fluent_function_skeleton_assignment_sets.size() << "\n";
 }
 
 template<typename Derived_>
@@ -413,9 +419,9 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
 
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
-    m_derived_predicate_assignment_sets_sets.reset();
+    m_derived_predicate_assignment_sets.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
-    m_derived_predicate_assignment_sets_sets.insert_ground_atoms(m_derived_atoms);
+    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
     m_fluent_function_skeleton_assignment_sets.reset();
@@ -432,7 +438,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
                                                         static_numeric_assignment_set,
                                                         m_numeric_assignment_set,
                                                         m_fluent_predicate_assignment_sets,
-                                                        m_derived_predicate_assignment_sets_sets,
+                                                        m_derived_predicate_assignment_sets,
                                                         static_function_skeleton_assignment_sets,
                                                         m_fluent_function_skeleton_assignment_sets))
     {

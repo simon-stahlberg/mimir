@@ -45,7 +45,7 @@ struct VertexAssignment
 
     VertexAssignment(const VertexAssignment& assignment, const IndexList& remapping)
     {
-        assert(assignment.is_valid());
+        assert(assignment.is_complete());
 
         index = remapping.at(assignment.index);
         object = assignment.object;
@@ -57,7 +57,7 @@ struct VertexAssignment
     }
 
     /// @brief Return true iff the index and object are set.
-    bool is_valid() const { return index != MAX_INDEX && object != MAX_INDEX; }
+    bool is_complete() const { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
 /**
@@ -84,7 +84,7 @@ struct EdgeAssignment
 
     EdgeAssignment(const EdgeAssignment& assignment, const IndexList& remapping)
     {
-        assert(assignment.is_valid());
+        assert(assignment.is_complete());
 
         first_index = remapping.at(assignment.first_index);
         second_index = remapping.at(assignment.second_index);
@@ -108,7 +108,7 @@ struct EdgeAssignment
     }
 
     /// @brief Return true iff both indices and objects are set.
-    bool is_valid() const
+    bool is_complete() const
     {
         return (first_index < second_index) && (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX)
                && (second_object != MAX_INDEX);

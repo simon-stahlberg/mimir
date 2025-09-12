@@ -71,6 +71,7 @@ public:
 
     size_t get_num_objects() const { return m_num_objects; }
     const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return m_per_predicate_assignment_set; }
+    size_t size() const;
 };
 
 /// @brief `NumericAssignmentSet` is a helper class representing a set of functions
@@ -114,6 +115,7 @@ public:
 
     size_t get_num_objects() const { return m_num_objects; }
     const std::vector<std::vector<Bounds<ContinuousCost>>>& get_per_function_skeleton_bounds_set() const { return m_per_function_skeleton_bounds_set; }
+    size_t size() const;
 };
 
 }

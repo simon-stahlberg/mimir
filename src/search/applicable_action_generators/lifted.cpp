@@ -54,7 +54,7 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>()),
     m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
     m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
                                                m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>())
 {
@@ -66,6 +66,13 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
         assert(action->get_index() == i);
         m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem));
     }
+
+    std::cout << "[LiftedApplicableActionGenerator] Fluent AssignmentSet size: " << m_fluent_assignment_set.size() << " "
+              << m_fluent_predicate_assignment_sets.size() << "\n";
+    std::cout << "[LiftedApplicableActionGenerator] Derived AssignmentSet size: " << m_derived_assignment_set.size() << " "
+              << m_derived_predicate_assignment_sets.size() << "\n";
+    std::cout << "[LiftedApplicableActionGenerator] Numeric AssignmentSet size: " << m_numeric_assignment_set.size() << " "
+              << m_fluent_function_skeleton_assignment_sets.size() << "\n";
 }
 
 LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler)
@@ -91,9 +98,9 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
 
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
-    m_derived_predicate_assignment_sets_sets.reset();
+    m_derived_predicate_assignment_sets.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
-    m_derived_predicate_assignment_sets_sets.insert_ground_atoms(m_derived_atoms);
+    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
     m_fluent_function_skeleton_assignment_sets.reset();
@@ -124,7 +131,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
                                                                           static_numeric_assignment_set,
                                                                           m_numeric_assignment_set,
                                                                           m_fluent_predicate_assignment_sets,
-                                                                          m_derived_predicate_assignment_sets_sets,
+                                                                          m_derived_predicate_assignment_sets,
                                                                           static_function_skeleton_assignment_sets,
                                                                           m_fluent_function_skeleton_assignment_sets))
         {

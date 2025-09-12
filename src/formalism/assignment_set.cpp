@@ -117,6 +117,15 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     }
 }
 
+template<IsStaticOrFluentOrDerivedTag P>
+size_t AssignmentSet<P>::size() const
+{
+    return std::accumulate(m_per_predicate_assignment_set.begin(),
+                           m_per_predicate_assignment_set.end(),
+                           size_t { 0 },
+                           [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
+}
+
 template class AssignmentSet<StaticTag>;
 template class AssignmentSet<FluentTag>;
 template class AssignmentSet<DerivedTag>;
@@ -191,16 +200,21 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
 
         auto& empty_assignment_bound = assignment_set[get_empty_assignment_rank()];
         empty_assignment_bound = Bounds(
-            (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value), 
-            (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.get_upper(), value));
+            (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value :
+                                                                                                       std::min(empty_assignment_bound.get_lower(), value),
+            (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
+                                                                                                      std::max(empty_assignment_bound.get_upper(), value));
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
             auto& single_assignment_bound = assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)];
-            single_assignment_bound = Bounds(
-                (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.get_lower(), value),
-                (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(single_assignment_bound.get_upper(), value));
+            single_assignment_bound = Bounds((single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                 value :
+                                                 std::min(single_assignment_bound.get_lower(), value),
+                                             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                 value :
+                                                 std::max(single_assignment_bound.get_upper(), value));
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
@@ -209,12 +223,24 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
                     assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                        arity,
                                                        m_num_objects)];
-                double_assignment_bound = Bounds(
-                    (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(double_assignment_bound.get_lower(), value),
-                    (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(double_assignment_bound.get_upper(), value));
+                double_assignment_bound = Bounds((single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                     value :
+                                                     std::min(double_assignment_bound.get_lower(), value),
+                                                 (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                     value :
+                                                     std::max(double_assignment_bound.get_upper(), value));
             }
         }
     }
+}
+
+template<IsStaticOrFluentTag F>
+size_t NumericAssignmentSet<F>::size() const
+{
+    return std::accumulate(m_per_function_skeleton_bounds_set.begin(),
+                           m_per_function_skeleton_bounds_set.end(),
+                           size_t { 0 },
+                           [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
 
 template class NumericAssignmentSet<StaticTag>;

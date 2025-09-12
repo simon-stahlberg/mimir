@@ -81,7 +81,8 @@ size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignme
     const auto j1 = m_offsets[assignment.first_index + 1] + o1;
     const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
-    const auto result = j1 * m_num_assignments + j2;
+    // The second assignment defines the multiplier to work in cases where it is unused.
+    const auto result = j2 * m_num_assignments + j1;
 
     assert(result < get_num_assignments());
 
@@ -137,6 +138,12 @@ bool PredicateAssignmentSet<P>::operator[](const EdgeAssignment& assignment) con
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
+template<IsStaticOrFluentOrDerivedTag P>
+size_t PredicateAssignmentSet<P>::size() const
+{
+    return m_set.size();
+}
+
 template class PredicateAssignmentSet<StaticTag>;
 template class PredicateAssignmentSet<FluentTag>;
 template class PredicateAssignmentSet<DerivedTag>;
@@ -177,6 +184,12 @@ template<IsStaticOrFluentOrDerivedTag P>
 const PredicateAssignmentSet<P>& PredicateAssignmentSets<P>::get_set(Predicate<P> predicate) const
 {
     return m_sets[predicate->get_index()];
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+size_t PredicateAssignmentSets<P>::size() const
+{
+    return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
 
 template class PredicateAssignmentSets<StaticTag>;
@@ -237,6 +250,24 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
     }
 }
 
+template<IsStaticOrFluentTag F>
+Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const VertexAssignment& assignment) const
+{
+    return m_set[m_hash.get_assignment_rank(assignment)];
+}
+
+template<IsStaticOrFluentTag F>
+Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EdgeAssignment& assignment) const
+{
+    return m_set[m_hash.get_assignment_rank(assignment)];
+}
+
+template<IsStaticOrFluentTag F>
+size_t FunctionSkeletonAssignmentSet<F>::size() const
+{
+    return m_set.size();
+}
+
 template class FunctionSkeletonAssignmentSet<StaticTag>;
 template class FunctionSkeletonAssignmentSet<FluentTag>;
 
@@ -277,6 +308,12 @@ template<IsStaticOrFluentTag F>
 const FunctionSkeletonAssignmentSet<F>& FunctionSkeletonAssignmentSets<F>::get_set(FunctionSkeleton<F> function_skeleton) const
 {
     return m_sets[function_skeleton->get_index()];
+}
+
+template<IsStaticOrFluentTag F>
+size_t FunctionSkeletonAssignmentSets<F>::size() const
+{
+    return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
 
 template class FunctionSkeletonAssignmentSets<StaticTag>;

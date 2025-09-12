@@ -269,7 +269,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals,
 
         for (const auto& assignment : VertexAssignmentRange(terms, element))
         {
-            assert(assignment.is_valid());
+            assert(assignment.is_complete());
 
             const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
 
@@ -321,18 +321,22 @@ static bool consistent_literals_helper(const LiteralList<P>& literals,
 
         assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
         const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
+        const auto& predicate_assignment_set2 = predicate_assignment_sets.get_set(literal->get_atom()->get_predicate());
         const auto& terms = literal->get_atom()->get_terms();
 
         /* Iterate edges. */
 
         for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
-            assert(assignment.is_valid());
+            assert(assignment.is_complete());
 
             const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
 
             assert(assignment_rank < predicate_assignment_set.size());
             const auto true_assignment = predicate_assignment_set[assignment_rank];
+            const auto true_assignment2 = predicate_assignment_set2[assignment];
+
+            assert(true_assignment == true_assignment2);  ///< Sanity check
 
             if (!negated && !true_assignment)
             {
@@ -360,6 +364,7 @@ remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunct
     const auto function_skeleton = function->get_function_skeleton();
     assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
     const auto& function_assignment_set = numeric_assignment_set.get_per_function_skeleton_bounds_set()[function_skeleton->get_index()];
+    const auto& function_assignment_set2 = function_skeleton_assignment_sets.get_set(function_skeleton);
 
     auto remapped_partial_assignment = AssignmentType(assignment, function->get_parent_terms_to_terms_mapping());
 
@@ -367,6 +372,9 @@ remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunct
 
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
+    const auto bounds2 = function_assignment_set2[remapped_partial_assignment];
+
+    assert(bounds.get_lower() == bounds2.get_lower() && bounds.get_upper() == bounds2.get_upper());  ///< Sanity check
 
     return bounds;
 }
@@ -515,7 +523,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 
         for (const auto& assignment : VertexAssignmentRange(terms, element))
         {
-            assert(assignment.is_valid());
+            assert(assignment.is_complete());
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint,
                                                              assignment,
@@ -551,7 +559,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 
         for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
-            assert(assignment.is_valid());
+            assert(assignment.is_complete());
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint,
                                                              assignment,
