@@ -543,10 +543,8 @@ void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunct
 
     const auto& ground_functions = boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {});
 
-    for (const auto& ground_function : ground_functions)
-    {
-        out_ground_functions.push_back(&ground_function);
-    }
+    for (size_t i = 0; i < num_ground_functions; ++i)
+        out_ground_functions.push_back(ground_functions[i]);
 }
 
 template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<StaticTag>& out_ground_functions) const;
@@ -562,9 +560,7 @@ void Repositories::get_ground_function_values(const FlatDoubleList& values,
     const auto& ground_functions = boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {});
 
     for (size_t i = 0; i < values.size(); ++i)
-    {
         out_ground_function_values.emplace_back(ground_functions.at(i), values[i]);
-    }
 }
 
 template void Repositories::get_ground_function_values(const FlatDoubleList& values,

@@ -218,8 +218,6 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 
-    // auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
-
     auto& empty_assignment_bound = m_set[m_hash.get_empty_assignment_rank()];
     empty_assignment_bound = Bounds(
         (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value),
