@@ -23,12 +23,8 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set_utils.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/parameter.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/type.hpp"
 
+#include <boost/dynamic_bitset.hpp>
 #include <cassert>
 #include <limits>
 #include <tuple>
@@ -43,65 +39,15 @@ struct PerfectAssignmentHash
     std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to index for each type legal [i/o]
     std::vector<size_t> m_offsets;                   ///< The offsets of i
 
-    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) : m_num_assignments(0), m_remapping(), m_offsets()
-    {
-        const auto num_parameters = parameters.size();
-        const auto num_objects = objects.size();
+    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
 
-        /* Compute the remapping */
-        m_remapping.resize(num_parameters + 1);
+    size_t get_empty_assignment_rank() const;
 
-        m_remapping[0].resize(1, MAX_INDEX);
-        m_remapping[0][0] = 0;  // sentinel
+    size_t get_assignment_rank(VertexAssignment assignment) const;
 
-        for (Index i = 0; i < num_parameters; ++i)
-        {
-            const auto& parameter = parameters[i];
-            m_remapping[i + 1].resize(num_objects + 1, MAX_INDEX);
-            m_remapping[i + 1][0] = 0;  // sentinel
+    size_t get_assignment_rank(EdgeAssignment assignment) const;
 
-            auto new_index = Index { 1 };
-            for (const auto& object : objects)
-                if (is_subtypeeq(object->get_bases(), parameter->get_bases()))
-                    m_remapping[i + 1][object->get_index() + 1] = new_index++;
-        }
-
-        /* Compute the offsets and num_assignments */
-        m_offsets.resize(num_parameters + 1);
-        for (Index i = 0; i < num_parameters + 1; ++i)
-        {
-            m_offsets[i] = m_num_assignments;
-            m_num_assignments += std::count_if(m_remapping[i].begin(), m_remapping[i].end(), [](auto&& index) { return index != MAX_INDEX; });
-        }
-
-        assert(m_num_assignments > 0);
-    }
-
-    size_t get_empty_assignment_rank() const { return 0; }
-
-    size_t get_assignment_rank(VertexAssignment assignment) const
-    {
-        const auto o = m_remapping[assignment.index + 1][assignment.object + 1];
-
-        const auto result = m_offsets[assignment.index + 1] + o;
-
-        return result;
-    }
-
-    size_t get_assignment_rank(EdgeAssignment assignment) const
-    {
-        const auto o1 = m_remapping[assignment.first_index + 1][assignment.first_object + 1];
-        const auto o2 = m_remapping[assignment.second_index + 1][assignment.second_object + 1];
-
-        const auto j1 = m_offsets[assignment.first_index + 1] + o1;
-        const auto j2 = m_offsets[assignment.second_index + 1] + o2;
-
-        const auto result = j1 * m_num_assignments + j2;
-
-        return result;
-    }
-
-    size_t get_num_assignments() const { return m_num_assignments * m_num_assignments; }
+    size_t get_num_assignments() const;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -109,19 +55,13 @@ class PredicateAssignmentSet
 {
 private:
     Problem m_problem;
-    Predicate m_predicate;
+    Predicate<P> m_predicate;
 
     PerfectAssignmentHash m_hash;
-    std::vector<bool> m_set;
+    boost::dynamic_bitset<> m_set;
 
 public:
-    PredicateAssignmentSet(Problem problem, Predicate predicate) :
-        m_problem(problem),
-        m_predicate(predicate),
-        m_hash(PerfectAssignmentHash(predicate->get_parameters(), problem->get_problem_and_domain_objects())),
-        m_set(m_hash.get_num_assignments(), false)
-    {
-    }
+    PredicateAssignmentSet(Problem problem, Predicate<P> predicate);
 
     void reset();
 
@@ -145,7 +85,7 @@ public:
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    const PredicateAssignmentSet<P>& get_set(Predicate predicate) const { return m_sets[predicate->get_index()]; }
+    const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const;
 };
 
 template<IsStaticOrFluentTag F>
@@ -153,7 +93,7 @@ class FunctionSkeletonAssignmentSet
 {
 private:
     Problem m_problem;
-    FunctionSkeleton m_function_skeleton;
+    FunctionSkeleton<F> m_function_skeleton;
 
     PerfectAssignmentHash m_hash;
     std::vector<Bounds<ContinuousCost>> m_set;
@@ -161,13 +101,7 @@ private:
 public:
     FunctionSkeletonAssignmentSet() = default;
 
-    FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton function_skeleton) :
-        m_problem(problem),
-        m_function_skeleton(function_skeleton),
-        m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), problem->get_problem_and_domain_objects())),
-        m_set(m_hash.get_num_assignments(), Bounds<ContinuousCost>::unbounded)
-    {
-    }
+    FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton<F> function_skeleton);
 
     void reset();
 
@@ -185,7 +119,7 @@ private:
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
 
 public:
-    FunctionSkeletonAssignmentSets();
+    FunctionSkeletonAssignmentSets() = default;
 
     FunctionSkeletonAssignmentSets(Problem problem, const FunctionSkeletonList<F>& function_skeletons);
 
@@ -193,7 +127,7 @@ public:
 
     void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
-    const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const { return m_sets[function_skeleton->get_index()]; }
+    const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const;
 };
 
 }
