@@ -151,13 +151,13 @@ template<IsStaticOrFluentOrDerivedTag P>
 void PredicateAssignmentSets<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms)
 {
     for (const auto& ground_atom : ground_atoms)
-        m_sets[ground_atom->get_predicate()->get_index()].insert(ground_atom);
+        m_sets[ground_atom->get_predicate()->get_index()].insert_ground_atom(ground_atom);
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
 void PredicateAssignmentSets<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
-    m_sets[ground_atom->get_predicate()->get_index()].insert(ground_atom);
+    m_sets[ground_atom->get_predicate()->get_index()].insert_ground_atom(ground_atom);
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -165,6 +165,10 @@ const PredicateAssignmentSet<P>& PredicateAssignmentSets<P>::get_set(Predicate<P
 {
     return m_sets[predicate->get_index()];
 }
+
+template class PredicateAssignmentSets<StaticTag>;
+template class PredicateAssignmentSets<FluentTag>;
+template class PredicateAssignmentSets<DerivedTag>;
 
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(Problem problem, FunctionSkeleton<F> function_skeleton) :
@@ -221,6 +225,9 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
     }
 }
 
+template class FunctionSkeletonAssignmentSet<StaticTag>;
+template class FunctionSkeletonAssignmentSet<FluentTag>;
+
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(Problem problem, const FunctionSkeletonList<F>& function_skeletons)
 {
@@ -259,5 +266,8 @@ const FunctionSkeletonAssignmentSet<F>& FunctionSkeletonAssignmentSets<F>::get_s
 {
     return m_sets[function_skeleton->get_index()];
 }
+
+template class FunctionSkeletonAssignmentSets<StaticTag>;
+template class FunctionSkeletonAssignmentSets<FluentTag>;
 
 }
