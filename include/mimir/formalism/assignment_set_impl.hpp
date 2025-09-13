@@ -15,7 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/assignment_set.hpp"
+#ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
+#define MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
 
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/parameter.hpp"
@@ -28,53 +29,53 @@
 namespace mimir::formalism
 {
 
-PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) : m_num_assignments(0), m_remapping(), m_offsets()
+inline PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) :
+    m_num_assignments(0),
+    m_remapping(),
+    m_offsets()
 {
     const auto num_parameters = parameters.size();
     const auto num_objects = objects.size();
 
-    /* Compute the remapping */
     m_remapping.resize(num_parameters + 1);
+    m_offsets.resize(num_parameters + 1);
 
     m_remapping[0].resize(1, 0);  // 0 is sentinel to map to 0
+    m_offsets[0] = m_num_assignments++;
 
     for (Index i = 0; i < num_parameters; ++i)
     {
         const auto& parameter = parameters[i];
         m_remapping[i + 1].resize(num_objects + 1, 0);  // 0 is sentinel to map to 0
+        m_offsets[i + 1] = m_num_assignments++;
 
         auto new_index = Index { 1 };
         for (const auto& object : objects)
         {
             if (is_subtypeeq(object->get_bases(), parameter->get_bases()))
+            {
                 m_remapping[i + 1][object->get_index() + 1] = new_index++;
+                ++m_num_assignments;
+            }
         }
-    }
-
-    /* Compute the offsets and num_assignments */
-    m_offsets.resize(num_parameters + 1);
-    for (Index i = 0; i < num_parameters + 1; ++i)
-    {
-        m_offsets[i] = m_num_assignments;
-        m_num_assignments += std::count_if(m_remapping[i].begin(), m_remapping[i].end(), [](auto&& index) { return index != 0; }) + 1;
     }
 }
 
-size_t PerfectAssignmentHash::get_empty_assignment_rank() const { return 0; }
+inline size_t PerfectAssignmentHash::get_empty_assignment_rank() const noexcept { return 0; }
 
-size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const
+inline size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const noexcept
 {
     const auto o = m_remapping[assignment.index + 1][assignment.object + 1];
 
     const auto result = m_offsets[assignment.index + 1] + o;
 
     assert(result < m_num_assignments);
-    assert(result == get_assignment_rank(EdgeAssignment(assignment.index, assignment.object, MAX_INDEX, MAX_INDEX)));
+    assert(result == get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, assignment.index, assignment.object)));
 
     return result;
 }
 
-size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const
+inline size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const noexcept
 {
     const auto o1 = m_remapping[assignment.first_index + 1][assignment.first_object + 1];
     const auto o2 = m_remapping[assignment.second_index + 1][assignment.second_object + 1];
@@ -83,14 +84,14 @@ size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignme
     const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
     assert(assignment.is_ordered());
-    const auto result = j2 * m_num_assignments + j1;
+    const auto result = j1 * m_num_assignments + j2;
 
     assert(result < get_num_assignments());
 
     return result;
 }
 
-size_t PerfectAssignmentHash::get_num_assignments() const { return m_num_assignments * m_num_assignments; }
+inline size_t PerfectAssignmentHash::get_num_assignments() const noexcept { return m_num_assignments * m_num_assignments; }
 
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate) :
@@ -101,7 +102,7 @@ PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Pre
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-void PredicateAssignmentSet<P>::reset()
+void PredicateAssignmentSet<P>::reset() noexcept
 {
     m_set.reset();
 }
@@ -121,6 +122,12 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
         // Complete vertex.
         m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
 
+        // Partial edge with first assignment.
+        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX)));
+        // Partial edge with second assignment is implicit in VertexAssignment.
+        assert(m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))]
+               == m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))]);
+
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = objects[second_index];
@@ -132,26 +139,22 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool PredicateAssignmentSet<P>::operator[](const VertexAssignment& assignment) const
+bool PredicateAssignmentSet<P>::operator[](const VertexAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool PredicateAssignmentSet<P>::operator[](const EdgeAssignment& assignment) const
+bool PredicateAssignmentSet<P>::operator[](const EdgeAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-size_t PredicateAssignmentSet<P>::size() const
+size_t PredicateAssignmentSet<P>::size() const noexcept
 {
     return m_set.size();
 }
-
-template class PredicateAssignmentSet<StaticTag>;
-template class PredicateAssignmentSet<FluentTag>;
-template class PredicateAssignmentSet<DerivedTag>;
 
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateAssignmentSets<P>::PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates)
@@ -166,7 +169,7 @@ PredicateAssignmentSets<P>::PredicateAssignmentSets(const ObjectList& objects, c
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-void PredicateAssignmentSets<P>::reset()
+void PredicateAssignmentSets<P>::reset() noexcept
 {
     for (auto& set : m_sets)
         set.reset();
@@ -186,20 +189,16 @@ void PredicateAssignmentSets<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-const PredicateAssignmentSet<P>& PredicateAssignmentSets<P>::get_set(Predicate<P> predicate) const
+const PredicateAssignmentSet<P>& PredicateAssignmentSets<P>::get_set(Predicate<P> predicate) const noexcept
 {
     return m_sets[predicate->get_index()];
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-size_t PredicateAssignmentSets<P>::size() const
+size_t PredicateAssignmentSets<P>::size() const noexcept
 {
     return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
-
-template class PredicateAssignmentSets<StaticTag>;
-template class PredicateAssignmentSets<FluentTag>;
-template class PredicateAssignmentSets<DerivedTag>;
 
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
@@ -210,7 +209,7 @@ FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList
 }
 
 template<IsStaticOrFluentTag F>
-void FunctionSkeletonAssignmentSet<F>::reset()
+void FunctionSkeletonAssignmentSet<F>::reset() noexcept
 {
     std::fill(m_set.begin(), m_set.end(), Bounds<ContinuousCost>::unbounded);
 }
@@ -240,6 +239,12 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
                                                                                                        std::max(single_assignment_bound.get_upper(), value));
 
+        // Partial edge with first assignment.
+        m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX))] = single_assignment_bound;
+        // Partial edge with second assignment is implicit in VertexAssignment.
+        assert(m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))]
+               == m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))]);
+
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
@@ -258,25 +263,22 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 }
 
 template<IsStaticOrFluentTag F>
-Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const VertexAssignment& assignment) const
+Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const VertexAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
 template<IsStaticOrFluentTag F>
-Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EdgeAssignment& assignment) const
+Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EdgeAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
 template<IsStaticOrFluentTag F>
-size_t FunctionSkeletonAssignmentSet<F>::size() const
+size_t FunctionSkeletonAssignmentSet<F>::size() const noexcept
 {
     return m_set.size();
 }
-
-template class FunctionSkeletonAssignmentSet<StaticTag>;
-template class FunctionSkeletonAssignmentSet<FluentTag>;
 
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons)
@@ -286,7 +288,7 @@ FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectLi
 }
 
 template<IsStaticOrFluentTag F>
-void FunctionSkeletonAssignmentSets<F>::reset()
+void FunctionSkeletonAssignmentSets<F>::reset() noexcept
 {
     for (auto& set : m_sets)
         set.reset();
@@ -312,18 +314,17 @@ void FunctionSkeletonAssignmentSets<F>::insert_ground_function_values(const Grou
 }
 
 template<IsStaticOrFluentTag F>
-const FunctionSkeletonAssignmentSet<F>& FunctionSkeletonAssignmentSets<F>::get_set(FunctionSkeleton<F> function_skeleton) const
+const FunctionSkeletonAssignmentSet<F>& FunctionSkeletonAssignmentSets<F>::get_set(FunctionSkeleton<F> function_skeleton) const noexcept
 {
     return m_sets[function_skeleton->get_index()];
 }
 
 template<IsStaticOrFluentTag F>
-size_t FunctionSkeletonAssignmentSets<F>::size() const
+size_t FunctionSkeletonAssignmentSets<F>::size() const noexcept
 {
     return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
 
-template class FunctionSkeletonAssignmentSets<StaticTag>;
-template class FunctionSkeletonAssignmentSets<FluentTag>;
-
 }
+
+#endif

@@ -11,6 +11,7 @@ INPUT                 = \
     "include/mimir/common/types.hpp" \
     "include/mimir/formalism/action.hpp" \
     "include/mimir/formalism/assignment_set.hpp" \
+    "include/mimir/formalism/assignment.hpp" \
     "include/mimir/formalism/atom.hpp" \
     "include/mimir/formalism/axiom_stratification.hpp" \
     "include/mimir/formalism/axiom.hpp" \
@@ -38,6 +39,7 @@ INPUT                 = \
     "include/mimir/formalism/metric.hpp" \
     "include/mimir/formalism/numeric_constraint.hpp" \
     "include/mimir/formalism/object.hpp" \
+    "include/mimir/formalism/parameter.hpp" \
     "include/mimir/formalism/parser.hpp" \
     "include/mimir/formalism/predicate.hpp" \
     "include/mimir/formalism/problem_builder.hpp" \
@@ -46,6 +48,7 @@ INPUT                 = \
     "include/mimir/formalism/requirements.hpp" \
     "include/mimir/formalism/tags.hpp" \
     "include/mimir/formalism/term.hpp" \
+    "include/mimir/formalism/type.hpp" \
     "include/mimir/formalism/utils.hpp" \
     "include/mimir/formalism/variable.hpp" \
     "include/mimir/datasets/generalized_state_space/class_graph.hpp" \

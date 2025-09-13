@@ -305,7 +305,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
 
         for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
-            assert(assignment.is_complete());
+            assert(assignment.is_complete() && assignment.is_ordered());
 
             const auto true_assignment = predicate_assignment_set[assignment];
 
@@ -490,7 +490,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 
         for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
-            assert(assignment.is_complete());
+            assert(assignment.is_complete() && assignment.is_ordered());
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint,
                                                              assignment,

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_UTILS_HPP_
-#define MIMIR_FORMALISM_ASSIGNMENT_SET_UTILS_HPP_
+#ifndef MIMIR_FORMALISM_ASSIGNMENT_HPP_
+#define MIMIR_FORMALISM_ASSIGNMENT_HPP_
 
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -25,10 +25,6 @@
 
 namespace mimir::formalism
 {
-
-/**
- * We keep all the stuff in the header to allow inlining because this is used in tight loops!
- */
 
 /**
  * VertexAssignment
@@ -56,8 +52,7 @@ struct VertexAssignment
         }
     }
 
-    /// @brief Iterators must yield complete assignments.
-    bool is_complete() const { return index != MAX_INDEX && object != MAX_INDEX; }
+    inline bool is_complete() const noexcept { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
 /**
@@ -84,7 +79,7 @@ struct EdgeAssignment
 
     EdgeAssignment(const EdgeAssignment& assignment, const IndexList& remapping)
     {
-        assert(assignment.is_complete());
+        assert(assignment.is_complete() && assignment.is_ordered());
 
         first_index = remapping.at(assignment.first_index);
         second_index = remapping.at(assignment.second_index);
@@ -105,16 +100,16 @@ struct EdgeAssignment
             std::swap(first_index, second_index);
             std::swap(first_object, second_object);
         }
+
+        assert(assignment.is_ordered());
     }
 
-    /// @brief Iterators must yield complete assignments.
-    bool is_complete() const
+    inline bool is_complete() const noexcept
     {
-        return (first_index < second_index) && (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX)
-               && (second_object != MAX_INDEX);
+        return (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX) && (second_object != MAX_INDEX);
     }
 
-    bool is_ordered() const { return first_index <= second_index; }
+    inline bool is_ordered() const noexcept { return first_index == MAX_INDEX || second_index == MAX_INDEX || first_index < second_index; }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const VertexAssignment& assignment)

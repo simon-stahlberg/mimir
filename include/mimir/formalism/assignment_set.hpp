@@ -21,7 +21,7 @@
 #include "mimir/common/bounds.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
-#include "mimir/formalism/assignment_set_utils.hpp"
+#include "mimir/formalism/assignment.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -37,17 +37,17 @@ struct PerfectAssignmentHash
 {
     size_t m_num_assignments;                        ///< The number of type legal [i/o] including a sentinel for each i
     std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to index for each type legal [i/o]
-    std::vector<size_t> m_offsets;                   ///< The offsets of i
+    std::vector<uint32_t> m_offsets;                 ///< The offsets of i
 
-    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
+    inline PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
 
-    size_t get_empty_assignment_rank() const;
+    inline size_t get_empty_assignment_rank() const noexcept;
 
-    size_t get_assignment_rank(const VertexAssignment& assignment) const;
+    inline size_t get_assignment_rank(const VertexAssignment& assignment) const noexcept;
 
-    size_t get_assignment_rank(const EdgeAssignment& assignment) const;
+    inline size_t get_assignment_rank(const EdgeAssignment& assignment) const noexcept;
 
-    size_t get_num_assignments() const;
+    inline size_t get_num_assignments() const noexcept;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -62,14 +62,14 @@ private:
 public:
     PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate);
 
-    void reset();
+    inline void reset() noexcept;
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    bool operator[](const VertexAssignment& assignment) const;
-    bool operator[](const EdgeAssignment& assignment) const;
+    inline bool operator[](const VertexAssignment& assignment) const noexcept;
+    inline bool operator[](const EdgeAssignment& assignment) const noexcept;
 
-    size_t size() const;
+    inline size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -83,15 +83,15 @@ public:
 
     PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates);
 
-    void reset();
+    inline void reset() noexcept;
 
     void insert_ground_atoms(const GroundAtomList<P>& ground_atoms);
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const;
+    inline const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const noexcept;
 
-    size_t size() const;
+    inline size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentTag F>
@@ -108,14 +108,14 @@ public:
 
     FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton);
 
-    void reset();
+    inline void reset() noexcept;
 
     void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
 
-    Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const;
-    Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const;
+    inline Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
+    inline Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
 
-    size_t size() const;
+    inline size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentTag F>
@@ -133,15 +133,17 @@ public:
 
     FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons);
 
-    void reset();
+    inline void reset() noexcept;
 
     void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
-    const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const;
+    inline const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const noexcept;
 
-    size_t size() const;
+    inline size_t size() const noexcept;
 };
 
 }
+
+#include "mimir/formalism/assignment_set_impl.hpp"
 
 #endif
