@@ -69,6 +69,7 @@ size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assign
     const auto result = m_offsets[assignment.index + 1] + o;
 
     assert(result < m_num_assignments);
+    assert(result == get_assignment_rank(EdgeAssignment(assignment.index, assignment.object, MAX_INDEX, MAX_INDEX)));
 
     return result;
 }
@@ -81,6 +82,7 @@ size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignme
     const auto j1 = m_offsets[assignment.first_index + 1] + o1;
     const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
+    assert(assignment.is_ordered());
     const auto result = j2 * m_num_assignments + j1;
 
     assert(result < get_num_assignments());
@@ -115,15 +117,15 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = objects[first_index];
-        m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
 
-        // For partial assigned edges.
-        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX)));
-        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index())));
+        // Complete vertex.
+        m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = objects[second_index];
+
+            // Ordered complete edge.
             m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index())));
         }
     }
@@ -229,6 +231,8 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = arguments[first_index];
+
+        // Complete vertex.
         auto& single_assignment_bound = m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))];
         single_assignment_bound = Bounds(
             (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value :
@@ -236,13 +240,11 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
                                                                                                        std::max(single_assignment_bound.get_upper(), value));
 
-        // For partial assigned edges.
-        m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX))] = single_assignment_bound;
-        m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))] = single_assignment_bound;
-
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
+
+            // Ordered complete edge.
             auto& double_assignment_bound =
                 m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()))];
             double_assignment_bound = Bounds((single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?

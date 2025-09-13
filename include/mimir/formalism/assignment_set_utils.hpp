@@ -56,7 +56,7 @@ struct VertexAssignment
         }
     }
 
-    /// @brief Return true iff the index and object are set.
+    /// @brief Iterators must yield complete assignments.
     bool is_complete() const { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
@@ -100,20 +100,21 @@ struct EdgeAssignment
             second_object = MAX_INDEX;
         }
 
-        if (first_index > second_index)  // TODO: the swap seems redundant in the new design of the assignment set insert where partially assigned edges are
-                                         // properly initialized
+        if (first_index > second_index)
         {
             std::swap(first_index, second_index);
             std::swap(first_object, second_object);
         }
     }
 
-    /// @brief Return true iff both indices and objects are set.
+    /// @brief Iterators must yield complete assignments.
     bool is_complete() const
     {
         return (first_index < second_index) && (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX)
                && (second_object != MAX_INDEX);
     }
+
+    bool is_ordered() const { return first_index <= second_index; }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const VertexAssignment& assignment)
