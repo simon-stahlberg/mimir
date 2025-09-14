@@ -15,25 +15,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_GROUND_ATOM_HPP_
-#define MIMIR_FORMALISM_GROUND_ATOM_HPP_
+#ifndef MIMIR_FORMALISM_BINDING_HPP_
+#define MIMIR_FORMALISM_BINDING_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir::formalism
 {
 
-template<IsStaticOrFluentOrDerivedTag P>
-class GroundAtomImpl
+class BindingImpl
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
-    Binding m_binding;
+    ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(Index index, Predicate<P> predicate, Binding binding);
+    BindingImpl(Index index, ObjectList objects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -41,34 +39,27 @@ private:
 
 public:
     using FormalismEntity = void;
-    using Type = P;
 
     // moveable but not copyable
-    GroundAtomImpl(const GroundAtomImpl& other) = delete;
-    GroundAtomImpl& operator=(const GroundAtomImpl& other) = delete;
-    GroundAtomImpl(GroundAtomImpl&& other) = default;
-    GroundAtomImpl& operator=(GroundAtomImpl&& other) = default;
+    BindingImpl(const BindingImpl& other) = delete;
+    BindingImpl& operator=(const BindingImpl& other) = delete;
+    BindingImpl(BindingImpl&& other) = default;
+    BindingImpl& operator=(BindingImpl&& other) = default;
 
     Index get_index() const;
-    Predicate<P> get_predicate() const;
-    Binding get_binding() const;
+    const ObjectList& get_objects() const;
     size_t get_arity() const;
-    Atom<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
+    Object get_object(Index pos) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), get_binding()); }
+    auto identifying_members() const { return std::tuple(std::cref(get_objects())); }
 };
 
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories);
+extern std::ostream& operator<<(std::ostream& out, const BindingImpl& element);
 
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
-
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
+extern std::ostream& operator<<(std::ostream& out, Binding element);
 
 }
 

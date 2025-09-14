@@ -18,16 +18,17 @@
 #include "mimir/formalism/ground_function.hpp"
 
 #include "formatter.hpp"
+#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/object.hpp"
 
 namespace mimir::formalism
 {
 template<IsStaticOrFluentOrAuxiliaryTag F>
-GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects) :
+GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, Binding binding) :
     m_index(index),
-    m_function_skeleton(std::move(function_skeleton)),
-    m_objects(std::move(objects))
+    m_function_skeleton(function_skeleton),
+    m_binding(binding)
 {
 }
 
@@ -44,15 +45,15 @@ FunctionSkeleton<F> GroundFunctionImpl<F>::get_function_skeleton() const
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-const ObjectList& GroundFunctionImpl<F>::get_objects() const
+Binding GroundFunctionImpl<F>::get_binding() const
 {
-    return m_objects;
+    return m_binding;
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 size_t GroundFunctionImpl<F>::get_arity() const
 {
-    return m_objects.size();
+    return m_binding->get_arity();
 }
 
 template class GroundFunctionImpl<StaticTag>;

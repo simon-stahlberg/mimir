@@ -56,6 +56,9 @@ template<Formatter T>
 void write(const AxiomImpl& element, T formatter, std::ostream& out);
 
 template<Formatter T>
+void write(const BindingImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
 void write(const DomainImpl& element, T formatter, std::ostream& out);
 
 template<Formatter T, IsFluentOrAuxiliaryTag F>

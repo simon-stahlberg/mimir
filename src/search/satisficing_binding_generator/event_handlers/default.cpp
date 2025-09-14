@@ -22,7 +22,7 @@ namespace mimir::search::satisficing_binding_generator
 
 DefaultEventHandlerImpl::DefaultEventHandlerImpl() : IEventHandler() {}
 
-void DefaultEventHandlerImpl::on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) {}
+void DefaultEventHandlerImpl::on_invalid_binding(formalism::Binding binding, const formalism::ProblemImpl& problem) {}
 
 DefaultEventHandler DefaultEventHandlerImpl::create() { return std::make_shared<DefaultEventHandlerImpl>(); }
 

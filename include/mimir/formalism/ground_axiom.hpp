@@ -35,11 +35,11 @@ class GroundAxiomImpl
 private:
     Index m_index;
     Axiom m_axiom;
-    ObjectList m_objects;
+    Binding m_binding;
     GroundConjunctiveCondition m_conjunctive_condition;
     GroundLiteral<DerivedTag> m_literal;
 
-    GroundAxiomImpl(Index index, Axiom axiom, ObjectList objects, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
+    GroundAxiomImpl(Index index, Axiom axiom, Binding binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -56,7 +56,7 @@ public:
 
     Index get_index() const;
     Axiom get_axiom() const;
-    const ObjectList& get_objects() const;
+    Binding get_binding() const;
     GroundConjunctiveCondition get_conjunctive_condition() const;
     GroundLiteral<DerivedTag> get_literal() const;
 
@@ -65,7 +65,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_axiom(), std::cref(get_objects())); }
+    auto identifying_members() const { return std::tuple(get_axiom(), get_binding()); }
 };
 }
 

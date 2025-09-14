@@ -53,6 +53,7 @@ protected:
     using TranslatorCaches = boost::hana::map<TranslatorCache<Requirements>,
                                               TranslatorCache<Type>,
                                               TranslatorCache<Object>,
+                                              TranslatorCache<Binding>,
                                               TranslatorCache<Variable>,
                                               TranslatorCache<Parameter>,
                                               TranslatorCache<Term>,
@@ -146,6 +147,7 @@ protected:
     void prepare_level_2(Requirements requirements) {}
     void prepare_level_2(Type type) { this->prepare_level_0(type->get_bases()); }
     void prepare_level_2(Object object) {}
+    void prepare_level_2(Binding binding) { this->prepare_level_0(binding->get_objects()); }
     void prepare_level_2(Variable variable) {}
     void prepare_level_2(Parameter parameter)
     {
@@ -274,7 +276,7 @@ protected:
     void prepare_level_2(GroundFunction<F> function)
     {
         this->prepare_level_0(function->get_function_skeleton());
-        this->prepare_level_0(function->get_objects());
+        this->prepare_level_0(function->get_binding());
     }
     void prepare_level_2(Action action)
     {
@@ -394,6 +396,10 @@ protected:
     {
         return repositories.get_or_create_object(object->get_name(), this->translate_level_0(object->get_bases(), repositories));
     }
+    Binding translate_level_2(Binding binding, Repositories& repositories)
+    {
+        return repositories.get_or_create_binding(this->translate_level_0(binding->get_objects(), repositories));
+    }
     Variable translate_level_2(Variable variable, Repositories& repositories)
     {
         return repositories.get_or_create_variable(variable->get_name(), variable->get_parameter_index());
@@ -422,7 +428,7 @@ protected:
     GroundAtom<P> translate_level_2(GroundAtom<P> atom, Repositories& repositories)
     {
         return repositories.get_or_create_ground_atom(this->translate_level_0(atom->get_predicate(), repositories),
-                                                      this->translate_level_0(atom->get_objects(), repositories));
+                                                      this->translate_level_0(atom->get_binding(), repositories));
     }
     template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories)
@@ -561,7 +567,7 @@ protected:
     GroundFunction<F> translate_level_2(GroundFunction<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function(this->translate_level_0(function->get_function_skeleton(), repositories),
-                                                          this->translate_level_0(function->get_objects(), repositories));
+                                                          this->translate_level_0(function->get_binding(), repositories));
     }
     Action translate_level_2(Action action, Repositories& repositories)
     {

@@ -661,11 +661,10 @@ Object ToMimirStructures::translate_grounded(loki::Term term, Repositories& repo
 
 StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::Atom atom, Repositories& repositories)
 {
-    auto static_or_fluent_or_derived_predicate = translate_common(atom->get_predicate(), repositories);
-
-    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
-                      { return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories)); },
-                      static_or_fluent_or_derived_predicate);
+    return std::visit(
+        [&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
+        { return repositories.get_or_create_ground_atom(arg, repositories.get_or_create_binding(translate_grounded(atom->get_terms(), repositories))); },
+        translate_common(atom->get_predicate(), repositories));
 }
 
 StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki::Literal literal, Repositories& repositories)
@@ -728,12 +727,13 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
 
 StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(loki::Function function, Repositories& repositories)
 {
-    const auto static_or_fluent_or_auxiliary_function_skeleton = translate_common(function->get_function_skeleton(), repositories);
-    const auto objects = translate_grounded(function->get_terms(), repositories);
-
-    return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
-                      { return repositories.get_or_create_ground_function(function_skeleton, objects); },
-                      static_or_fluent_or_auxiliary_function_skeleton);
+    return std::visit(
+        [&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
+        {
+            return repositories.get_or_create_ground_function(function_skeleton,
+                                                              repositories.get_or_create_binding(translate_grounded(function->get_terms(), repositories)));
+        },
+        translate_common(function->get_function_skeleton(), repositories));
 }
 
 GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNumericConstraint condition, Repositories& repositories)

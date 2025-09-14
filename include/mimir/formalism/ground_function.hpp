@@ -28,9 +28,9 @@ class GroundFunctionImpl
 private:
     Index m_index;
     FunctionSkeleton<F> m_function_skeleton;
-    ObjectList m_objects;
+    Binding m_binding;
 
-    GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects);
+    GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, Binding binding);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -48,13 +48,13 @@ public:
 
     Index get_index() const;
     FunctionSkeleton<F> get_function_skeleton() const;
-    const ObjectList& get_objects() const;
+    Binding get_binding() const;
     size_t get_arity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_function_skeleton(), std::cref(get_objects())); }
+    auto identifying_members() const { return std::tuple(get_function_skeleton(), get_binding()); }
 };
 
 template<IsStaticOrFluentOrAuxiliaryTag F>

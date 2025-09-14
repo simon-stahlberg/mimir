@@ -20,6 +20,7 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -46,6 +47,8 @@
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 #include <sstream>
 
 namespace mimir::formalism
@@ -315,6 +318,12 @@ void write(const AxiomImpl& element, T formatter, std::ostream& out)
 
 template void write(const AxiomImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const AxiomImpl& element, AddressFormatter formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const BindingImpl& element, T formatter, std::ostream& out)
+{
+    out << fmt::format("{}", fmt::join(element.get_objects() | std::views::transform([](auto* obj) { return obj->get_name(); }), " "));
+}
 
 template<Formatter T>
 void write(const DomainImpl& element, T formatter, std::ostream& out)
@@ -650,9 +659,10 @@ template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
-    for (const auto& object : element.get_objects())
+    if (element.get_arity() > 0)
     {
-        out << " " << object->get_name();
+        out << " ";
+        write(*element.get_binding(), formatter, out);
     }
     out << ")";
 }
@@ -738,21 +748,13 @@ template void write(const GroundFunctionExpressionImpl& element, AddressFormatte
 template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out)
 {
-    if (element.get_objects().empty())
+    out << "(" << element.get_function_skeleton()->get_name();
+    if (element.get_arity() > 0)
     {
-        out << "(" << element.get_function_skeleton()->get_name() << ")";
+        out << " ";
+        write(*element.get_binding(), formatter, out);
     }
-    else
-    {
-        out << "(" << element.get_function_skeleton()->get_name() << "(";
-        for (size_t i = 0; i < element.get_objects().size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            write_untyped(*element.get_objects()[i], formatter, out);
-        }
-        out << "))";
-    }
+    out << ")";
 }
 
 template void write(const GroundFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);

@@ -47,27 +47,27 @@ public:
 
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    mimir::generator<formalism::ObjectList>
+    mimir::generator<formalism::Binding>
     create_binding_generator(const State& state,
                              const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                              const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
 
-    mimir::generator<formalism::ObjectList>
+    mimir::generator<formalism::Binding>
     create_binding_generator(const UnpackedStateImpl& unpacked_state,
                              const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                              const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
                              const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
 
-    mimir::generator<std::pair<formalism::ObjectList,
+    mimir::generator<std::pair<formalism::Binding,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                           formalism::GroundLiteralList<formalism::FluentTag>,
                                           formalism::GroundLiteralList<formalism::DerivedTag>>>>
     create_ground_conjunction_generator(const State& state);
 
-    mimir::generator<std::pair<formalism::ObjectList,
+    mimir::generator<std::pair<formalism::Binding,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                           formalism::GroundLiteralList<formalism::FluentTag>,
                                           formalism::GroundLiteralList<formalism::DerivedTag>>>>
@@ -104,27 +104,26 @@ protected:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
     template<formalism::IsFluentOrDerivedTag P>
-    bool is_valid_dynamic_binding(const formalism::LiteralList<P>& literals, const FlatBitset& atom_indices, const formalism::ObjectList& binding);
+    bool is_valid_dynamic_binding(const formalism::LiteralList<P>& literals, const FlatBitset& atom_indices, formalism::Binding binding);
 
-    bool is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals, const formalism::ObjectList& binding);
+    bool is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals, formalism::Binding binding);
 
-    bool
-    is_valid_binding(const formalism::NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
+    bool is_valid_binding(const formalism::NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, formalism::Binding binding);
 
-    bool is_valid_binding(formalism::ConjunctiveCondition condition, const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
+    bool is_valid_binding(formalism::ConjunctiveCondition condition, const UnpackedStateImpl& unpacked_state, formalism::Binding binding);
 
-    bool is_valid_binding(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
+    bool is_valid_binding(const UnpackedStateImpl& unpacked_state, formalism::Binding binding);
 
-    mimir::generator<formalism::ObjectList> nullary_case(const UnpackedStateImpl& unpacked_state);
+    mimir::generator<formalism::Binding> nullary_case(const UnpackedStateImpl& unpacked_state);
 
-    mimir::generator<formalism::ObjectList>
+    mimir::generator<formalism::Binding>
     unary_case(const UnpackedStateImpl& unpacked_state,
                const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
                const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
                const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
 
-    mimir::generator<formalism::ObjectList>
+    mimir::generator<formalism::Binding>
     general_case(const UnpackedStateImpl& unpacked_state,
                  const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
                  const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,

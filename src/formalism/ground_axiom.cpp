@@ -27,12 +27,12 @@ namespace mimir::formalism
 
 GroundAxiomImpl::GroundAxiomImpl(Index index,
                                  Axiom axiom,
-                                 ObjectList objects,
+                                 Binding binding,
                                  GroundConjunctiveCondition conjunctive_condition,
                                  GroundLiteral<DerivedTag> literal) :
     m_index(index),
     m_axiom(axiom),
-    m_objects(std::move(objects)),
+    m_binding(binding),
     m_conjunctive_condition(conjunctive_condition),
     m_literal(literal)
 {
@@ -42,7 +42,7 @@ Index GroundAxiomImpl::get_index() const { return m_index; }
 
 Axiom GroundAxiomImpl::get_axiom() const { return m_axiom; }
 
-const ObjectList& GroundAxiomImpl::get_objects() const { return m_objects; }
+Binding GroundAxiomImpl::get_binding() const { return m_binding; }
 
 GroundConjunctiveCondition GroundAxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxi
     os << "Axiom("                                                                          //
        << "index=" << axiom->get_index() << ", "                                            //
        << "name=" << axiom->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << axiom->get_objects() << ", "                                        //
+       << "binding=" << axiom->get_binding() << ", "                                        //
        << std::make_tuple(axiom->get_conjunctive_condition(), std::cref(problem)) << ", "   //
        << "effect=" << axiom->get_literal() << ")";
 

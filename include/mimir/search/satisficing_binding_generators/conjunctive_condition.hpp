@@ -30,7 +30,7 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>;
 
-    bool is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding) { return true; }
+    bool is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, formalism::Binding binding) { return true; }
 
 public:
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::create_binding_generator;

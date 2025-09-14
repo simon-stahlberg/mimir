@@ -33,12 +33,12 @@ namespace mimir::formalism
 
 GroundActionImpl::GroundActionImpl(Index index,
                                    Action action,
-                                   ObjectList objects,
+                                   Binding binding,
                                    GroundConjunctiveCondition conjunctive_precondition,
                                    GroundConditionalEffectList conditional_effects) :
     m_index(index),
     m_action(action),
-    m_objects(std::move(objects)),
+    m_binding(binding),
     m_conjunctive_precondition(conjunctive_precondition),
     m_conditional_effects(std::move(conditional_effects))
 {
@@ -48,7 +48,7 @@ Index GroundActionImpl::get_index() const { return m_index; }
 
 Action GroundActionImpl::get_action() const { return m_action; }
 
-const ObjectList& GroundActionImpl::get_objects() const { return m_objects; }
+Binding GroundActionImpl::get_binding() const { return m_binding; }
 
 GroundConjunctiveCondition GroundActionImpl::get_conjunctive_condition() const { return m_conjunctive_precondition; }
 
@@ -75,7 +75,7 @@ std::ostream& operator<<(std::ostream& os,
     os << "Action("                                                           //
        << "index=" << action->get_index() << ", "                             //
        << "name=" << action->get_action()->get_name() << ", "                 //
-       << "binding=" << action->get_objects() << ", "                         //
+       << "binding=" << action->get_binding() << ", "                         //
        << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "  //
        << ", " << "conditional_effects=[";
     for (const auto& cond_effect : conditional_effects)
@@ -95,7 +95,9 @@ std::ostream& operator<<(std::ostream& os,
     ;
     os << "(" << action->get_action()->get_name();
     // Only take objects w.r.t. to the original action parameters
-    for (auto it = action->get_objects().begin(); it != action->get_objects().begin() + action->get_action()->get_original_arity(); ++it)
+    for (auto it = action->get_binding()->get_objects().begin();
+         it != action->get_binding()->get_objects().begin() + action->get_action()->get_original_arity();
+         ++it)
     {
         os << " " << **it;
     }

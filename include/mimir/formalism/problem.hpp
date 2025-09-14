@@ -174,8 +174,6 @@ public:
 
     /* Goal */
 
-    bool static_literal_holds(const GroundLiteral<StaticTag> literal) const;  // TODO: probably can go in the future
-
     bool static_goal_holds() const;
 
     template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
@@ -194,31 +192,33 @@ public:
 
     /* Grounding */
 
-    template<IsStaticOrFluentOrDerivedTag P>
-    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects);
+    Binding get_or_create_binding(const ObjectList& objects);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, Binding binding);
 
-    GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
+    template<IsStaticOrFluentOrDerivedTag P>
+    GroundLiteral<P> ground(Literal<P> literal, Binding binding);
 
-    GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+    GroundFunctionExpression ground(FunctionExpression fexpr, Binding binding);
+
+    GroundNumericConstraint ground(NumericConstraint numeric_constraint, Binding binding);
 
     template<IsFluentOrAuxiliaryTag F>
-    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
+    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, Binding binding);
 
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
+    GroundFunction<F> ground(Function<F> function, Binding binding);
 
-    GroundConjunctiveCondition ground(ConjunctiveCondition conjunctive_condition, const ObjectList& binding);
+    GroundConjunctiveCondition ground(ConjunctiveCondition conjunctive_condition, Binding binding);
 
-    GroundConjunctiveEffect ground(ConjunctiveEffect conjunctive_effect, const ObjectList& binding);
+    GroundConjunctiveEffect ground(ConjunctiveEffect conjunctive_effect, Binding binding);
 
-    GroundConditionalEffect ground(ConditionalEffect conditional_effect, const ObjectList& binding);
+    GroundConditionalEffect ground(ConditionalEffect conditional_effect, Binding binding);
 
-    GroundAction ground(Action action, const ObjectList& binding);
+    GroundAction ground(Action action, Binding binding);
 
-    GroundAxiom ground(Axiom axiom, const ObjectList& binding);
+    GroundAxiom ground(Axiom axiom, Binding binding);
 
     /* Lifting */
 

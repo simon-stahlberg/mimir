@@ -34,13 +34,13 @@ class GroundActionImpl
 private:
     Index m_index;
     Action m_action;
-    ObjectList m_objects;
+    Binding m_binding;
     GroundConjunctiveCondition m_conjunctive_precondition;
     GroundConditionalEffectList m_conditional_effects;
 
     GroundActionImpl(Index index,
                      Action action,
-                     ObjectList objects,
+                     Binding binding,
                      GroundConjunctiveCondition conjunctive_precondition,
                      GroundConditionalEffectList conditional_effects);
 
@@ -68,7 +68,7 @@ public:
 
     Index get_index() const;
     Action get_action() const;
-    const ObjectList& get_objects() const;
+    Binding get_binding() const;
     GroundConjunctiveCondition get_conjunctive_condition() const;
     const GroundConditionalEffectList& get_conditional_effects() const;
 
@@ -77,7 +77,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_action(), std::cref(get_objects())); }
+    auto identifying_members() const { return std::tuple(get_action(), get_binding()); }
 };
 
 /// @brief STL does not define operator== for std::span.

@@ -30,7 +30,7 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;
 
-    bool is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
+    bool is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, formalism::Binding binding);
 
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding;
 
@@ -42,14 +42,14 @@ private:
     std::optional<loki::AssignOperatorEnum> m_auxiliary_numeric_change;
 
     template<formalism::IsFluentOrAuxiliaryTag F>
-    bool is_valid_binding(formalism::NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
+    bool is_valid_binding(formalism::NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, formalism::Binding binding);
 
     template<formalism::IsFluentOrAuxiliaryTag F>
-    bool is_valid_binding(const formalism::NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
+    bool is_valid_binding(const formalism::NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, formalism::Binding binding);
 
-    bool is_valid_binding(formalism::ConjunctiveEffect effect, const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
+    bool is_valid_binding(formalism::ConjunctiveEffect effect, const UnpackedStateImpl& unpacked_state, formalism::Binding binding);
 
-    bool is_valid_binding_if_fires(formalism::ConditionalEffect effect, const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding);
+    bool is_valid_binding_if_fires(formalism::ConditionalEffect effect, const UnpackedStateImpl& unpacked_state, formalism::Binding binding);
 
 public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::create_binding_generator;

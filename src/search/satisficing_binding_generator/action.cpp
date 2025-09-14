@@ -36,7 +36,7 @@ ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action acti
 
 const Action& ActionSatisficingBindingGenerator::get_action() const { return m_action; }
 
-bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, Binding binding)
 {
     m_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
     m_auxiliary_numeric_change = std::nullopt;
@@ -47,15 +47,13 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const UnpackedStat
 }
 
 template<IsFluentOrAuxiliaryTag F>
-bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, Binding binding)
 {
     throw std::logic_error("Should not be called.");
 }
 
 template<>
-bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag> effect,
-                                                         const FlatDoubleList& fluent_numeric_variables,
-                                                         const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag> effect, const FlatDoubleList& fluent_numeric_variables, Binding binding)
 {
     // For fluent, we have to check that the target function is well-defined.
     const auto ground_target_function = m_problem->ground(effect->get_function(), binding);
@@ -84,9 +82,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag
 }
 
 template<>
-bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<AuxiliaryTag> effect,
-                                                         const FlatDoubleList& fluent_numeric_variables,
-                                                         const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<AuxiliaryTag> effect, const FlatDoubleList& fluent_numeric_variables, Binding binding)
 {
     auto& recorded_change = m_auxiliary_numeric_change;
     const bool is_incompatible_change = (m_auxiliary_numeric_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
@@ -102,9 +98,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
 }
 
 template<IsFluentOrAuxiliaryTag F>
-bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects,
-                                                         const FlatDoubleList& fluent_numeric_variables,
-                                                         const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, Binding binding)
 {
     for (const auto& effect : effects)
     {
@@ -118,19 +112,19 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList
 
 template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<FluentTag>& effects,
                                                                   const FlatDoubleList& fluent_numeric_variables,
-                                                                  const ObjectList& binding);
+                                                                  Binding binding);
 template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<AuxiliaryTag>& effects,
                                                                   const FlatDoubleList& fluent_numeric_variables,
-                                                                  const ObjectList& binding);
+                                                                  Binding binding);
 
-bool ActionSatisficingBindingGenerator::is_valid_binding(ConjunctiveEffect effect, const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(ConjunctiveEffect effect, const UnpackedStateImpl& unpacked_state, Binding binding)
 {
     return is_valid_binding(effect->get_fluent_numeric_effects(), unpacked_state.get_numeric_variables(), binding)
            && (!effect->get_auxiliary_numeric_effect().has_value()
                || is_valid_binding(effect->get_auxiliary_numeric_effect().value(), unpacked_state.get_numeric_variables(), binding));
 }
 
-bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEffect effect, const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEffect effect, const UnpackedStateImpl& unpacked_state, Binding binding)
 {
     // Same idea as in is_applicable_if_fires.
     return !(!is_valid_binding(effect->get_conjunctive_effect(), unpacked_state, binding)  //

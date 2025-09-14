@@ -27,7 +27,7 @@ class DefaultEventHandlerImpl : public IEventHandler
 public:
     DefaultEventHandlerImpl();
 
-    void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem);
+    void on_invalid_binding(formalism::Binding binding, const formalism::ProblemImpl& problem);
 
     static DefaultEventHandler create();
 };

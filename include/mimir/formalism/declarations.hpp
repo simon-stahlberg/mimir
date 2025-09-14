@@ -57,6 +57,9 @@ class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
+class BindingImpl;
+using Binding = const BindingImpl*;
+
 class GroundActionImpl;
 using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
