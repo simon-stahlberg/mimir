@@ -18,7 +18,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 
 #include "formatter.hpp"
-#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -28,7 +27,10 @@
 namespace mimir::formalism
 {
 template<IsStaticOrFluentOrDerivedTag P>
-GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, Binding binding) : m_index(index), m_predicate(predicate), m_binding(binding)
+GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :
+    m_index(index),
+    m_predicate(predicate),
+    m_objects(std::move(objects))
 {
 }
 
@@ -45,15 +47,15 @@ Predicate<P> GroundAtomImpl<P>::get_predicate() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-Binding GroundAtomImpl<P>::get_binding() const
+const ObjectList& GroundAtomImpl<P>::get_objects() const
 {
-    return m_binding;
+    return m_objects;
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
 size_t GroundAtomImpl<P>::get_arity() const
 {
-    return m_binding->get_arity();
+    return m_objects.size();
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -75,7 +77,7 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
     for (const auto& ground_atom : ground_atoms)
     {
         TermList terms;
-        for (const auto& object : ground_atom->get_binding()->get_objects())
+        for (const auto& object : ground_atom->get_objects())
         {
             if (!to_variable.contains(object))
             {

@@ -10,7 +10,7 @@ namespace mimir::formalism
 {
 
 template<typename T>
-using GroundingTable = absl::flat_hash_map<Binding, T>;
+using GroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
 
 template<typename T>
 using GroundingTableList = std::vector<GroundingTable<T>>;

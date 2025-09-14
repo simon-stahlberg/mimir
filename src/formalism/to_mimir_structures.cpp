@@ -661,10 +661,9 @@ Object ToMimirStructures::translate_grounded(loki::Term term, Repositories& repo
 
 StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::Atom atom, Repositories& repositories)
 {
-    return std::visit(
-        [&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
-        { return repositories.get_or_create_ground_atom(arg, repositories.get_or_create_binding(translate_grounded(atom->get_terms(), repositories))); },
-        translate_common(atom->get_predicate(), repositories));
+    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
+                      { return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories)); },
+                      translate_common(atom->get_predicate(), repositories));
 }
 
 StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki::Literal literal, Repositories& repositories)
@@ -727,13 +726,9 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
 
 StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(loki::Function function, Repositories& repositories)
 {
-    return std::visit(
-        [&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
-        {
-            return repositories.get_or_create_ground_function(function_skeleton,
-                                                              repositories.get_or_create_binding(translate_grounded(function->get_terms(), repositories)));
-        },
-        translate_common(function->get_function_skeleton(), repositories));
+    return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
+                      { return repositories.get_or_create_ground_function(function_skeleton, translate_grounded(function->get_terms(), repositories)); },
+                      translate_common(function->get_function_skeleton(), repositories));
 }
 
 GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNumericConstraint condition, Repositories& repositories)

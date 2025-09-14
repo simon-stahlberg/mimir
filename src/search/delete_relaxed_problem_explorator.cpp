@@ -149,8 +149,7 @@ GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
     {
         const auto predicate = get_predicate<P>(*m_problem, delete_free_ground_atom.get_predicate()->get_name());
 
-        auto binding = m_problem->get_or_create_binding(
-            translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom.get_binding()->get_objects(), m_delete_free_object_to_unrelaxed_object));
+        auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
         auto ground_atom = m_problem->get_or_create_ground_atom(predicate, binding);
 
@@ -173,11 +172,9 @@ GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action.get_action()))
         {
-            auto binding =
-                m_problem->get_or_create_binding(translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action.get_binding()->get_objects(),
-                                                                                                 m_delete_free_object_to_unrelaxed_object));
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
-            auto grounded_action = m_problem->ground(action, binding);
+            auto grounded_action = m_problem->ground(action, std::move(binding));
 
             if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
             {
@@ -199,11 +196,9 @@ GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom.get_axiom()))
         {
-            auto binding =
-                m_problem->get_or_create_binding(translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom.get_binding()->get_objects(),
-                                                                                                 m_delete_free_object_to_unrelaxed_object));
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom.get_objects(), m_delete_free_object_to_unrelaxed_object);
 
-            auto ground_axiom = m_problem->ground(axiom, binding);
+            auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
             if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
             {

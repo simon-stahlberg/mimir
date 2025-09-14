@@ -17,7 +17,6 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
@@ -37,7 +36,7 @@ add_objects_graph_structures(const State& state, const ProblemImpl& problem, gra
     auto object_to_literal_color = ObjectMap<std::vector<std::pair<PredicateVariant, bool>>> {};
     auto initialize_object_colors_func = [&](auto&& atom)
     {
-        for (const auto& object : atom->get_binding()->get_objects())
+        for (const auto& object : atom->get_objects())
         {
             object_to_atom_color[object] = PredicateVariantList();
             object_to_literal_color[object] = std::vector<std::pair<PredicateVariant, bool>>();
@@ -69,7 +68,7 @@ add_objects_graph_structures(const State& state, const ProblemImpl& problem, gra
     {
         if (atom->get_arity() == 1)
         {
-            object_to_atom_color[atom->get_binding()->get_objects().front()].push_back(atom->get_predicate());
+            object_to_atom_color[atom->get_objects().front()].push_back(atom->get_predicate());
         }
     };
     for (const auto& atom : problem.get_static_initial_atoms())
@@ -88,8 +87,7 @@ add_objects_graph_structures(const State& state, const ProblemImpl& problem, gra
     {
         if (literal->get_atom()->get_arity() == 1)
         {
-            object_to_literal_color[literal->get_atom()->get_binding()->get_objects().front()].emplace_back(literal->get_atom()->get_predicate(),
-                                                                                                            literal->get_polarity());
+            object_to_literal_color[literal->get_atom()->get_objects().front()].emplace_back(literal->get_atom()->get_predicate(), literal->get_polarity());
         }
     };
     boost::hana::for_each(problem.get_hana_goal_condition(),
@@ -143,7 +141,7 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
         {
             const auto vertex_index = out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(atom->get_predicate(), pos)));
 
-            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_binding()->get_objects().at(pos)));
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
 
             if (pos > 0)
             {
@@ -164,7 +162,7 @@ static void add_ground_atoms_graph_structures(const ProblemImpl& problem,
     for (const auto& atom : atoms)
     {
         auto object_indices = IndexList {};
-        for (const auto& object : atom->get_binding()->get_objects())
+        for (const auto& object : atom->get_objects())
         {
             object_indices.push_back(object->get_index());
         }
@@ -214,7 +212,7 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
             const auto vertex_index =
                 out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(literal->get_atom()->get_predicate(), pos, literal->get_polarity())));
 
-            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_binding()->get_objects().at(pos)));
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
 
             if (pos > 0)
             {
@@ -235,7 +233,7 @@ static void add_ground_literals_graph_structures(const ProblemImpl& problem,
     for (const auto& literal : literals)
     {
         auto object_indices = IndexList {};
-        for (const auto& object : literal->get_atom()->get_binding()->get_objects())
+        for (const auto& object : literal->get_atom()->get_objects())
         {
             object_indices.push_back(object->get_index());
         }

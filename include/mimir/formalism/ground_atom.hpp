@@ -29,13 +29,13 @@ class GroundAtomImpl
 private:
     Index m_index;
     Predicate<P> m_predicate;
-    Binding m_binding;
+    ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(Index index, Predicate<P> predicate, Binding binding);
+    GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList object);
 
-    static auto identifying_args(Predicate<P> predicate, Binding binding) noexcept { return std::tuple(predicate, binding); }
+    static auto identifying_args(Predicate<P> predicate, const ObjectList& binding) noexcept { return std::tuple(predicate, std::cref(binding)); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -53,14 +53,14 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
-    Binding get_binding() const;
+    const ObjectList& get_objects() const;
     size_t get_arity() const;
     Atom<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), get_binding()); }
+    auto identifying_members() const { return std::tuple(get_predicate(), std::cref(get_objects())); }
 };
 
 template<IsStaticOrFluentOrDerivedTag P>

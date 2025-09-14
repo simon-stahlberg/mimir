@@ -103,11 +103,6 @@ Object Repositories::get_or_create_object(std::string name, TypeList types)
     return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).get_or_create(std::move(name), std::move(types));
 }
 
-Binding Repositories::get_or_create_binding(ObjectList objects)
-{
-    return boost::hana::at_key(m_repositories, boost::hana::type<BindingImpl> {}).get_or_create(std::move(objects));
-}
-
 template<IsStaticOrFluentOrDerivedTag P>
 Atom<P> Repositories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
@@ -119,14 +114,14 @@ template Atom<FluentTag> Repositories::get_or_create_atom(Predicate<FluentTag> p
 template Atom<DerivedTag> Repositories::get_or_create_atom(Predicate<DerivedTag> predicate, TermList terms);
 
 template<IsStaticOrFluentOrDerivedTag P>
-GroundAtom<P> Repositories::get_or_create_ground_atom(Predicate<P> predicate, Binding binding)
+GroundAtom<P> Repositories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList binding)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(predicate, binding);
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(predicate, std::move(binding));
 }
 
-template GroundAtom<StaticTag> Repositories::get_or_create_ground_atom(Predicate<StaticTag> predicate, Binding binding);
-template GroundAtom<FluentTag> Repositories::get_or_create_ground_atom(Predicate<FluentTag> predicate, Binding binding);
-template GroundAtom<DerivedTag> Repositories::get_or_create_ground_atom(Predicate<DerivedTag> predicate, Binding binding);
+template GroundAtom<StaticTag> Repositories::get_or_create_ground_atom(Predicate<StaticTag> predicate, ObjectList binding);
+template GroundAtom<FluentTag> Repositories::get_or_create_ground_atom(Predicate<FluentTag> predicate, ObjectList binding);
+template GroundAtom<DerivedTag> Repositories::get_or_create_ground_atom(Predicate<DerivedTag> predicate, ObjectList binding);
 
 template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> Repositories::get_or_create_literal(bool polarity, Atom<P> atom)
@@ -320,14 +315,14 @@ template Function<AuxiliaryTag>
 Repositories::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-GroundFunction<F> Repositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, Binding binding)
+GroundFunction<F> Repositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList binding)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {}).get_or_create(function_skeleton, binding);
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {}).get_or_create(function_skeleton, std::move(binding));
 }
 
-template GroundFunction<StaticTag> Repositories::get_or_create_ground_function(FunctionSkeleton<StaticTag> function_skeleton, Binding binding);
-template GroundFunction<FluentTag> Repositories::get_or_create_ground_function(FunctionSkeleton<FluentTag> function_skeleton, Binding binding);
-template GroundFunction<AuxiliaryTag> Repositories::get_or_create_ground_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, Binding binding);
+template GroundFunction<StaticTag> Repositories::get_or_create_ground_function(FunctionSkeleton<StaticTag> function_skeleton, ObjectList binding);
+template GroundFunction<FluentTag> Repositories::get_or_create_ground_function(FunctionSkeleton<FluentTag> function_skeleton, ObjectList binding);
+template GroundFunction<AuxiliaryTag> Repositories::get_or_create_ground_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, ObjectList binding);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionSkeleton<F> Repositories::get_or_create_function_skeleton(std::string name, ParameterList parameters)
@@ -469,14 +464,16 @@ Action Repositories::get_or_create_action(std::string name,
         .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conditional_effects));
 }
 
-GroundAction
-Repositories::get_or_create_ground_action(Action action, Binding binding, GroundConjunctiveCondition condition, GroundConditionalEffectList conditional_effects)
+GroundAction Repositories::get_or_create_ground_action(Action action,
+                                                       ObjectList binding,
+                                                       GroundConjunctiveCondition condition,
+                                                       GroundConditionalEffectList conditional_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundActionImpl> {})
-        .get_or_create(action, binding, std::move(condition), std::move(conditional_effects));
+        .get_or_create(action, std::move(binding), std::move(condition), std::move(conditional_effects));
 }
 
 Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal)
@@ -484,9 +481,9 @@ Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_conditi
     return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(conjunctive_condition), std::move(literal));
 }
 
-GroundAxiom Repositories::get_or_create_ground_axiom(Axiom axiom, Binding binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect)
+GroundAxiom Repositories::get_or_create_ground_axiom(Axiom axiom, ObjectList binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAxiomImpl> {}).get_or_create(axiom, binding, condition, effect);
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAxiomImpl> {}).get_or_create(axiom, std::move(binding), condition, effect);
 }
 
 OptimizationMetric Repositories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)

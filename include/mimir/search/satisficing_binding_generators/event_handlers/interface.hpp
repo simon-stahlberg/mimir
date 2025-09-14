@@ -28,7 +28,7 @@ class IEventHandler
 public:
     virtual ~IEventHandler() = default;
 
-    virtual void on_invalid_binding(formalism::Binding binding, const formalism::ProblemImpl& problem) = 0;
+    virtual void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) = 0;
 };
 }
 

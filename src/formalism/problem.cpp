@@ -458,21 +458,17 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
     }
 }
 
-// Binding
-
-Binding ProblemImpl::get_or_create_binding(const ObjectList& objects) { return m_repositories.get_or_create_binding(objects); }
-
 // Atom
 
 template<IsStaticOrFluentOrDerivedTag P>
-GroundAtom<P> ProblemImpl::get_or_create_ground_atom(Predicate<P> predicate, Binding binding)
+GroundAtom<P> ProblemImpl::get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_atom(predicate, binding);
 }
 
-template GroundAtom<StaticTag> ProblemImpl::get_or_create_ground_atom(Predicate<StaticTag> predicate, Binding binding);
-template GroundAtom<FluentTag> ProblemImpl::get_or_create_ground_atom(Predicate<FluentTag> predicate, Binding binding);
-template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate<DerivedTag> predicate, Binding binding);
+template GroundAtom<StaticTag> ProblemImpl::get_or_create_ground_atom(Predicate<StaticTag> predicate, const ObjectList& binding);
+template GroundAtom<FluentTag> ProblemImpl::get_or_create_ground_atom(Predicate<FluentTag> predicate, const ObjectList& binding);
+template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate<DerivedTag> predicate, const ObjectList& binding);
 
 // Literal
 
@@ -481,7 +477,7 @@ static void ground_and_fill_bitset(ProblemImpl& problem,
                                    const std::vector<Literal<P>>& literals,
                                    FlatBitset& ref_positive_bitset,
                                    FlatBitset& ref_negative_bitset,
-                                   Binding binding)
+                                   const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -502,24 +498,24 @@ template void ground_and_fill_bitset(ProblemImpl& problem,
                                      const std::vector<Literal<StaticTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
-                                     Binding binding);
+                                     const ObjectList& binding);
 template void ground_and_fill_bitset(ProblemImpl& problem,
                                      const std::vector<Literal<FluentTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
-                                     Binding binding);
+                                     const ObjectList& binding);
 template void ground_and_fill_bitset(ProblemImpl& problem,
                                      const std::vector<Literal<DerivedTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
-                                     Binding binding);
+                                     const ObjectList& binding);
 
 template<IsStaticOrFluentOrDerivedTag P>
 static void ground_and_fill_vector(ProblemImpl& problem,
                                    const std::vector<Literal<P>>& literals,
                                    FlatIndexList& ref_positive_indices,
                                    FlatIndexList& ref_negative_indices,
-                                   Binding binding)
+                                   const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -542,20 +538,20 @@ template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<StaticTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
-                                     Binding binding);
+                                     const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<FluentTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
-                                     Binding binding);
+                                     const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<DerivedTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
-                                     Binding binding);
+                                     const ObjectList& binding);
 
 template<IsStaticOrFluentOrDerivedTag P>
-GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, Binding binding)
+GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundLiteral<P>> {});
@@ -576,10 +572,9 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, Binding binding)
     // We have to fetch the literal-relevant part of the binding first.
     static thread_local auto s_grounded_terms = ObjectList {};
     s_grounded_terms.clear();
-    ground_terms(literal->get_atom()->get_terms(), binding->get_objects(), s_grounded_terms);
-    binding = m_repositories.get_or_create_binding(s_grounded_terms);
+    ground_terms(literal->get_atom()->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(binding);
+    const auto it = grounding_table.find(s_grounded_terms);
     if (it != grounding_table.end())
     {
         return it->second;
@@ -587,26 +582,26 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, Binding binding)
 
     /* 4. Ground the literal */
 
-    const auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), binding);
+    const auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms);
     const auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(binding, GroundLiteral<P>(grounded_literal));
+    grounding_table.emplace(s_grounded_terms, GroundLiteral<P>(grounded_literal));
 
     /* 6. Return the resulting ground literal */
 
     return grounded_literal;
 }
 
-template GroundLiteral<StaticTag> ProblemImpl::ground(Literal<StaticTag> literal, Binding binding);
-template GroundLiteral<FluentTag> ProblemImpl::ground(Literal<FluentTag> literal, Binding binding);
-template GroundLiteral<DerivedTag> ProblemImpl::ground(Literal<DerivedTag> literal, Binding binding);
+template GroundLiteral<StaticTag> ProblemImpl::ground(Literal<StaticTag> literal, const ObjectList& binding);
+template GroundLiteral<FluentTag> ProblemImpl::ground(Literal<FluentTag> literal, const ObjectList& binding);
+template GroundLiteral<DerivedTag> ProblemImpl::ground(Literal<DerivedTag> literal, const ObjectList& binding);
 
 // Function
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-GroundFunction<F> ProblemImpl::ground(Function<F> function, Binding binding)
+GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundFunction<F>> {});
@@ -625,10 +620,9 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, Binding binding)
     // We have to fetch the literal-relevant part of the binding first.
     // Note: this is important and saves a lot of memory.
     static thread_local auto s_grounded_terms = ObjectList {};
-    ground_terms(function->get_terms(), binding->get_objects(), s_grounded_terms);
-    binding = m_repositories.get_or_create_binding(s_grounded_terms);
+    ground_terms(function->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(binding);
+    const auto it = grounding_table.find(s_grounded_terms);
     if (it != grounding_table.end())
     {
         return it->second;
@@ -636,24 +630,24 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, Binding binding)
 
     /* 4. Ground the function */
 
-    const auto grounded_function = m_repositories.get_or_create_ground_function(function->get_function_skeleton(), binding);
+    const auto grounded_function = m_repositories.get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(binding, GroundFunction<F>(grounded_function));
+    grounding_table.emplace(s_grounded_terms, GroundFunction<F>(grounded_function));
 
     /* 6. Return the resulting ground literal */
 
     return grounded_function;
 }
 
-template GroundFunction<StaticTag> ProblemImpl::ground(Function<StaticTag> function, Binding binding);
-template GroundFunction<FluentTag> ProblemImpl::ground(Function<FluentTag> function, Binding binding);
-template GroundFunction<AuxiliaryTag> ProblemImpl::ground(Function<AuxiliaryTag> function, Binding binding);
+template GroundFunction<StaticTag> ProblemImpl::ground(Function<StaticTag> function, const ObjectList& binding);
+template GroundFunction<FluentTag> ProblemImpl::ground(Function<FluentTag> function, const ObjectList& binding);
+template GroundFunction<AuxiliaryTag> ProblemImpl::ground(Function<AuxiliaryTag> function, const ObjectList& binding);
 
 // FunctionExpression
 
-GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Binding binding)
+GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundFunctionExpression> {});
@@ -771,7 +765,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Binding b
 }
 
 // NumericConstraint
-GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint, Binding binding)
+GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_numeric_constraint(numeric_constraint->get_binary_comparator(),
                                                                   ground(numeric_constraint->get_left_function_expression(), binding),
@@ -780,21 +774,21 @@ GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint
 
 // NumericEffect
 template<IsFluentOrAuxiliaryTag F>
-GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, Binding binding)
+GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
                                                               ground(numeric_effect->get_function(), binding),
                                                               ground(numeric_effect->get_function_expression(), binding));
 }
 
-template GroundNumericEffect<FluentTag> ProblemImpl::ground(NumericEffect<FluentTag> numeric_effect, Binding binding);
-template GroundNumericEffect<AuxiliaryTag> ProblemImpl::ground(NumericEffect<AuxiliaryTag> numeric_effect, Binding binding);
+template GroundNumericEffect<FluentTag> ProblemImpl::ground(NumericEffect<FluentTag> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<AuxiliaryTag> ProblemImpl::ground(NumericEffect<AuxiliaryTag> numeric_effect, const ObjectList& binding);
 
 // Action
 
 static void ground_and_fill_vector(ProblemImpl& problem,
                                    const NumericConstraintList& numeric_constraints,
-                                   Binding binding,
+                                   const ObjectList& binding,
                                    GroundNumericConstraintList& ref_numeric_constraints)
 {
     for (const auto& condition : numeric_constraints)
@@ -805,7 +799,7 @@ static void ground_and_fill_vector(ProblemImpl& problem,
 
 static void ground_and_fill_vector(ProblemImpl& problem,
                                    const NumericEffectList<FluentTag>& numeric_effects,
-                                   Binding binding,
+                                   const ObjectList& binding,
                                    GroundNumericEffectList<FluentTag>& ref_numeric_effects)
 {
     for (const auto& effect : numeric_effects)
@@ -816,7 +810,7 @@ static void ground_and_fill_vector(ProblemImpl& problem,
 
 static void ground_and_fill_optional(ProblemImpl& problem,
                                      const std::optional<NumericEffect<AuxiliaryTag>>& numeric_effect,
-                                     Binding binding,
+                                     const ObjectList& binding,
                                      std::optional<GroundNumericEffect<AuxiliaryTag>>& ref_numeric_effect)
 {
     if (numeric_effect.has_value())
@@ -826,7 +820,7 @@ static void ground_and_fill_optional(ProblemImpl& problem,
     }
 }
 
-GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_condition, Binding binding)
+GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_condition, const ObjectList& binding)
 {
     auto positive_index_list = FlatIndexList {};
     auto negative_index_list = FlatIndexList {};
@@ -871,7 +865,7 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
         std::move(numeric_constraints));
 }
 
-GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect, Binding binding)
+GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect, const ObjectList& binding)
 {
     auto positive_index_list = FlatIndexList {};
     auto negative_index_list = FlatIndexList {};
@@ -897,13 +891,13 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
         std::move(auxiliary_numerical_effect));
 }
 
-GroundConditionalEffect ProblemImpl::ground(ConditionalEffect conditional_effect, Binding binding)
+GroundConditionalEffect ProblemImpl::ground(ConditionalEffect conditional_effect, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_conditional_effect(ground(conditional_effect->get_conjunctive_condition(), binding),
                                                                   ground(conditional_effect->get_conjunctive_effect(), binding));
 }
 
-GroundAction ProblemImpl::ground(Action action, Binding binding)
+GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -933,7 +927,7 @@ GroundAction ProblemImpl::ground(Action action, Binding binding)
     // We have copy the binding to extend it with objects for quantified effect variables
     // and at the same time we need to use the original binding as cache key.
     static thread_local auto s_binding_cond_effect = ObjectList {};
-    s_binding_cond_effect = binding->get_objects();
+    s_binding_cond_effect = binding;
 
     const auto& action_info = m_details.grounding.get_action_infos().at(action->get_index());
 
@@ -949,18 +943,17 @@ GroundAction ProblemImpl::ground(Action action, Binding binding)
                 const auto& objects_by_parameter_index = action_info.conditional_effect_infos.at(i).candidate_variable_bindings;
 
                 // Resize binding to have additional space for all variables in quantified effect.
-                s_binding_cond_effect.resize(binding->get_arity() + lifted_cond_effect->get_arity());
+                s_binding_cond_effect.resize(binding.size() + lifted_cond_effect->get_arity());
 
                 for (const auto& binding_cond : create_cartesian_product_generator(objects_by_parameter_index))
                 {
                     // Create resulting conditional effect binding.
                     for (size_t pos = 0; pos < lifted_cond_effect->get_arity(); ++pos)
                     {
-                        s_binding_cond_effect[binding->get_arity() + pos] = m_repositories.get_object(binding_cond[pos]);
+                        s_binding_cond_effect[binding.size() + pos] = m_repositories.get_object(binding_cond[pos]);
                     }
 
-                    const auto binding_cond_effect = m_repositories.get_or_create_binding(s_binding_cond_effect);
-                    ground_conditional_effects.push_back(ground(lifted_cond_effect, binding_cond_effect));
+                    ground_conditional_effects.push_back(ground(lifted_cond_effect, s_binding_cond_effect));
                 }
             }
             else
@@ -983,7 +976,7 @@ GroundAction ProblemImpl::ground(Action action, Binding binding)
 
 // Axiom
 
-GroundAxiom ProblemImpl::ground(Axiom axiom, Binding binding)
+GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 

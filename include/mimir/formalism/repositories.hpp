@@ -21,7 +21,6 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
@@ -61,7 +60,6 @@ using VariableRepository = loki::IndexedHashSet<VariableImpl>;
 using ParameterRepository = loki::IndexedHashSet<ParameterImpl>;
 using TermRepository = loki::IndexedHashSet<TermImpl>;
 using ObjectRepository = loki::IndexedHashSet<ObjectImpl>;
-using BindingRepository = loki::IndexedHashSet<BindingImpl>;
 template<IsStaticOrFluentOrDerivedTag P>
 using AtomRepository = loki::IndexedHashSet<AtomImpl<P>>;
 template<IsStaticOrFluentOrDerivedTag P>
@@ -119,7 +117,6 @@ using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<ParameterImpl>, ParameterRepository>,
     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
     boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
-    boost::hana::pair<boost::hana::type<BindingImpl>, BindingRepository>,
     boost::hana::pair<boost::hana::type<AtomImpl<StaticTag>>, AtomRepository<StaticTag>>,
     boost::hana::pair<boost::hana::type<AtomImpl<FluentTag>>, AtomRepository<FluentTag>>,
     boost::hana::pair<boost::hana::type<AtomImpl<DerivedTag>>, AtomRepository<DerivedTag>>,
@@ -222,14 +219,11 @@ public:
     /// @brief Get or create an object for the given parameters.
     Object get_or_create_object(std::string name, TypeList types);
 
-    /// @brief Get or create a binding for the given parameters.
-    Binding get_or_create_binding(ObjectList objects);
-
     template<IsStaticOrFluentOrDerivedTag P>
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, Binding binding);
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList binding);
 
     template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> get_or_create_literal(bool polarity, Atom<P> atom);
@@ -300,7 +294,7 @@ public:
 
     /// @brief Get or create a function for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, Binding binding);
+    GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList binding);
 
     /// @brief Get or create a function skeleton for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
@@ -358,13 +352,13 @@ public:
 
     /// @brief get or create a ground action for the given parameters.
     GroundAction
-    get_or_create_ground_action(Action action, Binding binding, GroundConjunctiveCondition condition, GroundConditionalEffectList conditional_effects);
+    get_or_create_ground_action(Action action, ObjectList binding, GroundConjunctiveCondition condition, GroundConditionalEffectList conditional_effects);
 
     /// @brief Get or create an axiom for the given parameters.
     Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<DerivedTag> effect_literal);
 
     /// @brief Get or create a ground axiom for the given parameters.
-    GroundAxiom get_or_create_ground_axiom(Axiom axiom, Binding binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect);
+    GroundAxiom get_or_create_ground_axiom(Axiom axiom, ObjectList binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect);
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);

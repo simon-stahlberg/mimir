@@ -67,7 +67,7 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
     for (const auto& ground_literal : ground_literals)
     {
         TermList terms;
-        for (const auto& object : ground_literal->get_atom()->get_binding()->get_objects())
+        for (const auto& object : ground_literal->get_atom()->get_objects())
         {
             if (!to_variable.contains(object))
             {

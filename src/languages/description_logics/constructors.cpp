@@ -20,7 +20,6 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
@@ -123,7 +122,7 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
             // Ensure that object index is within bounds.
             assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
-            bitset.set(atom->get_binding()->get_objects().at(0)->get_index());
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -143,7 +142,7 @@ void ConceptAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context
             // Ensure that object index is within bounds.
             assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
-            bitset.set(atom->get_binding()->get_objects().at(0)->get_index());
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -205,7 +204,7 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
             // Ensure that object index is within bounds.
             assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
-            bitset.set(atom->get_binding()->get_objects().at(0)->get_index());
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -598,8 +597,8 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_index = atom->get_binding()->get_objects().at(0)->get_index();
-            const auto object_right_index = atom->get_binding()->get_objects().at(1)->get_index();
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
 
             // Ensure that object index is within bounds.
             assert(object_left_index < num_objects);
@@ -627,8 +626,8 @@ void RoleAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context) c
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_index = atom->get_binding()->get_objects().at(0)->get_index();
-            const auto object_right_index = atom->get_binding()->get_objects().at(1)->get_index();
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
 
             // Ensure that object index is within bounds.
             assert(object_left_index < num_objects);
@@ -695,8 +694,8 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 
         if (literal->get_polarity() == get_polarity() && atom->get_predicate() == m_predicate)
         {
-            const auto object_left_index = atom->get_binding()->get_objects().at(0)->get_index();
-            const auto object_right_index = atom->get_binding()->get_objects().at(1)->get_index();
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
 
             // Ensure that object index is within bounds.
             assert(object_left_index < num_objects);

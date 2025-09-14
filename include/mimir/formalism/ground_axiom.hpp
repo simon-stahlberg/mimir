@@ -35,15 +35,16 @@ class GroundAxiomImpl
 private:
     Index m_index;
     Axiom m_axiom;
-    Binding m_binding;
+    ObjectList m_objects;
     GroundConjunctiveCondition m_conjunctive_condition;
     GroundLiteral<DerivedTag> m_literal;
 
-    GroundAxiomImpl(Index index, Axiom axiom, Binding binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
+    GroundAxiomImpl(Index index, Axiom axiom, ObjectList object, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
 
-    static auto identifying_args(Axiom axiom, Binding binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal) noexcept
+    static auto
+    identifying_args(Axiom axiom, const ObjectList& binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal) noexcept
     {
-        return std::tuple(axiom, binding);
+        return std::tuple(axiom, std::cref(binding));
     }
 
     // Give access to the constructor.
@@ -61,7 +62,7 @@ public:
 
     Index get_index() const;
     Axiom get_axiom() const;
-    Binding get_binding() const;
+    const ObjectList& get_objects() const;
     GroundConjunctiveCondition get_conjunctive_condition() const;
     GroundLiteral<DerivedTag> get_literal() const;
 
@@ -70,7 +71,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_axiom(), get_binding()); }
+    auto identifying_members() const { return std::tuple(get_axiom(), std::cref(get_objects())); }
 };
 }
 

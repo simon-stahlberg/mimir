@@ -64,7 +64,7 @@ template<typename Derived_>
 template<formalism::IsFluentOrDerivedTag P>
 bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const formalism::LiteralList<P>& literals,
                                                                      const FlatBitset& atom_indices,
-                                                                     formalism::Binding binding)
+                                                                     const formalism::ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -82,7 +82,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const forma
 template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const formalism::NumericConstraintList& constraints,
                                                              const FlatDoubleList& fluent_numeric_variables,
-                                                             formalism::Binding binding)
+                                                             const formalism::ObjectList& binding)
 {
     for (const auto& constraint : constraints)
     {
@@ -95,7 +95,8 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const formalism::Nu
 }
 
 template<typename Derived_>
-bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals, formalism::Binding binding)
+bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals,
+                                                                    const formalism::ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -113,7 +114,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formal
 template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_binding(formalism::ConjunctiveCondition condition,
                                                              const UnpackedStateImpl& unpacked_state,
-                                                             formalism::Binding binding)
+                                                             const formalism::ObjectList& binding)
 {
     return is_valid_static_binding(condition->get_literals<formalism::StaticTag>(), binding)
            && is_valid_dynamic_binding(condition->get_literals<formalism::FluentTag>(), unpacked_state.get_atoms<formalism::FluentTag>(), binding)
@@ -122,17 +123,17 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(formalism::Conjunct
 }
 
 template<typename Derived_>
-bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const UnpackedStateImpl& unpacked_state, formalism::Binding binding)
+bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding)
 {
     return is_valid_binding(m_conjunctive_condition, unpacked_state, binding)  ///< Check applicability of our conjunctive condition.
            && self().is_valid_binding_impl(unpacked_state, binding);           ///< Check applicability in Derived.
 }
 
 template<typename Derived_>
-mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::nullary_case(const UnpackedStateImpl& unpacked_state)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case(const UnpackedStateImpl& unpacked_state)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
-    auto binding = m_problem->get_or_create_binding(formalism::ObjectList {});
+    auto binding = formalism::ObjectList {};
 
     if (is_valid_binding(unpacked_state, binding))
     {
@@ -145,7 +146,7 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::null
 }
 
 template<typename Derived_>
-mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::unary_case(
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(
     const UnpackedStateImpl& unpacked_state,
     const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
     const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
@@ -163,11 +164,11 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::unar
                                           static_function_skeleton_assignment_sets,
                                           fluent_function_skeleton_assignment_sets))
         {
-            auto binding = m_problem->get_or_create_binding(formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) });
+            auto binding = formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(unpacked_state, binding))
             {
-                co_yield binding;
+                co_yield std::move(binding);
             }
             else
             {
@@ -178,7 +179,7 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::unar
 }
 
 template<typename Derived_>
-mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::general_case(
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(
     const UnpackedStateImpl& unpacked_state,
     const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
     const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
@@ -240,19 +241,19 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::gene
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
     for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions))
     {
-        auto objects = formalism::ObjectList(clique.size());
+        auto binding = formalism::ObjectList(clique.size());
+
         for (std::size_t index = 0; index < clique.size(); ++index)
         {
             const auto& vertex = vertices[clique[index]];
             const auto parameter_index = vertex.get_parameter_index();
             const auto object_index = vertex.get_object_index();
-            objects[parameter_index] = problem.get_problem_and_domain_objects()[object_index];
+            binding[parameter_index] = problem.get_problem_and_domain_objects()[object_index];
         }
-        const auto binding = m_problem->get_or_create_binding(std::move(objects));
 
         if (is_valid_binding(unpacked_state, binding))
         {
-            co_yield binding;
+            co_yield std::move(binding);
         }
         else
         {
@@ -282,7 +283,7 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
 }
 
 template<typename Derived_>
-mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::create_binding_generator(
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(
     const State& state,
     const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
     const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
@@ -297,7 +298,7 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::crea
 }
 
 template<typename Derived_>
-mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::create_binding_generator(
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(
     const UnpackedStateImpl& unpacked_state,
     const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
     const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
@@ -332,7 +333,7 @@ mimir::generator<formalism::Binding> SatisficingBindingGenerator<Derived_>::crea
 }
 
 template<typename Derived_>
-mimir::generator<std::pair<formalism::Binding,
+mimir::generator<std::pair<formalism::ObjectList,
                            std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                       formalism::GroundLiteralList<formalism::FluentTag>,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
@@ -342,7 +343,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
 }
 
 template<typename Derived_>
-mimir::generator<std::pair<formalism::Binding,
+mimir::generator<std::pair<formalism::ObjectList,
                            std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
                                       formalism::GroundLiteralList<formalism::FluentTag>,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>

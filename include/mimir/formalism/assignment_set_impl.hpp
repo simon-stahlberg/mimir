@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
 
-#include "mimir/formalism/binding.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -112,7 +111,7 @@ template<IsStaticOrFluentOrDerivedTag P>
 void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto& arity = ground_atom->get_arity();
-    const auto& objects = ground_atom->get_binding()->get_objects();
+    const auto& objects = ground_atom->get_objects();
 
     assert(ground_atom->get_predicate() == m_predicate);
 
@@ -219,7 +218,7 @@ template<IsStaticOrFluentTag F>
 void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value)
 {
     const auto& arity = ground_function->get_arity();
-    const auto& arguments = ground_function->get_binding()->get_objects();
+    const auto& arguments = ground_function->get_objects();
 
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 

@@ -34,22 +34,22 @@ class GroundActionImpl
 private:
     Index m_index;
     Action m_action;
-    Binding m_binding;
+    ObjectList m_objects;
     GroundConjunctiveCondition m_conjunctive_precondition;
     GroundConditionalEffectList m_conditional_effects;
 
     GroundActionImpl(Index index,
                      Action action,
-                     Binding binding,
+                     ObjectList object,
                      GroundConjunctiveCondition conjunctive_precondition,
                      GroundConditionalEffectList conditional_effects);
 
     static auto identifying_args(Action action,
-                                 Binding binding,
+                                 const ObjectList& binding,
                                  GroundConjunctiveCondition conjunctive_precondition,
-                                 GroundConditionalEffectList conditional_effects) noexcept
+                                 const GroundConditionalEffectList& conditional_effects) noexcept
     {
-        return std::tuple(action, binding);
+        return std::tuple(action, std::cref(binding));
     }
 
     // Give access to the constructor.
@@ -76,7 +76,7 @@ public:
 
     Index get_index() const;
     Action get_action() const;
-    Binding get_binding() const;
+    const ObjectList& get_objects() const;
     GroundConjunctiveCondition get_conjunctive_condition() const;
     const GroundConditionalEffectList& get_conditional_effects() const;
 
@@ -85,7 +85,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_action(), get_binding()); }
+    auto identifying_members() const { return std::tuple(get_action(), std::cref(get_objects())); }
 };
 
 /// @brief STL does not define operator== for std::span.
