@@ -223,7 +223,7 @@ public:
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList binding);
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& binding);
 
     template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> get_or_create_literal(bool polarity, Atom<P> atom);
@@ -294,7 +294,7 @@ public:
 
     /// @brief Get or create a function for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList binding);
+    GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, const ObjectList& binding);
 
     /// @brief Get or create a function skeleton for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
@@ -351,14 +351,16 @@ public:
     Action get_or_create_action(std::string name, size_t original_arity, ConjunctiveCondition conjunctive_condition, ConditionalEffectList conditional_effects);
 
     /// @brief get or create a ground action for the given parameters.
-    GroundAction
-    get_or_create_ground_action(Action action, ObjectList binding, GroundConjunctiveCondition condition, GroundConditionalEffectList conditional_effects);
+    GroundAction get_or_create_ground_action(Action action,
+                                             const ObjectList& binding,
+                                             GroundConjunctiveCondition condition,
+                                             GroundConditionalEffectList conditional_effects);
 
     /// @brief Get or create an axiom for the given parameters.
     Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<DerivedTag> effect_literal);
 
     /// @brief Get or create a ground axiom for the given parameters.
-    GroundAxiom get_or_create_ground_axiom(Axiom axiom, ObjectList binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect);
+    GroundAxiom get_or_create_ground_axiom(Axiom axiom, const ObjectList& binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect);
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
