@@ -35,6 +35,8 @@ private:
 
     GroundLiteralImpl(Index index, bool polarity, GroundAtom<P> atom);
 
+    static auto identifying_args(bool polarity, GroundAtom<P> atom) noexcept { return std::tuple(polarity, atom); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

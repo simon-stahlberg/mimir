@@ -38,6 +38,19 @@ private:
                                    HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> preconditions,
                                    GroundNumericConstraintList numeric_constraints);
 
+    static auto
+    identifying_args(const HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& preconditions,
+                     const GroundNumericConstraintList& numeric_constraints) noexcept
+    {
+        return std::tuple(boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<PositiveTag> {}), boost::hana::type<StaticTag> {}),
+                          boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<NegativeTag> {}), boost::hana::type<StaticTag> {}),
+                          boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<PositiveTag> {}), boost::hana::type<FluentTag> {}),
+                          boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<NegativeTag> {}), boost::hana::type<FluentTag> {}),
+                          boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<PositiveTag> {}), boost::hana::type<DerivedTag> {}),
+                          boost::hana::at_key(boost::hana::at_key(preconditions, boost::hana::type<NegativeTag> {}), boost::hana::type<DerivedTag> {}),
+                          std::cref(numeric_constraints));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -83,7 +96,7 @@ public:
                           get_compressed_precondition<NegativeTag, FluentTag>(),
                           get_compressed_precondition<PositiveTag, DerivedTag>(),
                           get_compressed_precondition<NegativeTag, DerivedTag>(),
-                          get_numeric_constraints());
+                          std::cref(get_numeric_constraints()));
     }
 };
 

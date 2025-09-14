@@ -35,6 +35,11 @@ private:
 
     PredicateImpl(Index index, std::string name, ParameterList parameters);
 
+    static auto identifying_args(const std::string& name, const ParameterList& parameters) noexcept
+    {
+        return std::tuple(std::cref(name), std::cref(parameters));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

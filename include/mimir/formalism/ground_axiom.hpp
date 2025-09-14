@@ -41,6 +41,11 @@ private:
 
     GroundAxiomImpl(Index index, Axiom axiom, Binding binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
 
+    static auto identifying_args(Axiom axiom, Binding binding, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal) noexcept
+    {
+        return std::tuple(axiom, binding);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

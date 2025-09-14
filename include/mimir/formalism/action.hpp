@@ -35,6 +35,14 @@ private:
 
     ActionImpl(Index index, std::string name, size_t original_arity, ConjunctiveCondition conjunctive_condition, ConditionalEffectList conditional_effects);
 
+    static auto identifying_args(const std::string& name,
+                                 size_t original_arity,
+                                 ConjunctiveCondition conjunctive_condition,
+                                 const ConditionalEffectList& conditional_effects) noexcept
+    {
+        return std::tuple(std::cref(name), original_arity, conjunctive_condition, std::cref(conditional_effects));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

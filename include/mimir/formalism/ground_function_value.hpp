@@ -34,6 +34,8 @@ private:
 
     GroundFunctionValueImpl(Index index, GroundFunction<F> function, double number);
 
+    static auto identifying_args(GroundFunction<F> function, double number) noexcept { return std::tuple(function, number); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

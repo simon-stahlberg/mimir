@@ -32,6 +32,8 @@ private:
 
     RequirementsImpl(Index index, loki::RequirementEnumSet requirements);
 
+    static auto identifying_args(const loki::RequirementEnumSet& requirements) noexcept { return std::tuple(std::cref(requirements)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

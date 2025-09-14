@@ -36,6 +36,8 @@ private:
 
     FunctionExpressionNumberImpl(Index index, double number);
 
+    static auto identifying_args(double number) noexcept { return std::tuple(number); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -74,6 +76,13 @@ private:
                                          FunctionExpression left_function_expression,
                                          FunctionExpression right_function_expression);
 
+    static auto identifying_args(loki::BinaryOperatorEnum binary_operator,
+                                 FunctionExpression left_function_expression,
+                                 FunctionExpression right_function_expression) noexcept
+    {
+        return std::tuple(binary_operator, left_function_expression, right_function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -110,6 +119,11 @@ private:
 
     FunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
+    static auto identifying_args(loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions) noexcept
+    {
+        return std::tuple(multi_operator, std::cref(function_expressions));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -144,6 +158,8 @@ private:
 
     FunctionExpressionMinusImpl(Index index, FunctionExpression function_expression);
 
+    static auto identifying_args(FunctionExpression function_expression) noexcept { return std::tuple(function_expression); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -177,6 +193,8 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     FunctionExpressionFunctionImpl(Index index, Function<F> function);
+
+    static auto identifying_args(Function<F> function) noexcept { return std::tuple(function); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -216,6 +234,8 @@ private:
     FunctionExpressionVariant m_function_expression;
 
     FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression);
+
+    static auto identifying_args(FunctionExpressionVariant function_expression) noexcept { return std::tuple(function_expression); }
 
     // Below: add additional members if needed and initialize them in the constructor
 

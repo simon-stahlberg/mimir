@@ -34,6 +34,8 @@ private:
 
     AtomImpl(Index index, Predicate<P> predicate, TermList terms);
 
+    static auto identifying_args(Predicate<P> predicate, const TermList& terms) noexcept { return std::tuple(predicate, std::cref(terms)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

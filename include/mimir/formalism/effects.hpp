@@ -36,6 +36,11 @@ private:
 
     NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
+    static auto identifying_args(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) noexcept
+    {
+        return std::tuple(assign_operator, function, function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -80,6 +85,14 @@ private:
                           NumericEffectList<FluentTag> fluent_numeric_effects,
                           std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
+    static auto identifying_args(const ParameterList& parameters,
+                                 const LiteralList<FluentTag>& literals,
+                                 const NumericEffectList<FluentTag>& fluent_numeric_effects,
+                                 std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) noexcept
+    {
+        return std::tuple(std::cref(parameters), std::cref(literals), std::cref(fluent_numeric_effects), auxiliary_numeric_effect);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -121,6 +134,11 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     ConditionalEffectImpl(Index index, ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
+
+    static auto identifying_args(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect) noexcept
+    {
+        return std::tuple(conjunctive_condition, conjunctive_effect);
+    }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>

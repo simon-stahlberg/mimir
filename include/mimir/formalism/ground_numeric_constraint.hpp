@@ -38,6 +38,13 @@ private:
                                 GroundFunctionExpression left_function_expression,
                                 GroundFunctionExpression right_function_expression);
 
+    static auto identifying_args(loki::BinaryComparatorEnum binary_comparator,
+                                 GroundFunctionExpression left_function_expression,
+                                 GroundFunctionExpression right_function_expression) noexcept
+    {
+        return std::tuple(binary_comparator, left_function_expression, right_function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

@@ -44,6 +44,14 @@ private:
                      GroundConjunctiveCondition conjunctive_precondition,
                      GroundConditionalEffectList conditional_effects);
 
+    static auto identifying_args(Action action,
+                                 Binding binding,
+                                 GroundConjunctiveCondition conjunctive_precondition,
+                                 GroundConditionalEffectList conditional_effects) noexcept
+    {
+        return std::tuple(action, binding);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

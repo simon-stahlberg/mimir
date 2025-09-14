@@ -33,6 +33,11 @@ private:
 
     OptimizationMetricImpl(Index index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
 
+    static auto identifying_args(loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) noexcept
+    {
+        return std::tuple(optimization_metric, function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

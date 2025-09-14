@@ -33,6 +33,8 @@ private:
 
     BindingImpl(Index index, ObjectList objects);
 
+    static auto identifying_args(const ObjectList& objects) noexcept { return std::tuple(std::cref(objects)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -55,6 +57,8 @@ public:
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const { return std::tuple(std::cref(get_objects())); }
+
+    static auto identifying_view(const ObjectList& objects) { return std::tuple(std::cref(objects)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const BindingImpl& element);

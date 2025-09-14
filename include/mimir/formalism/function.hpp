@@ -35,6 +35,11 @@ private:
 
     FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping = IndexList {});
 
+    static auto identifying_args(FunctionSkeleton<F> function_skeleton, const TermList& terms, const IndexList& parent_terms_to_terms_mapping) noexcept
+    {
+        return std::tuple(function_skeleton, std::cref(terms), std::cref(parent_terms_to_terms_mapping));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

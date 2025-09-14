@@ -35,6 +35,8 @@ private:
 
     GroundFunctionExpressionNumberImpl(Index index, double number);
 
+    static auto identifying_args(double number) noexcept { return std::tuple(number); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -73,6 +75,13 @@ private:
                                                GroundFunctionExpression left_function_expression,
                                                GroundFunctionExpression right_function_expression);
 
+    static auto identifying_args(loki::BinaryOperatorEnum binary_operator,
+                                 GroundFunctionExpression left_function_expression,
+                                 GroundFunctionExpression right_function_expression) noexcept
+    {
+        return std::tuple(binary_operator, left_function_expression, right_function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -109,6 +118,11 @@ private:
 
     GroundFunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
 
+    static auto identifying_args(loki::MultiOperatorEnum multi_operator, const GroundFunctionExpressionList& function_expressions) noexcept
+    {
+        return std::tuple(multi_operator, std::cref(function_expressions));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -143,6 +157,8 @@ private:
 
     GroundFunctionExpressionMinusImpl(Index index, GroundFunctionExpression function_expression);
 
+    static auto identifying_args(GroundFunctionExpression function_expression) noexcept { return std::tuple(function_expression); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -176,6 +192,8 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function);
+
+    static auto identifying_args(GroundFunction<F> function) noexcept { return std::tuple(function); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -215,6 +233,8 @@ private:
     GroundFunctionExpressionVariant m_ground_function_expression;
 
     GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression);
+
+    static auto identifying_args(GroundFunctionExpressionVariant ground_function_expression) noexcept { return std::tuple(ground_function_expression); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>

@@ -42,6 +42,11 @@ private:
 
     GroundNumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
+    static auto identifying_args(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression) noexcept
+    {
+        return std::tuple(assign_operator, function, function_expression);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -77,6 +82,16 @@ private:
                                 GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                 std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
+    static auto identifying_args(const HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag>& propositional_effects,
+                                 const GroundNumericEffectList<FluentTag>& fluent_numeric_effects,
+                                 std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) noexcept
+    {
+        return std::tuple(boost::hana::at_key(propositional_effects, boost::hana::type<PositiveTag> {}),
+                          boost::hana::at_key(propositional_effects, boost::hana::type<NegativeTag> {}),
+                          std::cref(fluent_numeric_effects),
+                          auxiliary_numeric_effect);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -106,7 +121,7 @@ public:
     {
         return std::tuple(&get_compressed_propositional_effects<PositiveTag>(),
                           &get_compressed_propositional_effects<NegativeTag>(),
-                          m_fluent_numeric_effects,
+                          std::cref(m_fluent_numeric_effects),
                           m_auxiliary_numeric_effect);
     }
 };
@@ -119,6 +134,11 @@ private:
     GroundConjunctiveEffect m_conjunctive_effect;
 
     GroundConditionalEffectImpl(Index index, GroundConjunctiveCondition conjunctive_condition, GroundConjunctiveEffect conjunctive_effect);
+
+    static auto identifying_args(GroundConjunctiveCondition conjunctive_condition, GroundConjunctiveEffect conjunctive_effect) noexcept
+    {
+        return std::tuple(conjunctive_condition, conjunctive_effect);
+    }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>

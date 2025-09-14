@@ -39,6 +39,18 @@ private:
                              GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
                              NumericConstraintList numeric_constraints);
 
+    static auto identifying_args(const ParameterList& parameters,
+                                 const LiteralLists<StaticTag, FluentTag, DerivedTag>& literals,
+                                 const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& nullary_ground_literals,
+                                 const NumericConstraintList& numeric_constraints) noexcept
+    {
+        return std::tuple(std::cref(parameters),
+                          std::cref(boost::hana::at_key(literals, boost::hana::type<StaticTag> {})),
+                          std::cref(boost::hana::at_key(literals, boost::hana::type<FluentTag> {})),
+                          std::cref(boost::hana::at_key(literals, boost::hana::type<DerivedTag> {})),
+                          std::cref(numeric_constraints));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

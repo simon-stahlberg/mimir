@@ -43,6 +43,14 @@ private:
                           FunctionExpression right_function_expression,
                           TermList terms);
 
+    static auto identifying_args(loki::BinaryComparatorEnum binary_comparator,
+                                 FunctionExpression left_function_expression,
+                                 FunctionExpression right_function_expression,
+                                 const TermList& terms) noexcept
+    {
+        return std::tuple(binary_comparator, left_function_expression, right_function_expression, std::cref(terms));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

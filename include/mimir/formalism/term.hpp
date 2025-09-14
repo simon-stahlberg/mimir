@@ -31,6 +31,8 @@ private:
 
     TermImpl(size_t index, std::variant<Object, Variable> object_or_variable);
 
+    static auto identifying_args(std::variant<Object, Variable> object_or_variable) noexcept { return std::tuple(object_or_variable); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

@@ -34,6 +34,8 @@ private:
 
     VariableImpl(Index index, std::string name, Index parameter_index);
 
+    static auto identifying_args(const std::string& name, Index parameter_index) noexcept { return std::tuple(std::cref(name), parameter_index); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

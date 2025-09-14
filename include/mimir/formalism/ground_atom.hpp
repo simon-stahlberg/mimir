@@ -35,6 +35,8 @@ private:
 
     GroundAtomImpl(Index index, Predicate<P> predicate, Binding binding);
 
+    static auto identifying_args(Predicate<P> predicate, Binding binding) noexcept { return std::tuple(predicate, binding); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

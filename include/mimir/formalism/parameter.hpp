@@ -32,6 +32,8 @@ private:
 
     ParameterImpl(Index index, Variable variable, TypeList types);
 
+    static auto identifying_args(Variable variable, const TypeList& types) noexcept { return std::tuple(variable, std::cref(types)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

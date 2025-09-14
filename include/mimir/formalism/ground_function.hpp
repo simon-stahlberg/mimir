@@ -32,6 +32,8 @@ private:
 
     GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, Binding binding);
 
+    static auto identifying_args(FunctionSkeleton<F> function_skeleton, Binding binding) noexcept { return std::tuple(function_skeleton, binding); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

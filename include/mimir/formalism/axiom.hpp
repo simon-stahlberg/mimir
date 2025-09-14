@@ -33,6 +33,11 @@ private:
 
     AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal);
 
+    static auto identifying_args(ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal) noexcept
+    {
+        return std::tuple(conjunctive_condition, literal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

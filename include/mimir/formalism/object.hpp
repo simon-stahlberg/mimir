@@ -34,6 +34,8 @@ private:
 
     ObjectImpl(Index index, std::string name, TypeList types);
 
+    static auto identifying_args(const std::string& name, const TypeList& types) noexcept { return std::tuple(std::cref(name), std::cref(types)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;

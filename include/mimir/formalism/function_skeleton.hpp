@@ -34,6 +34,11 @@ private:
 
     FunctionSkeletonImpl(Index index, std::string name, ParameterList parameters);
 
+    static auto identifying_args(const std::string& name, const ParameterList& parameters) noexcept
+    {
+        return std::tuple(std::cref(name), std::cref(parameters));
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -56,7 +61,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_name(), std::cref(get_parameters())); }
+    auto identifying_members() const { return std::tuple(std::cref(get_name()), std::cref(get_parameters())); }
 };
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
