@@ -575,10 +575,11 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     /* 3. Check if grounding is cached */
 
     // We have to fetch the literal-relevant part of the binding first.
-    auto grounded_terms = ObjectList {};
-    ground_terms(literal->get_atom()->get_terms(), binding, grounded_terms);
+    static thread_local auto s_grounded_terms = ObjectList {};
+    s_grounded_terms.clear();
+    ground_terms(literal->get_atom()->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
+    const auto it = grounding_table.find(s_grounded_terms);
     if (it != grounding_table.end())
     {
         return it->second;
@@ -586,12 +587,12 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
 
     /* 4. Ground the literal */
 
-    auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
+    auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms);
     auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
+    grounding_table.emplace(s_grounded_terms, GroundLiteral<P>(grounded_literal));
 
     /* 6. Return the resulting ground literal */
 
@@ -623,10 +624,10 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
 
     // We have to fetch the literal-relevant part of the binding first.
     // Note: this is important and saves a lot of memory.
-    auto grounded_terms = ObjectList {};
-    ground_terms(function->get_terms(), binding, grounded_terms);
+    static thread_local auto s_grounded_terms = ObjectList {};
+    ground_terms(function->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
+    const auto it = grounding_table.find(s_grounded_terms);
     if (it != grounding_table.end())
     {
         return it->second;
@@ -634,11 +635,11 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
 
     /* 4. Ground the function */
 
-    const auto grounded_function = m_repositories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
+    const auto grounded_function = m_repositories.get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
+    grounding_table.emplace(s_grounded_terms, GroundFunction<F>(grounded_function));
 
     /* 6. Return the resulting ground literal */
 
