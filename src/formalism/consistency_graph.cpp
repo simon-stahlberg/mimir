@@ -33,7 +33,6 @@ namespace mimir::formalism
 using Vertex = StaticConsistencyGraph::Vertex;
 using Edge = StaticConsistencyGraph::Edge;
 using Vertices = StaticConsistencyGraph::Vertices;
-using Edges = StaticConsistencyGraph::Edges;
 
 /**
  * VertexIndexIterator
@@ -638,34 +637,40 @@ std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsi
     return std::make_tuple(std::move(vertices), std::move(vertices_by_parameter_index), std::move(objects_by_parameter_index));
 }
 
-Edges StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices)
+std::pair<IndexList, IndexList>
+StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices)
 {
     const auto& static_predicate_assignment_sets = problem.get_positive_static_initial_predicate_assignment_sets();
 
-    auto edges = Edges {};
+    auto offsets = IndexList {};
+    offsets.reserve(vertices.size() + 1);
+
+    auto targets = IndexList {};
 
     for (Index first_vertex_index = 0; first_vertex_index < vertices.size(); ++first_vertex_index)
     {
+        offsets.push_back(targets.size());
+
         for (Index second_vertex_index = (first_vertex_index + 1); second_vertex_index < vertices.size(); ++second_vertex_index)
         {
             const auto& first_vertex = vertices.at(first_vertex_index);
             const auto& second_vertex = vertices.at(second_vertex_index);
 
-            // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
-            if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index())
-            {
-                auto edge = Edge(Vertex(first_vertex_index, first_vertex.get_parameter_index(), first_vertex.get_object_index()),
-                                 Vertex(second_vertex_index, second_vertex.get_parameter_index(), second_vertex.get_object_index()));
+            assert(first_vertex.get_index() == first_vertex_index);
+            assert(second_vertex.get_index() == second_vertex_index);
 
-                if (edge.consistent_literals(static_conditions, static_predicate_assignment_sets))
-                {
-                    edges.push_back(std::move(edge));
-                }
+            // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
+            if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index()
+                && Edge(first_vertex, second_vertex).consistent_literals(static_conditions, static_predicate_assignment_sets))
+            {
+                targets.push_back(second_vertex_index);
             }
         }
     }
 
-    return edges;
+    offsets.push_back(targets.size());
+
+    return { std::move(offsets), std::move(targets) };
 }
 
 StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
@@ -680,7 +685,10 @@ StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
     m_vertices_by_parameter_index = std::move(vertices_by_parameter_index_);
     m_objects_by_parameter_index = std::move(objects_by_parameter_index_);
 
-    m_edges = compute_edges(problem, static_conditions, m_vertices);
+    auto [offsets_, targets_] = compute_edges(problem, static_conditions, m_vertices);
+
+    m_offsets = std::move(offsets_);
+    m_targets = std::move(targets_);
 }
 
 }

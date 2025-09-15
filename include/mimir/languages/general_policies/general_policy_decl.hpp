@@ -141,7 +141,7 @@ public:
     /// @return the rules in the `GeneralPolicyImpl`.
     const RuleList& get_rules() const;
 
-    auto identifying_members() const
+    auto identifying_members() const noexcept
     {
         return std::tuple(std::cref(get_features<dl::BooleanTag>()), std::cref(get_features<dl::NumericalTag>()), std::cref(get_rules()));
     }

@@ -88,7 +88,7 @@ public:
 
     const GroundNumericConstraintList& get_numeric_constraints() const;
 
-    auto identifying_members() const
+    auto identifying_members() const noexcept
     {
         return std::tuple(get_compressed_precondition<PositiveTag, StaticTag>(),
                           get_compressed_precondition<NegativeTag, StaticTag>(),

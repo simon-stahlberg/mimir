@@ -185,7 +185,7 @@ public:
     /// @return
     const std::vector<int>& get_pi_inverse() const;
 
-    auto identifying_members() const
+    auto identifying_members() const noexcept
     {
         return std::tuple(get_nde(),
                           std::cref(get_v()),

@@ -57,7 +57,7 @@ struct AtomSplit
 
     AtomSplitDistribution distribution;
 
-    auto identifying_members() const { return std::tuple(std::as_const(feature)); }
+    auto identifying_members() const noexcept { return std::tuple(std::as_const(feature)); }
 };
 
 struct NumericConstraintSplitDistribution
@@ -71,7 +71,7 @@ struct NumericConstraintSplit
     formalism::GroundNumericConstraint feature;
     NumericConstraintSplitDistribution distribution;
 
-    auto identifying_members() const { return std::tuple(std::as_const(feature)); }
+    auto identifying_members() const noexcept { return std::tuple(std::as_const(feature)); }
 };
 
 using Split = std::variant<AtomSplit<formalism::FluentTag>, AtomSplit<formalism::DerivedTag>, NumericConstraintSplit>;

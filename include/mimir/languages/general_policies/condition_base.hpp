@@ -51,7 +51,7 @@ public:
 
     static auto identifying_args(NamedFeature<D> feature) noexcept { return std::tuple(feature); }
 
-    auto identifying_members() const { return std::tuple(get_feature()); }
+    auto identifying_members() const noexcept { return std::tuple(get_feature()); }
 };
 }
 

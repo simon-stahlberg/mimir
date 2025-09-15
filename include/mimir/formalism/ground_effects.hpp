@@ -66,7 +66,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_assign_operator(), get_function(), get_function_expression()); }
+    auto identifying_members() const noexcept { return std::tuple(get_assign_operator(), get_function(), get_function_expression()); }
 };
 
 class GroundConjunctiveEffectImpl
@@ -117,7 +117,7 @@ public:
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 
-    auto identifying_members() const
+    auto identifying_members() const noexcept
     {
         return std::tuple(&get_compressed_propositional_effects<PositiveTag>(),
                           &get_compressed_propositional_effects<NegativeTag>(),
@@ -155,7 +155,7 @@ public:
     GroundConjunctiveCondition get_conjunctive_condition() const;
     GroundConjunctiveEffect get_conjunctive_effect() const;
 
-    auto identifying_members() const { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
+    auto identifying_members() const noexcept { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
 };
 
 /**

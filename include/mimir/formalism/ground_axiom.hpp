@@ -71,7 +71,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_axiom(), std::cref(get_objects())); }
+    auto identifying_members() const noexcept { return std::tuple(get_axiom(), std::cref(get_objects())); }
 };
 }
 

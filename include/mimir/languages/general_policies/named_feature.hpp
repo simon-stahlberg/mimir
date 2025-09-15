@@ -57,7 +57,7 @@ public:
     /// @return  the `dl::Constructor`.
     dl::Constructor<D> get_feature() const;
 
-    auto identifying_members() const { return std::tuple(std::cref(get_name()), get_feature()); }
+    auto identifying_members() const noexcept { return std::tuple(std::cref(get_name()), get_feature()); }
 };
 
 }

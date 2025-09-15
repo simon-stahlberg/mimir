@@ -48,7 +48,7 @@ public:
     const ConditionList& get_conditions() const;
     const EffectList& get_effects() const;
 
-    auto identifying_members() const { return std::tuple(std::cref(get_conditions()), std::cref(get_effects())); }
+    auto identifying_members() const noexcept { return std::tuple(std::cref(get_conditions()), std::cref(get_effects())); }
 };
 }
 

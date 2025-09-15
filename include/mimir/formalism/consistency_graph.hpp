@@ -106,7 +106,6 @@ public:
     };
 
     using Vertices = std::vector<Vertex>;
-    using Edges = std::vector<Edge>;
 
 public:
     /// @brief Construct a static consistency graph
@@ -127,13 +126,83 @@ public:
     static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
     compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
 
-    static Edges compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
+    static std::pair<IndexList, IndexList> compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
 
-    /// @brief Get the vertices.
-    const Vertices& get_vertices() const { return m_vertices; }
+    class EdgeIterator
+    {
+    private:
+        const StaticConsistencyGraph* m_graph;
+        size_t m_offsets_pos;
+        size_t m_targets_pos;
 
-    /// @brief Get the edges.
-    const Edges& get_edges() const { return m_edges; }
+        const StaticConsistencyGraph& get_graph() const
+        {
+            assert(m_graph);
+            return *m_graph;
+        }
+
+        void advance()
+        {
+            ++m_targets_pos;
+
+            while (m_offsets_pos < get_graph().m_offsets.size() - 1 && get_graph().m_offsets[m_offsets_pos + 1] <= m_targets_pos)
+                ++m_offsets_pos;
+
+            assert(m_offsets_pos < get_graph().m_offsets.size());
+        }
+
+    public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = Edge;
+        using pointer = value_type*;
+        using reference = const value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        EdgeIterator() : m_graph(nullptr), m_offsets_pos(0), m_targets_pos(0) {}
+        EdgeIterator(const StaticConsistencyGraph& graph, bool begin) :
+            m_graph(&graph),
+            m_offsets_pos(begin ? 0 : graph.m_vertices.size()),
+            m_targets_pos(begin ? 0 : graph.m_targets.size())
+        {
+            assert(get_graph().m_offsets.size() - 1 == get_graph().m_vertices.size());
+
+            if (begin)
+            {
+                while (m_offsets_pos < get_graph().m_offsets.size() - 1 && get_graph().m_offsets[m_offsets_pos + 1] <= m_targets_pos)
+                    ++m_offsets_pos;
+            }
+        }
+        value_type operator*() const
+        {
+            assert(m_offsets_pos < get_graph().get_num_vertices());
+            assert(m_targets_pos < get_graph().get_num_edges());
+            assert(get_graph().m_targets[m_targets_pos] < get_graph().get_num_vertices());
+            return Edge(get_graph().m_vertices[m_offsets_pos], get_graph().m_vertices[get_graph().m_targets[m_targets_pos]]);
+        }
+        EdgeIterator& operator++()
+        {
+            advance();
+            return *this;
+        }
+        EdgeIterator operator++(int)
+        {
+            EdgeIterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+        bool operator==(const EdgeIterator& other) const { return m_targets_pos == other.m_targets_pos && m_offsets_pos == other.m_offsets_pos; }
+        bool operator!=(const EdgeIterator& other) const { return !(*this == other); }
+    };
+
+    friend class EdgeIterator;
+
+    /// @brief Get an forward_range over immutable Vertices.
+    auto get_vertices() const { return std::ranges::subrange(m_vertices.cbegin(), m_vertices.cend()); }
+
+    auto get_edges() const { return std::ranges::subrange(EdgeIterator(*this, true), EdgeIterator(*this, false)); }
+
+    size_t get_num_vertices() const { return m_vertices.size(); }
+    size_t get_num_edges() const { return m_targets.size(); }
 
     /// @brief Get the vertex indices partitioned by the parameter index.
     const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
@@ -147,7 +216,9 @@ private:
     std::vector<IndexList> m_vertices_by_parameter_index;
     std::vector<IndexList> m_objects_by_parameter_index;
 
-    Edges m_edges;
+    // Adjacency list of edges.
+    IndexList m_offsets;
+    IndexList m_targets;
 };
 
 }

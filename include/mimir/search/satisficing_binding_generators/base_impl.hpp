@@ -186,7 +186,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
     const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
     const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets)
 {
-    if (m_static_consistency_graph.get_edges().size() == 0)
+    if (m_static_consistency_graph.get_num_edges() == 0)
     {
         co_return;
     }

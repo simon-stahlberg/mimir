@@ -51,7 +51,7 @@ public:
     Variable get_variable() const;
     const TypeList& get_bases() const;
 
-    auto identifying_members() const { return std::tuple(get_variable(), std::cref(get_bases())); }
+    auto identifying_members() const noexcept { return std::tuple(get_variable(), std::cref(get_bases())); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ParameterImpl& element);

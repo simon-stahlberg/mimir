@@ -61,7 +61,10 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_function_skeleton(), std::cref(get_terms()), std::cref(get_parent_terms_to_terms_mapping())); }
+    auto identifying_members() const noexcept
+    {
+        return std::tuple(get_function_skeleton(), std::cref(get_terms()), std::cref(get_parent_terms_to_terms_mapping()));
+    }
 };
 
 static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);

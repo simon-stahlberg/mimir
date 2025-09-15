@@ -67,7 +67,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(); }
+    auto identifying_members() const noexcept { return std::tuple(); }
 };
 
 class ConceptTopImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptTopImpl>
@@ -103,7 +103,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(); }
+    auto identifying_members() const noexcept { return std::tuple(); }
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
@@ -142,7 +142,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate()); }
+    auto identifying_members() const noexcept { return std::tuple(get_predicate()); }
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
@@ -183,7 +183,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
+    auto identifying_members() const noexcept { return std::tuple(get_predicate(), get_polarity()); }
 };
 
 class ConceptIntersectionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptIntersectionImpl>
@@ -226,7 +226,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
 class ConceptUnionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptUnionImpl>
@@ -269,7 +269,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
 class ConceptNegationImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptNegationImpl>
@@ -307,7 +307,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_concept()); }
 };
 
 class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptValueRestrictionImpl>
@@ -347,7 +347,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role(), get_concept()); }
 };
 
 class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptExistentialQuantificationImpl>
@@ -387,7 +387,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role(), get_concept()); }
 };
 
 class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapContainmentImpl>
@@ -427,7 +427,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_role(), get_right_role()); }
 };
 
 class ConceptRoleValueMapEqualityImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapEqualityImpl>
@@ -467,7 +467,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_role(), get_right_role()); }
 };
 
 class ConceptNominalImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptNominalImpl>
@@ -505,7 +505,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_object()); }
+    auto identifying_members() const noexcept { return std::tuple(get_object()); }
 };
 
 /**
@@ -545,7 +545,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(); }
+    auto identifying_members() const noexcept { return std::tuple(); }
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
@@ -584,7 +584,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate()); }
+    auto identifying_members() const noexcept { return std::tuple(get_predicate()); }
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
@@ -625,7 +625,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
+    auto identifying_members() const noexcept { return std::tuple(get_predicate(), get_polarity()); }
 };
 
 class RoleIntersectionImpl : public ConstructorEvaluatorBase<RoleTag, RoleIntersectionImpl>
@@ -665,7 +665,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_role(), get_right_role()); }
 };
 
 class RoleUnionImpl : public ConstructorEvaluatorBase<RoleTag, RoleUnionImpl>
@@ -705,7 +705,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_role(), get_right_role()); }
 };
 
 class RoleComplementImpl : public ConstructorEvaluatorBase<RoleTag, RoleComplementImpl>
@@ -743,7 +743,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role()); }
 };
 
 class RoleInverseImpl : public ConstructorEvaluatorBase<RoleTag, RoleInverseImpl>
@@ -781,7 +781,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role()); }
 };
 
 class RoleCompositionImpl : public ConstructorEvaluatorBase<RoleTag, RoleCompositionImpl>
@@ -821,7 +821,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_role(), get_right_role()); }
 };
 
 class RoleTransitiveClosureImpl : public ConstructorEvaluatorBase<RoleTag, RoleTransitiveClosureImpl>
@@ -859,7 +859,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role()); }
 };
 
 class RoleReflexiveTransitiveClosureImpl : public ConstructorEvaluatorBase<RoleTag, RoleReflexiveTransitiveClosureImpl>
@@ -897,7 +897,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role()); }
 };
 
 class RoleRestrictionImpl : public ConstructorEvaluatorBase<RoleTag, RoleRestrictionImpl>
@@ -937,7 +937,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_role(), get_concept()); }
 };
 
 class RoleIdentityImpl : public ConstructorEvaluatorBase<RoleTag, RoleIdentityImpl>
@@ -975,7 +975,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_concept()); }
 };
 
 /**
@@ -1018,7 +1018,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate()); }
+    auto identifying_members() const noexcept { return std::tuple(get_predicate()); }
 };
 
 template<IsConceptOrRoleTag D>
@@ -1057,7 +1057,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_constructor()); }
+    auto identifying_members() const noexcept { return std::tuple(get_constructor()); }
 };
 
 /**
@@ -1100,7 +1100,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_constructor()); }
+    auto identifying_members() const noexcept { return std::tuple(get_constructor()); }
 };
 
 class NumericalDistanceImpl : public ConstructorEvaluatorBase<NumericalTag, NumericalDistanceImpl>
@@ -1145,7 +1145,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_left_concept(), get_role(), get_right_concept()); }
+    auto identifying_members() const noexcept { return std::tuple(get_left_concept(), get_role(), get_right_concept()); }
 };
 
 }

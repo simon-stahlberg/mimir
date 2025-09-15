@@ -50,7 +50,7 @@ public:
     const std::string& get_name() const;
     const TypeList& get_bases() const;
 
-    auto identifying_members() const { return std::tuple(std::cref(get_name()), std::cref(get_bases())); }
+    auto identifying_members() const noexcept { return std::tuple(std::cref(get_name()), std::cref(get_bases())); }
 };
 
 class TypesHierarchy

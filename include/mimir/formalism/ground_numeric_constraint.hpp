@@ -66,7 +66,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_binary_comparator(), get_left_function_expression(), get_right_function_expression()); }
+    auto identifying_members() const noexcept { return std::tuple(get_binary_comparator(), get_left_function_expression(), get_right_function_expression()); }
 };
 
 /**

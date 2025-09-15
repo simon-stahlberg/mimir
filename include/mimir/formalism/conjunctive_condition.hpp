@@ -79,7 +79,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const
+    auto identifying_members() const noexcept
     {
         return std::tuple(std::cref(get_parameters()),
                           std::cref(get_literals<StaticTag>()),
