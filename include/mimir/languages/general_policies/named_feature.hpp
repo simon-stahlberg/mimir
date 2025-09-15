@@ -35,6 +35,8 @@ private:
 
     NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature);
 
+    static auto identifying_args(const std::string& name, dl::Constructor<D> feature) noexcept { return std::tuple(std::cref(name), feature); }
+
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
 

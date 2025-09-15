@@ -31,6 +31,11 @@ private:
 
     RuleImpl(Index index, ConditionList conditions, EffectList effects);
 
+    static auto identifying_args(const ConditionList& conditions, const EffectList& effects) noexcept
+    {
+        return std::tuple(std::cref(conditions), std::cref(effects));
+    }
+
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
 

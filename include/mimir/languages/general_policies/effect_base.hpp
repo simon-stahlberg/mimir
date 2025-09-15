@@ -52,6 +52,8 @@ public:
 
     void accept(IVisitor& visitor) const override { self().accept_impl(visitor); };
 
+    static auto identifying_args(NamedFeature<D> feature) noexcept { return std::tuple(feature); }
+
     auto identifying_members() const { return std::tuple(get_feature()); }
 };
 }

@@ -161,6 +161,13 @@ private:
     /// @param rules is the set of policy rules.
     GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
 
+    static auto identifying_args(const NamedFeatureLists<dl::BooleanTag, dl::NumericalTag>& features, const RuleList& rules) noexcept
+    {
+        return std::tuple(std::cref(boost::hana::at_key(features, boost::hana::type<dl::BooleanTag> {})),
+                          std::cref(boost::hana::at_key(features, boost::hana::type<dl::NumericalTag> {})),
+                          std::cref(rules));
+    }
+
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
 

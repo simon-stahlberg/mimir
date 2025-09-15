@@ -32,30 +32,27 @@
 namespace mimir::languages::general_policies
 {
 
-template<typename T>
-using SegmentedPDDLRepository = loki::IndexedHashSet<T>;
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+using NamedFeatureRepository = loki::IndexedHashSet<NamedFeatureImpl<D>>;
 
 template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
-using NamedFeatureRepository = SegmentedPDDLRepository<NamedFeatureImpl<D>>;
+using NamedFeatureRepository = loki::IndexedHashSet<NamedFeatureImpl<D>>;
 
-template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
-using NamedFeatureRepository = SegmentedPDDLRepository<NamedFeatureImpl<D>>;
+using PositiveBooleanConditionRepository = loki::IndexedHashSet<PositiveBooleanConditionImpl>;
+using NegativeBooleanConditionRepository = loki::IndexedHashSet<NegativeBooleanConditionImpl>;
+using GreaterNumericalConditionRepository = loki::IndexedHashSet<GreaterNumericalConditionImpl>;
+using EqualNumericalConditionRepository = loki::IndexedHashSet<EqualNumericalConditionImpl>;
 
-using PositiveBooleanConditionRepository = SegmentedPDDLRepository<PositiveBooleanConditionImpl>;
-using NegativeBooleanConditionRepository = SegmentedPDDLRepository<NegativeBooleanConditionImpl>;
-using GreaterNumericalConditionRepository = SegmentedPDDLRepository<GreaterNumericalConditionImpl>;
-using EqualNumericalConditionRepository = SegmentedPDDLRepository<EqualNumericalConditionImpl>;
+using PositiveBooleanEffectRepository = loki::IndexedHashSet<PositiveBooleanEffectImpl>;
+using NegativeBooleanEffectRepository = loki::IndexedHashSet<NegativeBooleanEffectImpl>;
+using UnchangedBooleanEffectRepository = loki::IndexedHashSet<UnchangedBooleanEffectImpl>;
+using IncreaseNumericalEffectRepository = loki::IndexedHashSet<IncreaseNumericalEffectImpl>;
+using DecreaseNumericalEffectRepository = loki::IndexedHashSet<DecreaseNumericalEffectImpl>;
+using UnchangedNumericalEffectRepository = loki::IndexedHashSet<UnchangedNumericalEffectImpl>;
 
-using PositiveBooleanEffectRepository = SegmentedPDDLRepository<PositiveBooleanEffectImpl>;
-using NegativeBooleanEffectRepository = SegmentedPDDLRepository<NegativeBooleanEffectImpl>;
-using UnchangedBooleanEffectRepository = SegmentedPDDLRepository<UnchangedBooleanEffectImpl>;
-using IncreaseNumericalEffectRepository = SegmentedPDDLRepository<IncreaseNumericalEffectImpl>;
-using DecreaseNumericalEffectRepository = SegmentedPDDLRepository<DecreaseNumericalEffectImpl>;
-using UnchangedNumericalEffectRepository = SegmentedPDDLRepository<UnchangedNumericalEffectImpl>;
+using RuleRepository = loki::IndexedHashSet<RuleImpl>;
 
-using RuleRepository = SegmentedPDDLRepository<RuleImpl>;
-
-using GeneralPolicyRepository = SegmentedPDDLRepository<GeneralPolicyImpl>;
+using GeneralPolicyRepository = loki::IndexedHashSet<GeneralPolicyImpl>;
 
 using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::ConceptTag>>, NamedFeatureRepository<dl::ConceptTag>>,
                                           boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::RoleTag>>, NamedFeatureRepository<dl::RoleTag>>,

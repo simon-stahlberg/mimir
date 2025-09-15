@@ -46,6 +46,8 @@ private:
 
     NonTerminalImpl(Index index, std::string name);
 
+    static auto identifying_args(const std::string& name) noexcept { return std::tuple(std::cref(name)); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -67,7 +69,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_name()); }
+    auto identifying_members() const { return std::tuple(std::cref(get_name())); }
 };
 
 /**
@@ -82,6 +84,8 @@ private:
     std::variant<Constructor<D>, NonTerminal<D>> m_choice;
 
     ConstructorOrNonTerminalImpl(Index index, std::variant<Constructor<D>, NonTerminal<D>> choice);
+
+    static auto identifying_args(std::variant<Constructor<D>, NonTerminal<D>> choice) noexcept { return std::tuple(choice); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -121,6 +125,11 @@ protected:
 
     DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals);
 
+    static auto identifying_args(NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals) noexcept
+    {
+        return std::tuple(non_terminal, constructor_or_non_terminals);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -159,6 +168,8 @@ private:
 
     explicit ConceptBotImpl(Index index);
 
+    static auto identifying_args() noexcept { return std::tuple(); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -188,6 +199,8 @@ private:
     Index m_index;
 
     explicit ConceptTopImpl(Index index);
+
+    static auto identifying_args() noexcept { return std::tuple(); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -220,6 +233,8 @@ private:
     formalism::Predicate<P> m_predicate;
 
     ConceptAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
+
+    static auto identifying_args(formalism::Predicate<P> predicate) noexcept { return std::tuple(predicate); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -254,6 +269,8 @@ private:
     bool m_polarity;
 
     ConceptAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
+
+    static auto identifying_args(formalism::Predicate<P> predicate, bool polarity) noexcept { return std::tuple(predicate, polarity); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -291,6 +308,12 @@ private:
                             ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal,
                             ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal,
+                                 ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal) noexcept
+    {
+        return std::tuple(left_concept_or_non_terminal, right_concept_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -327,6 +350,12 @@ private:
                      ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal,
                      ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal,
+                                 ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal) noexcept
+    {
+        return std::tuple(left_concept_or_non_terminal, right_concept_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -359,6 +388,8 @@ private:
     ConstructorOrNonTerminal<ConceptTag> m_concept_or_non_terminal;
 
     ConceptNegationImpl(Index index, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal) noexcept { return std::tuple(concept_or_non_terminal); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -394,6 +425,11 @@ private:
     ConceptValueRestrictionImpl(Index index,
                                 ConstructorOrNonTerminal<RoleTag> role_or_non_terminal,
                                 ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal) noexcept
+    {
+        return std::tuple(role_or_non_terminal, concept_or_non_terminal);
+    }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -431,6 +467,11 @@ private:
                                          ConstructorOrNonTerminal<RoleTag> role_or_non_terminal,
                                          ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal) noexcept
+    {
+        return std::tuple(role_or_non_terminal, concept_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -466,6 +507,12 @@ private:
     ConceptRoleValueMapContainmentImpl(Index index,
                                        ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
                                        ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
+                                 ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal) noexcept
+    {
+        return std::tuple(left_role_or_non_terminal, right_role_or_non_terminal);
+    }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -503,6 +550,12 @@ private:
                                     ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
                                     ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
+                                 ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal) noexcept
+    {
+        return std::tuple(left_role_or_non_terminal, right_role_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -535,6 +588,8 @@ private:
     formalism::Object m_object;
 
     ConceptNominalImpl(Index index, formalism::Object object);
+
+    static auto identifying_args(formalism::Object object) noexcept { return std::tuple(object); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -571,6 +626,8 @@ private:
 
     explicit RoleUniversalImpl(Index index);
 
+    static auto identifying_args() noexcept { return std::tuple(); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -602,6 +659,8 @@ private:
     formalism::Predicate<P> m_predicate;
 
     RoleAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
+
+    static auto identifying_args(formalism::Predicate<P> predicate) noexcept { return std::tuple(predicate); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -636,6 +695,8 @@ private:
     bool m_polarity;
 
     RoleAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
+
+    static auto identifying_args(formalism::Predicate<P> predicate, bool polarity) noexcept { return std::tuple(predicate, polarity); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -673,6 +734,12 @@ private:
                          ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
                          ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
+                                 ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal) noexcept
+    {
+        return std::tuple(left_role_or_non_terminal, right_role_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -707,6 +774,12 @@ private:
 
     RoleUnionImpl(Index index, ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal, ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
+                                 ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal) noexcept
+    {
+        return std::tuple(left_role_or_non_terminal, right_role_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -740,6 +813,8 @@ private:
 
     RoleComplementImpl(Index index, ConstructorOrNonTerminal<RoleTag> role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal) noexcept { return std::tuple(role_or_non_terminal); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -771,6 +846,8 @@ private:
     ConstructorOrNonTerminal<RoleTag> m_role_or_non_terminal;
 
     RoleInverseImpl(Index index, ConstructorOrNonTerminal<RoleTag> role_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal) noexcept { return std::tuple(role_or_non_terminal); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -805,6 +882,12 @@ private:
 
     RoleCompositionImpl(Index index, ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal, ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal,
+                                 ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal) noexcept
+    {
+        return std::tuple(left_role_or_non_terminal, right_role_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -838,6 +921,8 @@ private:
 
     RoleTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<RoleTag> role_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal) noexcept { return std::tuple(role_or_non_terminal); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -869,6 +954,8 @@ private:
     ConstructorOrNonTerminal<RoleTag> m_role_or_non_terminal;
 
     RoleReflexiveTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<RoleTag> role_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal) noexcept { return std::tuple(role_or_non_terminal); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -903,6 +990,11 @@ private:
 
     RoleRestrictionImpl(Index index, ConstructorOrNonTerminal<RoleTag> role_or_non_terminal, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<RoleTag> role_or_non_terminal, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal) noexcept
+    {
+        return std::tuple(role_or_non_terminal, concept_or_non_terminal);
+    }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -935,6 +1027,8 @@ private:
     ConstructorOrNonTerminal<ConceptTag> m_concept_or_non_terminal;
 
     RoleIdentityImpl(Index index, ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal) noexcept { return std::tuple(concept_or_non_terminal); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -973,6 +1067,8 @@ private:
 
     BooleanAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
+    static auto identifying_args(formalism::Predicate<P> predicate) noexcept { return std::tuple(predicate); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -1005,6 +1101,8 @@ private:
     ConstructorOrNonTerminal<D> m_constructor_or_nonterminal;
 
     BooleanNonemptyImpl(Index index, ConstructorOrNonTerminal<D> constructor_or_nonterminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<D> constructor_or_nonterminal) noexcept { return std::tuple(constructor_or_nonterminal); }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -1043,6 +1141,8 @@ private:
 
     NumericalCountImpl(Index index, ConstructorOrNonTerminal<D> constructor_or_nonterminal);
 
+    static auto identifying_args(ConstructorOrNonTerminal<D> constructor_or_nonterminal) noexcept { return std::tuple(constructor_or_nonterminal); }
+
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::IndexedHashSet;
@@ -1079,6 +1179,13 @@ private:
                           ConstructorOrNonTerminal<ConceptTag> left_concept_or_nonterminal,
                           ConstructorOrNonTerminal<RoleTag> role_or_nonterminal,
                           ConstructorOrNonTerminal<ConceptTag> right_concept_or_nonterminal);
+
+    static auto identifying_args(ConstructorOrNonTerminal<ConceptTag> left_concept_or_nonterminal,
+                                 ConstructorOrNonTerminal<RoleTag> role_or_nonterminal,
+                                 ConstructorOrNonTerminal<ConceptTag> right_concept_or_nonterminal) noexcept
+    {
+        return std::tuple(left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal);
+    }
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
