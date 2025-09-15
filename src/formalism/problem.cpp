@@ -553,45 +553,13 @@ template void ground_and_fill_vector(ProblemImpl& problem,
 template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& binding)
 {
-    /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundLiteral<P>> {});
-
-    /* 2. Access the context-independent literal grounding table */
-    const auto polarity = literal->get_polarity();
-    const auto predicate_index = literal->get_atom()->get_predicate()->get_index();
-    auto& polarity_grounding_tables = grounding_tables[polarity];
-    if (predicate_index >= polarity_grounding_tables.size())
-    {
-        polarity_grounding_tables.resize(predicate_index + 1);
-    }
-
-    auto& grounding_table = polarity_grounding_tables.at(predicate_index);
-
-    /* 3. Check if grounding is cached */
-
     // We have to fetch the literal-relevant part of the binding first.
     static thread_local auto s_grounded_terms = ObjectList {};
     s_grounded_terms.clear();
     ground_terms(literal->get_atom()->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(s_grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
-
-    /* 4. Ground the literal */
-
-    const auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms);
-    const auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
-
-    /* 5. Insert to grounding_table table */
-
-    grounding_table.emplace(s_grounded_terms, GroundLiteral<P>(grounded_literal));
-
-    /* 6. Return the resulting ground literal */
-
-    return grounded_literal;
+    return m_repositories.get_or_create_ground_literal(literal->get_polarity(),
+                                                       m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms));
 }
 
 template GroundLiteral<StaticTag> ProblemImpl::ground(Literal<StaticTag> literal, const ObjectList& binding);
@@ -603,42 +571,11 @@ template GroundLiteral<DerivedTag> ProblemImpl::ground(Literal<DerivedTag> liter
 template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& binding)
 {
-    /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundFunction<F>> {});
-
-    /* 2. Access the context-independent function grounding table */
-    const auto function_skeleton_index = function->get_function_skeleton()->get_index();
-    if (function_skeleton_index >= grounding_tables.size())
-    {
-        grounding_tables.resize(function_skeleton_index + 1);
-    }
-
-    auto& grounding_table = grounding_tables.at(function_skeleton_index);
-
-    /* 3. Check if grounding is cached */
-
-    // We have to fetch the literal-relevant part of the binding first.
-    // Note: this is important and saves a lot of memory.
+    // We have to fetch the function-relevant part of the binding first.
     static thread_local auto s_grounded_terms = ObjectList {};
     ground_terms(function->get_terms(), binding, s_grounded_terms);
 
-    const auto it = grounding_table.find(s_grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
-
-    /* 4. Ground the function */
-
-    const auto grounded_function = m_repositories.get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
-
-    /* 5. Insert to grounding_table table */
-
-    grounding_table.emplace(s_grounded_terms, GroundFunction<F>(grounded_function));
-
-    /* 6. Return the resulting ground literal */
-
-    return grounded_function;
+    return m_repositories.get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
 }
 
 template GroundFunction<StaticTag> ProblemImpl::ground(Function<StaticTag> function, const ObjectList& binding);
@@ -649,30 +586,7 @@ template GroundFunction<AuxiliaryTag> ProblemImpl::ground(Function<AuxiliaryTag>
 
 GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const ObjectList& binding)
 {
-    /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundFunctionExpression> {});
-
-    /* 2. Access the context-specific fexpr grounding table
-     */
-
-    const auto fexpr_index = fexpr->get_index();
-    if (fexpr_index >= grounding_tables.size())
-    {
-        grounding_tables.resize(fexpr_index + 1);
-    }
-
-    auto& grounding_table = grounding_tables.at(fexpr_index);
-
-    /* 3. Check if grounding is cached */
-
-    const auto it = grounding_table.find(binding);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
-
-    /* 4. Ground the function expression */
-    const auto grounded_fexpr = std::visit(
+    return std::visit(
         [&](auto&& arg) -> GroundFunctionExpression
         {
             using T = std::decay_t<decltype(arg)>;
@@ -754,14 +668,6 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
             }
         },
         fexpr->get_variant());
-
-    /* 5. Insert to grounding_table table */
-
-    grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
-
-    /* 6. Return the resulting ground literal */
-
-    return grounded_fexpr;
 }
 
 // NumericConstraint

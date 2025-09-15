@@ -146,22 +146,8 @@ struct GroundingDetails
     mutable std::optional<ActionGroundingInfoList> action_infos;  ///< lazyly initialized
     const ActionGroundingInfoList& get_action_infos() const;      ///< lazily initializes problem-specific action infos.
 
-    // A table for each pair (polarity,predicate_index) since those are context independent.
-    // TODO: In each literal, we would like to have a context-independent representation, i.e., FreeLiteral
-
-    template<typename T>
-    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
-
-    using PDDLTypeToGroundingTable =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<StaticTag>>, LiteralGroundingTableList<GroundLiteral<StaticTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<FluentTag>>, LiteralGroundingTableList<GroundLiteral<FluentTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<DerivedTag>>, LiteralGroundingTableList<GroundLiteral<DerivedTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<StaticTag>>, GroundingTableList<GroundFunction<StaticTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<FluentTag>>, GroundingTableList<GroundFunction<FluentTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<AuxiliaryTag>>, GroundingTableList<GroundFunction<AuxiliaryTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>,
-                         boost::hana::pair<boost::hana::type<GroundAction>, GroundingTableList<GroundAction>>,
-                         boost::hana::pair<boost::hana::type<GroundAxiom>, GroundingTableList<GroundAxiom>>>;
+    using PDDLTypeToGroundingTable = boost::hana::map<boost::hana::pair<boost::hana::type<GroundAction>, GroundingTableList<GroundAction>>,
+                                                      boost::hana::pair<boost::hana::type<GroundAxiom>, GroundingTableList<GroundAxiom>>>;
 
     PDDLTypeToGroundingTable grounding_tables;
 
