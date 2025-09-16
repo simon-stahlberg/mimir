@@ -103,9 +103,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abba22b3d1b3447fc2a04b1545afcd127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a262e3c2115e0b8291c7d95f15eed4278"><td class="memItemLeft" align="right" valign="top">const std::variant&lt; <a class="el" href="namespacemimir_1_1formalism.html#acaf64f488a8195b48868e925aebd3b75">Object</a>, <a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1TermImpl.html#a262e3c2115e0b8291c7d95f15eed4278">get_variant</a> () const</td></tr>
 <tr class="separator:a262e3c2115e0b8291c7d95f15eed4278"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06574d72fee92a258e3a1677229e09ca"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1TermImpl.html#a06574d72fee92a258e3a1677229e09ca">identifying_members</a> () const</td></tr>
-<tr class="memdesc:a06574d72fee92a258e3a1677229e09ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:a06574d72fee92a258e3a1677229e09ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f0211aaf4f2caaa8ce7c440a068f23"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1TermImpl.html#a22f0211aaf4f2caaa8ce7c440a068f23">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a22f0211aaf4f2caaa8ce7c440a068f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a22f0211aaf4f2caaa8ce7c440a068f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -216,8 +216,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a06574d72fee92a258e3a1677229e09ca" name="a06574d72fee92a258e3a1677229e09ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06574d72fee92a258e3a1677229e09ca">&#9670;&#160;</a></span>identifying_members()</h2>
+<a id="a22f0211aaf4f2caaa8ce7c440a068f23" name="a22f0211aaf4f2caaa8ce7c440a068f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f0211aaf4f2caaa8ce7c440a068f23">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +234,7 @@ Friends</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['plan_0',['plan',['../structmimir_1_1search_1_1SearchResult.html#ad81d2706f5870a1fd4e27b5651953f4c',1,'mimir::search::SearchResult']]],
-  ['positive_5fboolean_5fcondition_1',['positive_boolean_condition',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a1cf56291b2290a80b1accaf28e71c937',1,'mimir::languages::general_policies::keywords']]],
-  ['positive_5fboolean_5feffect_2',['positive_boolean_effect',['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html#a62257b336a34f7ea1217f714b45a1d5d',1,'mimir::languages::general_policies::keywords']]],
-  ['pruning_5fstrategy_3',['pruning_strategy',['../structmimir_1_1search_1_1astar__lazy_1_1Options.html#ab094f14ceda6c3b51b1072d666f9b0f3',1,'mimir::search::astar_lazy::Options::pruning_strategy()'],['../structmimir_1_1search_1_1astar__eager_1_1Options.html#a34f806882b1781e7f1956d4da822dfe6',1,'mimir::search::astar_eager::Options::pruning_strategy()'],['../structmimir_1_1search_1_1brfs_1_1Options.html#ad2b1b4291e0ddb134a113d4265fbb8f5',1,'mimir::search::brfs::Options::pruning_strategy()'],['../structmimir_1_1search_1_1gbfs__lazy_1_1Options.html#a55312c2042340b486becc4fc64a215ba',1,'mimir::search::gbfs_lazy::Options::pruning_strategy()'],['../structmimir_1_1search_1_1gbfs__eager_1_1Options.html#a7ad6e61764888a9ea2afb8bee6d6d576',1,'mimir::search::gbfs_eager::Options::pruning_strategy()']]]
+  ['object_0',['object',['../structmimir_1_1formalism_1_1VertexAssignment.html#a602bd09114b70150e8c289f70aa8f7e2',1,'mimir::formalism::VertexAssignment']]],
+  ['openlist_5fweights_1',['openlist_weights',['../structmimir_1_1search_1_1astar__lazy_1_1Options.html#a317edf6995c17ff22cb8fd743526456e',1,'mimir::search::astar_lazy::Options::openlist_weights()'],['../structmimir_1_1search_1_1gbfs__lazy_1_1Options.html#a546674f3250d8d2d19ef8a2334aa2cd4',1,'mimir::search::gbfs_lazy::Options::openlist_weights()']]],
+  ['optimization_5fdirection_2',['optimization_direction',['../structmimir_1_1search_1_1match__tree_1_1Options.html#ace70aedf0d97f4e3a63c61dd61d8f5d8',1,'mimir::search::match_tree::Options']]],
+  ['output_5fdot_5ffile_3',['output_dot_file',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a31509aa1b133ec8de7cb842fb77f849e',1,'mimir::search::match_tree::Options']]]
 ];

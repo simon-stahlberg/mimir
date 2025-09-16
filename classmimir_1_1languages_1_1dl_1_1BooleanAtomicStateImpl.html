@@ -108,9 +108,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa77176b773ba341da17c0b476206cbed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e2f7abdd9581d9b4b1e1f7b0a254441"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">formalism::Predicate</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1BooleanAtomicStateImpl.html#a9e2f7abdd9581d9b4b1e1f7b0a254441">get_predicate</a> () const</td></tr>
 <tr class="separator:a9e2f7abdd9581d9b4b1e1f7b0a254441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a961485d020d8e5e225e8a0c0268f693e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1BooleanAtomicStateImpl.html#a961485d020d8e5e225e8a0c0268f693e">identifying_members</a> () const</td></tr>
-<tr class="memdesc:a961485d020d8e5e225e8a0c0268f693e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:a961485d020d8e5e225e8a0c0268f693e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53abf13059418bf989960fed24aca1e9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1BooleanAtomicStateImpl.html#a53abf13059418bf989960fed24aca1e9">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a53abf13059418bf989960fed24aca1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a53abf13059418bf989960fed24aca1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase.html">mimir::languages::dl::ConstructorEvaluatorBase&lt; BooleanTag, BooleanAtomicStateImpl&lt; P &gt; &gt;</a></td></tr>
 <tr class="memitem:a7d9bf49f453cb4da5d7ec724d801fa96 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5fb58daa88a73a4d955b36135ac1696d">Denotation</a>&lt; D &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase.html#a7d9bf49f453cb4da5d7ec724d801fa96">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">EvaluationContext</a> &amp;context) const override</td></tr>
 <tr class="memdesc:a7d9bf49f453cb4da5d7ec724d801fa96 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the dl constructor on the evaluation context.  <br /></td></tr>
@@ -270,8 +270,8 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="a961485d020d8e5e225e8a0c0268f693e" name="a961485d020d8e5e225e8a0c0268f693e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a961485d020d8e5e225e8a0c0268f693e">&#9670;&#160;</a></span>identifying_members()</h2>
+<a id="a53abf13059418bf989960fed24aca1e9" name="a53abf13059418bf989960fed24aca1e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53abf13059418bf989960fed24aca1e9">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -290,7 +290,7 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

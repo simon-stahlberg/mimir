@@ -78,6 +78,7 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classmimir_1_1formalism_1_1StaticConsistencyGraph-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">mimir::formalism::StaticConsistencyGraph Class Reference</div></div>
 </div><!--header-->
@@ -93,6 +94,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html">Edge</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An undirected edge {src,dst} in the consistency graph.  <a href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1EdgeIterator.html">EdgeIterator</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Vertex.html">Vertex</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A vertex [parameter_index/object_index] in the consistency graph.  <a href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Vertex.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,20 +104,21 @@ Classes</h2></td></tr>
 Public Types</h2></td></tr>
 <tr class="memitem:abfcd2478666795d472f46fc82970b4da"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a> = std::vector&lt; <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Vertex.html">Vertex</a> &gt;</td></tr>
 <tr class="separator:abfcd2478666795d472f46fc82970b4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a616cebe5bcfca0b72c62d7bae64fb236"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">Edges</a> = std::vector&lt; <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html">Edge</a> &gt;</td></tr>
-<tr class="separator:a616cebe5bcfca0b72c62d7bae64fb236"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9c6bff43b892a6049ca5145ec054076d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a9c6bff43b892a6049ca5145ec054076d">StaticConsistencyGraph</a> (const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> begin_parameter_index, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> end_parameter_index, const <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;static_conditions)</td></tr>
-<tr class="memdesc:a9c6bff43b892a6049ca5145ec054076d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a static consistency graph @parameter_index problem The problem context. @parameter_index begin_parameter_index The first parameter index for which consistent assignments are represented. @parameter_index end_parameter_index The last parameter index plus one for which consistent assignments are represented. @parameter_index static_conditions The static literals for which a bindings must be found. @parameter_index static_assignment_set The assignment set of static initial literals.  <br /></td></tr>
+<tr class="memdesc:a9c6bff43b892a6049ca5145ec054076d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a static consistency graph.  <br /></td></tr>
 <tr class="separator:a9c6bff43b892a6049ca5145ec054076d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00528d0e4efb74bc4841b90c39f02aa6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a00528d0e4efb74bc4841b90c39f02aa6">get_vertices</a> () const</td></tr>
-<tr class="memdesc:a00528d0e4efb74bc4841b90c39f02aa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the vertices.  <br /></td></tr>
-<tr class="separator:a00528d0e4efb74bc4841b90c39f02aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae074c3dc699a2cb934261eed45a3287a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">Edges</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#ae074c3dc699a2cb934261eed45a3287a">get_edges</a> () const</td></tr>
-<tr class="memdesc:ae074c3dc699a2cb934261eed45a3287a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the edges.  <br /></td></tr>
-<tr class="separator:ae074c3dc699a2cb934261eed45a3287a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31001bc75871781d18ffcb193cc3cf23"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a31001bc75871781d18ffcb193cc3cf23">get_vertices</a> () const</td></tr>
+<tr class="memdesc:a31001bc75871781d18ffcb193cc3cf23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an forward_range over immutable Vertices.  <br /></td></tr>
+<tr class="separator:a31001bc75871781d18ffcb193cc3cf23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3abeedc9035db887e6ceefd475bc8522"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a3abeedc9035db887e6ceefd475bc8522">get_edges</a> () const</td></tr>
+<tr class="separator:a3abeedc9035db887e6ceefd475bc8522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d6da7f043fad7c50766c11a7ced0229"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a9d6da7f043fad7c50766c11a7ced0229">get_num_vertices</a> () const</td></tr>
+<tr class="separator:a9d6da7f043fad7c50766c11a7ced0229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a367f7c2eea0b7b80b0ece8a339c0b080"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a367f7c2eea0b7b80b0ece8a339c0b080">get_num_edges</a> () const</td></tr>
+<tr class="separator:a367f7c2eea0b7b80b0ece8a339c0b080"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f8679bde706d18ef7164f70c939ffee"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a1f8679bde706d18ef7164f70c939ffee">get_vertices_by_parameter_index</a> () const</td></tr>
 <tr class="memdesc:a1f8679bde706d18ef7164f70c939ffee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the vertex indices partitioned by the parameter index.  <br /></td></tr>
 <tr class="separator:a1f8679bde706d18ef7164f70c939ffee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,27 +131,18 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aafe3445a03492cca1c10052acc2a41d5"><td class="memItemLeft" align="right" valign="top">static std::tuple&lt; <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a>, std::vector&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;, std::vector&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#aafe3445a03492cca1c10052acc2a41d5">compute_vertices</a> (const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> begin_parameter_index, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> end_parameter_index, const <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;static_conditions)</td></tr>
 <tr class="memdesc:aafe3445a03492cca1c10052acc2a41d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Useful to compute possible substitutions for conditional effects.  <br /></td></tr>
 <tr class="separator:aafe3445a03492cca1c10052acc2a41d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29679d1caee59f8da1e64dd7a52b8a52"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">Edges</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a29679d1caee59f8da1e64dd7a52b8a52">compute_edges</a> (const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;problem, const <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;static_conditions, const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a> &amp;vertices)</td></tr>
-<tr class="separator:a29679d1caee59f8da1e64dd7a52b8a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8e9fec7b717d4a3c0782cb35b011c07"><td class="memItemLeft" align="right" valign="top">static std::tuple&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#ae8e9fec7b717d4a3c0782cb35b011c07">compute_edges</a> (const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;problem, const <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;static_conditions, const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a> &amp;vertices)</td></tr>
+<tr class="separator:ae8e9fec7b717d4a3c0782cb35b011c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a265a85b438f4a316627f37c1c2d442e8"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a265a85b438f4a316627f37c1c2d442e8">EdgeIterator</a></td></tr>
+<tr class="separator:a265a85b438f4a316627f37c1c2d442e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html" title="The StaticConsistencyGraph encodes the assignments to static conditions, and hence,...">StaticConsistencyGraph</a> encodes the assignments to static conditions, and hence, it is an overapproximation of the actual consistency graph. </p>
 <p><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html" title="The StaticConsistencyGraph encodes the assignments to static conditions, and hence,...">StaticConsistencyGraph</a> </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a616cebe5bcfca0b72c62d7bae64fb236" name="a616cebe5bcfca0b72c62d7bae64fb236"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a616cebe5bcfca0b72c62d7bae64fb236">&#9670;&#160;</a></span>Edges</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">mimir::formalism::StaticConsistencyGraph::Edges</a> =  std::vector&lt;<a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html">Edge</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="abfcd2478666795d472f46fc82970b4da" name="abfcd2478666795d472f46fc82970b4da"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfcd2478666795d472f46fc82970b4da">&#9670;&#160;</a></span>Vertices</h2>
 
@@ -201,7 +196,16 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Construct a static consistency graph @parameter_index problem The problem context. @parameter_index begin_parameter_index The first parameter index for which consistent assignments are represented. @parameter_index end_parameter_index The last parameter index plus one for which consistent assignments are represented. @parameter_index static_conditions The static literals for which a bindings must be found. @parameter_index static_assignment_set The assignment set of static initial literals. </p>
+<p>Construct a static consistency graph. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">problem</td><td>The problem. </td></tr>
+    <tr><td class="paramname">begin_parameter_index</td><td>The first parameter index for which consistent assignments are represented. </td></tr>
+    <tr><td class="paramname">end_parameter_index</td><td>The last parameter index plus one for which consistent assignments are represented. </td></tr>
+    <tr><td class="paramname">static_conditions</td><td>The static literals for which a bindings must be found.</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>For universal effects, we can set first and last parameter indices respectively to find consistent assignments irrespective of the action parameter bindings. More specifically:</p><ol type="1">
 <li>for action parameters, we set first to 0 and last to 0 + arity(action)</li>
 <li>for universal effects, we set first to arity(action) and last to arity(action) + arity(effect) </li>
@@ -210,8 +214,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a29679d1caee59f8da1e64dd7a52b8a52" name="a29679d1caee59f8da1e64dd7a52b8a52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29679d1caee59f8da1e64dd7a52b8a52">&#9670;&#160;</a></span>compute_edges()</h2>
+<a id="ae8e9fec7b717d4a3c0782cb35b011c07" name="ae8e9fec7b717d4a3c0782cb35b011c07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8e9fec7b717d4a3c0782cb35b011c07">&#9670;&#160;</a></span>compute_edges()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -220,7 +224,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">Edges</a> mimir::formalism::StaticConsistencyGraph::compute_edges </td>
+          <td class="memname">static std::tuple&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; mimir::formalism::StaticConsistencyGraph::compute_edges </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;&#160;</td>
           <td class="paramname"><em>problem</em>, </td>
@@ -302,8 +306,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae074c3dc699a2cb934261eed45a3287a" name="ae074c3dc699a2cb934261eed45a3287a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae074c3dc699a2cb934261eed45a3287a">&#9670;&#160;</a></span>get_edges()</h2>
+<a id="a3abeedc9035db887e6ceefd475bc8522" name="a3abeedc9035db887e6ceefd475bc8522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3abeedc9035db887e6ceefd475bc8522">&#9670;&#160;</a></span>get_edges()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,7 +316,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a616cebe5bcfca0b72c62d7bae64fb236">Edges</a> &amp; mimir::formalism::StaticConsistencyGraph::get_edges </td>
+          <td class="memname">auto mimir::formalism::StaticConsistencyGraph::get_edges </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -325,7 +329,55 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the edges. </p>
+</div>
+</div>
+<a id="a367f7c2eea0b7b80b0ece8a339c0b080" name="a367f7c2eea0b7b80b0ece8a339c0b080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a367f7c2eea0b7b80b0ece8a339c0b080">&#9670;&#160;</a></span>get_num_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::formalism::StaticConsistencyGraph::get_num_edges </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d6da7f043fad7c50766c11a7ced0229" name="a9d6da7f043fad7c50766c11a7ced0229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d6da7f043fad7c50766c11a7ced0229">&#9670;&#160;</a></span>get_num_vertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::formalism::StaticConsistencyGraph::get_num_vertices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -356,8 +408,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a00528d0e4efb74bc4841b90c39f02aa6" name="a00528d0e4efb74bc4841b90c39f02aa6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00528d0e4efb74bc4841b90c39f02aa6">&#9670;&#160;</a></span>get_vertices()</h2>
+<a id="a31001bc75871781d18ffcb193cc3cf23" name="a31001bc75871781d18ffcb193cc3cf23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31001bc75871781d18ffcb193cc3cf23">&#9670;&#160;</a></span>get_vertices()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -366,7 +418,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcd2478666795d472f46fc82970b4da">Vertices</a> &amp; mimir::formalism::StaticConsistencyGraph::get_vertices </td>
+          <td class="memname">auto mimir::formalism::StaticConsistencyGraph::get_vertices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -379,7 +431,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the vertices. </p>
+<p>Get an forward_range over immutable Vertices. </p>
 
 </div>
 </div>
@@ -407,6 +459,29 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the vertex indices partitioned by the parameter index. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a265a85b438f4a316627f37c1c2d442e8" name="a265a85b438f4a316627f37c1c2d442e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a265a85b438f4a316627f37c1c2d442e8">&#9670;&#160;</a></span>EdgeIterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1EdgeIterator.html">EdgeIterator</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

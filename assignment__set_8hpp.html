@@ -82,22 +82,27 @@ $(function() {
 <div class="textblock"><code>#include &quot;mimir/common/bounds.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;mimir/common/types_cista.hpp&quot;</code><br />
-<code>#include &quot;mimir/formalism/assignment_set_utils.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="assignment_8hpp_source.html">mimir/formalism/assignment.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;mimir/formalism/assignment_set_impl.hpp&quot;</code><br />
 </div>
 <p><a href="assignment__set_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1AssignmentSet.html">mimir::formalism::AssignmentSet&lt; P &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1formalism_1_1AssignmentSet.html" title="AssignmentSet is a helper class representing a set of functions f : Predicates x Params(A) x Object x...">AssignmentSet</a></code> is a helper class representing a set of functions f : Predicates x Params(A) x Object x Params(A) x Object -&gt; {true, false} where  <a href="classmimir_1_1formalism_1_1AssignmentSet.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1formalism_1_1PerfectAssignmentHash.html">mimir::formalism::PerfectAssignmentHash</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1NumericAssignmentSet.html">mimir::formalism::NumericAssignmentSet&lt; F &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1formalism_1_1NumericAssignmentSet.html" title="NumericAssignmentSet is a helper class representing a set of functions f : FunctionSkeleton x Params(...">NumericAssignmentSet</a></code> is a helper class representing a set of functions f : FunctionSkeleton x Params(A) x Object x Params(A) x Object -&gt; Bounds&lt;ContinuousCost&gt; where  <a href="classmimir_1_1formalism_1_1NumericAssignmentSet.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1PredicateAssignmentSet.html">mimir::formalism::PredicateAssignmentSet&lt; P &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1PredicateAssignmentSets.html">mimir::formalism::PredicateAssignmentSets&lt; P &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSet.html">mimir::formalism::FunctionSkeletonAssignmentSet&lt; F &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSets.html">mimir::formalism::FunctionSkeletonAssignmentSets&lt; F &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>

@@ -113,9 +113,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af98f21b2872bdf0673d534163708ccbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2a03691e5283629864c609afdb8a7bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#acee7e4bd3a6f41e462847a848dbeb545">ConstructorOrNonTerminal</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1RoleTag.html">RoleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleUnionImpl.html#ab2a03691e5283629864c609afdb8a7bb">get_right_role_or_non_terminal</a> () const</td></tr>
 <tr class="separator:ab2a03691e5283629864c609afdb8a7bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef53fcbe26315622794380b02661fff2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleUnionImpl.html#aef53fcbe26315622794380b02661fff2">identifying_members</a> () const</td></tr>
-<tr class="memdesc:aef53fcbe26315622794380b02661fff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:aef53fcbe26315622794380b02661fff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cdcad63a84801d882543fe5d8f4177b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleUnionImpl.html#a8cdcad63a84801d882543fe5d8f4177b">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a8cdcad63a84801d882543fe5d8f4177b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a8cdcad63a84801d882543fe5d8f4177b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">mimir::languages::dl::grammar::IConstructor&lt; D &gt;</a></td></tr>
 <tr class="memitem:a5794f1d4a81c7a7c011d21b3306f1d48 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html#a5794f1d4a81c7a7c011d21b3306f1d48">IConstructor</a> (const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a> &amp;other)=delete</td></tr>
 <tr class="separator:a5794f1d4a81c7a7c011d21b3306f1d48 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -280,8 +280,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="aef53fcbe26315622794380b02661fff2" name="aef53fcbe26315622794380b02661fff2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef53fcbe26315622794380b02661fff2">&#9670;&#160;</a></span>identifying_members()</h2>
+<a id="a8cdcad63a84801d882543fe5d8f4177b" name="a8cdcad63a84801d882543fe5d8f4177b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cdcad63a84801d882543fe5d8f4177b">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -298,7 +298,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

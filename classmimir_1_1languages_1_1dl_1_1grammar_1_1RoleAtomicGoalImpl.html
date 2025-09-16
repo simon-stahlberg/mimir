@@ -113,9 +113,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a16560ac89ff19747384e3f66b46adf06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a655f2b4e82a7da4263dfd8bbb2ee2ebc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleAtomicGoalImpl.html#a655f2b4e82a7da4263dfd8bbb2ee2ebc">get_polarity</a> () const</td></tr>
 <tr class="separator:a655f2b4e82a7da4263dfd8bbb2ee2ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf26459a5cc49e1e5137862d1b65bbe2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleAtomicGoalImpl.html#abf26459a5cc49e1e5137862d1b65bbe2">identifying_members</a> () const</td></tr>
-<tr class="memdesc:abf26459a5cc49e1e5137862d1b65bbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:abf26459a5cc49e1e5137862d1b65bbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a453f9a1b9db9e83d66adafde2234ac47"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1RoleAtomicGoalImpl.html#a453f9a1b9db9e83d66adafde2234ac47">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a453f9a1b9db9e83d66adafde2234ac47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a453f9a1b9db9e83d66adafde2234ac47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">mimir::languages::dl::grammar::IConstructor&lt; D &gt;</a></td></tr>
 <tr class="memitem:a5794f1d4a81c7a7c011d21b3306f1d48 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html#a5794f1d4a81c7a7c011d21b3306f1d48">IConstructor</a> (const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a> &amp;other)=delete</td></tr>
 <tr class="separator:a5794f1d4a81c7a7c011d21b3306f1d48 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -292,8 +292,8 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="abf26459a5cc49e1e5137862d1b65bbe2" name="abf26459a5cc49e1e5137862d1b65bbe2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf26459a5cc49e1e5137862d1b65bbe2">&#9670;&#160;</a></span>identifying_members()</h2>
+<a id="a453f9a1b9db9e83d66adafde2234ac47" name="a453f9a1b9db9e83d66adafde2234ac47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a453f9a1b9db9e83d66adafde2234ac47">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,7 +312,7 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

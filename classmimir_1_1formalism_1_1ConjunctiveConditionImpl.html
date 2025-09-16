@@ -117,9 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1b3cf956d1065f8e9cefe59b407756a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96d676b764455f197bbafa7b797011d0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ConjunctiveConditionImpl.html#a96d676b764455f197bbafa7b797011d0">get_arity</a> () const</td></tr>
 <tr class="separator:a96d676b764455f197bbafa7b797011d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb8052c1373369dafa9b3af17430807e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ConjunctiveConditionImpl.html#acb8052c1373369dafa9b3af17430807e">identifying_members</a> () const</td></tr>
-<tr class="memdesc:acb8052c1373369dafa9b3af17430807e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:acb8052c1373369dafa9b3af17430807e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3da70274866b0ede2cc824fa71fc935d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ConjunctiveConditionImpl.html#a3da70274866b0ede2cc824fa71fc935d">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a3da70274866b0ede2cc824fa71fc935d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a3da70274866b0ede2cc824fa71fc935d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -336,8 +336,8 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="acb8052c1373369dafa9b3af17430807e" name="acb8052c1373369dafa9b3af17430807e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb8052c1373369dafa9b3af17430807e">&#9670;&#160;</a></span>identifying_members()</h2>
+<a id="a3da70274866b0ede2cc824fa71fc935d" name="a3da70274866b0ede2cc824fa71fc935d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3da70274866b0ede2cc824fa71fc935d">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -354,7 +354,7 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
