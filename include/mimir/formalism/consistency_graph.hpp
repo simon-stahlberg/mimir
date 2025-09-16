@@ -109,11 +109,10 @@ public:
 
 public:
     /// @brief Construct a static consistency graph
-    /// @parameter_index problem The problem context.
-    /// @parameter_index begin_parameter_index The first parameter index for which consistent assignments are represented.
-    /// @parameter_index end_parameter_index The last parameter index plus one for which consistent assignments are represented.
-    /// @parameter_index static_conditions The static literals for which a bindings must be found.
-    /// @parameter_index static_assignment_set The assignment set of static initial literals.
+    /// @param problem The problem.
+    /// @param begin_parameter_index The first parameter index for which consistent assignments are represented.
+    /// @param end_parameter_index The last parameter index plus one for which consistent assignments are represented.
+    /// @param static_conditions The static literals for which a bindings must be found.
     ///
     /// For universal effects, we can set first and last parameter indices respectively
     /// to find consistent assignments irrespective of the action parameter bindings.
@@ -126,13 +125,14 @@ public:
     static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
     compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
 
-    static std::pair<IndexList, IndexList> compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
+    static std::tuple<IndexList, IndexList, IndexList>
+    compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
 
     class EdgeIterator
     {
     private:
         const StaticConsistencyGraph* m_graph;
-        size_t m_offsets_pos;
+        size_t m_sources_pos;
         size_t m_targets_pos;
 
         const StaticConsistencyGraph& get_graph() const
@@ -143,12 +143,8 @@ public:
 
         void advance()
         {
-            ++m_targets_pos;
-
-            while (m_offsets_pos < get_graph().m_offsets.size() - 1 && get_graph().m_offsets[m_offsets_pos + 1] <= m_targets_pos)
-                ++m_offsets_pos;
-
-            assert(m_offsets_pos < get_graph().m_offsets.size());
+            if (++m_targets_pos >= get_graph().m_target_offsets[m_sources_pos])
+                ++m_sources_pos;
         }
 
     public:
@@ -158,26 +154,18 @@ public:
         using reference = const value_type&;
         using iterator_category = std::forward_iterator_tag;
 
-        EdgeIterator() : m_graph(nullptr), m_offsets_pos(0), m_targets_pos(0) {}
+        EdgeIterator() : m_graph(nullptr), m_sources_pos(0), m_targets_pos(0) {}
         EdgeIterator(const StaticConsistencyGraph& graph, bool begin) :
             m_graph(&graph),
-            m_offsets_pos(begin ? 0 : graph.m_vertices.size()),
+            m_sources_pos(begin ? 0 : graph.m_sources.size()),
             m_targets_pos(begin ? 0 : graph.m_targets.size())
         {
-            assert(get_graph().m_offsets.size() - 1 == get_graph().m_vertices.size());
-
-            if (begin)
-            {
-                while (m_offsets_pos < get_graph().m_offsets.size() - 1 && get_graph().m_offsets[m_offsets_pos + 1] <= m_targets_pos)
-                    ++m_offsets_pos;
-            }
         }
         value_type operator*() const
         {
-            assert(m_offsets_pos < get_graph().get_num_vertices());
-            assert(m_targets_pos < get_graph().get_num_edges());
-            assert(get_graph().m_targets[m_targets_pos] < get_graph().get_num_vertices());
-            return Edge(get_graph().m_vertices[m_offsets_pos], get_graph().m_vertices[get_graph().m_targets[m_targets_pos]]);
+            assert(m_sources_pos < get_graph().m_sources.size());
+            assert(m_targets_pos < get_graph().m_targets.size());
+            return Edge(get_graph().m_vertices[get_graph().m_sources[m_sources_pos]], get_graph().m_vertices[get_graph().m_targets[m_targets_pos]]);
         }
         EdgeIterator& operator++()
         {
@@ -190,7 +178,7 @@ public:
             ++(*this);
             return tmp;
         }
-        bool operator==(const EdgeIterator& other) const { return m_targets_pos == other.m_targets_pos && m_offsets_pos == other.m_offsets_pos; }
+        bool operator==(const EdgeIterator& other) const { return m_targets_pos == other.m_targets_pos && m_sources_pos == other.m_sources_pos; }
         bool operator!=(const EdgeIterator& other) const { return !(*this == other); }
     };
 
@@ -217,7 +205,8 @@ private:
     std::vector<IndexList> m_objects_by_parameter_index;
 
     // Adjacency list of edges.
-    IndexList m_offsets;
+    IndexList m_sources;  ///< sources with non-zero out-degree
+    IndexList m_target_offsets;
     IndexList m_targets;
 };
 
