@@ -50,18 +50,17 @@ namespace mimir::search::astar_lazy
 struct SearchNode
 {
     ContinuousCost g_value;
-    ContinuousCost h_value;
     Index parent_state;
     SearchNodeStatus status;
 };
 
-static_assert(sizeof(SearchNode) == 24);
+static_assert(sizeof(SearchNode) == 16);
 
 using SearchNodeVector = SegmentedVector<SearchNode>;
 
 static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVector& search_nodes)
 {
-    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0), MAX_INDEX, SearchNodeStatus::NEW };
+    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), MAX_INDEX, SearchNodeStatus::NEW };
 
     while (state_index >= search_nodes.size())
     {
@@ -77,13 +76,13 @@ static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVecto
 struct QueueEntry
 {
     using KeyType = ContinuousCost;
-    using ItemType = PackedState;
+    using ItemType = std::pair<ContinuousCost, PackedState>;
 
-    KeyType f_value;
-    ItemType packed_state;
+    ContinuousCost f_value;
+    PackedState packed_state;
 
     KeyType get_key() const { return f_value; }
-    ItemType get_item() const { return packed_state; }
+    ItemType get_item() const { return std::make_pair(f_value, packed_state); }
 };
 
 static_assert(sizeof(QueueEntry) == 16);
@@ -165,7 +164,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
     start_search_node.status = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     start_search_node.g_value = start_g_value;
-    start_search_node.h_value = start_h_value;
 
     /* Test whether start state is deadend. */
 
@@ -202,8 +200,10 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             return result;
         }
 
-        const auto state = state_repository.get_state(*openlist.top());
+        const auto [state_f_value, packed_state] = openlist.top();
         openlist.pop();
+
+        const auto state = state_repository.get_state(*packed_state);
 
         auto& search_node = get_or_create_search_node(state.get_index(), search_nodes);
 
@@ -215,7 +215,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         }
 
         const auto state_h_value = heuristic->compute_heuristic(state, search_node.status == SearchNodeStatus::GOAL);
-        search_node.h_value = state_h_value;
         if (state_h_value == INFINITY_CONTINUOUS_COST)
         {
             search_node.status = SearchNodeStatus::DEAD_END;
@@ -224,14 +223,12 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         /* Report search progress. */
 
-        const auto search_node_f_value = search_node.g_value + search_node.h_value;
-
-        if (search_node_f_value > f_value)
+        if (state_f_value > f_value)
         {
             applicable_action_generator.on_finish_search_layer();
             state_repository.get_axiom_evaluator()->on_finish_search_layer();
             event_handler->on_finish_f_layer(f_value);
-            f_value = search_node_f_value;
+            f_value = state_f_value;
         }
 
         /* Test whether state achieves the dynamic goal. */
@@ -312,15 +309,9 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 successor_search_node.parent_state = state.get_index();
                 successor_search_node.g_value = successor_state_metric_value;
 
-                if (is_new_successor_state)
+                if (is_new_successor_state && goal_strategy->test_dynamic_goal(successor_state))
                 {
-                    const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
-                    if (successor_is_goal_state)
-                    {
-                        successor_search_node.status = SearchNodeStatus::GOAL;
-                    }
-
-                    successor_search_node.h_value = state_h_value;
+                    successor_search_node.status = SearchNodeStatus::GOAL;
                 }
 
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);

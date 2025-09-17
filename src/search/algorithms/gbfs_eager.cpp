@@ -48,18 +48,17 @@ namespace mimir::search::gbfs_eager
 struct SearchNode
 {
     ContinuousCost g_value;
-    ContinuousCost h_value;
     Index parent_state;
     SearchNodeStatus status;
 };
 
-static_assert(sizeof(SearchNode) == 24);
+static_assert(sizeof(SearchNode) == 16);
 
 using SearchNodeVector = SegmentedVector<SearchNode>;
 
 static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVector& search_nodes)
 {
-    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0), MAX_INDEX, SearchNodeStatus::NEW };
+    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), MAX_INDEX, SearchNodeStatus::NEW };
 
     while (state_index >= search_nodes.size())
     {
@@ -165,7 +164,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
     start_search_node.status = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     start_search_node.g_value = start_g_value;
-    start_search_node.h_value = start_h_value;
 
     /* Test whether start state is deadend. */
 
@@ -290,7 +288,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             /* Compute heuristic since state is new. */
 
             const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
-            successor_search_node.h_value = successor_h_value;
             if (successor_h_value == INFINITY_CONTINUOUS_COST)
             {
                 successor_search_node.status = SearchNodeStatus::DEAD_END;
