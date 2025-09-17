@@ -240,7 +240,9 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
 {
     for (const auto& literal : literals)
     {
-        const auto arity = literal->get_atom()->get_predicate()->get_arity();
+        const auto atom = literal->get_atom();
+        const auto predicate = atom->get_predicate();
+        const auto arity = predicate->get_arity();
 
         if (arity < 1)
         {
@@ -254,8 +256,8 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
             continue;  ///< Can only handly unary negated literals due to overapproximation
         }
 
-        const auto& predicate_assignment_set = predicate_assignment_sets.get_set(literal->get_atom()->get_predicate());
-        const auto& terms = literal->get_atom()->get_terms();
+        const auto& predicate_assignment_set = predicate_assignment_sets.get_set(predicate);
+        const auto& terms = atom->get_terms();
 
         for (const auto& assignment : VertexAssignmentRange(terms, element))
         {
@@ -283,7 +285,9 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
 {
     for (const auto& literal : literals)
     {
-        const auto arity = literal->get_atom()->get_predicate()->get_arity();
+        const auto atom = literal->get_atom();
+        const auto predicate = atom->get_predicate();
+        const auto arity = predicate->get_arity();
 
         if (arity < 2)
         {
@@ -297,8 +301,8 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
             continue;  ///< Can only handly binary negated literals due to overapproximation
         }
 
-        const auto& predicate_assignment_set = predicate_assignment_sets.get_set(literal->get_atom()->get_predicate());
-        const auto& terms = literal->get_atom()->get_terms();
+        const auto& predicate_assignment_set = predicate_assignment_sets.get_set(predicate);
+        const auto& terms = atom->get_terms();
 
         /* Iterate edges. */
 

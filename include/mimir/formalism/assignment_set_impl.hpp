@@ -104,7 +104,7 @@ PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Pre
 template<IsStaticOrFluentOrDerivedTag P>
 void PredicateAssignmentSet<P>::reset() noexcept
 {
-    std::fill(m_set.begin(), m_set.end(), false);
+    m_set.reset();
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -120,20 +120,20 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
         const auto& first_object = objects[first_index];
 
         // Complete vertex.
-        m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))] = true;
+        m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
 
         // Partial edge with first assignment.
-        m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX))] = true;
+        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX)));
         // Partial edge with second assignment is implicit in VertexAssignment.
-        assert(m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))]
-               == m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))]);
+        assert(m_set.test(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())))
+               == m_set.test(m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = objects[second_index];
 
             // Ordered complete edge.
-            m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()))] = true;
+            m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index())));
         }
     }
 }
@@ -141,13 +141,13 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 template<IsStaticOrFluentOrDerivedTag P>
 bool PredicateAssignmentSet<P>::operator[](const VertexAssignment& assignment) const noexcept
 {
-    return m_set[m_hash.get_assignment_rank(assignment)];
+    return m_set.test(m_hash.get_assignment_rank(assignment));
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
 bool PredicateAssignmentSet<P>::operator[](const EdgeAssignment& assignment) const noexcept
 {
-    return m_set[m_hash.get_assignment_rank(assignment)];
+    return m_set.test(m_hash.get_assignment_rank(assignment));
 }
 
 template<IsStaticOrFluentOrDerivedTag P>

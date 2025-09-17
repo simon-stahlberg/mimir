@@ -24,6 +24,7 @@
 #include "mimir/formalism/assignment.hpp"
 #include "mimir/formalism/declarations.hpp"
 
+#include <boost/dynamic_bitset.hpp>
 #include <cassert>
 #include <limits>
 #include <tuple>
@@ -56,7 +57,7 @@ private:
     Predicate<P> m_predicate;
 
     PerfectAssignmentHash m_hash;
-    std::vector<bool> m_set;
+    boost::dynamic_bitset<> m_set;
 
 public:
     PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate);
