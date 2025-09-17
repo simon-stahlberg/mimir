@@ -51,25 +51,6 @@ template valla::Slot<Index> PackedStateImpl::get_atoms<DerivedTag>() const;
 
 valla::Slot<Index> PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
 
-template<IsFluentOrDerivedTag P>
-bool PackedStateImpl::literal_holds(GroundLiteral<P> literal, const ProblemImpl& problem) const
-{
-    auto atoms = get_atoms<P>(problem);
-    return (std::find(atoms.begin(), atoms.end(), literal->get_atom()->get_index()) != atoms.end()) == literal->get_polarity();
-}
-
-template bool PackedStateImpl::literal_holds(GroundLiteral<FluentTag> literal, const ProblemImpl& problem) const;
-template bool PackedStateImpl::literal_holds(GroundLiteral<DerivedTag> literal, const ProblemImpl& problem) const;
-
-template<IsFluentOrDerivedTag P>
-bool PackedStateImpl::literals_hold(const GroundLiteralList<P>& literals, const ProblemImpl& problem) const
-{
-    return std::all_of(literals.begin(), literals.end(), [this, &problem](auto&& arg) { return this->literal_holds(arg, problem); });
-}
-
-template bool PackedStateImpl::literals_hold(const GroundLiteralList<FluentTag>& literals, const ProblemImpl& problem) const;
-template bool PackedStateImpl::literals_hold(const GroundLiteralList<DerivedTag>& literals, const ProblemImpl& problem) const;
-
 }
 
 namespace loki
@@ -77,8 +58,8 @@ namespace loki
 
 size_t Hash<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& el) const
 {
-    return loki::hash_combine(valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
-                              valla::Hasher<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
+    return loki::hash_combine(valla::Hash<valla::Slot<mimir::Index>> {}(el.get_atoms<FluentTag>()),
+                              valla::Hash<valla::Slot<mimir::Index>> {}(el.get_numeric_variables()));
 }
 
 bool EqualTo<mimir::search::PackedStateImpl>::operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const

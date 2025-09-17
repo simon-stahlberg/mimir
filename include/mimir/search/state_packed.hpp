@@ -30,7 +30,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <valla/indexed_hash_set.hpp>
-#include <valla/plain/swiss.hpp>
+#include <valla/valla.hpp>
 
 namespace mimir::search
 {
@@ -58,58 +58,9 @@ public:
     template<formalism::IsFluentOrDerivedTag P>
     valla::Slot<Index> get_atoms() const;
     valla::Slot<Index> get_numeric_variables() const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    auto get_atoms(const formalism::ProblemImpl& problem) const;
-    auto get_numeric_variables(const formalism::ProblemImpl& problem) const;
-
-    /**
-     * Utils
-     */
-
-    /// @brief Check whether the literal holds in the state using binary search over the atoms in the state.
-    /// @tparam P is the literal type.
-    /// @param literal is the literal.
-    /// @return true if the literal holds in the state, and false otherwise.
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literal_holds(formalism::GroundLiteral<P> literal, const formalism::ProblemImpl& problem) const;
-
-    /// @brief Check whether all literals hold in the state using binary searches over the atoms in the state.
-    /// @tparam P is the literal type.
-    /// @param literals are the literals.
-    /// @return true if all literals hold in the state, and false otherwise.
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literals_hold(const formalism::GroundLiteralList<P>& literals, const formalism::ProblemImpl& problem) const;
-
-    template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
-        requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
-    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const;
 };
 
 static_assert(sizeof(PackedStateImpl) == 24);
-
-/**
- * Implementations
- */
-
-template<formalism::IsFluentOrDerivedTag P>
-auto PackedStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
-{
-    return valla::plain::swiss::range(get_atoms<P>(), problem.get_index_tree_table());
-}
-
-inline auto PackedStateImpl::get_numeric_variables(const formalism::ProblemImpl& problem) const
-{
-    return valla::plain::swiss::range(get_numeric_variables(), problem.get_index_tree_table(), problem.get_double_leaf_table());
-}
-
-template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
-    requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
-bool PackedStateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const
-{
-    auto atoms = get_atoms<P>(problem);
-    return is_supseteq(atoms, positive_atoms) && are_disjoint(atoms, negative_atoms);
-}
 
 }
 
