@@ -1,5 +1,5 @@
 # List of subdirectory names
-set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages" "sdsl")
+set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages")
 
 # Initialize empty lists for source and header files
 set(MIMIR_SRC_FILES "")
@@ -38,7 +38,7 @@ target_link_libraries(core Nauty::Nauty)
 target_link_libraries(core fmt::fmt)
 target_link_libraries(core -pthread)
 target_link_libraries(core absl::flat_hash_set absl::flat_hash_map)
-target_link_libraries(core TBB::tbb)
+target_link_libraries(core valla::core)
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})
 # target_link_libraries(core ${PYTHON3_LIB_DIRS})
 
