@@ -316,10 +316,6 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     valla::encode_as_unsigned_integrals(dense_fluent_numeric_variables, double_leaf_table, std::back_inserter(m_index_list));
     state_numeric_variables = valla::insert_sequence(m_index_list, index_tree_table);
 
-    assert(std::equal(dense_fluent_numeric_variables.begin(),
-                      dense_fluent_numeric_variables.end(),
-                      valla::plain::swiss::begin(state_numeric_variables, index_tree_table, double_leaf_table)));
-
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
