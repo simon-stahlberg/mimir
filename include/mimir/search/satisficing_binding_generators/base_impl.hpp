@@ -102,7 +102,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formal
     {
         auto ground_literal = m_problem->ground(literal, binding);
 
-        if (ground_literal->get_polarity() != m_problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
+        if (ground_literal->get_polarity() != m_problem->get_positive_static_initial_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
             return false;
         }

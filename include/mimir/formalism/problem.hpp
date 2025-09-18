@@ -159,8 +159,8 @@ public:
 
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
-    const FlatBitset& get_static_initial_positive_atoms_bitset() const;
-    const FlatIndexList& get_static_initial_positive_atoms_indices() const;
+    const FlatBitset& get_positive_static_initial_atoms_bitset() const;
+    const FlatIndexList& get_positive_static_initial_atoms_indices() const;
     const PredicateAssignmentSets<StaticTag>& get_positive_static_initial_predicate_assignment_sets() const;
     const FunctionSkeletonAssignmentSets<StaticTag>& get_static_initial_function_skeleton_assignment_sets() const;
 

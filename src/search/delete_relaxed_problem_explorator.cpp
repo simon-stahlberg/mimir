@@ -176,7 +176,7 @@ GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
 
             auto grounded_action = m_problem->ground(action, std::move(binding));
 
-            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
             {
                 result.push_back(grounded_action);
             }
@@ -200,7 +200,7 @@ GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
 
             auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
             {
                 result.push_back(ground_axiom);
             }

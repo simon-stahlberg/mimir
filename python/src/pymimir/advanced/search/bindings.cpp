@@ -347,37 +347,7 @@ void bind_module_definitions(nb::module_& m)
     /* PackedState */
     nb::class_<PackedStateImpl>(m, "PackedState")
         .def("__hash__", [](const PackedStateImpl& self) { return loki::Hash<PackedStateImpl> {}(self); })
-        .def("__eq__", [](const PackedStateImpl& lhs, const PackedStateImpl& rhs) { return loki::EqualTo<PackedStateImpl> {}(lhs, rhs); })
-        .def(
-            "get_fluent_atoms",
-            [](const PackedStateImpl& self, const ProblemImpl& problem)
-            {
-                auto range = self.get_atoms<FluentTag>(problem);
-                return nb::make_iterator(nb::type<nb::iterator>(), "Iterator over fluent state atom indices.", range.begin(), range.end());
-            },
-            nb::keep_alive<0, 1>(),
-            "problem"_a)
-        .def(
-            "get_derived_atoms",
-            [](const PackedStateImpl& self, const ProblemImpl& problem)
-            {
-                auto range = self.get_atoms<DerivedTag>(problem);
-                return nb::make_iterator(nb::type<nb::iterator>(), "Iterator over derived state atom indices.", range.begin(), range.end());
-            },
-            nb::keep_alive<0, 1>(),
-            "problem"_a)
-        .def(
-            "get_numeric_variables",
-            [](const PackedStateImpl& self, const ProblemImpl& problem)
-            {
-                const auto& list = self.get_numeric_variables(problem);
-                return std::vector<double>(list.begin(), list.end());
-            },
-            "problem"_a)
-        .def("literal_holds", &PackedStateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a, "problem"_a)
-        .def("literal_holds", &PackedStateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a, "problem"_a)
-        .def("literal_holds", &PackedStateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a, "problem"_a)
-        .def("literal_holds", &PackedStateImpl::literals_hold<DerivedTag>, nb::rv_policy::copy, "literals"_a, "problem"_a);
+        .def("__eq__", [](const PackedStateImpl& lhs, const PackedStateImpl& rhs) { return loki::EqualTo<PackedStateImpl> {}(lhs, rhs); });
 
     /* State */
     nb::class_<State>(m, "State")  //

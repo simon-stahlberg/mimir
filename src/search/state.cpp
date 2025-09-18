@@ -108,7 +108,7 @@ std::ostream& operator<<(std::ostream& os, const search::State& state)
     auto fluent_function_values = std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>> {};
 
     state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_atoms<FluentTag>(), fluent_ground_atoms);
-    state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_problem().get_static_initial_positive_atoms_bitset(), static_ground_atoms);
+    state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_problem().get_positive_static_initial_atoms_bitset(), static_ground_atoms);
     state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_atoms<DerivedTag>(), derived_ground_atoms);
     state.get_problem().get_repositories().get_ground_function_values(state.get_numeric_variables(), fluent_function_values);
 

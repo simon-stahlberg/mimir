@@ -742,31 +742,34 @@ void bind_module_definitions(nb::module_& m)
              nb::rv_policy::copy)
         .def("get_object", &Repositories::get_object, nb::rv_policy::reference_internal);
 
-    /* AssignmentSets */
+    /* PredicateAssignmentSets */
     auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
     {
-        nb::class_<AssignmentSet<Tag>>(m, class_name.c_str())
-            .def(nb::init<size_t, const PredicateList<Tag>&>(), "num_objects"_a, "predicates"_a)
-            .def("reset", &AssignmentSet<Tag>::reset)
-            .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, "ground_atoms"_a)
-            .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, "ground_atom"_a);
+        nb::class_<PredicateAssignmentSets<Tag>>(m, class_name.c_str())
+            .def(nb::init<const ObjectList&, const PredicateList<Tag>&>(), "objects"_a, "predicates"_a)
+            .def("reset", &PredicateAssignmentSets<Tag>::reset)
+            .def("insert_ground_atoms", &PredicateAssignmentSets<Tag>::insert_ground_atoms, "ground_atoms"_a)
+            .def("insert_ground_atom", &PredicateAssignmentSets<Tag>::insert_ground_atoms, "ground_atom"_a);
     };
-    bind_assignment_set("StaticAssignmentSet", StaticTag {});
-    bind_assignment_set("FluentAssignmentSet", FluentTag {});
-    bind_assignment_set("DerivedAssignmentSet", DerivedTag {});
+    bind_assignment_set("StaticPredicateAssignmentSets", StaticTag {});
+    bind_assignment_set("FluentPredicateAssignmentSets", FluentTag {});
+    bind_assignment_set("DerivedPredicateAssignmentSets", DerivedTag {});
 
-    /* NumericAssignmentSets */
+    /* FunctionSkeletonAssignmentSets */
     auto bind_numeric_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
     {
-        nb::class_<NumericAssignmentSet<Tag>>(m, class_name.c_str())
+        nb::class_<FunctionSkeletonAssignmentSets<Tag>>(m, class_name.c_str())
             .def(nb::init<>())
-            .def(nb::init<size_t, const FunctionSkeletonList<Tag>&>(), "num_objects"_a, "function_skeletons"_a)
-            .def("reset", &NumericAssignmentSet<Tag>::reset)
-            .def("insert_ground_function_values", &NumericAssignmentSet<Tag>::insert_ground_function_values, "ground_functions"_a, "numeric_values"_a);
+            .def(nb::init<const ObjectList&, const FunctionSkeletonList<Tag>&>(), "objects"_a, "function_skeletons"_a)
+            .def("reset", &FunctionSkeletonAssignmentSets<Tag>::reset)
+            .def("insert_ground_function_values",
+                 &FunctionSkeletonAssignmentSets<Tag>::insert_ground_function_values,
+                 "ground_functions"_a,
+                 "numeric_values"_a);
     };
 
-    bind_numeric_assignment_set("StaticNumericAssignmentSet", StaticTag {});
-    bind_numeric_assignment_set("FluentNumericAssignmentSet", FluentTag {});
+    bind_numeric_assignment_set("StaticFunctionSkeletonAssignmentSets", StaticTag {});
+    bind_numeric_assignment_set("FluentFunctionSkeletonAssignmentSets", FluentTag {});
 
     /* Domain */
     nb::class_<DomainImpl>(m, "Domain")  //
@@ -840,7 +843,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_numeric_goal_condition", &ProblemImpl::get_numeric_goal_condition, nb::rv_policy::copy)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
-        .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy)
+        .def("get_positive_static_initial_predicate_assignment_sets", &ProblemImpl::get_positive_static_initial_predicate_assignment_sets, nb::rv_policy::copy)
         .def(
             "ground",
             [](ProblemImpl& self, Action lifted, const ObjectList& binding) -> GroundAction { return self.ground(lifted, binding); },

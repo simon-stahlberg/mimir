@@ -317,9 +317,9 @@ const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_
 
 const GroundAtomList<StaticTag>& ProblemImpl::get_static_initial_atoms() const { return m_details.initial.positive_static_initial_atoms; }
 
-const FlatBitset& ProblemImpl::get_static_initial_positive_atoms_bitset() const { return m_details.initial.positive_static_initial_atoms_bitset; }
+const FlatBitset& ProblemImpl::get_positive_static_initial_atoms_bitset() const { return m_details.initial.positive_static_initial_atoms_bitset; }
 
-const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() const
+const FlatIndexList& ProblemImpl::get_positive_static_initial_atoms_indices() const
 {
     assert(std::is_sorted(m_details.initial.positive_static_initial_atoms_indices.uncompressed_begin(),
                           m_details.initial.positive_static_initial_atoms_indices.uncompressed_end()));

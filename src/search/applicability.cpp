@@ -129,7 +129,7 @@ bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition, 
 bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const UnpackedStateImpl& unpacked_state)
 {
     return is_dynamically_applicable(conjunctive_condition, unpacked_state)
-           && is_statically_applicable(conjunctive_condition, unpacked_state.get_problem().get_static_initial_positive_atoms_bitset());
+           && is_statically_applicable(conjunctive_condition, unpacked_state.get_problem().get_positive_static_initial_atoms_bitset());
 }
 
 bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const State& state)
