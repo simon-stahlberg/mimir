@@ -118,14 +118,12 @@ std::ostream& operator<<(std::ostream& os, const search::State& state);
 
 namespace loki
 {
-/// @private
 template<>
 struct Hash<mimir::search::State>
 {
     size_t operator()(const mimir::search::State& el) const;
 };
 
-/// @private
 template<>
 struct EqualTo<mimir::search::State>
 {
@@ -136,6 +134,8 @@ struct EqualTo<mimir::search::State>
 namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
+
+static_assert(sizeof(PackedStateImplMap::value_type) == 16);
 
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;

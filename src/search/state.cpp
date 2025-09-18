@@ -58,7 +58,7 @@ const ProblemImpl& State::get_problem() const { return m_unpacked->get_problem()
 template<IsFluentOrDerivedTag P>
 bool State::literal_holds(GroundLiteral<P> literal) const
 {
-    return (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_atom()->get_index()) != get_atoms<P>().end()) == literal->get_polarity();
+    return (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_index()) != get_atoms<P>().end()) == literal->get_polarity();
 }
 
 template bool State::literal_holds(GroundLiteral<FluentTag> literal) const;
@@ -135,7 +135,7 @@ namespace loki
 {
 size_t Hash<mimir::search::State>::operator()(const mimir::search::State& el) const
 {
-    return hash_combine(Hash<mimir::search::PackedStateImpl> {}(*el.get_packed_state()), &el.get_problem());
+    return hash_combine(Hash<mimir::search::PackedStateImpl>(el.get_problem())(*el.get_packed_state()), &el.get_problem());
 }
 
 bool EqualTo<mimir::search::State>::operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const

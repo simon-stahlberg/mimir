@@ -29,20 +29,19 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
-#include <valla/indexed_hash_set.hpp>
-#include <valla/valla.hpp>
 
 namespace mimir::search
 {
+
 /// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
 class PackedStateImpl
 {
 private:
-    valla::Slot<Index> m_fluent_atoms;
-    valla::Slot<Index> m_derived_atoms;
-    valla::Slot<Index> m_numeric_variables;
+    Index m_fluent_atoms;
+    Index m_derived_atoms;
+    Index m_numeric_variables;
 
-    PackedStateImpl(valla::Slot<Index> fluent_atoms, valla::Slot<Index> derived_atoms, valla::Slot<Index> numeric_variables);
+    PackedStateImpl(Index fluent_atoms, Index derived_atoms, Index numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -56,23 +55,26 @@ public:
      */
 
     template<formalism::IsFluentOrDerivedTag P>
-    valla::Slot<Index> get_atoms() const;
-    valla::Slot<Index> get_numeric_variables() const;
+    Index get_atoms() const;
+    Index get_numeric_variables() const;
 };
 
-static_assert(sizeof(PackedStateImpl) == 24);
+static_assert(sizeof(PackedStateImpl) == 12);
 
 }
 
 namespace loki
 {
-/// @private
 template<>
 struct Hash<mimir::search::PackedStateImpl>
 {
+    const mimir::formalism::ProblemImpl& problem;
+
+    explicit Hash(const mimir::formalism::ProblemImpl& problem);
+
     size_t operator()(const mimir::search::PackedStateImpl& el) const;
 };
-/// @private
+
 template<>
 struct EqualTo<mimir::search::PackedStateImpl>
 {
@@ -84,8 +86,6 @@ struct EqualTo<mimir::search::PackedStateImpl>
 namespace mimir::search
 {
 using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
-
-static_assert(sizeof(PackedStateImplMap::value_type) == 28);
 }
 
 #endif
