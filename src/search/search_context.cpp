@@ -17,6 +17,7 @@
 
 #include "mimir/search/search_context.hpp"
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
@@ -42,27 +43,45 @@ SearchContext SearchContextImpl::create(const fs::path& domain_filepath, const f
 
 SearchContext SearchContextImpl::create(Problem problem, const Options& options)
 {
-    switch (options.mode)
-    {
-        case SearchMode::GROUNDED:
+    return std::visit(
+        [&](auto&& arg)
         {
-            auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(problem);
+            using T = std::decay_t<decltype(arg)>;
 
-            return create(problem,
-                          delete_relaxed_explorator.create_grounded_applicable_action_generator(),
-                          std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator()));
-        }
-        case SearchMode::LIFTED:
-        {
-            return create(problem,
-                          std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
-                          std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
-        }
-        default:
-        {
-            throw std::runtime_error("SearchContext::SearchContext: Unexpected search mode.");
-        }
-    }
+            if constexpr (std::is_same_v<T, GroundedOptions>)
+            {
+                auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(problem);
+
+                return create(problem,
+                              delete_relaxed_explorator.create_grounded_applicable_action_generator(),
+                              std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator()));
+            }
+            else if constexpr (std::is_same_v<T, LiftedOptions>)
+            {  // Lifted
+                switch (arg.kind)
+                {
+                    case LiftedOptions::Kind::EXHAUSTIVE:
+                    {
+                        return create(problem,
+                                      std::make_shared<ExhaustiveLiftedApplicableActionGeneratorImpl>(problem),
+                                      std::make_shared<StateRepositoryImpl>(std::make_shared<ExhaustiveLiftedAxiomEvaluatorImpl>(problem)));
+                    }
+                    case LiftedOptions::Kind::KPKC:
+                    {
+                        return create(problem,
+                                      std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
+                                      std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
+                    }
+                    default:
+                        throw std::logic_error("Unknown GeneratorOptions.");
+                }
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "Unhandled generator kind");
+            }
+        },
+        options.mode);
 }
 
 SearchContext SearchContextImpl::create(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository)

@@ -40,6 +40,7 @@
 #include <nanobind/stl/tuple.h>
 #include <nanobind/stl/unordered_map.h>
 #include <nanobind/stl/unordered_set.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 // Ensure mimir is included last to ensure that specializations are available
 #include <mimir/mimir.hpp>

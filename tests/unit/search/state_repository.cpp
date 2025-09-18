@@ -38,7 +38,7 @@ TEST(MimirTests, SearchStateRepositoryImplTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
 
     auto search_context =
-        SearchContextImpl::create(ProblemImpl::create(domain_file, problem_file), SearchContextImpl::Options(SearchContextImpl::SearchMode::LIFTED));
+        SearchContextImpl::create(ProblemImpl::create(domain_file, problem_file), SearchContextImpl::Options(SearchContextImpl::LiftedOptions()));
 
     auto& applicable_action_generator = *search_context->get_applicable_action_generator();
     auto& state_repository = *search_context->get_state_repository();

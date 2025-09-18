@@ -34,8 +34,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -55,8 +54,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
@@ -78,8 +76,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -108,8 +105,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
@@ -143,8 +139,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -159,8 +154,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -188,8 +182,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -208,8 +201,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space_result = datasets::StateSpaceImpl::create(
-            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
+        const auto state_space_result = datasets::StateSpaceImpl::create(search::SearchContextImpl::create(domain_file, problem_file));
         const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 

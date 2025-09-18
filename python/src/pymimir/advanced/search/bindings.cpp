@@ -257,9 +257,9 @@ public:
 void bind_module_definitions(nb::module_& m)
 {
     /* Enums */
-    nb::enum_<SearchContextImpl::SearchMode>(m, "SearchMode")
-        .value("GROUNDED", SearchContextImpl::SearchMode::GROUNDED)
-        .value("LIFTED", SearchContextImpl::SearchMode::LIFTED)
+    nb::enum_<SearchContextImpl::LiftedOptions::Kind>(m, "LiftedGeneratorKind")
+        .value("EXHAUSTIVE", SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE)
+        .value("KPKC", SearchContextImpl::LiftedOptions::Kind::KPKC)
         .export_values();
 
     nb::enum_<SearchNodeStatus>(m, "SearchNodeStatus")
@@ -293,6 +293,12 @@ void bind_module_definitions(nb::module_& m)
         .value("MAXIMIZE", match_tree::OptimizationDirectionEnum::MAXIMIZE);
 
     /* SearchContext */
+
+    nb::class_<SearchContextImpl::GroundedOptions>(m, "GroundedOptions")  //
+        .def(nb::init<>());
+
+    nb::class_<SearchContextImpl::LiftedOptions>(m, "LiftedOptions")  //
+        .def(nb::init<SearchContextImpl::LiftedOptions::Kind>());
 
     nb::class_<SearchContextImpl::Options>(m, "SearchContextOptions")
         .def(nb::init<>())

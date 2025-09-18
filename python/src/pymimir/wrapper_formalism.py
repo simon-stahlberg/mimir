@@ -46,7 +46,7 @@ from pymimir.advanced.formalism import TermList as AdvancedTermList
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
-from pymimir.advanced.search import SearchMode, SearchContext, SearchContextOptions
+from pymimir.advanced.search import GroundedOptions, LiftedOptions, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
 from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpression
 

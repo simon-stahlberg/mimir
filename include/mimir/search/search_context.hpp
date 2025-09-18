@@ -34,17 +34,31 @@ private:
     SearchContextImpl(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
 public:
-    enum class SearchMode
+    struct GroundedOptions
     {
-        GROUNDED = 0,
-        LIFTED = 1
+        GroundedOptions() = default;
     };
+
+    struct LiftedOptions
+    {
+        enum class Kind
+        {
+            EXHAUSTIVE = 0,
+            KPKC = 1
+        };
+
+        Kind kind;
+
+        LiftedOptions(Kind kind = Kind::KPKC) : kind(kind) {}
+    };
+
+    using SearchMode = std::variant<GroundedOptions, LiftedOptions>;
 
     struct Options
     {
         SearchMode mode;
 
-        Options() : mode(SearchMode::GROUNDED) {}
+        Options() : mode(GroundedOptions()) {}
         explicit Options(SearchMode mode) : mode(mode) {}
     };
 
