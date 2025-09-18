@@ -26,7 +26,7 @@ if (NOT valla_FOUND)
     ExternalProject_Add(
         valla
         GIT_REPOSITORY https://github.com/drexlerd/tree-compression.git
-        GIT_TAG 2d865a903e68c71f20b513cf9f615a734da790c3
+        GIT_TAG b3db873242c58039f2b9ac9d5de499ad770479b4
         PREFIX ${CMAKE_BINARY_DIR}/valla
         DEPENDS abseil fmt oneTBB
         CMAKE_ARGS ${CMAKE_ARGS}
