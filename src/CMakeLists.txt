@@ -33,12 +33,19 @@ set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 # Create an alias for simpler reference
 add_library(mimir::core ALIAS core)
 
-target_link_libraries(core loki::parsers)
-target_link_libraries(core Nauty::Nauty)
-target_link_libraries(core fmt::fmt)
-target_link_libraries(core -pthread)
-target_link_libraries(core absl::flat_hash_set absl::flat_hash_map)
-target_link_libraries(core valla::core)
+target_link_libraries(core
+  PUBLIC
+    Threads::Threads
+    valla::core
+    loki::parsers  
+    absl::flat_hash_set
+    absl::flat_hash_map  
+    TBB::tbb
+  PRIVATE
+    Nauty::Nauty
+    fmt::fmt
+)
+
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})
 # target_link_libraries(core ${PYTHON3_LIB_DIRS})
 

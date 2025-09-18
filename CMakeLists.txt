@@ -102,6 +102,16 @@ if(Boost_FOUND)
   message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
 endif()
 
+# Prefer -pthread over -lpthread on platforms that support it
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+# CMake's built-in module; no PATHS/NO_DEFAULT_PATH here
+find_package(Threads REQUIRED)
+
+if(Threads_FOUND)
+  # CMake doesn't expose a version for Threads; just confirm it’s found
+  message(STATUS "Found Threads: ${CMAKE_THREAD_LIBS_INIT}")
+endif()
 
 configure_loki()
 find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
@@ -188,7 +198,7 @@ endif()
 ###########
 
 # Install header files
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir" "${PROJECT_SOURCE_DIR}/include/cista" "${PROJECT_SOURCE_DIR}/include/valla"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir" "${PROJECT_SOURCE_DIR}/include/cista"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Install cmake scripts
