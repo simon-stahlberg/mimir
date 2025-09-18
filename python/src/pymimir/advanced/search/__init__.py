@@ -136,12 +136,19 @@ from pymimir.pymimir.advanced.search import (
 
 # Lifted
 from pymimir.pymimir.advanced.search import (
-    DebugLiftedApplicableActionGeneratorEventHandler,
-    DefaultLiftedApplicableActionGeneratorEventHandler,
-    LiftedApplicableActionGenerator,
-    LiftedAxiomEvaluator,
-    ILiftedApplicableActionGeneratorEventHandler,
-    ILiftedAxiomEvaluatorEventHandler,
+    DebugExhaustiveLiftedApplicableActionGeneratorEventHandler,
+    DefaultExhaustiveLiftedApplicableActionGeneratorEventHandler,
+    ExhaustiveLiftedApplicableActionGenerator,
+    ExhaustiveLiftedAxiomEvaluator,
+    IExhaustiveLiftedApplicableActionGeneratorEventHandler,
+    IExhaustiveLiftedAxiomEvaluatorEventHandler,
+
+    DebugKPKCLiftedApplicableActionGeneratorEventHandler,
+    DefaultKPKCLiftedApplicableActionGeneratorEventHandler,
+    KPKCLiftedApplicableActionGenerator,
+    KPKCLiftedAxiomEvaluator,
+    IKPKCLiftedApplicableActionGeneratorEventHandler,
+    IKPKCLiftedAxiomEvaluatorEventHandler,
 )
 
 # Grounded

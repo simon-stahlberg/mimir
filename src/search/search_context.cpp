@@ -55,8 +55,8 @@ SearchContext SearchContextImpl::create(Problem problem, const Options& options)
         case SearchMode::LIFTED:
         {
             return create(problem,
-                          std::make_shared<LiftedApplicableActionGeneratorImpl>(problem),
-                          std::make_shared<StateRepositoryImpl>(std::make_shared<LiftedAxiomEvaluatorImpl>(problem)));
+                          std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
+                          std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
         }
         default:
         {

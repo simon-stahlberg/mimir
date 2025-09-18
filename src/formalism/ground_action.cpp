@@ -97,7 +97,7 @@ std::ostream& operator<<(std::ostream& os,
     // Only take objects w.r.t. to the original action parameters
     for (auto it = action->get_objects().begin(); it != action->get_objects().begin() + action->get_action()->get_original_arity(); ++it)
     {
-        os << " " << **it;
+        os << " " << (*it)->get_name();
     }
     os << ")";
     return os;

@@ -134,8 +134,8 @@ int main(int argc, char** argv)
     else
     {
         applicable_action_generator =
-            LiftedApplicableActionGeneratorImpl::create(problem, LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+            KPKCLiftedApplicableActionGeneratorImpl::create(problem, KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+        axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
 
         if (heuristic_type == HeuristicType::MAX)

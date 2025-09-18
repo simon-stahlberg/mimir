@@ -22,12 +22,12 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
-#include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/applicable_action_generators/grounded/grounded.hpp"
+#include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
-#include "mimir/search/axiom_evaluators/lifted.hpp"
+#include "mimir/search/axiom_evaluators/grounded/grounded.hpp"
+#include "mimir/search/axiom_evaluators/lifted/kpkc.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
@@ -51,8 +51,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     auto delete_relax_builder = ProblemBuilder(delete_free_domain);
     m_delete_free_problem = m_delete_relax_transformer.translate_level_0(m_problem, delete_relax_builder);
 
-    auto delete_free_applicable_action_generator = LiftedApplicableActionGeneratorImpl(m_delete_free_problem);
-    auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluatorImpl>(m_delete_free_problem);
+    auto delete_free_applicable_action_generator = KPKCLiftedApplicableActionGeneratorImpl(m_delete_free_problem);
+    auto delete_free_axiom_evalator = std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(m_delete_free_problem);
     auto delete_free_state_repository = std::make_shared<StateRepositoryImpl>(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
 
     auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};

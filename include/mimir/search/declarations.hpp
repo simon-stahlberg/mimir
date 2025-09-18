@@ -74,8 +74,10 @@ class IApplicableActionGenerator;
 using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
 class GroundedApplicableActionGeneratorImpl;
 using GroundedApplicableActionGenerator = std::shared_ptr<GroundedApplicableActionGeneratorImpl>;
-class LiftedApplicableActionGeneratorImpl;
-using LiftedApplicableActionGenerator = std::shared_ptr<LiftedApplicableActionGeneratorImpl>;
+class KPKCLiftedApplicableActionGeneratorImpl;
+using KPKCLiftedApplicableActionGenerator = std::shared_ptr<KPKCLiftedApplicableActionGeneratorImpl>;
+class ExhaustiveLiftedApplicableActionGeneratorImpl;
+using ExhaustiveLiftedApplicableActionGenerator = std::shared_ptr<ExhaustiveLiftedApplicableActionGeneratorImpl>;
 
 namespace applicable_action_generator::grounded
 {
@@ -90,6 +92,8 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 
 namespace applicable_action_generator::lifted
 {
+namespace kpkc
+{
 class Statistics;
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
@@ -98,14 +102,27 @@ using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
+namespace exhaustive
+{
+class Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+}
 
 /* AxiomEvaluators */
 class IAxiomEvaluator;
 using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
 class GroundedAxiomEvaluatorImpl;
 using GroundedAxiomEvaluator = std::shared_ptr<GroundedAxiomEvaluatorImpl>;
-class LiftedAxiomEvaluatorImpl;
-using LiftedAxiomEvaluator = std::shared_ptr<LiftedAxiomEvaluatorImpl>;
+class KPKCLiftedAxiomEvaluatorImpl;
+using KPKCLiftedAxiomEvaluator = std::shared_ptr<KPKCLiftedAxiomEvaluatorImpl>;
+class ExhaustiveLiftedAxiomEvaluatorImpl;
+using ExhaustiveLiftedAxiomEvaluator = std::shared_ptr<ExhaustiveLiftedAxiomEvaluatorImpl>;
 
 namespace axiom_evaluator::grounded
 {
@@ -120,6 +137,8 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 
 namespace axiom_evaluator::lifted
 {
+namespace kpkc
+{
 class Statistics;
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
@@ -127,6 +146,17 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+namespace exhaustive
+{
+class Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
 }
 
 /* Heuristics */

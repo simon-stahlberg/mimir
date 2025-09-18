@@ -20,8 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
-#include "mimir/search/applicable_action_generators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/options.hpp"
@@ -70,7 +68,7 @@ public:
     /// @param event_handler the grounded axiom evaluator event handler.
     /// @return a grounded axiom evaluator.
     GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                           GroundedAxiomEvaluatorImpl::EventHandler event_handler = nullptr) const;
+                                                           axiom_evaluator::grounded::EventHandler event_handler = nullptr) const;
 
     /// @brief Create a grounded applicable action generator.
     /// @param options the match tree options
@@ -78,7 +76,7 @@ public:
     /// @return a grounded applicable action generator.
     GroundedApplicableActionGenerator
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                GroundedApplicableActionGeneratorImpl::EventHandler event_handler = nullptr) const;
+                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const;
 
     /// @brief Get the input problem.
     /// @return the input problem.

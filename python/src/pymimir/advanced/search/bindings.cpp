@@ -493,20 +493,35 @@ void bind_module_definitions(nb::module_& m)
             nb::keep_alive<0, 1>(),
             "state"_a);
 
-    // Lifted
-    nb::class_<LiftedApplicableActionGeneratorImpl::IEventHandler>(m,
-                                                                   "ILiftedApplicableActionGeneratorEventHandler");  //
-    nb::class_<LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
+    // Lifted Exhaustive
+    nb::class_<ExhaustiveLiftedApplicableActionGeneratorImpl::IEventHandler>(m,
+                                                                             "IExhaustiveLiftedApplicableActionGeneratorEventHandler");  //
+    nb::class_<ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, ExhaustiveLiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
-        "DefaultLiftedApplicableActionGeneratorEventHandler")
-        .def_static("create", &LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
-    nb::class_<LiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
+        "DefaultExhaustiveLiftedApplicableActionGeneratorEventHandler")
+        .def_static("create", &ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<ExhaustiveLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl, ExhaustiveLiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
-        "DebugLiftedApplicableActionGeneratorEventHandler")  //
-        .def_static("create", &LiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
-    nb::class_<LiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
-                                                                                "LiftedApplicableActionGenerator")  //
-        .def_static("create", &LiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+        "DebugExhaustiveLiftedApplicableActionGeneratorEventHandler")  //
+        .def_static("create", &ExhaustiveLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<ExhaustiveLiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
+                                                                                          "ExhaustiveLiftedApplicableActionGenerator")  //
+        .def_static("create", &ExhaustiveLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+
+    // Lifted KPKC
+    nb::class_<KPKCLiftedApplicableActionGeneratorImpl::IEventHandler>(m,
+                                                                       "IKPKCLiftedApplicableActionGeneratorEventHandler");  //
+    nb::class_<KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, KPKCLiftedApplicableActionGeneratorImpl::IEventHandler>(
+        m,
+        "DefaultKPKCLiftedApplicableActionGeneratorEventHandler")
+        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<KPKCLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl, KPKCLiftedApplicableActionGeneratorImpl::IEventHandler>(
+        m,
+        "DebugKPKCLiftedApplicableActionGeneratorEventHandler")  //
+        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<KPKCLiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
+                                                                                    "KPKCLiftedApplicableActionGenerator")  //
+        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -525,16 +540,31 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<IAxiomEvaluator>(m, "IAxiomEvaluator")  //
         .def("get_problem", &IAxiomEvaluator::get_problem);
 
-    // Lifted
-    nb::class_<LiftedAxiomEvaluatorImpl::IEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
-    nb::class_<LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
-                                                                                                           "DefaultLiftedAxiomEvaluatorEventHandler")  //
-        .def_static("create", &LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
-    nb::class_<LiftedAxiomEvaluatorImpl::DebugEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
-                                                                                                         "DebugLiftedAxiomEvaluatorEventHandler")  //
-        .def_static("create", &LiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
-    nb::class_<LiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
-        .def_static("create", &LiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+    // Lifted: Exhaustive
+    nb::class_<ExhaustiveLiftedAxiomEvaluatorImpl::IEventHandler>(m, "IExhaustiveLiftedAxiomEvaluatorEventHandler");  //
+    nb::class_<ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl, ExhaustiveLiftedAxiomEvaluatorImpl::IEventHandler>(
+        m,
+        "DefaultExhaustiveLiftedAxiomEvaluatorEventHandler")  //
+        .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<ExhaustiveLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl, ExhaustiveLiftedAxiomEvaluatorImpl::IEventHandler>(
+        m,
+        "DebugExhaustiveLiftedAxiomEvaluatorEventHandler")  //
+        .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<ExhaustiveLiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "ExhaustiveLiftedAxiomEvaluator")  //
+        .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+
+    // Lifted: KPKC
+    nb::class_<KPKCLiftedAxiomEvaluatorImpl::IEventHandler>(m, "IKPKCLiftedAxiomEvaluatorEventHandler");  //
+    nb::class_<KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl, KPKCLiftedAxiomEvaluatorImpl::IEventHandler>(
+        m,
+        "DefaultKPKCLiftedAxiomEvaluatorEventHandler")  //
+        .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<KPKCLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl, KPKCLiftedAxiomEvaluatorImpl::IEventHandler>(
+        m,
+        "DebugKPKCLiftedAxiomEvaluatorEventHandler")  //
+        .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
+    nb::class_<KPKCLiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "KPKCLiftedAxiomEvaluator")  //
+        .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedAxiomEvaluatorImpl::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //

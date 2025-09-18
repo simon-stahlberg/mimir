@@ -18,11 +18,14 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_
 
-#include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/debug.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
-#include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers/debug.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers/default.hpp"
+#include "mimir/search/applicable_action_generators/grounded/grounded.hpp"
+#include "mimir/search/applicable_action_generators/lifted/exhaustive.hpp"
+#include "mimir/search/applicable_action_generators/lifted/exhaustive/event_handlers/debug.hpp"
+#include "mimir/search/applicable_action_generators/lifted/exhaustive/event_handlers/default.hpp"
+#include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
+#include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/debug.hpp"
+#include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/default.hpp"
 
 #endif

@@ -35,9 +35,9 @@ def test_astar_search_2():
     domain = parser.get_domain()
     problem = parser.parse_problem(problem_filepath, formalism.ParserOptions())
 
-    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    axiom_evaluator = search.KPKCLiftedAxiomEvaluator.create(problem)
     state_repository = search.StateRepository.create(axiom_evaluator)
-    applicable_action_generator = search.LiftedApplicableActionGenerator.create(problem)
+    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem)
 
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 

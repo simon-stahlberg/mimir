@@ -23,8 +23,8 @@ def main():
     for object in problem.get_problem_and_domain_objects():
         objects_by_name[object.get_name()] = object
 
-    applicable_action_generator = search.LiftedApplicableActionGenerator.create(problem)
-    axiom_evaluator = search.LiftedAxiomEvaluator.create(problem)
+    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem)
+    axiom_evaluator = search.KPKCLiftedAxiomEvaluator.create(problem)
     state_repository = search.StateRepository.create(axiom_evaluator)
     problem_goal_strategy = search.ProblemGoalStrategy.create(problem)
 

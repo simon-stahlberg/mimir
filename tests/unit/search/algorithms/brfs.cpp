@@ -39,10 +39,10 @@ class LiftedBrFSPlanner
 {
 private:
     Problem m_problem;
-    LiftedApplicableActionGeneratorImpl::EventHandler m_applicable_action_generator_event_handler;
-    LiftedApplicableActionGenerator m_applicable_action_generator;
-    LiftedAxiomEvaluatorImpl::EventHandler m_axiom_evaluator_event_handler;
-    LiftedAxiomEvaluator m_axiom_evaluator;
+    KPKCLiftedApplicableActionGeneratorImpl::EventHandler m_applicable_action_generator_event_handler;
+    KPKCLiftedApplicableActionGenerator m_applicable_action_generator;
+    KPKCLiftedAxiomEvaluatorImpl::EventHandler m_axiom_evaluator_event_handler;
+    KPKCLiftedAxiomEvaluator m_axiom_evaluator;
     StateRepository m_state_repository;
     brfs::EventHandler m_brfs_event_handler;
     SearchContext m_search_context;
@@ -50,10 +50,10 @@ private:
 public:
     LiftedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
-        m_applicable_action_generator_event_handler(LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create()),
-        m_applicable_action_generator(LiftedApplicableActionGeneratorImpl::create(m_problem, m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
-        m_axiom_evaluator(LiftedAxiomEvaluatorImpl::create(m_problem, m_axiom_evaluator_event_handler)),
+        m_applicable_action_generator_event_handler(KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create()),
+        m_applicable_action_generator(KPKCLiftedApplicableActionGeneratorImpl::create(m_problem, m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
+        m_axiom_evaluator(KPKCLiftedAxiomEvaluatorImpl::create(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
         m_brfs_event_handler(brfs::DefaultEventHandlerImpl::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
@@ -70,12 +70,12 @@ public:
 
     const brfs::Statistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
-    const LiftedApplicableActionGeneratorImpl::Statistics& get_applicable_action_generator_statistics() const
+    const KPKCLiftedApplicableActionGeneratorImpl::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const LiftedAxiomEvaluatorImpl::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const KPKCLiftedAxiomEvaluatorImpl::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /// @brief Instantiate a grounded BrFS

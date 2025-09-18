@@ -18,11 +18,14 @@
 #ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
 
-#include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/debug.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
-#include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers/debug.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers/default.hpp"
+#include "mimir/search/axiom_evaluators/grounded/grounded.hpp"
+#include "mimir/search/axiom_evaluators/lifted/exhaustive.hpp"
+#include "mimir/search/axiom_evaluators/lifted/exhaustive/event_handlers/debug.hpp"
+#include "mimir/search/axiom_evaluators/lifted/exhaustive/event_handlers/default.hpp"
+#include "mimir/search/axiom_evaluators/lifted/kpkc.hpp"
+#include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/debug.hpp"
+#include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/default.hpp"
 
 #endif
