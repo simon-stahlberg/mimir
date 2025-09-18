@@ -1,5 +1,7 @@
 var searchData=
 [
   ['key_5ftype_0',['key_type',['../structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html#abaeaa9de109c14c1457c0ea0e664c127',1,'mimir::graphs::bgl::TrivialReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1bgl_1_1VectorReadPropertyMap.html#aa3c07eecc87c9d2920a507d0af7a367a',1,'mimir::graphs::bgl::VectorReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1bgl_1_1VectorReadWritePropertyMap.html#a24c58356f24e162a62015c69487227dc',1,'mimir::graphs::bgl::VectorReadWritePropertyMap::key_type()'],['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadPropertyMap.html#a9e13b251780fb946ef875ab414fba585',1,'mimir::graphs::bgl::UnorderedMapReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a2fec1932ddda63bf98d18fb95052e67a',1,'mimir::graphs::bgl::UnorderedMapReadWritePropertyMap::key_type()']]],
-  ['knowledgebase_1',['KnowledgeBase',['../namespacemimir_1_1datasets.html#ac77871da00480c4f226f77c8c4180c6e',1,'mimir::datasets']]]
+  ['knowledgebase_1',['KnowledgeBase',['../namespacemimir_1_1datasets.html#ac77871da00480c4f226f77c8c4180c6e',1,'mimir::datasets']]],
+  ['kpkcliftedapplicableactiongenerator_2',['KPKCLiftedApplicableActionGenerator',['../namespacemimir_1_1search.html#a2106a2d27dd91ba984d55768bbaa5810',1,'mimir::search']]],
+  ['kpkcliftedaxiomevaluator_3',['KPKCLiftedAxiomEvaluator',['../namespacemimir_1_1search.html#a8168503a14427bd7cd752275b5c5c130',1,'mimir::search']]]
 ];

@@ -34,6 +34,5 @@ var searchData=
   ['ground_5ffunction_2ehpp_31',['ground_function.hpp',['../ground__function_8hpp.html',1,'']]],
   ['ground_5ffunction_5fexpressions_2ehpp_32',['ground_function_expressions.hpp',['../ground__function__expressions_8hpp.html',1,'']]],
   ['ground_5ffunction_5fvalue_2ehpp_33',['ground_function_value.hpp',['../ground__function__value_8hpp.html',1,'']]],
-  ['ground_5fliteral_2ehpp_34',['ground_literal.hpp',['../ground__literal_8hpp.html',1,'']]],
-  ['grounded_2ehpp_35',['grounded.hpp',['../applicable__action__generators_2grounded_8hpp.html',1,'(Global Namespace)'],['../axiom__evaluators_2grounded_8hpp.html',1,'(Global Namespace)']]]
+  ['ground_5fliteral_2ehpp_34',['ground_literal.hpp',['../ground__literal_8hpp.html',1,'']]]
 ];
