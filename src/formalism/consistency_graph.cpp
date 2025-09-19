@@ -563,6 +563,7 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                  const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
+    return true;
     return consistent_numeric_constraints_helper(numeric_constraints,
                                                  static_function_skeleton_assignment_sets,
                                                  fluent_function_skeleton_assignment_sets,
@@ -605,6 +606,7 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
+    return true;
     return consistent_numeric_constraints_helper(numeric_constraints,
                                                  static_function_skeleton_assignment_sets,
                                                  fluent_function_skeleton_assignment_sets,
