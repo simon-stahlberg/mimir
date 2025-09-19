@@ -22,14 +22,24 @@
 
 namespace mimir::search::satisficing_binding_generator
 {
-class DefaultEventHandlerImpl : public IEventHandler
+class DefaultEventHandlerImpl : public EventHandlerBase<DefaultEventHandlerImpl>
 {
+private:
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandlerImpl>;
+
+    void on_valid_binding_impl(const formalism::ObjectList& binding) const;
+
+    void on_invalid_binding_impl(const formalism::ObjectList& binding) const;
+
+    void on_end_search_impl() const;
+
+    void on_finish_search_layer_impl() const;
+
 public:
-    DefaultEventHandlerImpl();
+    explicit DefaultEventHandlerImpl(bool quiet = true);
 
-    void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem);
-
-    static DefaultEventHandler create();
+    static DefaultEventHandler create(bool quiet = true);
 };
 }
 

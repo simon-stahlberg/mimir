@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/statistics.hpp"
 
 namespace mimir::search::satisficing_binding_generator
 {
@@ -28,8 +29,76 @@ class IEventHandler
 public:
     virtual ~IEventHandler() = default;
 
-    virtual void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) = 0;
+    virtual void on_valid_binding(const formalism::ObjectList& binding) = 0;
+
+    virtual void on_invalid_binding(const formalism::ObjectList& binding) = 0;
+
+    virtual void on_end_search() = 0;
+
+    virtual void on_finish_search_layer() = 0;
+
+    virtual const Statistics& get_statistics() const = 0;
 };
+
+template<typename Derived_>
+class EventHandlerBase : public IEventHandler
+{
+protected:
+    Statistics m_statistics;
+    bool m_quiet;
+
+private:
+    EventHandlerBase() = default;
+    friend Derived_;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+public:
+    explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
+    void on_valid_binding(const formalism::ObjectList& binding) override
+    {
+        m_statistics.increment_num_valid_bindings();
+
+        if (!m_quiet)
+        {
+            self().on_valid_binding_impl(binding);
+        }
+    }
+
+    void on_invalid_binding(const formalism::ObjectList& binding) override
+    {
+        m_statistics.increment_num_invalid_bindings();
+
+        if (!m_quiet)
+        {
+            self().on_invalid_binding_impl(binding);
+        }
+    }
+
+    void on_end_search() override
+    {
+        if (!m_quiet)
+        {
+            self().on_end_search_impl();
+        }
+    }
+
+    void on_finish_search_layer() override
+    {
+        m_statistics.on_finish_search_layer();
+
+        if (!m_quiet)
+        {
+            self().on_finish_search_layer_impl();
+        }
+    }
+
+    const Statistics& get_statistics() const override { return m_statistics; }
+};
+
 }
 
 #endif

@@ -39,9 +39,12 @@ public:
     using DefaultEventHandlerImpl = axiom_evaluator::lifted::exhaustive::DefaultEventHandlerImpl;
     using DefaultEventHandler = axiom_evaluator::lifted::exhaustive::DefaultEventHandler;
 
-    ExhaustiveLiftedAxiomEvaluatorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
+    ExhaustiveLiftedAxiomEvaluatorImpl(formalism::Problem problem,
+                                       EventHandler event_handler = nullptr,
+                                       satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
-    static ExhaustiveLiftedAxiomEvaluator create(formalism::Problem problem, EventHandler event_handler = nullptr);
+    static ExhaustiveLiftedAxiomEvaluator
+    create(formalism::Problem problem, EventHandler event_handler = nullptr, satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     // Uncopyable
     ExhaustiveLiftedAxiomEvaluatorImpl(const ExhaustiveLiftedAxiomEvaluatorImpl& other) = delete;
@@ -65,6 +68,7 @@ public:
 private:
     formalism::Problem m_problem;
     EventHandler m_event_handler;
+    satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     using AxiomParameterBindings = std::vector<formalism::ObjectList>;
 

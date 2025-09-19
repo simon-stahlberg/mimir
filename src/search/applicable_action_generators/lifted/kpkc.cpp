@@ -26,6 +26,8 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/interface.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -43,9 +45,12 @@ namespace mimir::search
  * LiftedApplicableActionGenerator
  */
 
-KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl(Problem problem, EventHandler event_handler) :
+KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl(Problem problem,
+                                                                                 EventHandler event_handler,
+                                                                                 satisficing_binding_generator::EventHandler binding_event_handler) :
     m_problem(problem),
-    m_event_handler(event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()),
+    m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
+    m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
     m_action_grounding_data(),
     m_fluent_atoms(),
     m_derived_atoms(),
@@ -61,14 +66,14 @@ KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl
     {
         const auto& action = actions[i];
         assert(action->get_index() == i);
-        m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem));
+        m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem, m_binding_event_handler));
     }
 }
 
-KPKCLiftedApplicableActionGenerator KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler)
+KPKCLiftedApplicableActionGenerator
+KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler, satisficing_binding_generator::EventHandler binding_event_handler)
 {
-    return std::shared_ptr<KPKCLiftedApplicableActionGeneratorImpl>(
-        new KPKCLiftedApplicableActionGeneratorImpl(std::move(problem), event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()));
+    return std::shared_ptr<KPKCLiftedApplicableActionGeneratorImpl>(new KPKCLiftedApplicableActionGeneratorImpl(problem, event_handler, binding_event_handler));
 }
 
 mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
@@ -134,7 +139,15 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
 const Problem& KPKCLiftedApplicableActionGeneratorImpl::get_problem() const { return m_problem; }
 
-void KPKCLiftedApplicableActionGeneratorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void KPKCLiftedApplicableActionGeneratorImpl::on_finish_search_layer()
+{
+    m_event_handler->on_finish_search_layer();
+    m_binding_event_handler->on_finish_search_layer();
+}
 
-void KPKCLiftedApplicableActionGeneratorImpl::on_end_search() { m_event_handler->on_end_search(); }
+void KPKCLiftedApplicableActionGeneratorImpl::on_end_search()
+{
+    m_event_handler->on_end_search();
+    m_binding_event_handler->on_end_search();
+}
 }

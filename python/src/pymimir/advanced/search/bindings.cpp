@@ -407,6 +407,14 @@ void bind_module_definitions(nb::module_& m)
         .def("get_totally_ordered_plan", &PartiallyOrderedPlan::get_t_o_plan, nb::rv_policy::reference_internal)  // Plan is immutable
         .def("get_graph", [](const PartiallyOrderedPlan& self) { return PyImmutable<graphs::DynamicDigraph>(self.get_graph()); });
 
+    /* SatisficingBindingGenerator */
+    nb::class_<satisficing_binding_generator::IEventHandler>(m,
+                                                             "ISatisficingBindingGeneratorEventHandler");  //
+    nb::class_<satisficing_binding_generator::DefaultEventHandlerImpl, satisficing_binding_generator::IEventHandler>(
+        m,
+        "DefaultSatisficingBindingGeneratorEventHandler")
+        .def_static("create", &satisficing_binding_generator::DefaultEventHandlerImpl::create, "quiet"_a = true);
+
     /* ConjunctiveConditionSatisficingBindingGenerator */
     nb::class_<ConjunctiveConditionSatisficingBindingGenerator>(m, "ConjunctiveConditionSatisficingBindingGenerator")  //
         .def(nb::init<ConjunctiveCondition, Problem>(), "conjunctive_condition"_a, "problem"_a)
@@ -512,7 +520,11 @@ void bind_module_definitions(nb::module_& m)
         .def_static("create", &ExhaustiveLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<ExhaustiveLiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
                                                                                           "ExhaustiveLiftedApplicableActionGenerator")  //
-        .def_static("create", &ExhaustiveLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+        .def_static("create",
+                    &ExhaustiveLiftedApplicableActionGeneratorImpl::create,
+                    "problem"_a,
+                    "event_handler"_a = nullptr,
+                    "binding_event_handler"_a = nullptr);
 
     // Lifted KPKC
     nb::class_<KPKCLiftedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -527,7 +539,7 @@ void bind_module_definitions(nb::module_& m)
         .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<KPKCLiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
                                                                                     "KPKCLiftedApplicableActionGenerator")  //
-        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr, "binding_event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -557,7 +569,7 @@ void bind_module_definitions(nb::module_& m)
         "DebugExhaustiveLiftedAxiomEvaluatorEventHandler")  //
         .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<ExhaustiveLiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "ExhaustiveLiftedAxiomEvaluator")  //
-        .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+        .def_static("create", &ExhaustiveLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr, "binding_event_handler"_a = nullptr);
 
     // Lifted: KPKC
     nb::class_<KPKCLiftedAxiomEvaluatorImpl::IEventHandler>(m, "IKPKCLiftedAxiomEvaluatorEventHandler");  //
@@ -570,7 +582,7 @@ void bind_module_definitions(nb::module_& m)
         "DebugKPKCLiftedAxiomEvaluatorEventHandler")  //
         .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<KPKCLiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "KPKCLiftedAxiomEvaluator")  //
-        .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr);
+        .def_static("create", &KPKCLiftedAxiomEvaluatorImpl::create, "problem"_a, "event_handler"_a = nullptr, "binding_event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedAxiomEvaluatorImpl::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //

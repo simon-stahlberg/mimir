@@ -44,6 +44,8 @@ from pymimir.pymimir.advanced.search import (
 
 # SatisficingBindingGenerator
 from pymimir.pymimir.advanced.search import (
+    ISatisficingBindingGeneratorEventHandler,
+    DefaultSatisficingBindingGeneratorEventHandler,
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator

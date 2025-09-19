@@ -139,19 +139,25 @@ int main(int argc, char** argv)
         {
             case SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE:
             {
-                applicable_action_generator = ExhaustiveLiftedApplicableActionGeneratorImpl::create(
-                    problem,
-                    ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-                axiom_evaluator =
-                    ExhaustiveLiftedAxiomEvaluatorImpl::create(problem, ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                applicable_action_generator =
+                    ExhaustiveLiftedApplicableActionGeneratorImpl::create(problem,
+                                                                          ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                                                          satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator = ExhaustiveLiftedAxiomEvaluatorImpl::create(problem,
+                                                                             ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                             satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
                 state_repository = StateRepositoryImpl::create(axiom_evaluator);
                 break;
             }
             case SearchContextImpl::LiftedOptions::Kind::KPKC:
             {
                 applicable_action_generator =
-                    KPKCLiftedApplicableActionGeneratorImpl::create(problem, KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-                axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                    KPKCLiftedApplicableActionGeneratorImpl::create(problem,
+                                                                    KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                                                    satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem,
+                                                                       KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                       satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
                 state_repository = StateRepositoryImpl::create(axiom_evaluator);
                 break;
             }

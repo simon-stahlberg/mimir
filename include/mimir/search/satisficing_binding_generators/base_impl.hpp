@@ -137,11 +137,13 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 
     if (is_valid_binding(unpacked_state, binding))
     {
+        m_event_handler->on_valid_binding(binding);
+
         co_yield std::move(binding);
     }
     else
     {
-        m_event_handler->on_invalid_binding(binding, *m_problem);
+        m_event_handler->on_invalid_binding(binding);
     }
 }
 
@@ -168,11 +170,13 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::u
 
             if (is_valid_binding(unpacked_state, binding))
             {
+                m_event_handler->on_valid_binding(binding);
+
                 co_yield std::move(binding);
             }
             else
             {
-                m_event_handler->on_invalid_binding(binding, problem);
+                m_event_handler->on_invalid_binding(binding);
             }
         }
     }
@@ -253,11 +257,13 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
 
         if (is_valid_binding(unpacked_state, binding))
         {
+            m_event_handler->on_valid_binding(binding);
+
             co_yield std::move(binding);
         }
         else
         {
-            m_event_handler->on_invalid_binding(binding, problem);
+            m_event_handler->on_invalid_binding(binding);
         }
     }
 }

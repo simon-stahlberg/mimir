@@ -63,6 +63,7 @@ class ConjunctiveConditionSatisficingBindingGenerator;
 
 namespace satisficing_binding_generator
 {
+struct Statistics;
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DefaultEventHandlerImpl;

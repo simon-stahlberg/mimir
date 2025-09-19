@@ -25,6 +25,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/interface.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
@@ -35,9 +36,12 @@ namespace mimir::search
  * LiftedAxiomEvaluator
  */
 
-KPKCLiftedAxiomEvaluatorImpl::KPKCLiftedAxiomEvaluatorImpl(Problem problem, EventHandler event_handler) :
+KPKCLiftedAxiomEvaluatorImpl::KPKCLiftedAxiomEvaluatorImpl(Problem problem,
+                                                           EventHandler event_handler,
+                                                           satisficing_binding_generator::EventHandler binding_event_handler) :
     m_problem(problem),
-    m_event_handler(event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()),
+    m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
+    m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
     m_condition_grounders(),
     m_fluent_atoms(),
     m_derived_atoms(),
@@ -53,14 +57,14 @@ KPKCLiftedAxiomEvaluatorImpl::KPKCLiftedAxiomEvaluatorImpl(Problem problem, Even
     {
         const auto& axiom = axioms[i];
         assert(axiom->get_index() == i);
-        m_condition_grounders.emplace_back(AxiomSatisficingBindingGenerator(axiom, m_problem));
+        m_condition_grounders.emplace_back(AxiomSatisficingBindingGenerator(axiom, m_problem, m_binding_event_handler));
     }
 }
 
-KPKCLiftedAxiomEvaluator KPKCLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler)
+KPKCLiftedAxiomEvaluator
+KPKCLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler, satisficing_binding_generator::EventHandler binding_event_handler)
 {
-    return std::shared_ptr<KPKCLiftedAxiomEvaluatorImpl>(
-        new KPKCLiftedAxiomEvaluatorImpl(std::move(problem), event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()));
+    return std::shared_ptr<KPKCLiftedAxiomEvaluatorImpl>(new KPKCLiftedAxiomEvaluatorImpl(problem, event_handler, binding_event_handler));
 }
 
 void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
@@ -175,9 +179,17 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
     m_event_handler->on_end_generating_applicable_axioms();
 }
 
-void KPKCLiftedAxiomEvaluatorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void KPKCLiftedAxiomEvaluatorImpl::on_finish_search_layer()
+{
+    m_event_handler->on_finish_search_layer();
+    m_binding_event_handler->on_finish_search_layer();
+}
 
-void KPKCLiftedAxiomEvaluatorImpl::on_end_search() { m_event_handler->on_end_search(); }
+void KPKCLiftedAxiomEvaluatorImpl::on_end_search()
+{
+    m_event_handler->on_end_search();
+    m_binding_event_handler->on_end_search();
+}
 
 const Problem& KPKCLiftedAxiomEvaluatorImpl::get_problem() const { return m_problem; }
 
