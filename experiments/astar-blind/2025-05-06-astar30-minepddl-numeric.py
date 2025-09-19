@@ -13,7 +13,7 @@ from lab.environments import TetralithEnvironment, LocalEnvironment
 from lab.experiment import Experiment
 from lab.reports import Attribute, geometric_mean
 
-DIR = Path(__file__).resolve().parent
+DIR = Path(__file__).resolve().parent.parent
 REPO = DIR.parent.parent
 
 sys.path.append(str(DIR.parent))
@@ -117,7 +117,6 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     weight_preferred_queue = 64
     weight_standard_queue = 1
     heuristic_type = "blind"
-    enabled_grounding = True
     enable_eager = True
 
     for enabled_grounding in [True, False]:
@@ -140,7 +139,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
                 str(weight_preferred_queue), 
                 str(weight_standard_queue), 
                 heuristic_type, 
-                str(int(enabled_grounding))
+                str(int(enabled_grounding)),
+                lifted_kind
             ],
             time_limit=TIME_LIMIT,
             memory_limit=MEMORY_LIMIT,

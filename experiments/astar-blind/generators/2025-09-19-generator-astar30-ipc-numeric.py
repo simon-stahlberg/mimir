@@ -13,14 +13,14 @@ from lab.environments import TetralithEnvironment, LocalEnvironment
 from lab.experiment import Experiment
 from lab.reports import Attribute, geometric_mean
 
-DIR = Path(__file__).resolve().parent
+DIR = Path(__file__).resolve().parent.parent
 REPO = DIR.parent.parent
 
 sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_IPC_OPTIMAL_STRIPS
+from utils import SUITE_IPC2023_NUMERIC
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -34,7 +34,7 @@ class BaseReport(AbsoluteReport):
         "node",
     ]
 
-BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "downward-benchmarks"
+BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "ipc2023-numeric"
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -43,13 +43,13 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2025-5-382")
-    SUITE = SUITE_IPC_OPTIMAL_STRIPS
-    TIME_LIMIT = 5 * 60  # 5 minutes
+    SUITE = SUITE_IPC2023_NUMERIC
+    TIME_LIMIT = 30 * 60 
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "gripper:prob01.pddl",
-        "gripper:prob10.pddl",
+        "delivery:pfile1.pddl",        # easy
+        "block-grouping:pfile1.pddl",  # hard
     ]
     TIME_LIMIT = 3
 ATTRIBUTES = [
@@ -78,7 +78,7 @@ ATTRIBUTES = [
 
     "score_peak_memory_usage_in_bytes",
     "score_state_peak_memory_usage_in_bytes",
-
+    
     "num_of_states",
     "num_of_nodes",
     "num_of_actions",
@@ -122,8 +122,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     enable_eager = True
     lifted_kind = "kpkc"
 
-    for enabled_grounding in [True, False]:
-        enabled_grounding_str = "grounded" if enabled_grounding else "lifted"
+    for lifted_kind in ["kpkc", "exhaustive"]:
 
         ################ Grounded ################
         run = exp.add_run()
@@ -143,7 +142,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
                 str(weight_standard_queue), 
                 heuristic_type, 
                 str(int(enabled_grounding)),
-                lifted_kind
+                str(lifted_kind)
             ],
             time_limit=TIME_LIMIT,
             memory_limit=MEMORY_LIMIT,
@@ -152,7 +151,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
         # 'domain', 'problem', 'algorithm', 'coverage'.
         run.set_property("domain", task.domain)
         run.set_property("problem", task.problem)
-        run.set_property("algorithm", f"mimir-{enabled_grounding_str}-astar-eager-blind")
+        run.set_property("algorithm", f"mimir-{lifted_kind}-astar-eager-blind")
         # BaseReport needs the following properties:
         # 'time_limit', 'memory_limit'.
         run.set_property("time_limit", TIME_LIMIT)
@@ -160,7 +159,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
         # Every run has to have a unique id in the form of a list.
         # The algorithm name is only really needed when there are
         # multiple algorithms.
-        run.set_property("id", [f"mimir-{enabled_grounding_str}-astar-eager-blind", task.domain, task.problem])
+        run.set_property("id", [f"mimir-{lifted_kind}-astar-eager-blind", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)
