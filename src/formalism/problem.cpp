@@ -1102,13 +1102,11 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
 
             for (const auto& conditional_effect : action->get_conditional_effects())
             {
-                auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                    StaticConsistencyGraph::compute_vertices(*parent,
-                                                             action->get_arity(),
-                                                             action->get_arity() + conditional_effect->get_arity(),
-                                                             conditional_effect->get_conjunctive_condition()->get_literals<StaticTag>());
-
-                conditional_effect_infos.emplace_back(std::move(objects_by_parameter_index_));
+                conditional_effect_infos.emplace_back(
+                    std::get<2>(StaticConsistencyGraph::compute_vertices(*parent,
+                                                                         action->get_arity(),
+                                                                         action->get_arity() + conditional_effect->get_arity(),
+                                                                         conditional_effect->get_conjunctive_condition()->get_literals<StaticTag>())));
             }
 
             action_infos->emplace_back(std::move(conditional_effect_infos));

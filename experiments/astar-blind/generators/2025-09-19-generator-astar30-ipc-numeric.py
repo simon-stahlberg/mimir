@@ -20,6 +20,7 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
+from generator_parser import GeneratorParser
 from utils import SUITE_IPC2023_NUMERIC
 
 # Create custom report class with suitable info and error attributes.
@@ -100,6 +101,20 @@ ATTRIBUTES = [
     "cost",
     "length",
     "invalid_plan_reported",
+
+    "num_generated_valid_action_bindings",
+    "num_generated_invalid_action_bindings",
+    "num_generated_valid_axiom_bindings",
+    "num_generated_invalid_axiom_bindings",
+    "num_generated_valid_bindings",
+    "num_generated_invalid_bindings",
+
+    "num_generated_valid_action_bindings_until_last_f_layer",
+    "num_generated_invalid_action_bindings_until_last_f_layer",
+    "num_generated_valid_axiom_bindings_until_last_f_layer",
+    "num_generated_invalid_axiom_bindings_until_last_f_layer",
+    "num_generated_valid_bindings_until_last_f_layer",
+    "num_generated_invalid_bindings_until_last_f_layer",
 ]
 
 MEMORY_LIMIT = 8000
@@ -108,6 +123,7 @@ MEMORY_LIMIT = 8000
 exp = Experiment(environment=ENV)
 exp.add_parser(ErrorParser())
 exp.add_parser(SearchParser(max_memory_in_bytes=MEMORY_LIMIT * 1e6))
+exp.add_parser(GeneratorParser())
 
 PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 
@@ -118,7 +134,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     weight_preferred_queue = 64
     weight_standard_queue = 1
     heuristic_type = "blind"
-    enabled_grounding = True
+    enabled_grounding = False
     enable_eager = True
     lifted_kind = "kpkc"
 

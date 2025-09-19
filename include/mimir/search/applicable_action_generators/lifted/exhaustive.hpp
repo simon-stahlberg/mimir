@@ -42,9 +42,12 @@ public:
     using DefaultEventHandlerImpl = applicable_action_generator::lifted::exhaustive::DefaultEventHandlerImpl;
     using DefaultEventHandler = applicable_action_generator::lifted::exhaustive::DefaultEventHandler;
 
-    ExhaustiveLiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
+    ExhaustiveLiftedApplicableActionGeneratorImpl(formalism::Problem problem,
+                                                  EventHandler event_handler = nullptr,
+                                                  satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
-    static std::shared_ptr<ExhaustiveLiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler = nullptr);
+    static std::shared_ptr<ExhaustiveLiftedApplicableActionGeneratorImpl>
+    create(formalism::Problem problem, EventHandler event_handler = nullptr, satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     // Uncopyable
     ExhaustiveLiftedApplicableActionGeneratorImpl(const ExhaustiveLiftedApplicableActionGeneratorImpl& other) = delete;
@@ -67,6 +70,7 @@ public:
 private:
     formalism::Problem m_problem;
     EventHandler m_event_handler;
+    satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     using ActionParameterBindings = std::vector<formalism::ObjectList>;
 

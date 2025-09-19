@@ -45,9 +45,12 @@ public:
     using DefaultEventHandlerImpl = applicable_action_generator::lifted::kpkc::DefaultEventHandlerImpl;
     using DefaultEventHandler = applicable_action_generator::lifted::kpkc::DefaultEventHandler;
 
-    KPKCLiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
+    KPKCLiftedApplicableActionGeneratorImpl(formalism::Problem problem,
+                                            EventHandler event_handler = nullptr,
+                                            satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
-    static KPKCLiftedApplicableActionGenerator create(formalism::Problem problem, EventHandler event_handler = nullptr);
+    static KPKCLiftedApplicableActionGenerator
+    create(formalism::Problem problem, EventHandler event_handler = nullptr, satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     // Uncopyable
     KPKCLiftedApplicableActionGeneratorImpl(const KPKCLiftedApplicableActionGeneratorImpl& other) = delete;
@@ -70,6 +73,7 @@ public:
 private:
     formalism::Problem m_problem;
     EventHandler m_event_handler;
+    satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
 

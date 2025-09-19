@@ -19,11 +19,16 @@
 
 namespace mimir::search::satisficing_binding_generator
 {
+void DefaultEventHandlerImpl::on_valid_binding_impl(const formalism::ObjectList& binding) const {}
 
-DefaultEventHandlerImpl::DefaultEventHandlerImpl() : IEventHandler() {}
+void DefaultEventHandlerImpl::on_invalid_binding_impl(const formalism::ObjectList& binding) const {}
 
-void DefaultEventHandlerImpl::on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) {}
+void DefaultEventHandlerImpl::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
 
-DefaultEventHandler DefaultEventHandlerImpl::create() { return std::make_shared<DefaultEventHandlerImpl>(); }
+void DefaultEventHandlerImpl::on_finish_search_layer_impl() const {}
+
+DefaultEventHandlerImpl::DefaultEventHandlerImpl(bool quiet) : EventHandlerBase<DefaultEventHandlerImpl>(quiet) {}
+
+DefaultEventHandler DefaultEventHandlerImpl::create(bool quiet) { return std::make_shared<DefaultEventHandlerImpl>(quiet); }
 
 }

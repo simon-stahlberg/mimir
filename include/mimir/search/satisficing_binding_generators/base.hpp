@@ -45,6 +45,8 @@ public:
     using DefaultEventHandlerImpl = satisficing_binding_generator::DefaultEventHandlerImpl;
     using DefaultEventHandler = satisficing_binding_generator::DefaultEventHandler;
 
+    using Statistics = satisficing_binding_generator::Statistics;
+
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
     mimir::generator<formalism::ObjectList>

@@ -19,6 +19,7 @@
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -26,6 +27,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/lifted/exhaustive/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted/exhaustive/event_handlers/interface.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
 using namespace mimir::formalism;
@@ -36,40 +38,36 @@ namespace mimir::search
  * LiftedAxiomEvaluator
  */
 
-ExhaustiveLiftedAxiomEvaluatorImpl::ExhaustiveLiftedAxiomEvaluatorImpl(Problem problem, EventHandler event_handler) :
+ExhaustiveLiftedAxiomEvaluatorImpl::ExhaustiveLiftedAxiomEvaluatorImpl(Problem problem,
+                                                                       EventHandler event_handler,
+                                                                       satisficing_binding_generator::EventHandler binding_event_handler) :
     m_problem(problem),
-    m_event_handler(event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()),
+    m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
+    m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
     m_parameters_bindings_per_axiom()
 {
     for (const auto axiom : m_problem->get_problem_and_domain_axioms())
     {
         assert(axiom->get_index() == m_parameters_bindings_per_axiom.size());
 
+        auto objects_by_parameter_index = std::get<2>(
+            StaticConsistencyGraph::compute_vertices(*m_problem, 0, axiom->get_arity(), axiom->get_conjunctive_condition()->get_literals<StaticTag>()));
+
         auto parameters_bindings = AxiomParameterBindings {};
-
-        for (const auto parameter : axiom->get_parameters())
+        parameters_bindings.reserve(objects_by_parameter_index.size());
+        for (const auto& idxs : objects_by_parameter_index)
         {
-            auto parameter_bindings = ObjectList {};
-
-            for (const auto object : problem->get_problem_and_domain_objects())
-            {
-                if (is_subtypeeq(object->get_bases(), parameter->get_bases()))
-                {
-                    parameter_bindings.push_back(object);
-                }
-            }
-
-            parameters_bindings.push_back(std::move(parameter_bindings));
+            parameters_bindings.push_back(m_problem->get_repositories().get_objects_from_indices(idxs));
         }
 
         m_parameters_bindings_per_axiom.push_back(std::move(parameters_bindings));
     }
 }
 
-ExhaustiveLiftedAxiomEvaluator ExhaustiveLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler)
+ExhaustiveLiftedAxiomEvaluator
+ExhaustiveLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler, satisficing_binding_generator::EventHandler binding_event_handler)
 {
-    return std::shared_ptr<ExhaustiveLiftedAxiomEvaluatorImpl>(
-        new ExhaustiveLiftedAxiomEvaluatorImpl(std::move(problem), event_handler ? std::move(event_handler) : DefaultEventHandlerImpl::create()));
+    return std::shared_ptr<ExhaustiveLiftedAxiomEvaluatorImpl>(new ExhaustiveLiftedAxiomEvaluatorImpl(problem, event_handler, binding_event_handler));
 }
 
 void ExhaustiveLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
@@ -115,14 +113,21 @@ void ExhaustiveLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedState
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, unpacked_state));
+                    if (is_applicable(ground_axiom, unpacked_state))
+                    {
+                        m_binding_event_handler->on_valid_binding(binding);
 
-                    m_event_handler->on_ground_axiom(ground_axiom);
+                        m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (ground_axiom_repository.size() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                                                                           m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                        (ground_axiom_repository.size() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                               m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
-                    applicable_axioms.emplace_back(ground_axiom);
+                        applicable_axioms.emplace_back(ground_axiom);
+                    }
+                    else
+                    {
+                        m_binding_event_handler->on_invalid_binding(binding);
+                    }
                 }
             }
 
@@ -155,9 +160,17 @@ void ExhaustiveLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedState
     m_event_handler->on_end_generating_applicable_axioms();
 }
 
-void ExhaustiveLiftedAxiomEvaluatorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void ExhaustiveLiftedAxiomEvaluatorImpl::on_finish_search_layer()
+{
+    m_event_handler->on_finish_search_layer();
+    m_binding_event_handler->on_finish_search_layer();
+}
 
-void ExhaustiveLiftedAxiomEvaluatorImpl::on_end_search() { m_event_handler->on_end_search(); }
+void ExhaustiveLiftedAxiomEvaluatorImpl::on_end_search()
+{
+    m_event_handler->on_end_search();
+    m_binding_event_handler->on_end_search();
+}
 
 const Problem& ExhaustiveLiftedAxiomEvaluatorImpl::get_problem() const { return m_problem; }
 

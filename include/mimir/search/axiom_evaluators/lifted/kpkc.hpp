@@ -41,9 +41,12 @@ public:
     using DefaultEventHandlerImpl = axiom_evaluator::lifted::kpkc::DefaultEventHandlerImpl;
     using DefaultEventHandler = axiom_evaluator::lifted::kpkc::DefaultEventHandler;
 
-    KPKCLiftedAxiomEvaluatorImpl(formalism::Problem problem, EventHandler event_handler = nullptr);
+    KPKCLiftedAxiomEvaluatorImpl(formalism::Problem problem,
+                                 EventHandler event_handler = nullptr,
+                                 satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
-    static KPKCLiftedAxiomEvaluator create(formalism::Problem problem, EventHandler event_handler = nullptr);
+    static KPKCLiftedAxiomEvaluator
+    create(formalism::Problem problem, EventHandler event_handler = nullptr, satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     // Uncopyable
     KPKCLiftedAxiomEvaluatorImpl(const KPKCLiftedAxiomEvaluatorImpl& other) = delete;
@@ -67,6 +70,7 @@ public:
 private:
     formalism::Problem m_problem;
     EventHandler m_event_handler;
+    satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     AxiomSatisficingBindingGeneratorList m_condition_grounders;
 

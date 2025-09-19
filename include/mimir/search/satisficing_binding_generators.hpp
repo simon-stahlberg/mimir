@@ -21,5 +21,7 @@
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 #include "mimir/search/satisficing_binding_generators/axiom.hpp"
 #include "mimir/search/satisficing_binding_generators/conjunctive_condition.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/statistics.hpp"
 
 #endif
