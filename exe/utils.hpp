@@ -18,6 +18,7 @@
 #ifndef MIMIR_EXE_UTILS_HPP_
 #define MIMIR_EXE_UTILS_HPP_
 
+#include <mimir/mimir.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -47,6 +48,16 @@ inline HeuristicType get_heuristic_type(const std::string& name)
         return HeuristicType::SETADD;
     else if (name == "ff")
         return HeuristicType::FF;
+    else
+        throw std::runtime_error("Undefined mapping from name to heuristic type.");
+}
+
+inline search::SearchContextImpl::LiftedOptions::Kind get_lifted_kind(const std::string& name)
+{
+    if (name == "exhaustive")
+        return search::SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE;
+    else if (name == "kpkc")
+        return search::SearchContextImpl::LiftedOptions::Kind::KPKC;
     else
         throw std::runtime_error("Undefined mapping from name to heuristic type.");
 }

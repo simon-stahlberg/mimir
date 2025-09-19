@@ -50,6 +50,7 @@ int main(int argc, char** argv)
         .default_value(size_t(0))
         .scan<'u', size_t>()
         .help("Non-zero values enabled grounding. Might be necessary for some features. Defaults to grounded.");
+    program.add_argument("-LO", "--lifted-kind").default_value("kpkc").choices("exhaustive", "kpkc");
     program.add_argument("-V", "--verbosity")
         .default_value(size_t(0))
         .scan<'u', size_t>()
@@ -75,6 +76,7 @@ int main(int argc, char** argv)
     auto weight_queue_standard = program.get<size_t>("--weight-queue-standard");
     auto heuristic_type = get_heuristic_type(program.get<std::string>("--heuristic-type"));
     auto grounded = static_cast<bool>(program.get<size_t>("--enable-grounding"));
+    auto lifted_kind = get_lifted_kind(program.get<std::string>("--lifted-kind"));
     auto verbosity = program.get<size_t>("--verbosity");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
@@ -133,10 +135,31 @@ int main(int argc, char** argv)
     }
     else
     {
-        applicable_action_generator =
-            KPKCLiftedApplicableActionGeneratorImpl::create(problem, KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
-        state_repository = StateRepositoryImpl::create(axiom_evaluator);
+        switch (lifted_kind)
+        {
+            case SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE:
+            {
+                applicable_action_generator = ExhaustiveLiftedApplicableActionGeneratorImpl::create(
+                    problem,
+                    ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator =
+                    ExhaustiveLiftedAxiomEvaluatorImpl::create(problem, ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                break;
+            }
+            case SearchContextImpl::LiftedOptions::Kind::KPKC:
+            {
+                applicable_action_generator =
+                    KPKCLiftedApplicableActionGeneratorImpl::create(problem, KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                break;
+            }
+            default:
+            {
+                throw std::runtime_error("Unexpected lifted kind.");
+            }
+        }
 
         if (heuristic_type == HeuristicType::MAX)
             throw std::runtime_error("Lifted h_max is not supported");

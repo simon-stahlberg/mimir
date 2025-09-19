@@ -119,6 +119,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     heuristic_type = "blind"
     enabled_grounding = True
     enable_eager = True
+    lifted_kind = "kpkc"
 
     for enabled_grounding in [True, False]:
         enabled_grounding_str = "grounded" if enabled_grounding else "lifted"
@@ -140,7 +141,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
                 str(weight_preferred_queue), 
                 str(weight_standard_queue), 
                 heuristic_type, 
-                str(int(enabled_grounding))
+                str(int(enabled_grounding)),
+                lifted_kind
             ],
             time_limit=TIME_LIMIT,
             memory_limit=MEMORY_LIMIT,
