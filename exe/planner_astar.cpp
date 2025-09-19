@@ -246,14 +246,10 @@ int main(int argc, char** argv)
                      / state_repository->get_state_count()
               << std::endl;
 
-    size_t states_mem_usage = 0;
-    for (const auto& list : problem->get_index_lists())
-        states_mem_usage += list->blocks().size() * sizeof(Index) + sizeof(FlatIndexList);
-    for (const auto& list : problem->get_double_lists())
-        states_mem_usage += list->size() * sizeof(double) + sizeof(FlatDoubleList);
-
     std::cout << "Peak memory usage in bytes for states: "
-              << states_mem_usage + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index)) << std::endl;
+              << problem->get_index_list_map().get_memory_usage_in_bytes() + problem->get_double_list_map().get_memory_usage_in_bytes()
+                     + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index))
+              << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

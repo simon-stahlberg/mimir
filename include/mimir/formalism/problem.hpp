@@ -123,10 +123,6 @@ public:
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
 
-    /// @brief Get the total number of bytes.
-    /// @return the number of bytes.
-    size_t get_estimated_memory_usage_in_bytes() const;
-
     /**
      * Additional members
      */

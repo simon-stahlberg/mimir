@@ -238,11 +238,6 @@ const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
 
-size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
-{
-    return m_flat_index_list_map.get_estimated_memory_usage_in_bytes() + m_flat_double_list_map.get_estimated_memory_usage_in_bytes();
-}
-
 /**
  * Additional members
  */

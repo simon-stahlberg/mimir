@@ -124,7 +124,7 @@ public:
         m_elements.clear();
     }
 
-    size_t get_estimated_memory_usage_in_bytes() const { return m_storage.capacity() + m_elements.capacity() * sizeof(T*); }
+    size_t mem_usage() const { return m_storage.capacity() + m_elements.capacity() * sizeof(T*); }
 };
 
 }
