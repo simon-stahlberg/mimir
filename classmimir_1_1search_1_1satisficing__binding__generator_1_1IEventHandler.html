@@ -87,7 +87,8 @@ Inheritance diagram for mimir::search::satisficing_binding_generator::IEventHand
  <div class="center">
   <img src="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.png" usemap="#mimir::search::satisficing_5Fbinding_5Fgenerator::IEventHandler_map" alt=""/>
   <map id="mimir::search::satisficing_5Fbinding_5Fgenerator::IEventHandler_map" name="mimir::search::satisficing_5Fbinding_5Fgenerator::IEventHandler_map">
-<area href="classmimir_1_1search_1_1satisficing__binding__generator_1_1DefaultEventHandlerImpl.html" alt="mimir::search::satisficing_binding_generator::DefaultEventHandlerImpl" shape="rect" coords="0,56,403,80"/>
+<area href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html" alt="mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;" shape="rect" coords="0,56,445,80"/>
+<area href="classmimir_1_1search_1_1satisficing__binding__generator_1_1DefaultEventHandlerImpl.html" alt="mimir::search::satisficing_binding_generator::DefaultEventHandlerImpl" shape="rect" coords="0,112,445,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -95,8 +96,16 @@ Inheritance diagram for mimir::search::satisficing_binding_generator::IEventHand
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a17b53296860824d69520c4569ca970a7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#a17b53296860824d69520c4569ca970a7">~IEventHandler</a> ()=default</td></tr>
 <tr class="separator:a17b53296860824d69520c4569ca970a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54c532624b07b9cbcfd0f6493329767a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#a54c532624b07b9cbcfd0f6493329767a">on_invalid_binding</a> (const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">formalism::ObjectList</a> &amp;binding, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)=0</td></tr>
-<tr class="separator:a54c532624b07b9cbcfd0f6493329767a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b8ffe622c9515ca4e548d48506f409"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#af3b8ffe622c9515ca4e548d48506f409">on_valid_binding</a> (const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">formalism::ObjectList</a> &amp;binding)=0</td></tr>
+<tr class="separator:af3b8ffe622c9515ca4e548d48506f409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a971ba2eab8ae3fb2d7dc62f37ed34b46"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#a971ba2eab8ae3fb2d7dc62f37ed34b46">on_invalid_binding</a> (const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">formalism::ObjectList</a> &amp;binding)=0</td></tr>
+<tr class="separator:a971ba2eab8ae3fb2d7dc62f37ed34b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31da46aceb77eec1653320a69626bb79"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#a31da46aceb77eec1653320a69626bb79">on_end_search</a> ()=0</td></tr>
+<tr class="separator:a31da46aceb77eec1653320a69626bb79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340bba3197e150dadb68bb4384e29e95"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#a340bba3197e150dadb68bb4384e29e95">on_finish_search_layer</a> ()=0</td></tr>
+<tr class="separator:a340bba3197e150dadb68bb4384e29e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9697f3ea0fa9f4867fdca8e960f4e06"><td class="memItemLeft" align="right" valign="top">virtual const Statistics &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1IEventHandler.html#ab9697f3ea0fa9f4867fdca8e960f4e06">get_statistics</a> () const =0</td></tr>
+<tr class="separator:ab9697f3ea0fa9f4867fdca8e960f4e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a17b53296860824d69520c4569ca970a7" name="a17b53296860824d69520c4569ca970a7"></a>
@@ -125,8 +134,89 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a54c532624b07b9cbcfd0f6493329767a" name="a54c532624b07b9cbcfd0f6493329767a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54c532624b07b9cbcfd0f6493329767a">&#9670;&#160;</a></span>on_invalid_binding()</h2>
+<a id="ab9697f3ea0fa9f4867fdca8e960f4e06" name="ab9697f3ea0fa9f4867fdca8e960f4e06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9697f3ea0fa9f4867fdca8e960f4e06">&#9670;&#160;</a></span>get_statistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const Statistics &amp; mimir::search::satisficing_binding_generator::IEventHandler::get_statistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html#ab43205ab598dff277cb5e4f957c0ba7a">mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a31da46aceb77eec1653320a69626bb79" name="a31da46aceb77eec1653320a69626bb79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31da46aceb77eec1653320a69626bb79">&#9670;&#160;</a></span>on_end_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::search::satisficing_binding_generator::IEventHandler::on_end_search </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html#a30c6e5e0b78650bd31d64ce1766934d8">mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a340bba3197e150dadb68bb4384e29e95" name="a340bba3197e150dadb68bb4384e29e95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340bba3197e150dadb68bb4384e29e95">&#9670;&#160;</a></span>on_finish_search_layer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::search::satisficing_binding_generator::IEventHandler::on_finish_search_layer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html#aadc5256cff245235b9d7556a278442bd">mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a971ba2eab8ae3fb2d7dc62f37ed34b46" name="a971ba2eab8ae3fb2d7dc62f37ed34b46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a971ba2eab8ae3fb2d7dc62f37ed34b46">&#9670;&#160;</a></span>on_invalid_binding()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -138,18 +228,8 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual void mimir::search::satisficing_binding_generator::IEventHandler::on_invalid_binding </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">formalism::ObjectList</a> &amp;&#160;</td>
-          <td class="paramname"><em>binding</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -159,7 +239,35 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1DefaultEventHandlerImpl.html#ac3af3d9c0441ba4dd1d3b637fce78d6d">mimir::search::satisficing_binding_generator::DefaultEventHandlerImpl</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html#a36fbb54e254db87bb14e81edc1a60cd5">mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
+
+</div>
+</div>
+<a id="af3b8ffe622c9515ca4e548d48506f409" name="af3b8ffe622c9515ca4e548d48506f409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b8ffe622c9515ca4e548d48506f409">&#9670;&#160;</a></span>on_valid_binding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::search::satisficing_binding_generator::IEventHandler::on_valid_binding </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">formalism::ObjectList</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1satisficing__binding__generator_1_1EventHandlerBase.html#a144175cfe22f9a846476484e95103842">mimir::search::satisficing_binding_generator::EventHandlerBase&lt; Derived_ &gt;</a>.</p>
 
 </div>
 </div>
