@@ -52,7 +52,7 @@ public:
     template<typename T>
     auto prepare_level_0(const T& element)
     {
-        self().prepare_base(element);
+        self().prepare_level_1(element);
     }
 
     ///////////////////////////////////////////////////////
@@ -69,6 +69,10 @@ public:
      * For domain and problem we provide specialized functions since they are treated fundamentally different,
      * i.e., there is no entry in the HanaRepositories and we need to pass additional information to create default behaviors.
      */
+
+    auto prepare_level_0(const Domain& domain) { return self().prepare_level_0(domain.get()); }
+
+    auto prepare_level_0(const Problem& problem) { return self().prepare_level_0(problem.get()); }
 
     auto translate_level_0(const Domain& domain, DomainBuilder& builder) { return self().translate_level_1(domain, builder); }
 
