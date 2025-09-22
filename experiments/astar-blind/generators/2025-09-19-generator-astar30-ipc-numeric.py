@@ -21,7 +21,8 @@ sys.path.append(str(DIR.parent))
 from search_parser import SearchParser
 from error_parser import ErrorParser
 from generator_parser import GeneratorParser
-from utils import SUITE_IPC2023_NUMERIC
+from suite import SUITE_IPC2023_NUMERIC
+from suite_test import SUITE_IPC2023_NUMERIC_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -48,11 +49,8 @@ if REMOTE:
     TIME_LIMIT = 30 * 60 
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "delivery:pfile1.pddl",        # easy
-        "block-grouping:pfile1.pddl",  # hard
-    ]
-    TIME_LIMIT = 3
+    SUITE = SUITE_IPC2023_NUMERIC_TEST
+    TIME_LIMIT = 10
 ATTRIBUTES = [
     "run_dir",
     "coverage",
@@ -119,36 +117,17 @@ ATTRIBUTES = [
     "overapproximation_ratio",
     "overapproximation_ratio_until_last_f_layer",
 
-    "num_predicates_by_arity_0",
-    "num_predicates_by_arity_1",
-    "num_predicates_by_arity_2",
-    "num_predicates_by_arity_3",
-    "num_predicates_by_arity_4",
-    "num_predicates_by_arity_5",
-    "num_predicates_by_arity_6",
-    "num_predicates_by_arity_7",
-    "num_predicates_by_arity_8",
-
-    "num_functions_by_arity_0",
-    "num_functions_by_arity_1",
-    "num_functions_by_arity_2",
-    "num_functions_by_arity_3",
-    "num_functions_by_arity_4",
-    "num_functions_by_arity_5",
-    "num_functions_by_arity_6",
-    "num_functions_by_arity_7",
-    "num_functions_by_arity_8",
-
-    "num_constraints_by_arity_0",
-    "num_constraints_by_arity_1",
-    "num_constraints_by_arity_2",
-    "num_constraints_by_arity_3",
-    "num_constraints_by_arity_4",
-    "num_constraints_by_arity_5",
-    "num_constraints_by_arity_6",
-    "num_constraints_by_arity_7",
-    "num_constraints_by_arity_8",
-]
+    "num_predicates_by_arity_greater_or_equal_5",
+    "num_functions_by_arity_greater_or_equal_5",
+    "num_constraints_by_arity_greater_or_equal_5",
+    "num_actions_by_arity_greater_or_equal_5",
+    "num_axioms_by_arity_greater_or_equal_5",
+] \
+    + [f"num_predicates_by_arity_{i}" for i in range(5)] \
+    + [f"num_functions_by_arity_{i}" for i in range(5)] \
+    + [f"num_constraints_by_arity_{i}" for i in range(5)] \
+    + [f"num_actions_by_arity_{i}" for i in range(5)] \
+    + [f"num_axioms_by_arity_{i}" for i in range(5)]
 
 MEMORY_LIMIT = 8000
 
