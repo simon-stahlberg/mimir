@@ -16,11 +16,19 @@ def aggregate_generator_statistics(content, props):
         props["num_generated_invalid_bindings_until_last_f_layer"] = props.get("num_generated_invalid_action_bindings_until_last_f_layer", 0) + props.get("num_generated_invalid_axiom_bindings_until_last_f_layer", 0)   
     
 
+def add_overapproximation_ratios(content, props):
+    if "num_generated_valid_bindings" in props and "num_generated_invalid_bindings":
+        props["overapproximation_ratio"] = props["num_generated_invalid_bindings"] / props["num_generated_valid_bindings"]
+    if "num_generated_valid_bindings_until_last_f_layer" in props and "num_generated_invalid_bindings_until_last_f_layer":
+        props["overapproximation_ratio_until_last_f_layer"] = props["num_generated_invalid_bindings_until_last_f_layer"] / props["num_generated_valid_bindings_until_last_f_layer"]
 
 
 
 class GeneratorParser(Parser):
     """
+    Num predicates by arity: [0, 8, 1]
+    Num functions by arity: [0, 2, 3]
+    Num constraints by arity: [0, 0, 4]
     [LiftedApplicableActionGenerator] Number of grounded action cache hits: 1905625
     [LiftedApplicableActionGenerator] Number of grounded action cache hits until last f-layer: 1902981
     [LiftedApplicableActionGenerator] Number of grounded action cache misses: 2
@@ -106,5 +114,29 @@ class GeneratorParser(Parser):
             flags="S")
         
         self.add_function(aggregate_generator_statistics)
+        self.add_function(add_overapproximation_ratios)
+ 
+        for i in range(9):
+            predicates_pattern = r"Num predicates by arity: \["
+            functions_pattern = r"Num functions by arity: \["
+            constraints_pattern = r"Num constraints by arity: \["
+            for _ in range(i):
+                predicates_pattern += r"\d+, "
+                functions_pattern += r"\d+, "
+                constraints_pattern += r"\d+, "
+            predicates_pattern += r"(\d+)"
+            functions_pattern += r"(\d+)"
+            constraints_pattern += r"(\d+)"
+
+            print(predicates_pattern)
+            
+            self.add_pattern(
+                f"num_predicates_by_arity_{i}", predicates_pattern, type=int)
+            self.add_pattern(
+                f"num_functions_by_arity_{i}", predicates_pattern, type=int)
+            self.add_pattern(
+                f"num_constraints_by_arity_{i}", predicates_pattern, type=int)
+
+
 
         
