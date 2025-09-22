@@ -3,6 +3,7 @@
 from lab.experiment import Experiment
 from downward.reports.absolute import AbsoluteReport
 from downward.reports.scatter import ScatterPlotReport
+from lab.reports import Attribute, geometric_mean
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -79,22 +80,22 @@ ATTRIBUTES = [
     "num_generated_valid_bindings_until_last_f_layer",
     "num_generated_invalid_bindings_until_last_f_layer",
 
-    "overapproximation_ratio",
-    "overapproximation_ratio_until_last_f_layer",
+    Attribute("overapproximation_ratio", function=geometric_mean),
+    Attribute("overapproximation_ratio_until_last_f_layer", function=geometric_mean),
 
-    "num_predicates_by_arity_greater_or_equal_5",
-    "num_functions_by_arity_greater_or_equal_5",
-    "num_constraints_by_arity_greater_or_equal_5",
-    "num_actions_by_arity_greater_or_equal_5",
-    "num_axioms_by_arity_greater_or_equal_5",
-    "num_schemas_by_arity_greater_or_equal_5"
+    Attribute("num_predicates_by_arity_greater_or_equal_5", function=max),
+    Attribute("num_functions_by_arity_greater_or_equal_5", function=max),
+    Attribute("num_constraints_by_arity_greater_or_equal_5", function=max),
+    Attribute("num_actions_by_arity_greater_or_equal_5", function=max),
+    Attribute("num_axioms_by_arity_greater_or_equal_5", function=max),
+    Attribute("num_schemas_by_arity_greater_or_equal_5", function=max)
 ] \
-    + [f"num_predicates_by_arity_{i}" for i in range(5)] \
-    + [f"num_functions_by_arity_{i}" for i in range(5)] \
-    + [f"num_constraints_by_arity_{i}" for i in range(5)] \
-    + [f"num_actions_by_arity_{i}" for i in range(5)] \
-    + [f"num_axioms_by_arity_{i}" for i in range(5)] \
-    + [f"num_schemas_by_arity_{i}" for i in range(5)]
+    + [Attribute(f"num_predicates_by_arity_{i}", function=max) for i in range(5)] \
+    + [Attribute(f"num_functions_by_arity_{i}", function=max) for i in range(5)] \
+    + [Attribute(f"num_constraints_by_arity_{i}", function=max) for i in range(5)] \
+    + [Attribute(f"num_actions_by_arity_{i}", function=max) for i in range(5)] \
+    + [Attribute(f"num_axioms_by_arity_{i}", function=max) for i in range(5)] \
+    + [Attribute(f"num_schemas_by_arity_{i}", function=max) for i in range(5)]
 
 
 exp = Experiment("combined-generator-astar-blind-30-numeric")
