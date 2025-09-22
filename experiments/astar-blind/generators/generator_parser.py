@@ -19,10 +19,10 @@ def aggregate_generator_statistics(content, props):
 def add_overapproximation_ratios(content, props):
     if "num_generated_valid_bindings" in props and "num_generated_invalid_bindings"  in props:
         if props["num_generated_valid_bindings"] != 0:
-            props["overapproximation_ratio"] = props["num_generated_invalid_bindings"] / props["num_generated_valid_bindings"]
+            props["overapproximation_ratio"] = (props["num_generated_invalid_bindings"] + props["num_generated_valid_bindings"]) / props["num_generated_valid_bindings"]
     if "num_generated_valid_bindings_until_last_f_layer" in props and "num_generated_invalid_bindings_until_last_f_layer" in props:
         if props["num_generated_valid_bindings_until_last_f_layer"] != 0:
-            props["overapproximation_ratio_until_last_f_layer"] = props["num_generated_invalid_bindings_until_last_f_layer"] / props["num_generated_valid_bindings_until_last_f_layer"]
+            props["overapproximation_ratio_until_last_f_layer"] = (props["num_generated_invalid_bindings_until_last_f_layer"] + props["num_generated_valid_bindings_until_last_f_layer"]) / props["num_generated_valid_bindings_until_last_f_layer"]
 
 
 
@@ -118,27 +118,46 @@ class GeneratorParser(Parser):
         self.add_function(aggregate_generator_statistics)
         self.add_function(add_overapproximation_ratios)
  
-        for i in range(9):
+        for i in range(5):
             predicates_pattern = r"Num predicates by arity: \["
             functions_pattern = r"Num functions by arity: \["
             constraints_pattern = r"Num constraints by arity: \["
+            actions_pattern = r"Num actions by arity: \["
+            axioms_pattern = r"Num axioms by arity: \["
             for _ in range(i):
                 predicates_pattern += r"\d+, "
                 functions_pattern += r"\d+, "
                 constraints_pattern += r"\d+, "
+                actions_pattern += r"\d+, "
+                axioms_pattern += r"\d+, "
             predicates_pattern += r"(\d+)"
             functions_pattern += r"(\d+)"
             constraints_pattern += r"(\d+)"
+            actions_pattern += r"(\d+)"
+            axioms_pattern += r"(\d+)"
 
-            print(predicates_pattern)
-            
             self.add_pattern(
                 f"num_predicates_by_arity_{i}", predicates_pattern, type=int)
             self.add_pattern(
-                f"num_functions_by_arity_{i}", predicates_pattern, type=int)
+                f"num_functions_by_arity_{i}", functions_pattern, type=int)
             self.add_pattern(
-                f"num_constraints_by_arity_{i}", predicates_pattern, type=int)
+                f"num_constraints_by_arity_{i}", constraints_pattern, type=int)
+            self.add_pattern(
+                f"num_actions_by_arity_{i}", actions_pattern, type=int)
+            self.add_pattern(
+                f"num_axioms_by_arity_{i}", axioms_pattern, type=int)
+            
+        self.add_pattern(
+            f"num_predicates_by_arity_greater_or_equal_5", r"Num predicates by oob arity: (\d+)", type=int)
+        self.add_pattern(
+            f"num_functions_by_arity_greater_or_equal_5", r"Num functions by oob arity: (\d+)", type=int)
+        self.add_pattern(
+            f"num_constraints_by_arity_greater_or_equal_5", r"Num constraints by oob arity: (\d+)", type=int)
+        self.add_pattern(
+            f"num_actions_by_arity_greater_or_equal_5", r"Num actions by oob arity: (\d+)", type=int)
+        self.add_pattern(
+            f"num_axioms_by_arity_greater_or_equal_5", r"Num axioms by oob arity: (\d+)", type=int)
 
 
 
-        
+    

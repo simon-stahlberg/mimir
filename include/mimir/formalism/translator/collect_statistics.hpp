@@ -27,9 +27,17 @@ class CollectStatisticsTranslator : public RecursiveBaseTranslator<CollectStatis
 {
 private:
     // There can be a one to many relationship between relaxed and unrelaxed.
+    const size_t m_max_arity = 4;
     std::vector<size_t> m_num_predicates_by_arity;
+    size_t m_num_predicates_by_oob_arity;
     std::vector<size_t> m_num_functions_by_arity;
+    size_t m_num_functions_by_oob_arity;
     std::vector<size_t> m_num_constraints_by_arity;
+    size_t m_num_constraints_by_oob_arity;
+    std::vector<size_t> m_num_actions_by_arity;
+    size_t m_num_actions_by_oob_arity;
+    std::vector<size_t> m_num_axioms_by_arity;
+    size_t m_num_axioms_by_oob_arity;
 
     /* Implement RecursiveBaseTranslator interface. */
     friend class RecursiveBaseTranslator<CollectStatisticsTranslator>;
@@ -37,6 +45,10 @@ private:
     using RecursiveBaseTranslator<CollectStatisticsTranslator>::prepare_level_2;
 
     void prepare_level_2(NumericConstraint condition);
+
+    void prepare_level_2(Action action);
+
+    void prepare_level_2(Axiom axiom);
 
     void prepare_level_2(const DomainImpl* domain);
 
@@ -46,12 +58,8 @@ private:
 public:
     CollectStatisticsTranslator();
 
-    const std::vector<size_t>& get_num_predicates_by_arity() const;
-    const std::vector<size_t>& get_num_functions_by_arity() const;
-    const std::vector<size_t>& get_num_constraints_by_arity() const;
+    friend std::ostream& operator<<(std::ostream& out, const CollectStatisticsTranslator& translator);
 };
-
-extern std::ostream& operator<<(std::ostream& out, const CollectStatisticsTranslator& translator);
 
 }
 
