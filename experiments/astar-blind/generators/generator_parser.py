@@ -25,6 +25,11 @@ def add_overapproximation_ratios(content, props):
             props["overapproximation_ratio_until_last_f_layer"] = (props["num_generated_invalid_bindings_until_last_f_layer"] + props["num_generated_valid_bindings_until_last_f_layer"]) / props["num_generated_valid_bindings_until_last_f_layer"]
 
 
+def combine_schema_statistics(content, props):
+    for i in range(5):
+        props[f"num_schemas_by_arity_{i}"] = props.get(f"num_actions_by_arity_{i}", 0) + props.get(f"num_axioms_by_arity_{i}", 0)
+    props["num_schemas_by_arity_greater_or_equal_5"] = props.get("num_actions_by_arity_greater_or_equal_5", 0) + props.get("num_axioms_by_arity_greater_or_equal_5", 0)
+
 
 class GeneratorParser(Parser):
     """
@@ -157,6 +162,8 @@ class GeneratorParser(Parser):
             f"num_actions_by_arity_greater_or_equal_5", r"Num actions by oob arity: (\d+)", type=int)
         self.add_pattern(
             f"num_axioms_by_arity_greater_or_equal_5", r"Num axioms by oob arity: (\d+)", type=int)
+        
+        self.add_function(combine_schema_statistics)
 
 
 
