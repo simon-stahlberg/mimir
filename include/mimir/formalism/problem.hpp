@@ -90,6 +90,8 @@ private:
     friend class ProblemBuilder;
 
 public:
+    using FormalismEntity = void;
+
     // not moveable and not copieable
     ProblemImpl(const ProblemImpl& other) = delete;
     ProblemImpl& operator=(const ProblemImpl& other) = delete;
