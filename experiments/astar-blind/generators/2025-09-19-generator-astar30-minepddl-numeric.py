@@ -161,6 +161,52 @@ PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 exp.add_resource("planner_exe", PLANNER_DIR)
 exp.add_resource("run_planner", DIR.parent / "astar_run_planner.sh")
 
+
+for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
+    weight_preferred_queue = 64
+    weight_standard_queue = 1
+    heuristic_type = "blind"
+    enabled_grounding = True
+    enable_eager = True
+    lifted_kind = "kpkc"
+
+    ################ Grounded ################
+    run = exp.add_run()
+    run.add_resource("domain", task.domain_file, symlink=True)
+    run.add_resource("problem", task.problem_file, symlink=True)
+
+    run.add_command(
+        f"astar_eager_planner",
+        [
+            "{run_planner}", 
+            "{planner_exe}", 
+            "{domain}", 
+            "{problem}", 
+            "plan.out", 
+            str(int(enable_eager)), 
+            str(weight_preferred_queue), 
+            str(weight_standard_queue), 
+            heuristic_type, 
+            str(int(enabled_grounding)),
+            str(lifted_kind)
+        ],
+        time_limit=TIME_LIMIT,
+        memory_limit=MEMORY_LIMIT,
+    )
+    # AbsoluteReport needs the following properties:
+    # 'domain', 'problem', 'algorithm', 'coverage'.
+    run.set_property("domain", task.domain)
+    run.set_property("problem", task.problem)
+    run.set_property("algorithm", f"mimir-grounded-astar-eager-blind")
+    # BaseReport needs the following properties:
+    # 'time_limit', 'memory_limit'.
+    run.set_property("time_limit", TIME_LIMIT)
+    run.set_property("memory_limit", MEMORY_LIMIT)
+    # Every run has to have a unique id in the form of a list.
+    # The algorithm name is only really needed when there are
+    # multiple algorithms.
+    run.set_property("id", [f"mimir-grounded-astar-eager-blind", task.domain, task.problem])
+
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     weight_preferred_queue = 64
     weight_standard_queue = 1
