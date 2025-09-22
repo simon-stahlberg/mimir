@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem_builder.hpp"
+#include "mimir/formalism/translator/collect_statistics.hpp"
 #include "mimir/formalism/translator/encode_parameter_index_in_variables.hpp"
 #include "to_mimir_structures.hpp"
 
@@ -41,6 +42,10 @@ Parser::Parser(const fs::path& domain_filepath, const loki::ParserOptions& optio
     auto encode_parameter_index_in_variables_translator = EncodeParameterIndexInVariables();
     builder = DomainBuilder();
     m_domain = encode_parameter_index_in_variables_translator.translate_level_0(m_domain, builder);
+
+    auto statistics_translator = CollectStatisticsTranslator();
+    statistics_translator.prepare_level_0(m_domain);
+    std::cout << statistics_translator << std::endl;
 }
 
 Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options)
