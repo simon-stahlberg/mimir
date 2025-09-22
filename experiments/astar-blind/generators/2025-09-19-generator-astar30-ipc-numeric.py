@@ -43,7 +43,7 @@ if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
-        extra_options="#SBATCH --account=naiss2025-5-382")
+        extra_options="#SBATCH --account=naiss2025-22-1245")
     SUITE = SUITE_IPC2023_NUMERIC
     TIME_LIMIT = 30 * 60 
 else:
