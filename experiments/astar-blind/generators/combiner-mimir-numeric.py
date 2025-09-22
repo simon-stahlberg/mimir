@@ -87,12 +87,14 @@ ATTRIBUTES = [
     "num_constraints_by_arity_greater_or_equal_5",
     "num_actions_by_arity_greater_or_equal_5",
     "num_axioms_by_arity_greater_or_equal_5",
+    "num_schemas_by_arity_greater_or_equal_5"
 ] \
     + [f"num_predicates_by_arity_{i}" for i in range(5)] \
     + [f"num_functions_by_arity_{i}" for i in range(5)] \
     + [f"num_constraints_by_arity_{i}" for i in range(5)] \
     + [f"num_actions_by_arity_{i}" for i in range(5)] \
-    + [f"num_axioms_by_arity_{i}" for i in range(5)]
+    + [f"num_axioms_by_arity_{i}" for i in range(5)] \
+    + [f"num_schemas_by_arity_{i}" for i in range(5)]
 
 
 exp = Experiment("combined-generator-astar-blind-30-numeric")
@@ -124,6 +126,6 @@ exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-minepddl-numeric
 exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-minepddl-numeric-eval", name="dtdb-s-fetch-minepddl-numeric", filter=rename_algorithm_kpkc_propositional)
 
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["exhaustive-propositional-astar-eager-blind", "kpkc-propositional-astar-eager-blind", "kpkc-numeric-astar-eager-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "exhaustive-propositional-astar-eager-blind", "kpkc-propositional-astar-eager-blind", "kpkc-numeric-astar-eager-blind"]))
 
 exp.run_steps()

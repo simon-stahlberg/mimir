@@ -122,12 +122,14 @@ ATTRIBUTES = [
     "num_constraints_by_arity_greater_or_equal_5",
     "num_actions_by_arity_greater_or_equal_5",
     "num_axioms_by_arity_greater_or_equal_5",
+    "num_schemas_by_arity_greater_or_equal_5"
 ] \
     + [f"num_predicates_by_arity_{i}" for i in range(5)] \
     + [f"num_functions_by_arity_{i}" for i in range(5)] \
     + [f"num_constraints_by_arity_{i}" for i in range(5)] \
     + [f"num_actions_by_arity_{i}" for i in range(5)] \
-    + [f"num_axioms_by_arity_{i}" for i in range(5)]
+    + [f"num_axioms_by_arity_{i}" for i in range(5)] \
+    + [f"num_schemas_by_arity_{i}" for i in range(5)]
 
 MEMORY_LIMIT = 8000
 
