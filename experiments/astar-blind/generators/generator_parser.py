@@ -18,9 +18,11 @@ def aggregate_generator_statistics(content, props):
 
 def add_overapproximation_ratios(content, props):
     if "num_generated_valid_bindings" in props and "num_generated_invalid_bindings"  in props:
-        props["overapproximation_ratio"] = props["num_generated_invalid_bindings"] / props["num_generated_valid_bindings"]
+        if props["num_generated_valid_bindings"] != 0:
+            props["overapproximation_ratio"] = props["num_generated_invalid_bindings"] / props["num_generated_valid_bindings"]
     if "num_generated_valid_bindings_until_last_f_layer" in props and "num_generated_invalid_bindings_until_last_f_layer" in props:
-        props["overapproximation_ratio_until_last_f_layer"] = props["num_generated_invalid_bindings_until_last_f_layer"] / props["num_generated_valid_bindings_until_last_f_layer"]
+        if props["num_generated_valid_bindings_until_last_f_layer"] != 0:
+            props["overapproximation_ratio_until_last_f_layer"] = props["num_generated_invalid_bindings_until_last_f_layer"] / props["num_generated_valid_bindings_until_last_f_layer"]
 
 
 
