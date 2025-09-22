@@ -220,7 +220,7 @@ protected:
         this->prepare_level_0(axiom->get_conjunctive_condition());
         this->prepare_level_0(axiom->get_literal());
     }
-    void prepare_level_2(Domain domain)
+    void prepare_level_2(const DomainImpl* domain)
     {
         this->prepare_level_0(domain->get_requirements());
         this->prepare_level_0(domain->get_constants());
@@ -234,7 +234,7 @@ protected:
         this->prepare_level_0(domain->get_axioms());
     }
     void prepare_level_2(OptimizationMetric metric) { this->prepare(metric->get_function_expression()); }
-    void prepare_level_2(Problem problem)
+    void prepare_level_2(const ProblemImpl* problem)
     {
         this->prepare_level_0(problem->get_domain());
         this->prepare_level_0(problem->get_requirements());

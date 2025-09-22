@@ -112,6 +112,39 @@ ATTRIBUTES = [
     "num_generated_invalid_axiom_bindings_until_last_f_layer",
     "num_generated_valid_bindings_until_last_f_layer",
     "num_generated_invalid_bindings_until_last_f_layer",
+
+    "overapproximation_ratio",
+    "overapproximation_ratio_until_last_f_layer",
+
+    "num_predicates_by_arity_0",
+    "num_predicates_by_arity_1",
+    "num_predicates_by_arity_2",
+    "num_predicates_by_arity_3",
+    "num_predicates_by_arity_4",
+    "num_predicates_by_arity_5",
+    "num_predicates_by_arity_6",
+    "num_predicates_by_arity_7",
+    "num_predicates_by_arity_8",
+
+    "num_functions_by_arity_0",
+    "num_functions_by_arity_1",
+    "num_functions_by_arity_2",
+    "num_functions_by_arity_3",
+    "num_functions_by_arity_4",
+    "num_functions_by_arity_5",
+    "num_functions_by_arity_6",
+    "num_functions_by_arity_7",
+    "num_functions_by_arity_8",
+
+    "num_constraints_by_arity_0",
+    "num_constraints_by_arity_1",
+    "num_constraints_by_arity_2",
+    "num_constraints_by_arity_3",
+    "num_constraints_by_arity_4",
+    "num_constraints_by_arity_5",
+    "num_constraints_by_arity_6",
+    "num_constraints_by_arity_7",
+    "num_constraints_by_arity_8",
 ]
 
 MEMORY_LIMIT = 8000
@@ -137,7 +170,6 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
 
     for search_mode in ["grounded", "lifted"]:
 
-        ################ Grounded ################
         run = exp.add_run()
         run.add_resource("domain", task.domain_file, symlink=True)
         run.add_resource("problem", task.problem_file, symlink=True)
