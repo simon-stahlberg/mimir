@@ -72,24 +72,39 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
 
+    auto ground_atoms = GroundAtomSet<FluentTag> {};
+    for (const auto& atom_index : state.get_atoms<FluentTag>())
+        ground_atoms.insert(m_delete_free_problem->get_repositories().get_ground_atom<FluentTag>(atom_index));
+
     do
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = delete_free_state_repository->get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_before = ground_atoms.size();
+        auto num_actions_before =
+            boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<ActionImpl> {}).size();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         for (const auto& action : delete_free_applicable_action_generator.create_applicable_action_generator(state))
         {
-            // Note that get_or_create_successor_state already modifies unpacked_state to be the successor state.
-            // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
-            auto [successor_state, metric_value] = delete_free_state_repository->get_or_create_successor_state(state, action, 0);
-            state = successor_state;
+            for (const auto& conditional_effect : action->get_conditional_effects())
+            {
+                if (is_applicable(conditional_effect, state))
+                {
+                    for (const auto& atom_index : conditional_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>())
+                    {
+                        ground_atoms.insert(m_delete_free_problem->get_repositories().get_ground_atom<FluentTag>(atom_index));
+                    }
+                }
+            }
         }
 
+        state = std::get<0>(delete_free_state_repository->get_or_create_state(GroundAtomList<FluentTag>(ground_atoms.begin(), ground_atoms.end()),
+                                                                              state.get_numeric_variables()));
+
         // Note: checking fluent atoms suffices because derived are implied by those.
-        auto num_atoms_after = delete_free_state_repository->get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_after = ground_atoms.size();
 
         if (num_atoms_before != num_atoms_after)
         {

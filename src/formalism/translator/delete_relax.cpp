@@ -86,7 +86,7 @@ AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, Repo
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Repositories& repositories)
+Literal<P> DeleteRelaxTranslator::translate_level_2_impl(Literal<P> literal, Repositories& repositories)
 {
     if (!literal->get_polarity())
     {
@@ -96,9 +96,20 @@ Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Reposito
     return repositories.get_or_create_literal(true, this->translate_level_0(literal->get_atom(), repositories));
 }
 
-template Literal<StaticTag> DeleteRelaxTranslator::translate_level_2(Literal<StaticTag> literal, Repositories& repositories);
-template Literal<FluentTag> DeleteRelaxTranslator::translate_level_2(Literal<FluentTag> literal, Repositories& repositories);
-template Literal<DerivedTag> DeleteRelaxTranslator::translate_level_2(Literal<DerivedTag> literal, Repositories& repositories);
+Literal<StaticTag> DeleteRelaxTranslator::translate_level_2(Literal<StaticTag> literal, Repositories& repositories)
+{
+    return translate_level_2_impl(literal, repositories);
+}
+
+Literal<FluentTag> DeleteRelaxTranslator::translate_level_2(Literal<FluentTag> literal, Repositories& repositories)
+{
+    return translate_level_2_impl(literal, repositories);
+}
+
+Literal<DerivedTag> DeleteRelaxTranslator::translate_level_2(Literal<DerivedTag> literal, Repositories& repositories)
+{
+    return translate_level_2_impl(literal, repositories);
+}
 
 ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, Repositories& repositories)
 {

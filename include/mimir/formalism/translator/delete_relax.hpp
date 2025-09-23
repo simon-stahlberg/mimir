@@ -43,7 +43,10 @@ private:
     AxiomList translate_level_2(const AxiomList& axioms, Repositories& repositories);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories);
+    Literal<P> translate_level_2_impl(Literal<P> literal, Repositories& repositories);
+    Literal<StaticTag> translate_level_2(Literal<StaticTag> literal, Repositories& repositories);
+    Literal<FluentTag> translate_level_2(Literal<FluentTag> literal, Repositories& repositories);
+    Literal<DerivedTag> translate_level_2(Literal<DerivedTag> literal, Repositories& repositories);
     ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, Repositories& repositories);
     ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, Repositories& repositories);
     ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories);
