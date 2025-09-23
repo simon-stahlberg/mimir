@@ -1689,7 +1689,7 @@
     "search_time": 1608503,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 1610085,
+    "total_time": 1611,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Gather_Multiple_Wood-Gather_Multiple_Wood_Hard.pddl": {
@@ -1908,7 +1908,7 @@
     "search_time": 8526,
     "state_peak_memory_usage_in_bytes": 21151,
     "time_limit": 1800,
-    "total_time": 9357,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Gather_Wood-Gather_Wood_Hard.pddl": {
@@ -2066,7 +2066,7 @@
     "search_time": 80186,
     "state_peak_memory_usage_in_bytes": 33179,
     "time_limit": 1800,
-    "total_time": 88024,
+    "total_time": 89,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Move_to_Location-Move_to_Location_Easy.pddl": {
@@ -2162,7 +2162,7 @@
     "search_time": 14338,
     "state_peak_memory_usage_in_bytes": 29983,
     "time_limit": 1800,
-    "total_time": 15522,
+    "total_time": 16,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Move_to_Location-Move_to_Location_Hard.pddl": {
@@ -2381,7 +2381,7 @@
     "search_time": 18311,
     "state_peak_memory_usage_in_bytes": 35812,
     "time_limit": 1800,
-    "total_time": 19659,
+    "total_time": 20,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Pickup_Diamond-Pickup_Diamond_Hard.pddl": {
@@ -2784,7 +2784,7 @@
     "search_time": 116530,
     "state_peak_memory_usage_in_bytes": 110692,
     "time_limit": 1800,
-    "total_time": 117514,
+    "total_time": 118,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Place_Wood-Place_Wood_Hard.pddl": {
@@ -3003,7 +3003,7 @@
     "search_time": 5804,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 10655,
+    "total_time": 11,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_101.pddl": {
@@ -3099,7 +3099,7 @@
     "search_time": 5598,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 10117,
+    "total_time": 11,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_102.pddl": {
@@ -3195,7 +3195,7 @@
     "search_time": 5511,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 10631,
+    "total_time": 11,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_103.pddl": {
@@ -3291,7 +3291,7 @@
     "search_time": 6729,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 12248,
+    "total_time": 13,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_104.pddl": {
@@ -3387,7 +3387,7 @@
     "search_time": 6224,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 11355,
+    "total_time": 12,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_105.pddl": {
@@ -3483,7 +3483,7 @@
     "search_time": 6566,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 12119,
+    "total_time": 13,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_106.pddl": {
@@ -3579,7 +3579,7 @@
     "search_time": 6910,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 12483,
+    "total_time": 13,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_107.pddl": {
@@ -3675,7 +3675,7 @@
     "search_time": 6907,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 12739,
+    "total_time": 13,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_108.pddl": {
@@ -3771,7 +3771,7 @@
     "search_time": 7320,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 13578,
+    "total_time": 14,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_109.pddl": {
@@ -3867,7 +3867,7 @@
     "search_time": 7353,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 13596,
+    "total_time": 14,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_110.pddl": {
@@ -3963,7 +3963,7 @@
     "search_time": 7802,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 13894,
+    "total_time": 14,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_111.pddl": {
@@ -4059,7 +4059,7 @@
     "search_time": 7859,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 14646,
+    "total_time": 15,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_112.pddl": {
@@ -4155,7 +4155,7 @@
     "search_time": 8432,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 15655,
+    "total_time": 16,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_113.pddl": {
@@ -4251,7 +4251,7 @@
     "search_time": 8243,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 14914,
+    "total_time": 15,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_114.pddl": {
@@ -4347,7 +4347,7 @@
     "search_time": 8421,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 15459,
+    "total_time": 16,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_115.pddl": {
@@ -4443,7 +4443,7 @@
     "search_time": 8592,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 15618,
+    "total_time": 16,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_116.pddl": {
@@ -4539,7 +4539,7 @@
     "search_time": 9178,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 17061,
+    "total_time": 18,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_117.pddl": {
@@ -4635,7 +4635,7 @@
     "search_time": 9907,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 18406,
+    "total_time": 19,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_118.pddl": {
@@ -4731,7 +4731,7 @@
     "search_time": 9542,
     "state_peak_memory_usage_in_bytes": 36148,
     "time_limit": 1800,
-    "total_time": 17334,
+    "total_time": 18,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_119.pddl": {
@@ -4827,7 +4827,7 @@
     "search_time": 9796,
     "state_peak_memory_usage_in_bytes": 35508,
     "time_limit": 1800,
-    "total_time": 17944,
+    "total_time": 18,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_120.pddl": {
@@ -4923,7 +4923,7 @@
     "search_time": 11288,
     "state_peak_memory_usage_in_bytes": 36828,
     "time_limit": 1800,
-    "total_time": 20855,
+    "total_time": 21,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_121.pddl": {
@@ -5019,7 +5019,7 @@
     "search_time": 11486,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 21224,
+    "total_time": 22,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_122.pddl": {
@@ -5115,7 +5115,7 @@
     "search_time": 10899,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 19799,
+    "total_time": 20,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_123.pddl": {
@@ -5211,7 +5211,7 @@
     "search_time": 11426,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 21005,
+    "total_time": 22,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_124.pddl": {
@@ -5307,7 +5307,7 @@
     "search_time": 11479,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 21106,
+    "total_time": 22,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_125.pddl": {
@@ -5403,7 +5403,7 @@
     "search_time": 11582,
     "state_peak_memory_usage_in_bytes": 36868,
     "time_limit": 1800,
-    "total_time": 21477,
+    "total_time": 22,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_126.pddl": {
@@ -5499,7 +5499,7 @@
     "search_time": 12108,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 22514,
+    "total_time": 23,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_127.pddl": {
@@ -5595,7 +5595,7 @@
     "search_time": 12103,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 22921,
+    "total_time": 23,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_128.pddl": {
@@ -5691,7 +5691,7 @@
     "search_time": 12525,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 23247,
+    "total_time": 24,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_129.pddl": {
@@ -5787,7 +5787,7 @@
     "search_time": 12780,
     "state_peak_memory_usage_in_bytes": 37292,
     "time_limit": 1800,
-    "total_time": 23689,
+    "total_time": 24,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_130.pddl": {
@@ -5883,7 +5883,7 @@
     "search_time": 12904,
     "state_peak_memory_usage_in_bytes": 37972,
     "time_limit": 1800,
-    "total_time": 24403,
+    "total_time": 25,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_131.pddl": {
@@ -5979,7 +5979,7 @@
     "search_time": 13604,
     "state_peak_memory_usage_in_bytes": 38052,
     "time_limit": 1800,
-    "total_time": 25384,
+    "total_time": 26,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_132.pddl": {
@@ -6075,7 +6075,7 @@
     "search_time": 14394,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 26463,
+    "total_time": 27,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_133.pddl": {
@@ -6171,7 +6171,7 @@
     "search_time": 14475,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 27053,
+    "total_time": 28,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_134.pddl": {
@@ -6267,7 +6267,7 @@
     "search_time": 14727,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 27275,
+    "total_time": 28,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_135.pddl": {
@@ -6363,7 +6363,7 @@
     "search_time": 14994,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 28204,
+    "total_time": 29,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_136.pddl": {
@@ -6459,7 +6459,7 @@
     "search_time": 15722,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 29220,
+    "total_time": 30,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_137.pddl": {
@@ -6555,7 +6555,7 @@
     "search_time": 15174,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 28640,
+    "total_time": 29,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_138.pddl": {
@@ -6651,7 +6651,7 @@
     "search_time": 15891,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 29734,
+    "total_time": 30,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_139.pddl": {
@@ -6747,7 +6747,7 @@
     "search_time": 16674,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 31261,
+    "total_time": 32,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_140.pddl": {
@@ -6843,7 +6843,7 @@
     "search_time": 16262,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 30855,
+    "total_time": 31,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_141.pddl": {
@@ -6939,7 +6939,7 @@
     "search_time": 17612,
     "state_peak_memory_usage_in_bytes": 40612,
     "time_limit": 1800,
-    "total_time": 32579,
+    "total_time": 33,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_142.pddl": {
@@ -7035,7 +7035,7 @@
     "search_time": 17867,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 33734,
+    "total_time": 34,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_143.pddl": {
@@ -7131,7 +7131,7 @@
     "search_time": 18438,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 34533,
+    "total_time": 35,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_144.pddl": {
@@ -7227,7 +7227,7 @@
     "search_time": 18714,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 35333,
+    "total_time": 36,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_145.pddl": {
@@ -7323,7 +7323,7 @@
     "search_time": 20321,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 38122,
+    "total_time": 39,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_146.pddl": {
@@ -7419,7 +7419,7 @@
     "search_time": 19266,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 36096,
+    "total_time": 37,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_147.pddl": {
@@ -7515,7 +7515,7 @@
     "search_time": 20701,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 38823,
+    "total_time": 39,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_148.pddl": {
@@ -7611,7 +7611,7 @@
     "search_time": 20395,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 38246,
+    "total_time": 39,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_149.pddl": {
@@ -7707,7 +7707,7 @@
     "search_time": 20417,
     "state_peak_memory_usage_in_bytes": 43172,
     "time_limit": 1800,
-    "total_time": 39352,
+    "total_time": 40,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_150.pddl": {
@@ -7803,7 +7803,7 @@
     "search_time": 21927,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 41254,
+    "total_time": 42,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_151.pddl": {
@@ -7899,7 +7899,7 @@
     "search_time": 21092,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 39682,
+    "total_time": 40,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_152.pddl": {
@@ -7995,7 +7995,7 @@
     "search_time": 22146,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 41606,
+    "total_time": 42,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_153.pddl": {
@@ -8091,7 +8091,7 @@
     "search_time": 24491,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 46161,
+    "total_time": 47,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_154.pddl": {
@@ -8187,7 +8187,7 @@
     "search_time": 25389,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 46460,
+    "total_time": 47,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_155.pddl": {
@@ -8283,7 +8283,7 @@
     "search_time": 23498,
     "state_peak_memory_usage_in_bytes": 44492,
     "time_limit": 1800,
-    "total_time": 43586,
+    "total_time": 44,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_156.pddl": {
@@ -8379,7 +8379,7 @@
     "search_time": 24437,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 46151,
+    "total_time": 47,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_157.pddl": {
@@ -8475,7 +8475,7 @@
     "search_time": 24593,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 46928,
+    "total_time": 47,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_158.pddl": {
@@ -8571,7 +8571,7 @@
     "search_time": 25021,
     "state_peak_memory_usage_in_bytes": 45892,
     "time_limit": 1800,
-    "total_time": 46669,
+    "total_time": 47,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_159.pddl": {
@@ -8667,7 +8667,7 @@
     "search_time": 26303,
     "state_peak_memory_usage_in_bytes": 45252,
     "time_limit": 1800,
-    "total_time": 49167,
+    "total_time": 50,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_160.pddl": {
@@ -8763,7 +8763,7 @@
     "search_time": 27690,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 52667,
+    "total_time": 53,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_161.pddl": {
@@ -8859,7 +8859,7 @@
     "search_time": 29352,
     "state_peak_memory_usage_in_bytes": 45932,
     "time_limit": 1800,
-    "total_time": 55568,
+    "total_time": 56,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_162.pddl": {
@@ -8955,7 +8955,7 @@
     "search_time": 27071,
     "state_peak_memory_usage_in_bytes": 47212,
     "time_limit": 1800,
-    "total_time": 51693,
+    "total_time": 52,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_163.pddl": {
@@ -9051,7 +9051,7 @@
     "search_time": 28172,
     "state_peak_memory_usage_in_bytes": 45292,
     "time_limit": 1800,
-    "total_time": 52777,
+    "total_time": 53,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_164.pddl": {
@@ -9147,7 +9147,7 @@
     "search_time": 28932,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 54601,
+    "total_time": 55,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_165.pddl": {
@@ -9243,7 +9243,7 @@
     "search_time": 33338,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 63540,
+    "total_time": 64,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_166.pddl": {
@@ -9339,7 +9339,7 @@
     "search_time": 29810,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 57678,
+    "total_time": 58,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_167.pddl": {
@@ -9435,7 +9435,7 @@
     "search_time": 32216,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 61041,
+    "total_time": 62,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_168.pddl": {
@@ -9531,7 +9531,7 @@
     "search_time": 35931,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 67988,
+    "total_time": 68,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_169.pddl": {
@@ -9627,7 +9627,7 @@
     "search_time": 34322,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 65173,
+    "total_time": 66,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_49.pddl": {
@@ -9723,7 +9723,7 @@
     "search_time": 493,
     "state_peak_memory_usage_in_bytes": 15338,
     "time_limit": 1800,
-    "total_time": 838,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_50.pddl": {
@@ -9819,7 +9819,7 @@
     "search_time": 613,
     "state_peak_memory_usage_in_bytes": 15518,
     "time_limit": 1800,
-    "total_time": 1070,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_51.pddl": {
@@ -9915,7 +9915,7 @@
     "search_time": 626,
     "state_peak_memory_usage_in_bytes": 15538,
     "time_limit": 1800,
-    "total_time": 1084,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_52.pddl": {
@@ -10011,7 +10011,7 @@
     "search_time": 531,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 916,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_53.pddl": {
@@ -10107,7 +10107,7 @@
     "search_time": 643,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 1126,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_54.pddl": {
@@ -10203,7 +10203,7 @@
     "search_time": 604,
     "state_peak_memory_usage_in_bytes": 15378,
     "time_limit": 1800,
-    "total_time": 1113,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_55.pddl": {
@@ -10299,7 +10299,7 @@
     "search_time": 746,
     "state_peak_memory_usage_in_bytes": 16198,
     "time_limit": 1800,
-    "total_time": 1304,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_56.pddl": {
@@ -10395,7 +10395,7 @@
     "search_time": 773,
     "state_peak_memory_usage_in_bytes": 17510,
     "time_limit": 1800,
-    "total_time": 1333,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_57.pddl": {
@@ -10491,7 +10491,7 @@
     "search_time": 755,
     "state_peak_memory_usage_in_bytes": 17670,
     "time_limit": 1800,
-    "total_time": 1270,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_58.pddl": {
@@ -10587,7 +10587,7 @@
     "search_time": 836,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1432,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_59.pddl": {
@@ -10683,7 +10683,7 @@
     "search_time": 922,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1573,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_60.pddl": {
@@ -10779,7 +10779,7 @@
     "search_time": 1111,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 2059,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_61.pddl": {
@@ -10875,7 +10875,7 @@
     "search_time": 1146,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 2071,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_62.pddl": {
@@ -10971,7 +10971,7 @@
     "search_time": 1161,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1954,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_63.pddl": {
@@ -11067,7 +11067,7 @@
     "search_time": 1244,
     "state_peak_memory_usage_in_bytes": 17710,
     "time_limit": 1800,
-    "total_time": 2168,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_64.pddl": {
@@ -11163,7 +11163,7 @@
     "search_time": 1292,
     "state_peak_memory_usage_in_bytes": 18030,
     "time_limit": 1800,
-    "total_time": 2093,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_65.pddl": {
@@ -11259,7 +11259,7 @@
     "search_time": 1468,
     "state_peak_memory_usage_in_bytes": 18222,
     "time_limit": 1800,
-    "total_time": 2472,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_66.pddl": {
@@ -11355,7 +11355,7 @@
     "search_time": 1361,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 2365,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_67.pddl": {
@@ -11451,7 +11451,7 @@
     "search_time": 1487,
     "state_peak_memory_usage_in_bytes": 18242,
     "time_limit": 1800,
-    "total_time": 2601,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_68.pddl": {
@@ -11547,7 +11547,7 @@
     "search_time": 1417,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 2503,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_69.pddl": {
@@ -11643,7 +11643,7 @@
     "search_time": 1637,
     "state_peak_memory_usage_in_bytes": 18582,
     "time_limit": 1800,
-    "total_time": 2826,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_70.pddl": {
@@ -11739,7 +11739,7 @@
     "search_time": 1727,
     "state_peak_memory_usage_in_bytes": 19872,
     "time_limit": 1800,
-    "total_time": 3025,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_71.pddl": {
@@ -11835,7 +11835,7 @@
     "search_time": 1600,
     "state_peak_memory_usage_in_bytes": 19232,
     "time_limit": 1800,
-    "total_time": 2780,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_72.pddl": {
@@ -11931,7 +11931,7 @@
     "search_time": 1849,
     "state_peak_memory_usage_in_bytes": 18612,
     "time_limit": 1800,
-    "total_time": 3253,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_73.pddl": {
@@ -12027,7 +12027,7 @@
     "search_time": 1862,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 3283,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_74.pddl": {
@@ -12123,7 +12123,7 @@
     "search_time": 2075,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 3551,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_75.pddl": {
@@ -12219,7 +12219,7 @@
     "search_time": 2042,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 3626,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_76.pddl": {
@@ -12315,7 +12315,7 @@
     "search_time": 2057,
     "state_peak_memory_usage_in_bytes": 19912,
     "time_limit": 1800,
-    "total_time": 3664,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_77.pddl": {
@@ -12411,7 +12411,7 @@
     "search_time": 2203,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 3950,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_78.pddl": {
@@ -12507,7 +12507,7 @@
     "search_time": 2154,
     "state_peak_memory_usage_in_bytes": 20552,
     "time_limit": 1800,
-    "total_time": 3927,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_79.pddl": {
@@ -12603,7 +12603,7 @@
     "search_time": 2410,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 4442,
+    "total_time": 5,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_80.pddl": {
@@ -12699,7 +12699,7 @@
     "search_time": 2616,
     "state_peak_memory_usage_in_bytes": 21212,
     "time_limit": 1800,
-    "total_time": 4726,
+    "total_time": 5,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_81.pddl": {
@@ -12795,7 +12795,7 @@
     "search_time": 2780,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 4981,
+    "total_time": 5,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_82.pddl": {
@@ -12891,7 +12891,7 @@
     "search_time": 2661,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 4798,
+    "total_time": 5,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_83.pddl": {
@@ -12987,7 +12987,7 @@
     "search_time": 3242,
     "state_peak_memory_usage_in_bytes": 21532,
     "time_limit": 1800,
-    "total_time": 5733,
+    "total_time": 6,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_84.pddl": {
@@ -13083,7 +13083,7 @@
     "search_time": 3318,
     "state_peak_memory_usage_in_bytes": 21572,
     "time_limit": 1800,
-    "total_time": 5928,
+    "total_time": 6,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_85.pddl": {
@@ -13179,7 +13179,7 @@
     "search_time": 3240,
     "state_peak_memory_usage_in_bytes": 31684,
     "time_limit": 1800,
-    "total_time": 5815,
+    "total_time": 6,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_86.pddl": {
@@ -13275,7 +13275,7 @@
     "search_time": 3550,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 6269,
+    "total_time": 7,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_87.pddl": {
@@ -13371,7 +13371,7 @@
     "search_time": 3796,
     "state_peak_memory_usage_in_bytes": 31364,
     "time_limit": 1800,
-    "total_time": 6858,
+    "total_time": 7,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_88.pddl": {
@@ -13467,7 +13467,7 @@
     "search_time": 3891,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 7010,
+    "total_time": 8,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_89.pddl": {
@@ -13563,7 +13563,7 @@
     "search_time": 4335,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 7819,
+    "total_time": 8,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_90.pddl": {
@@ -13659,7 +13659,7 @@
     "search_time": 4049,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 7404,
+    "total_time": 8,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_91.pddl": {
@@ -13755,7 +13755,7 @@
     "search_time": 4487,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 8155,
+    "total_time": 9,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_92.pddl": {
@@ -13851,7 +13851,7 @@
     "search_time": 4281,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 7731,
+    "total_time": 8,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_93.pddl": {
@@ -13947,7 +13947,7 @@
     "search_time": 5055,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 9096,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_94.pddl": {
@@ -14043,7 +14043,7 @@
     "search_time": 4558,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 8136,
+    "total_time": 9,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_95.pddl": {
@@ -14139,7 +14139,7 @@
     "search_time": 5219,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 9436,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_96.pddl": {
@@ -14235,7 +14235,7 @@
     "search_time": 5007,
     "state_peak_memory_usage_in_bytes": 31464,
     "time_limit": 1800,
-    "total_time": 9079,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_97.pddl": {
@@ -14331,7 +14331,7 @@
     "search_time": 5140,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 9372,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_98.pddl": {
@@ -14427,7 +14427,7 @@
     "search_time": 5329,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 9549,
+    "total_time": 10,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_99.pddl": {
@@ -14523,7 +14523,7 @@
     "search_time": 5532,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 10020,
+    "total_time": 11,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_170.pddl": {
@@ -14619,7 +14619,7 @@
     "search_time": 31642,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 60223,
+    "total_time": 61,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_180.pddl": {
@@ -14715,7 +14715,7 @@
     "search_time": 42520,
     "state_peak_memory_usage_in_bytes": 63676,
     "time_limit": 1800,
-    "total_time": 80795,
+    "total_time": 81,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_190.pddl": {
@@ -14811,7 +14811,7 @@
     "search_time": 52123,
     "state_peak_memory_usage_in_bytes": 63756,
     "time_limit": 1800,
-    "total_time": 99639,
+    "total_time": 100,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_200.pddl": {
@@ -14907,7 +14907,7 @@
     "search_time": 55734,
     "state_peak_memory_usage_in_bytes": 63956,
     "time_limit": 1800,
-    "total_time": 106397,
+    "total_time": 107,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_210.pddl": {
@@ -15003,7 +15003,7 @@
     "search_time": 68279,
     "state_peak_memory_usage_in_bytes": 64036,
     "time_limit": 1800,
-    "total_time": 131695,
+    "total_time": 132,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_220.pddl": {
@@ -15099,7 +15099,7 @@
     "search_time": 81021,
     "state_peak_memory_usage_in_bytes": 64116,
     "time_limit": 1800,
-    "total_time": 161855,
+    "total_time": 162,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_230.pddl": {
@@ -15195,7 +15195,7 @@
     "search_time": 103603,
     "state_peak_memory_usage_in_bytes": 71364,
     "time_limit": 1800,
-    "total_time": 198598,
+    "total_time": 199,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_240.pddl": {
@@ -15291,7 +15291,7 @@
     "search_time": 114047,
     "state_peak_memory_usage_in_bytes": 72724,
     "time_limit": 1800,
-    "total_time": 219714,
+    "total_time": 220,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_250.pddl": {
@@ -15387,7 +15387,7 @@
     "search_time": 127711,
     "state_peak_memory_usage_in_bytes": 71524,
     "time_limit": 1800,
-    "total_time": 248440,
+    "total_time": 249,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_260.pddl": {
@@ -15483,7 +15483,7 @@
     "search_time": 156404,
     "state_peak_memory_usage_in_bytes": 78692,
     "time_limit": 1800,
-    "total_time": 301426,
+    "total_time": 302,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_270.pddl": {
@@ -15579,7 +15579,7 @@
     "search_time": 183385,
     "state_peak_memory_usage_in_bytes": 85252,
     "time_limit": 1800,
-    "total_time": 357647,
+    "total_time": 358,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_280.pddl": {
@@ -15675,7 +15675,7 @@
     "search_time": 197638,
     "state_peak_memory_usage_in_bytes": 91732,
     "time_limit": 1800,
-    "total_time": 388573,
+    "total_time": 389,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_290.pddl": {
@@ -15771,7 +15771,7 @@
     "search_time": 228050,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 443530,
+    "total_time": 444,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_300.pddl": {
@@ -15867,7 +15867,7 @@
     "search_time": 250695,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 484456,
+    "total_time": 485,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_310.pddl": {
@@ -15963,7 +15963,7 @@
     "search_time": 294202,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 573750,
+    "total_time": 574,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_320.pddl": {
@@ -16059,7 +16059,7 @@
     "search_time": 366171,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 717709,
+    "total_time": 718,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_330.pddl": {
@@ -16155,7 +16155,7 @@
     "search_time": 465553,
     "state_peak_memory_usage_in_bytes": 127140,
     "time_limit": 1800,
-    "total_time": 903571,
+    "total_time": 904,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_340.pddl": {
@@ -16251,7 +16251,7 @@
     "search_time": 402293,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 781293,
+    "total_time": 782,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_350.pddl": {
@@ -16347,7 +16347,7 @@
     "search_time": 531832,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 1022430,
+    "total_time": 1023,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_360.pddl": {
@@ -16443,7 +16443,7 @@
     "search_time": 554985,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 1076518,
+    "total_time": 1077,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_370.pddl": {
@@ -16539,7 +16539,7 @@
     "search_time": 585104,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 1098005,
+    "total_time": 1099,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_380.pddl": {
@@ -16635,7 +16635,7 @@
     "search_time": 660123,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 1311255,
+    "total_time": 1312,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_390.pddl": {
@@ -16731,7 +16731,7 @@
     "search_time": 794509,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 1480354,
+    "total_time": 1481,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_400.pddl": {
@@ -16997,7 +16997,7 @@
     "search_time": 935499,
     "state_peak_memory_usage_in_bytes": 128100,
     "time_limit": 1800,
-    "total_time": 1738950,
+    "total_time": 1739,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_430.pddl": {
@@ -18931,7 +18931,7 @@
     "search_time": 120345,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 121073,
+    "total_time": 122,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Gather_Multiple_Wood-Gather_Multiple_Wood_Hard.pddl": {
@@ -19149,7 +19149,7 @@
     "search_time": 276,
     "state_peak_memory_usage_in_bytes": 21471,
     "time_limit": 1800,
-    "total_time": 913,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Gather_Wood-Gather_Wood_Hard.pddl": {
@@ -19306,7 +19306,7 @@
     "search_time": 961,
     "state_peak_memory_usage_in_bytes": 33179,
     "time_limit": 1800,
-    "total_time": 4525,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Move_to_Location-Move_to_Location_Easy.pddl": {
@@ -19402,7 +19402,7 @@
     "search_time": 506,
     "state_peak_memory_usage_in_bytes": 30303,
     "time_limit": 1800,
-    "total_time": 1114,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Move_to_Location-Move_to_Location_Hard.pddl": {
@@ -19620,7 +19620,7 @@
     "search_time": 766,
     "state_peak_memory_usage_in_bytes": 33887,
     "time_limit": 1800,
-    "total_time": 1439,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Pickup_Diamond-Pickup_Diamond_Hard.pddl": {
@@ -19777,7 +19777,7 @@
     "search_time": 75587,
     "state_peak_memory_usage_in_bytes": 327963,
     "time_limit": 1800,
-    "total_time": 79066,
+    "total_time": 80,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Easy.pddl": {
@@ -19873,7 +19873,7 @@
     "search_time": 130329,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 131081,
+    "total_time": 132,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Hard.pddl": {
@@ -20091,7 +20091,7 @@
     "search_time": 6782,
     "state_peak_memory_usage_in_bytes": 110692,
     "time_limit": 1800,
-    "total_time": 7461,
+    "total_time": 8,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Place_Wood-Place_Wood_Hard.pddl": {
@@ -20309,7 +20309,7 @@
     "search_time": 276,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 674,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_101.pddl": {
@@ -20405,7 +20405,7 @@
     "search_time": 315,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 782,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_102.pddl": {
@@ -20501,7 +20501,7 @@
     "search_time": 270,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 677,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_103.pddl": {
@@ -20597,7 +20597,7 @@
     "search_time": 314,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 791,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_104.pddl": {
@@ -20693,7 +20693,7 @@
     "search_time": 278,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 700,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_105.pddl": {
@@ -20789,7 +20789,7 @@
     "search_time": 290,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 728,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_106.pddl": {
@@ -20885,7 +20885,7 @@
     "search_time": 296,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 726,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_107.pddl": {
@@ -20981,7 +20981,7 @@
     "search_time": 362,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 858,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_108.pddl": {
@@ -21077,7 +21077,7 @@
     "search_time": 286,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 744,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_109.pddl": {
@@ -21173,7 +21173,7 @@
     "search_time": 342,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 830,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_110.pddl": {
@@ -21269,7 +21269,7 @@
     "search_time": 320,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 784,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_111.pddl": {
@@ -21365,7 +21365,7 @@
     "search_time": 403,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 988,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_112.pddl": {
@@ -21461,7 +21461,7 @@
     "search_time": 338,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 816,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_113.pddl": {
@@ -21557,7 +21557,7 @@
     "search_time": 352,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 845,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_114.pddl": {
@@ -21653,7 +21653,7 @@
     "search_time": 357,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 853,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_115.pddl": {
@@ -21749,7 +21749,7 @@
     "search_time": 363,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 867,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_116.pddl": {
@@ -21845,7 +21845,7 @@
     "search_time": 451,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1055,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_117.pddl": {
@@ -21941,7 +21941,7 @@
     "search_time": 347,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 828,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_118.pddl": {
@@ -22037,7 +22037,7 @@
     "search_time": 365,
     "state_peak_memory_usage_in_bytes": 35508,
     "time_limit": 1800,
-    "total_time": 891,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_119.pddl": {
@@ -22133,7 +22133,7 @@
     "search_time": 451,
     "state_peak_memory_usage_in_bytes": 35508,
     "time_limit": 1800,
-    "total_time": 1078,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_120.pddl": {
@@ -22229,7 +22229,7 @@
     "search_time": 374,
     "state_peak_memory_usage_in_bytes": 35548,
     "time_limit": 1800,
-    "total_time": 954,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_121.pddl": {
@@ -22325,7 +22325,7 @@
     "search_time": 416,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 988,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_122.pddl": {
@@ -22421,7 +22421,7 @@
     "search_time": 516,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1182,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_123.pddl": {
@@ -22517,7 +22517,7 @@
     "search_time": 506,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1109,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_124.pddl": {
@@ -22613,7 +22613,7 @@
     "search_time": 503,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1168,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_125.pddl": {
@@ -22709,7 +22709,7 @@
     "search_time": 452,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1055,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_126.pddl": {
@@ -22805,7 +22805,7 @@
     "search_time": 517,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1148,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_127.pddl": {
@@ -22901,7 +22901,7 @@
     "search_time": 446,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1029,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_128.pddl": {
@@ -22997,7 +22997,7 @@
     "search_time": 463,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1081,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_129.pddl": {
@@ -23093,7 +23093,7 @@
     "search_time": 493,
     "state_peak_memory_usage_in_bytes": 36652,
     "time_limit": 1800,
-    "total_time": 1134,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_130.pddl": {
@@ -23189,7 +23189,7 @@
     "search_time": 501,
     "state_peak_memory_usage_in_bytes": 37972,
     "time_limit": 1800,
-    "total_time": 1159,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_131.pddl": {
@@ -23285,7 +23285,7 @@
     "search_time": 524,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1230,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_132.pddl": {
@@ -23381,7 +23381,7 @@
     "search_time": 578,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1253,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_133.pddl": {
@@ -23477,7 +23477,7 @@
     "search_time": 526,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1191,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_134.pddl": {
@@ -23573,7 +23573,7 @@
     "search_time": 530,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1225,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_135.pddl": {
@@ -23669,7 +23669,7 @@
     "search_time": 669,
     "state_peak_memory_usage_in_bytes": 38052,
     "time_limit": 1800,
-    "total_time": 1483,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_136.pddl": {
@@ -23765,7 +23765,7 @@
     "search_time": 616,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1362,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_137.pddl": {
@@ -23861,7 +23861,7 @@
     "search_time": 516,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 1216,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_138.pddl": {
@@ -23957,7 +23957,7 @@
     "search_time": 670,
     "state_peak_memory_usage_in_bytes": 39972,
     "time_limit": 1800,
-    "total_time": 1473,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_139.pddl": {
@@ -24053,7 +24053,7 @@
     "search_time": 675,
     "state_peak_memory_usage_in_bytes": 39972,
     "time_limit": 1800,
-    "total_time": 1476,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_140.pddl": {
@@ -24149,7 +24149,7 @@
     "search_time": 600,
     "state_peak_memory_usage_in_bytes": 39972,
     "time_limit": 1800,
-    "total_time": 1333,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_141.pddl": {
@@ -24245,7 +24245,7 @@
     "search_time": 581,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 1298,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_142.pddl": {
@@ -24341,7 +24341,7 @@
     "search_time": 594,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 1333,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_143.pddl": {
@@ -24437,7 +24437,7 @@
     "search_time": 575,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 1350,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_144.pddl": {
@@ -24533,7 +24533,7 @@
     "search_time": 628,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 1392,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_145.pddl": {
@@ -24629,7 +24629,7 @@
     "search_time": 773,
     "state_peak_memory_usage_in_bytes": 42532,
     "time_limit": 1800,
-    "total_time": 1684,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_146.pddl": {
@@ -24725,7 +24725,7 @@
     "search_time": 674,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 1515,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_147.pddl": {
@@ -24821,7 +24821,7 @@
     "search_time": 675,
     "state_peak_memory_usage_in_bytes": 42532,
     "time_limit": 1800,
-    "total_time": 1495,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_148.pddl": {
@@ -24917,7 +24917,7 @@
     "search_time": 673,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 1518,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_149.pddl": {
@@ -25013,7 +25013,7 @@
     "search_time": 840,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 1842,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_150.pddl": {
@@ -25109,7 +25109,7 @@
     "search_time": 633,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 1504,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_151.pddl": {
@@ -25205,7 +25205,7 @@
     "search_time": 709,
     "state_peak_memory_usage_in_bytes": 43172,
     "time_limit": 1800,
-    "total_time": 1552,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_152.pddl": {
@@ -25301,7 +25301,7 @@
     "search_time": 759,
     "state_peak_memory_usage_in_bytes": 45092,
     "time_limit": 1800,
-    "total_time": 1631,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_153.pddl": {
@@ -25397,7 +25397,7 @@
     "search_time": 700,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 1597,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_154.pddl": {
@@ -25493,7 +25493,7 @@
     "search_time": 661,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 1499,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_155.pddl": {
@@ -25589,7 +25589,7 @@
     "search_time": 829,
     "state_peak_memory_usage_in_bytes": 43852,
     "time_limit": 1800,
-    "total_time": 1764,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_156.pddl": {
@@ -25685,7 +25685,7 @@
     "search_time": 799,
     "state_peak_memory_usage_in_bytes": 45812,
     "time_limit": 1800,
-    "total_time": 1761,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_157.pddl": {
@@ -25781,7 +25781,7 @@
     "search_time": 797,
     "state_peak_memory_usage_in_bytes": 46452,
     "time_limit": 1800,
-    "total_time": 1721,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_158.pddl": {
@@ -25877,7 +25877,7 @@
     "search_time": 932,
     "state_peak_memory_usage_in_bytes": 45892,
     "time_limit": 1800,
-    "total_time": 2049,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_159.pddl": {
@@ -25973,7 +25973,7 @@
     "search_time": 856,
     "state_peak_memory_usage_in_bytes": 46532,
     "time_limit": 1800,
-    "total_time": 1869,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_160.pddl": {
@@ -26069,7 +26069,7 @@
     "search_time": 856,
     "state_peak_memory_usage_in_bytes": 45932,
     "time_limit": 1800,
-    "total_time": 1868,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_161.pddl": {
@@ -26165,7 +26165,7 @@
     "search_time": 991,
     "state_peak_memory_usage_in_bytes": 45292,
     "time_limit": 1800,
-    "total_time": 2129,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_162.pddl": {
@@ -26261,7 +26261,7 @@
     "search_time": 899,
     "state_peak_memory_usage_in_bytes": 45292,
     "time_limit": 1800,
-    "total_time": 1964,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_163.pddl": {
@@ -26357,7 +26357,7 @@
     "search_time": 860,
     "state_peak_memory_usage_in_bytes": 47212,
     "time_limit": 1800,
-    "total_time": 1895,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_164.pddl": {
@@ -26453,7 +26453,7 @@
     "search_time": 858,
     "state_peak_memory_usage_in_bytes": 45932,
     "time_limit": 1800,
-    "total_time": 1871,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_165.pddl": {
@@ -26549,7 +26549,7 @@
     "search_time": 936,
     "state_peak_memory_usage_in_bytes": 62316,
     "time_limit": 1800,
-    "total_time": 2012,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_166.pddl": {
@@ -26645,7 +26645,7 @@
     "search_time": 994,
     "state_peak_memory_usage_in_bytes": 62316,
     "time_limit": 1800,
-    "total_time": 2185,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_167.pddl": {
@@ -26741,7 +26741,7 @@
     "search_time": 1056,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 2275,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_168.pddl": {
@@ -26837,7 +26837,7 @@
     "search_time": 1170,
     "state_peak_memory_usage_in_bytes": 62316,
     "time_limit": 1800,
-    "total_time": 2411,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_169.pddl": {
@@ -26933,7 +26933,7 @@
     "search_time": 853,
     "state_peak_memory_usage_in_bytes": 62316,
     "time_limit": 1800,
-    "total_time": 1903,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_49.pddl": {
@@ -27029,7 +27029,7 @@
     "search_time": 51,
     "state_peak_memory_usage_in_bytes": 15178,
     "time_limit": 1800,
-    "total_time": 249,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_50.pddl": {
@@ -27125,7 +27125,7 @@
     "search_time": 56,
     "state_peak_memory_usage_in_bytes": 15358,
     "time_limit": 1800,
-    "total_time": 216,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_51.pddl": {
@@ -27221,7 +27221,7 @@
     "search_time": 57,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 208,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_52.pddl": {
@@ -27317,7 +27317,7 @@
     "search_time": 60,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 237,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_53.pddl": {
@@ -27413,7 +27413,7 @@
     "search_time": 69,
     "state_peak_memory_usage_in_bytes": 15858,
     "time_limit": 1800,
-    "total_time": 236,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_54.pddl": {
@@ -27509,7 +27509,7 @@
     "search_time": 67,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 287,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_55.pddl": {
@@ -27605,7 +27605,7 @@
     "search_time": 68,
     "state_peak_memory_usage_in_bytes": 15718,
     "time_limit": 1800,
-    "total_time": 254,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_56.pddl": {
@@ -27701,7 +27701,7 @@
     "search_time": 78,
     "state_peak_memory_usage_in_bytes": 17670,
     "time_limit": 1800,
-    "total_time": 262,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_57.pddl": {
@@ -27797,7 +27797,7 @@
     "search_time": 76,
     "state_peak_memory_usage_in_bytes": 17670,
     "time_limit": 1800,
-    "total_time": 268,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_58.pddl": {
@@ -27893,7 +27893,7 @@
     "search_time": 76,
     "state_peak_memory_usage_in_bytes": 17530,
     "time_limit": 1800,
-    "total_time": 288,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_59.pddl": {
@@ -27989,7 +27989,7 @@
     "search_time": 77,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 242,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_60.pddl": {
@@ -28085,7 +28085,7 @@
     "search_time": 84,
     "state_peak_memory_usage_in_bytes": 18010,
     "time_limit": 1800,
-    "total_time": 280,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_61.pddl": {
@@ -28181,7 +28181,7 @@
     "search_time": 88,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 325,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_62.pddl": {
@@ -28277,7 +28277,7 @@
     "search_time": 83,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 277,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_63.pddl": {
@@ -28373,7 +28373,7 @@
     "search_time": 95,
     "state_peak_memory_usage_in_bytes": 18030,
     "time_limit": 1800,
-    "total_time": 321,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_64.pddl": {
@@ -28469,7 +28469,7 @@
     "search_time": 93,
     "state_peak_memory_usage_in_bytes": 18350,
     "time_limit": 1800,
-    "total_time": 285,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_65.pddl": {
@@ -28565,7 +28565,7 @@
     "search_time": 114,
     "state_peak_memory_usage_in_bytes": 19182,
     "time_limit": 1800,
-    "total_time": 353,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_66.pddl": {
@@ -28661,7 +28661,7 @@
     "search_time": 118,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 347,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_67.pddl": {
@@ -28757,7 +28757,7 @@
     "search_time": 98,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 300,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_68.pddl": {
@@ -28853,7 +28853,7 @@
     "search_time": 108,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 314,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_69.pddl": {
@@ -28949,7 +28949,7 @@
     "search_time": 116,
     "state_peak_memory_usage_in_bytes": 18582,
     "time_limit": 1800,
-    "total_time": 360,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_70.pddl": {
@@ -29045,7 +29045,7 @@
     "search_time": 111,
     "state_peak_memory_usage_in_bytes": 18912,
     "time_limit": 1800,
-    "total_time": 333,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_71.pddl": {
@@ -29141,7 +29141,7 @@
     "search_time": 132,
     "state_peak_memory_usage_in_bytes": 18912,
     "time_limit": 1800,
-    "total_time": 378,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_72.pddl": {
@@ -29237,7 +29237,7 @@
     "search_time": 128,
     "state_peak_memory_usage_in_bytes": 19252,
     "time_limit": 1800,
-    "total_time": 393,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_73.pddl": {
@@ -29333,7 +29333,7 @@
     "search_time": 122,
     "state_peak_memory_usage_in_bytes": 19252,
     "time_limit": 1800,
-    "total_time": 367,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_74.pddl": {
@@ -29429,7 +29429,7 @@
     "search_time": 127,
     "state_peak_memory_usage_in_bytes": 19412,
     "time_limit": 1800,
-    "total_time": 367,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_75.pddl": {
@@ -29525,7 +29525,7 @@
     "search_time": 128,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 433,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_76.pddl": {
@@ -29621,7 +29621,7 @@
     "search_time": 132,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 393,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_77.pddl": {
@@ -29717,7 +29717,7 @@
     "search_time": 171,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 452,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_78.pddl": {
@@ -29813,7 +29813,7 @@
     "search_time": 143,
     "state_peak_memory_usage_in_bytes": 21192,
     "time_limit": 1800,
-    "total_time": 434,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_79.pddl": {
@@ -29909,7 +29909,7 @@
     "search_time": 149,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 423,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_80.pddl": {
@@ -30005,7 +30005,7 @@
     "search_time": 150,
     "state_peak_memory_usage_in_bytes": 20252,
     "time_limit": 1800,
-    "total_time": 430,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_81.pddl": {
@@ -30101,7 +30101,7 @@
     "search_time": 156,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 451,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_82.pddl": {
@@ -30197,7 +30197,7 @@
     "search_time": 163,
     "state_peak_memory_usage_in_bytes": 21212,
     "time_limit": 1800,
-    "total_time": 456,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_83.pddl": {
@@ -30293,7 +30293,7 @@
     "search_time": 183,
     "state_peak_memory_usage_in_bytes": 21852,
     "time_limit": 1800,
-    "total_time": 473,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_84.pddl": {
@@ -30389,7 +30389,7 @@
     "search_time": 191,
     "state_peak_memory_usage_in_bytes": 22532,
     "time_limit": 1800,
-    "total_time": 510,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_85.pddl": {
@@ -30485,7 +30485,7 @@
     "search_time": 186,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 495,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_86.pddl": {
@@ -30581,7 +30581,7 @@
     "search_time": 174,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 466,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_87.pddl": {
@@ -30677,7 +30677,7 @@
     "search_time": 224,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 595,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_88.pddl": {
@@ -30773,7 +30773,7 @@
     "search_time": 194,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 514,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_89.pddl": {
@@ -30869,7 +30869,7 @@
     "search_time": 202,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 519,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_90.pddl": {
@@ -30965,7 +30965,7 @@
     "search_time": 236,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 611,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_91.pddl": {
@@ -31061,7 +31061,7 @@
     "search_time": 195,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 525,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_92.pddl": {
@@ -31157,7 +31157,7 @@
     "search_time": 201,
     "state_peak_memory_usage_in_bytes": 31444,
     "time_limit": 1800,
-    "total_time": 565,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_93.pddl": {
@@ -31253,7 +31253,7 @@
     "search_time": 228,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 586,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_94.pddl": {
@@ -31349,7 +31349,7 @@
     "search_time": 222,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 599,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_95.pddl": {
@@ -31445,7 +31445,7 @@
     "search_time": 240,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 614,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_96.pddl": {
@@ -31541,7 +31541,7 @@
     "search_time": 230,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 596,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_97.pddl": {
@@ -31637,7 +31637,7 @@
     "search_time": 234,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 589,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_98.pddl": {
@@ -31733,7 +31733,7 @@
     "search_time": 244,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 624,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_99.pddl": {
@@ -31829,7 +31829,7 @@
     "search_time": 255,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 647,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_170.pddl": {
@@ -31925,7 +31925,7 @@
     "search_time": 997,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 2121,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_180.pddl": {
@@ -32021,7 +32021,7 @@
     "search_time": 1140,
     "state_peak_memory_usage_in_bytes": 63676,
     "time_limit": 1800,
-    "total_time": 2375,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_190.pddl": {
@@ -32117,7 +32117,7 @@
     "search_time": 1303,
     "state_peak_memory_usage_in_bytes": 63756,
     "time_limit": 1800,
-    "total_time": 2694,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_200.pddl": {
@@ -32213,7 +32213,7 @@
     "search_time": 1699,
     "state_peak_memory_usage_in_bytes": 63956,
     "time_limit": 1800,
-    "total_time": 3425,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_210.pddl": {
@@ -32309,7 +32309,7 @@
     "search_time": 1696,
     "state_peak_memory_usage_in_bytes": 64036,
     "time_limit": 1800,
-    "total_time": 3415,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_220.pddl": {
@@ -32405,7 +32405,7 @@
     "search_time": 2057,
     "state_peak_memory_usage_in_bytes": 64116,
     "time_limit": 1800,
-    "total_time": 3980,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_230.pddl": {
@@ -32501,7 +32501,7 @@
     "search_time": 2183,
     "state_peak_memory_usage_in_bytes": 71364,
     "time_limit": 1800,
-    "total_time": 4289,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_240.pddl": {
@@ -32597,7 +32597,7 @@
     "search_time": 2507,
     "state_peak_memory_usage_in_bytes": 71444,
     "time_limit": 1800,
-    "total_time": 4890,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_250.pddl": {
@@ -32693,7 +32693,7 @@
     "search_time": 2643,
     "state_peak_memory_usage_in_bytes": 74084,
     "time_limit": 1800,
-    "total_time": 5208,
+    "total_time": 6,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_260.pddl": {
@@ -32789,7 +32789,7 @@
     "search_time": 3416,
     "state_peak_memory_usage_in_bytes": 77412,
     "time_limit": 1800,
-    "total_time": 6467,
+    "total_time": 7,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_270.pddl": {
@@ -32885,7 +32885,7 @@
     "search_time": 2977,
     "state_peak_memory_usage_in_bytes": 86532,
     "time_limit": 1800,
-    "total_time": 5649,
+    "total_time": 6,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_280.pddl": {
@@ -32981,7 +32981,7 @@
     "search_time": 3456,
     "state_peak_memory_usage_in_bytes": 90452,
     "time_limit": 1800,
-    "total_time": 6502,
+    "total_time": 7,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_290.pddl": {
@@ -33077,7 +33077,7 @@
     "search_time": 4312,
     "state_peak_memory_usage_in_bytes": 94292,
     "time_limit": 1800,
-    "total_time": 7882,
+    "total_time": 8,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_300.pddl": {
@@ -33173,7 +33173,7 @@
     "search_time": 3968,
     "state_peak_memory_usage_in_bytes": 94292,
     "time_limit": 1800,
-    "total_time": 7521,
+    "total_time": 8,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_310.pddl": {
@@ -33269,7 +33269,7 @@
     "search_time": 4655,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 8735,
+    "total_time": 9,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_320.pddl": {
@@ -33365,7 +33365,7 @@
     "search_time": 4868,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 9092,
+    "total_time": 10,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_330.pddl": {
@@ -33461,7 +33461,7 @@
     "search_time": 5622,
     "state_peak_memory_usage_in_bytes": 127140,
     "time_limit": 1800,
-    "total_time": 10288,
+    "total_time": 11,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_340.pddl": {
@@ -33557,7 +33557,7 @@
     "search_time": 6359,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 11417,
+    "total_time": 12,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_350.pddl": {
@@ -33653,7 +33653,7 @@
     "search_time": 6542,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 12001,
+    "total_time": 13,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_360.pddl": {
@@ -33749,7 +33749,7 @@
     "search_time": 6882,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 12592,
+    "total_time": 13,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_370.pddl": {
@@ -33845,7 +33845,7 @@
     "search_time": 7874,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 14066,
+    "total_time": 15,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_380.pddl": {
@@ -33941,7 +33941,7 @@
     "search_time": 9212,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 16581,
+    "total_time": 17,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_390.pddl": {
@@ -34037,7 +34037,7 @@
     "search_time": 8850,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 15899,
+    "total_time": 16,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_400.pddl": {
@@ -34133,7 +34133,7 @@
     "search_time": 9240,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 17077,
+    "total_time": 18,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_410.pddl": {
@@ -34229,7 +34229,7 @@
     "search_time": 9767,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 17875,
+    "total_time": 18,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_420.pddl": {
@@ -34325,7 +34325,7 @@
     "search_time": 9532,
     "state_peak_memory_usage_in_bytes": 128100,
     "time_limit": 1800,
-    "total_time": 17696,
+    "total_time": 18,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_430.pddl": {
@@ -34421,7 +34421,7 @@
     "search_time": 11257,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 20512,
+    "total_time": 21,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_440.pddl": {
@@ -34517,7 +34517,7 @@
     "search_time": 11476,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 21019,
+    "total_time": 22,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_450.pddl": {
@@ -34613,7 +34613,7 @@
     "search_time": 14285,
     "state_peak_memory_usage_in_bytes": 142596,
     "time_limit": 1800,
-    "total_time": 25987,
+    "total_time": 26,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Bridge-Bridge_Easy.pddl": {
@@ -36292,7 +36292,7 @@
     "search_time": 229318,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 230038,
+    "total_time": 231,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Gather_Multiple_Wood-Gather_Multiple_Wood_Hard.pddl": {
@@ -36510,7 +36510,7 @@
     "search_time": 623,
     "state_peak_memory_usage_in_bytes": 21151,
     "time_limit": 1800,
-    "total_time": 1343,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Gather_Wood-Gather_Wood_Hard.pddl": {
@@ -36667,7 +36667,7 @@
     "search_time": 1559,
     "state_peak_memory_usage_in_bytes": 33179,
     "time_limit": 1800,
-    "total_time": 5053,
+    "total_time": 6,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Move_to_Location-Move_to_Location_Easy.pddl": {
@@ -36763,7 +36763,7 @@
     "search_time": 979,
     "state_peak_memory_usage_in_bytes": 29983,
     "time_limit": 1800,
-    "total_time": 1676,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Move_to_Location-Move_to_Location_Hard.pddl": {
@@ -36981,7 +36981,7 @@
     "search_time": 1747,
     "state_peak_memory_usage_in_bytes": 35167,
     "time_limit": 1800,
-    "total_time": 2464,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Pickup_Diamond-Pickup_Diamond_Hard.pddl": {
@@ -37138,7 +37138,7 @@
     "search_time": 139186,
     "state_peak_memory_usage_in_bytes": 327963,
     "time_limit": 1800,
-    "total_time": 142811,
+    "total_time": 143,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Easy.pddl": {
@@ -37234,7 +37234,7 @@
     "search_time": 256601,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 257360,
+    "total_time": 258,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Hard.pddl": {
@@ -37452,7 +37452,7 @@
     "search_time": 14447,
     "state_peak_memory_usage_in_bytes": 110692,
     "time_limit": 1800,
-    "total_time": 15136,
+    "total_time": 16,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Place_Wood-Place_Wood_Hard.pddl": {
@@ -37670,7 +37670,7 @@
     "search_time": 579,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 1115,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_101.pddl": {
@@ -37766,7 +37766,7 @@
     "search_time": 583,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 1119,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_102.pddl": {
@@ -37862,7 +37862,7 @@
     "search_time": 553,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 1057,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_103.pddl": {
@@ -37958,7 +37958,7 @@
     "search_time": 648,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 1256,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_104.pddl": {
@@ -38054,7 +38054,7 @@
     "search_time": 721,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 1391,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_105.pddl": {
@@ -38150,7 +38150,7 @@
     "search_time": 616,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1143,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_106.pddl": {
@@ -38246,7 +38246,7 @@
     "search_time": 641,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1209,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_107.pddl": {
@@ -38342,7 +38342,7 @@
     "search_time": 576,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1121,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_108.pddl": {
@@ -38438,7 +38438,7 @@
     "search_time": 738,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1447,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_109.pddl": {
@@ -38534,7 +38534,7 @@
     "search_time": 686,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1274,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_110.pddl": {
@@ -38630,7 +38630,7 @@
     "search_time": 767,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1439,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_111.pddl": {
@@ -38726,7 +38726,7 @@
     "search_time": 763,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 1425,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_112.pddl": {
@@ -38822,7 +38822,7 @@
     "search_time": 736,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1333,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_113.pddl": {
@@ -38918,7 +38918,7 @@
     "search_time": 688,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1281,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_114.pddl": {
@@ -39014,7 +39014,7 @@
     "search_time": 743,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1346,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_115.pddl": {
@@ -39110,7 +39110,7 @@
     "search_time": 869,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1613,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_116.pddl": {
@@ -39206,7 +39206,7 @@
     "search_time": 741,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1383,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_117.pddl": {
@@ -39302,7 +39302,7 @@
     "search_time": 778,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 1424,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_118.pddl": {
@@ -39398,7 +39398,7 @@
     "search_time": 781,
     "state_peak_memory_usage_in_bytes": 36148,
     "time_limit": 1800,
-    "total_time": 1469,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_119.pddl": {
@@ -39494,7 +39494,7 @@
     "search_time": 821,
     "state_peak_memory_usage_in_bytes": 35508,
     "time_limit": 1800,
-    "total_time": 1496,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_120.pddl": {
@@ -39590,7 +39590,7 @@
     "search_time": 861,
     "state_peak_memory_usage_in_bytes": 36828,
     "time_limit": 1800,
-    "total_time": 1610,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_121.pddl": {
@@ -39686,7 +39686,7 @@
     "search_time": 790,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1477,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_122.pddl": {
@@ -39782,7 +39782,7 @@
     "search_time": 872,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1626,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_123.pddl": {
@@ -39878,7 +39878,7 @@
     "search_time": 891,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 1703,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_124.pddl": {
@@ -39974,7 +39974,7 @@
     "search_time": 867,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1591,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_125.pddl": {
@@ -40070,7 +40070,7 @@
     "search_time": 862,
     "state_peak_memory_usage_in_bytes": 36868,
     "time_limit": 1800,
-    "total_time": 1555,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_126.pddl": {
@@ -40166,7 +40166,7 @@
     "search_time": 952,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1727,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_127.pddl": {
@@ -40262,7 +40262,7 @@
     "search_time": 1115,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 2038,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_128.pddl": {
@@ -40358,7 +40358,7 @@
     "search_time": 936,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 1688,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_129.pddl": {
@@ -40454,7 +40454,7 @@
     "search_time": 985,
     "state_peak_memory_usage_in_bytes": 37292,
     "time_limit": 1800,
-    "total_time": 1821,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_130.pddl": {
@@ -40550,7 +40550,7 @@
     "search_time": 967,
     "state_peak_memory_usage_in_bytes": 37972,
     "time_limit": 1800,
-    "total_time": 1763,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_131.pddl": {
@@ -40646,7 +40646,7 @@
     "search_time": 988,
     "state_peak_memory_usage_in_bytes": 38052,
     "time_limit": 1800,
-    "total_time": 1853,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_132.pddl": {
@@ -40742,7 +40742,7 @@
     "search_time": 1091,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 1975,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_133.pddl": {
@@ -40838,7 +40838,7 @@
     "search_time": 1121,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 2032,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_134.pddl": {
@@ -40934,7 +40934,7 @@
     "search_time": 1089,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 1941,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_135.pddl": {
@@ -41030,7 +41030,7 @@
     "search_time": 1060,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 1947,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_136.pddl": {
@@ -41126,7 +41126,7 @@
     "search_time": 1234,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 2206,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_137.pddl": {
@@ -41222,7 +41222,7 @@
     "search_time": 1158,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 2107,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_138.pddl": {
@@ -41318,7 +41318,7 @@
     "search_time": 1222,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 2279,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_139.pddl": {
@@ -41414,7 +41414,7 @@
     "search_time": 1100,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2038,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_140.pddl": {
@@ -41510,7 +41510,7 @@
     "search_time": 1056,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 1990,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_141.pddl": {
@@ -41606,7 +41606,7 @@
     "search_time": 1252,
     "state_peak_memory_usage_in_bytes": 40612,
     "time_limit": 1800,
-    "total_time": 2252,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_142.pddl": {
@@ -41702,7 +41702,7 @@
     "search_time": 1283,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 2283,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_143.pddl": {
@@ -41798,7 +41798,7 @@
     "search_time": 1319,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2358,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_144.pddl": {
@@ -41894,7 +41894,7 @@
     "search_time": 1484,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2622,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_145.pddl": {
@@ -41990,7 +41990,7 @@
     "search_time": 1367,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2462,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_146.pddl": {
@@ -42086,7 +42086,7 @@
     "search_time": 1378,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2494,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_147.pddl": {
@@ -42182,7 +42182,7 @@
     "search_time": 1552,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 2762,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_148.pddl": {
@@ -42278,7 +42278,7 @@
     "search_time": 1471,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 2620,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_149.pddl": {
@@ -42374,7 +42374,7 @@
     "search_time": 1214,
     "state_peak_memory_usage_in_bytes": 43172,
     "time_limit": 1800,
-    "total_time": 2211,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_150.pddl": {
@@ -42470,7 +42470,7 @@
     "search_time": 1374,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 2488,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_151.pddl": {
@@ -42566,7 +42566,7 @@
     "search_time": 1381,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 2541,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_152.pddl": {
@@ -42662,7 +42662,7 @@
     "search_time": 1354,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 2471,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_153.pddl": {
@@ -42758,7 +42758,7 @@
     "search_time": 1434,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 2655,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_154.pddl": {
@@ -42854,7 +42854,7 @@
     "search_time": 1460,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 2655,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_155.pddl": {
@@ -42950,7 +42950,7 @@
     "search_time": 1580,
     "state_peak_memory_usage_in_bytes": 44492,
     "time_limit": 1800,
-    "total_time": 2752,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_156.pddl": {
@@ -43046,7 +43046,7 @@
     "search_time": 1605,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 2926,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_157.pddl": {
@@ -43142,7 +43142,7 @@
     "search_time": 1626,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 2910,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_158.pddl": {
@@ -43238,7 +43238,7 @@
     "search_time": 1796,
     "state_peak_memory_usage_in_bytes": 45892,
     "time_limit": 1800,
-    "total_time": 3221,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_159.pddl": {
@@ -43334,7 +43334,7 @@
     "search_time": 1677,
     "state_peak_memory_usage_in_bytes": 45252,
     "time_limit": 1800,
-    "total_time": 3023,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_160.pddl": {
@@ -43430,7 +43430,7 @@
     "search_time": 1687,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 3038,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_161.pddl": {
@@ -43526,7 +43526,7 @@
     "search_time": 1793,
     "state_peak_memory_usage_in_bytes": 45932,
     "time_limit": 1800,
-    "total_time": 3238,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_162.pddl": {
@@ -43622,7 +43622,7 @@
     "search_time": 1597,
     "state_peak_memory_usage_in_bytes": 47212,
     "time_limit": 1800,
-    "total_time": 2844,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_163.pddl": {
@@ -43718,7 +43718,7 @@
     "search_time": 1741,
     "state_peak_memory_usage_in_bytes": 45292,
     "time_limit": 1800,
-    "total_time": 3100,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_164.pddl": {
@@ -43814,7 +43814,7 @@
     "search_time": 1806,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 3235,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_165.pddl": {
@@ -43910,7 +43910,7 @@
     "search_time": 1828,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 3261,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_166.pddl": {
@@ -44006,7 +44006,7 @@
     "search_time": 1819,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 3221,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_167.pddl": {
@@ -44102,7 +44102,7 @@
     "search_time": 2008,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 3545,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_168.pddl": {
@@ -44198,7 +44198,7 @@
     "search_time": 1993,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 3477,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_169.pddl": {
@@ -44294,7 +44294,7 @@
     "search_time": 1961,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 3484,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_49.pddl": {
@@ -44390,7 +44390,7 @@
     "search_time": 143,
     "state_peak_memory_usage_in_bytes": 15338,
     "time_limit": 1800,
-    "total_time": 324,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_50.pddl": {
@@ -44486,7 +44486,7 @@
     "search_time": 135,
     "state_peak_memory_usage_in_bytes": 15518,
     "time_limit": 1800,
-    "total_time": 298,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_51.pddl": {
@@ -44582,7 +44582,7 @@
     "search_time": 147,
     "state_peak_memory_usage_in_bytes": 15538,
     "time_limit": 1800,
-    "total_time": 342,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_52.pddl": {
@@ -44678,7 +44678,7 @@
     "search_time": 129,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 313,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_53.pddl": {
@@ -44774,7 +44774,7 @@
     "search_time": 158,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 358,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_54.pddl": {
@@ -44870,7 +44870,7 @@
     "search_time": 159,
     "state_peak_memory_usage_in_bytes": 15378,
     "time_limit": 1800,
-    "total_time": 389,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_55.pddl": {
@@ -44966,7 +44966,7 @@
     "search_time": 147,
     "state_peak_memory_usage_in_bytes": 16198,
     "time_limit": 1800,
-    "total_time": 347,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_56.pddl": {
@@ -45062,7 +45062,7 @@
     "search_time": 172,
     "state_peak_memory_usage_in_bytes": 17510,
     "time_limit": 1800,
-    "total_time": 376,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_57.pddl": {
@@ -45158,7 +45158,7 @@
     "search_time": 155,
     "state_peak_memory_usage_in_bytes": 17670,
     "time_limit": 1800,
-    "total_time": 364,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_58.pddl": {
@@ -45254,7 +45254,7 @@
     "search_time": 190,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 440,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_59.pddl": {
@@ -45350,7 +45350,7 @@
     "search_time": 198,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 393,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_60.pddl": {
@@ -45446,7 +45446,7 @@
     "search_time": 187,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 419,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_61.pddl": {
@@ -45542,7 +45542,7 @@
     "search_time": 173,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 357,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_62.pddl": {
@@ -45638,7 +45638,7 @@
     "search_time": 244,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 513,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_63.pddl": {
@@ -45734,7 +45734,7 @@
     "search_time": 223,
     "state_peak_memory_usage_in_bytes": 17710,
     "time_limit": 1800,
-    "total_time": 448,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_64.pddl": {
@@ -45830,7 +45830,7 @@
     "search_time": 216,
     "state_peak_memory_usage_in_bytes": 18030,
     "time_limit": 1800,
-    "total_time": 476,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_65.pddl": {
@@ -45926,7 +45926,7 @@
     "search_time": 217,
     "state_peak_memory_usage_in_bytes": 18222,
     "time_limit": 1800,
-    "total_time": 498,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_66.pddl": {
@@ -46022,7 +46022,7 @@
     "search_time": 235,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 513,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_67.pddl": {
@@ -46118,7 +46118,7 @@
     "search_time": 247,
     "state_peak_memory_usage_in_bytes": 18242,
     "time_limit": 1800,
-    "total_time": 513,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_68.pddl": {
@@ -46214,7 +46214,7 @@
     "search_time": 238,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 482,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_69.pddl": {
@@ -46310,7 +46310,7 @@
     "search_time": 233,
     "state_peak_memory_usage_in_bytes": 18582,
     "time_limit": 1800,
-    "total_time": 503,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_70.pddl": {
@@ -46406,7 +46406,7 @@
     "search_time": 262,
     "state_peak_memory_usage_in_bytes": 19872,
     "time_limit": 1800,
-    "total_time": 547,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_71.pddl": {
@@ -46502,7 +46502,7 @@
     "search_time": 269,
     "state_peak_memory_usage_in_bytes": 19232,
     "time_limit": 1800,
-    "total_time": 535,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_72.pddl": {
@@ -46598,7 +46598,7 @@
     "search_time": 258,
     "state_peak_memory_usage_in_bytes": 18612,
     "time_limit": 1800,
-    "total_time": 519,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_73.pddl": {
@@ -46694,7 +46694,7 @@
     "search_time": 303,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 590,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_74.pddl": {
@@ -46790,7 +46790,7 @@
     "search_time": 292,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 618,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_75.pddl": {
@@ -46886,7 +46886,7 @@
     "search_time": 323,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 648,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_76.pddl": {
@@ -46982,7 +46982,7 @@
     "search_time": 319,
     "state_peak_memory_usage_in_bytes": 19912,
     "time_limit": 1800,
-    "total_time": 632,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_77.pddl": {
@@ -47078,7 +47078,7 @@
     "search_time": 309,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 633,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_78.pddl": {
@@ -47174,7 +47174,7 @@
     "search_time": 304,
     "state_peak_memory_usage_in_bytes": 20552,
     "time_limit": 1800,
-    "total_time": 628,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_79.pddl": {
@@ -47270,7 +47270,7 @@
     "search_time": 337,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 688,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_80.pddl": {
@@ -47366,7 +47366,7 @@
     "search_time": 349,
     "state_peak_memory_usage_in_bytes": 21212,
     "time_limit": 1800,
-    "total_time": 688,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_81.pddl": {
@@ -47462,7 +47462,7 @@
     "search_time": 404,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 823,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_82.pddl": {
@@ -47558,7 +47558,7 @@
     "search_time": 380,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 732,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_83.pddl": {
@@ -47654,7 +47654,7 @@
     "search_time": 365,
     "state_peak_memory_usage_in_bytes": 21532,
     "time_limit": 1800,
-    "total_time": 710,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_84.pddl": {
@@ -47750,7 +47750,7 @@
     "search_time": 380,
     "state_peak_memory_usage_in_bytes": 21572,
     "time_limit": 1800,
-    "total_time": 771,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_85.pddl": {
@@ -47846,7 +47846,7 @@
     "search_time": 400,
     "state_peak_memory_usage_in_bytes": 31684,
     "time_limit": 1800,
-    "total_time": 767,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_86.pddl": {
@@ -47942,7 +47942,7 @@
     "search_time": 373,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 741,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_87.pddl": {
@@ -48038,7 +48038,7 @@
     "search_time": 391,
     "state_peak_memory_usage_in_bytes": 31364,
     "time_limit": 1800,
-    "total_time": 762,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_88.pddl": {
@@ -48134,7 +48134,7 @@
     "search_time": 406,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 799,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_89.pddl": {
@@ -48230,7 +48230,7 @@
     "search_time": 435,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 852,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_90.pddl": {
@@ -48326,7 +48326,7 @@
     "search_time": 460,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 865,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_91.pddl": {
@@ -48422,7 +48422,7 @@
     "search_time": 448,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 874,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_92.pddl": {
@@ -48518,7 +48518,7 @@
     "search_time": 484,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 959,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_93.pddl": {
@@ -48614,7 +48614,7 @@
     "search_time": 506,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 972,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_94.pddl": {
@@ -48710,7 +48710,7 @@
     "search_time": 463,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 907,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_95.pddl": {
@@ -48806,7 +48806,7 @@
     "search_time": 560,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 1028,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_96.pddl": {
@@ -48902,7 +48902,7 @@
     "search_time": 564,
     "state_peak_memory_usage_in_bytes": 31464,
     "time_limit": 1800,
-    "total_time": 1083,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_97.pddl": {
@@ -48998,7 +48998,7 @@
     "search_time": 533,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 1011,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_98.pddl": {
@@ -49094,7 +49094,7 @@
     "search_time": 542,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 1043,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_99.pddl": {
@@ -49190,7 +49190,7 @@
     "search_time": 519,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 967,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_170.pddl": {
@@ -49286,7 +49286,7 @@
     "search_time": 2113,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 3727,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_180.pddl": {
@@ -49382,7 +49382,7 @@
     "search_time": 2189,
     "state_peak_memory_usage_in_bytes": 63676,
     "time_limit": 1800,
-    "total_time": 3900,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_190.pddl": {
@@ -49478,7 +49478,7 @@
     "search_time": 2540,
     "state_peak_memory_usage_in_bytes": 63756,
     "time_limit": 1800,
-    "total_time": 4394,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_200.pddl": {
@@ -49574,7 +49574,7 @@
     "search_time": 2837,
     "state_peak_memory_usage_in_bytes": 63956,
     "time_limit": 1800,
-    "total_time": 4935,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_210.pddl": {
@@ -49670,7 +49670,7 @@
     "search_time": 3203,
     "state_peak_memory_usage_in_bytes": 64036,
     "time_limit": 1800,
-    "total_time": 5656,
+    "total_time": 6,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_220.pddl": {
@@ -49766,7 +49766,7 @@
     "search_time": 3442,
     "state_peak_memory_usage_in_bytes": 64116,
     "time_limit": 1800,
-    "total_time": 5891,
+    "total_time": 6,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_230.pddl": {
@@ -49862,7 +49862,7 @@
     "search_time": 3566,
     "state_peak_memory_usage_in_bytes": 71364,
     "time_limit": 1800,
-    "total_time": 6331,
+    "total_time": 7,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_240.pddl": {
@@ -49958,7 +49958,7 @@
     "search_time": 4028,
     "state_peak_memory_usage_in_bytes": 72724,
     "time_limit": 1800,
-    "total_time": 6959,
+    "total_time": 7,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_250.pddl": {
@@ -50054,7 +50054,7 @@
     "search_time": 4860,
     "state_peak_memory_usage_in_bytes": 71524,
     "time_limit": 1800,
-    "total_time": 8288,
+    "total_time": 9,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_260.pddl": {
@@ -50150,7 +50150,7 @@
     "search_time": 5404,
     "state_peak_memory_usage_in_bytes": 78692,
     "time_limit": 1800,
-    "total_time": 9021,
+    "total_time": 10,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_270.pddl": {
@@ -50246,7 +50246,7 @@
     "search_time": 5805,
     "state_peak_memory_usage_in_bytes": 85252,
     "time_limit": 1800,
-    "total_time": 9812,
+    "total_time": 10,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_280.pddl": {
@@ -50342,7 +50342,7 @@
     "search_time": 6420,
     "state_peak_memory_usage_in_bytes": 91732,
     "time_limit": 1800,
-    "total_time": 10921,
+    "total_time": 11,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_290.pddl": {
@@ -50438,7 +50438,7 @@
     "search_time": 7469,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 12255,
+    "total_time": 13,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_300.pddl": {
@@ -50534,7 +50534,7 @@
     "search_time": 7088,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 12033,
+    "total_time": 13,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_310.pddl": {
@@ -50630,7 +50630,7 @@
     "search_time": 8008,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 13201,
+    "total_time": 14,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_320.pddl": {
@@ -50726,7 +50726,7 @@
     "search_time": 9635,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 16181,
+    "total_time": 17,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_330.pddl": {
@@ -50822,7 +50822,7 @@
     "search_time": 9631,
     "state_peak_memory_usage_in_bytes": 127140,
     "time_limit": 1800,
-    "total_time": 15727,
+    "total_time": 16,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_340.pddl": {
@@ -50918,7 +50918,7 @@
     "search_time": 10364,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 17367,
+    "total_time": 18,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_350.pddl": {
@@ -51014,7 +51014,7 @@
     "search_time": 12750,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 21324,
+    "total_time": 22,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_360.pddl": {
@@ -51110,7 +51110,7 @@
     "search_time": 11940,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 19265,
+    "total_time": 20,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_370.pddl": {
@@ -51206,7 +51206,7 @@
     "search_time": 14427,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 23553,
+    "total_time": 24,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_380.pddl": {
@@ -51302,7 +51302,7 @@
     "search_time": 14071,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 23502,
+    "total_time": 24,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_390.pddl": {
@@ -51398,7 +51398,7 @@
     "search_time": 15697,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 25108,
+    "total_time": 26,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_400.pddl": {
@@ -51494,7 +51494,7 @@
     "search_time": 22065,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 40541,
+    "total_time": 41,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_410.pddl": {
@@ -51590,7 +51590,7 @@
     "search_time": 16422,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 26859,
+    "total_time": 27,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_420.pddl": {
@@ -51686,7 +51686,7 @@
     "search_time": 17032,
     "state_peak_memory_usage_in_bytes": 128100,
     "time_limit": 1800,
-    "total_time": 28729,
+    "total_time": 29,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_430.pddl": {
@@ -51782,7 +51782,7 @@
     "search_time": 20819,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 34690,
+    "total_time": 35,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_440.pddl": {
@@ -51878,7 +51878,7 @@
     "search_time": 20371,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 33413,
+    "total_time": 34,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_450.pddl": {
@@ -51974,7 +51974,7 @@
     "search_time": 23187,
     "state_peak_memory_usage_in_bytes": 142596,
     "time_limit": 1800,
-    "total_time": 38292,
+    "total_time": 39,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Bridge-Bridge_Easy.pddl": {
@@ -53695,7 +53695,7 @@
     "search_time": 6191,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 28228,
+    "total_time": 29,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Gather_Multiple_Wood-Gather_Multiple_Wood_Hard.pddl": {
@@ -53905,7 +53905,7 @@
     "search_time": 15,
     "state_peak_memory_usage_in_bytes": 20191,
     "time_limit": 1800,
-    "total_time": 21842,
+    "total_time": 22,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Gather_Wood-Gather_Wood_Hard.pddl": {
@@ -54052,7 +54052,7 @@
     "search_time": 32,
     "state_peak_memory_usage_in_bytes": 34459,
     "time_limit": 1800,
-    "total_time": 392861,
+    "total_time": 393,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Move_to_Location-Move_to_Location_Easy.pddl": {
@@ -54136,7 +54136,7 @@
     "search_time": 27,
     "state_peak_memory_usage_in_bytes": 29983,
     "time_limit": 1800,
-    "total_time": 20841,
+    "total_time": 21,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Move_to_Location-Move_to_Location_Hard.pddl": {
@@ -54346,7 +54346,7 @@
     "search_time": 40,
     "state_peak_memory_usage_in_bytes": 35167,
     "time_limit": 1800,
-    "total_time": 22771,
+    "total_time": 23,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Pickup_Diamond-Pickup_Diamond_Hard.pddl": {
@@ -54493,7 +54493,7 @@
     "search_time": 3079,
     "state_peak_memory_usage_in_bytes": 327963,
     "time_limit": 1800,
-    "total_time": 433344,
+    "total_time": 434,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Easy.pddl": {
@@ -54577,7 +54577,7 @@
     "search_time": 8690,
     "state_peak_memory_usage_in_bytes": 1343583,
     "time_limit": 1800,
-    "total_time": 31323,
+    "total_time": 32,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Pickup_and_Place-Pickup_and_Place_Hard.pddl": {
@@ -54787,7 +54787,7 @@
     "search_time": 313,
     "state_peak_memory_usage_in_bytes": 110692,
     "time_limit": 1800,
-    "total_time": 27568,
+    "total_time": 28,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Place_Wood-Place_Wood_Hard.pddl": {
@@ -54997,7 +54997,7 @@
     "search_time": 20,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 4894,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_101.pddl": {
@@ -55081,7 +55081,7 @@
     "search_time": 19,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 4746,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_102.pddl": {
@@ -55165,7 +55165,7 @@
     "search_time": 21,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 5012,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_103.pddl": {
@@ -55249,7 +55249,7 @@
     "search_time": 20,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 5104,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_104.pddl": {
@@ -55333,7 +55333,7 @@
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 31864,
     "time_limit": 1800,
-    "total_time": 5257,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_105.pddl": {
@@ -55417,7 +55417,7 @@
     "search_time": 24,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 6046,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_106.pddl": {
@@ -55501,7 +55501,7 @@
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 5765,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_107.pddl": {
@@ -55585,7 +55585,7 @@
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 5855,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_108.pddl": {
@@ -55669,7 +55669,7 @@
     "search_time": 26,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 6388,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_109.pddl": {
@@ -55753,7 +55753,7 @@
     "search_time": 25,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 6520,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_110.pddl": {
@@ -55837,7 +55837,7 @@
     "search_time": 27,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 6447,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_111.pddl": {
@@ -55921,7 +55921,7 @@
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 31884,
     "time_limit": 1800,
-    "total_time": 6044,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_112.pddl": {
@@ -56005,7 +56005,7 @@
     "search_time": 26,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 6291,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_113.pddl": {
@@ -56089,7 +56089,7 @@
     "search_time": 26,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 6934,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_114.pddl": {
@@ -56173,7 +56173,7 @@
     "search_time": 26,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 6988,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_115.pddl": {
@@ -56257,7 +56257,7 @@
     "search_time": 27,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 7345,
+    "total_time": 8,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_116.pddl": {
@@ -56341,7 +56341,7 @@
     "search_time": 30,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 8045,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_117.pddl": {
@@ -56425,7 +56425,7 @@
     "search_time": 28,
     "state_peak_memory_usage_in_bytes": 35468,
     "time_limit": 1800,
-    "total_time": 7552,
+    "total_time": 8,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_118.pddl": {
@@ -56509,7 +56509,7 @@
     "search_time": 30,
     "state_peak_memory_usage_in_bytes": 36148,
     "time_limit": 1800,
-    "total_time": 8180,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_119.pddl": {
@@ -56593,7 +56593,7 @@
     "search_time": 29,
     "state_peak_memory_usage_in_bytes": 35508,
     "time_limit": 1800,
-    "total_time": 7399,
+    "total_time": 8,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_120.pddl": {
@@ -56677,7 +56677,7 @@
     "search_time": 35,
     "state_peak_memory_usage_in_bytes": 36828,
     "time_limit": 1800,
-    "total_time": 8918,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_121.pddl": {
@@ -56761,7 +56761,7 @@
     "search_time": 28,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 7924,
+    "total_time": 8,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_122.pddl": {
@@ -56845,7 +56845,7 @@
     "search_time": 32,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 8581,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_123.pddl": {
@@ -56929,7 +56929,7 @@
     "search_time": 30,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 8073,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_124.pddl": {
@@ -57013,7 +57013,7 @@
     "search_time": 30,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 8572,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_125.pddl": {
@@ -57097,7 +57097,7 @@
     "search_time": 34,
     "state_peak_memory_usage_in_bytes": 36868,
     "time_limit": 1800,
-    "total_time": 9027,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_126.pddl": {
@@ -57181,7 +57181,7 @@
     "search_time": 31,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 8970,
+    "total_time": 9,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_127.pddl": {
@@ -57265,7 +57265,7 @@
     "search_time": 31,
     "state_peak_memory_usage_in_bytes": 35588,
     "time_limit": 1800,
-    "total_time": 9008,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_128.pddl": {
@@ -57349,7 +57349,7 @@
     "search_time": 32,
     "state_peak_memory_usage_in_bytes": 36228,
     "time_limit": 1800,
-    "total_time": 9470,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_129.pddl": {
@@ -57433,7 +57433,7 @@
     "search_time": 34,
     "state_peak_memory_usage_in_bytes": 37292,
     "time_limit": 1800,
-    "total_time": 9618,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_130.pddl": {
@@ -57517,7 +57517,7 @@
     "search_time": 33,
     "state_peak_memory_usage_in_bytes": 37972,
     "time_limit": 1800,
-    "total_time": 9672,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_131.pddl": {
@@ -57601,7 +57601,7 @@
     "search_time": 35,
     "state_peak_memory_usage_in_bytes": 38052,
     "time_limit": 1800,
-    "total_time": 10058,
+    "total_time": 11,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_132.pddl": {
@@ -57685,7 +57685,7 @@
     "search_time": 42,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 11907,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_133.pddl": {
@@ -57769,7 +57769,7 @@
     "search_time": 40,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 10926,
+    "total_time": 11,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_134.pddl": {
@@ -57853,7 +57853,7 @@
     "search_time": 45,
     "state_peak_memory_usage_in_bytes": 38692,
     "time_limit": 1800,
-    "total_time": 12253,
+    "total_time": 13,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_135.pddl": {
@@ -57937,7 +57937,7 @@
     "search_time": 39,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 11169,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_136.pddl": {
@@ -58021,7 +58021,7 @@
     "search_time": 45,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 13038,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_137.pddl": {
@@ -58105,7 +58105,7 @@
     "search_time": 43,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 12529,
+    "total_time": 13,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_138.pddl": {
@@ -58189,7 +58189,7 @@
     "search_time": 44,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 11603,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_139.pddl": {
@@ -58273,7 +58273,7 @@
     "search_time": 39,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 11434,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_140.pddl": {
@@ -58357,7 +58357,7 @@
     "search_time": 44,
     "state_peak_memory_usage_in_bytes": 39332,
     "time_limit": 1800,
-    "total_time": 12107,
+    "total_time": 13,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_141.pddl": {
@@ -58441,7 +58441,7 @@
     "search_time": 48,
     "state_peak_memory_usage_in_bytes": 40612,
     "time_limit": 1800,
-    "total_time": 13545,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_142.pddl": {
@@ -58525,7 +58525,7 @@
     "search_time": 42,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 12270,
+    "total_time": 13,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_143.pddl": {
@@ -58609,7 +58609,7 @@
     "search_time": 47,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 13421,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_144.pddl": {
@@ -58693,7 +58693,7 @@
     "search_time": 49,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 14778,
+    "total_time": 15,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_145.pddl": {
@@ -58777,7 +58777,7 @@
     "search_time": 45,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 13609,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_146.pddl": {
@@ -58861,7 +58861,7 @@
     "search_time": 48,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 13239,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_147.pddl": {
@@ -58945,7 +58945,7 @@
     "search_time": 46,
     "state_peak_memory_usage_in_bytes": 41892,
     "time_limit": 1800,
-    "total_time": 13912,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_148.pddl": {
@@ -59029,7 +59029,7 @@
     "search_time": 54,
     "state_peak_memory_usage_in_bytes": 41252,
     "time_limit": 1800,
-    "total_time": 15621,
+    "total_time": 16,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_149.pddl": {
@@ -59113,7 +59113,7 @@
     "search_time": 55,
     "state_peak_memory_usage_in_bytes": 43172,
     "time_limit": 1800,
-    "total_time": 15914,
+    "total_time": 16,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_150.pddl": {
@@ -59197,7 +59197,7 @@
     "search_time": 58,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 16830,
+    "total_time": 17,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_151.pddl": {
@@ -59281,7 +59281,7 @@
     "search_time": 53,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 15688,
+    "total_time": 16,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_152.pddl": {
@@ -59365,7 +59365,7 @@
     "search_time": 53,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 15307,
+    "total_time": 16,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_153.pddl": {
@@ -59449,7 +59449,7 @@
     "search_time": 51,
     "state_peak_memory_usage_in_bytes": 44452,
     "time_limit": 1800,
-    "total_time": 14941,
+    "total_time": 15,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_154.pddl": {
@@ -59533,7 +59533,7 @@
     "search_time": 58,
     "state_peak_memory_usage_in_bytes": 43812,
     "time_limit": 1800,
-    "total_time": 17269,
+    "total_time": 18,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_155.pddl": {
@@ -59617,7 +59617,7 @@
     "search_time": 62,
     "state_peak_memory_usage_in_bytes": 44492,
     "time_limit": 1800,
-    "total_time": 18761,
+    "total_time": 19,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_156.pddl": {
@@ -59701,7 +59701,7 @@
     "search_time": 53,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 16108,
+    "total_time": 17,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_157.pddl": {
@@ -59785,7 +59785,7 @@
     "search_time": 59,
     "state_peak_memory_usage_in_bytes": 44532,
     "time_limit": 1800,
-    "total_time": 17685,
+    "total_time": 18,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_158.pddl": {
@@ -59869,7 +59869,7 @@
     "search_time": 55,
     "state_peak_memory_usage_in_bytes": 45892,
     "time_limit": 1800,
-    "total_time": 17170,
+    "total_time": 18,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_159.pddl": {
@@ -59953,7 +59953,7 @@
     "search_time": 59,
     "state_peak_memory_usage_in_bytes": 45252,
     "time_limit": 1800,
-    "total_time": 17791,
+    "total_time": 18,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_160.pddl": {
@@ -60037,7 +60037,7 @@
     "search_time": 64,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 19669,
+    "total_time": 20,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_161.pddl": {
@@ -60121,7 +60121,7 @@
     "search_time": 57,
     "state_peak_memory_usage_in_bytes": 45932,
     "time_limit": 1800,
-    "total_time": 18234,
+    "total_time": 19,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_162.pddl": {
@@ -60205,7 +60205,7 @@
     "search_time": 64,
     "state_peak_memory_usage_in_bytes": 47212,
     "time_limit": 1800,
-    "total_time": 19405,
+    "total_time": 20,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_163.pddl": {
@@ -60289,7 +60289,7 @@
     "search_time": 60,
     "state_peak_memory_usage_in_bytes": 45292,
     "time_limit": 1800,
-    "total_time": 18814,
+    "total_time": 19,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_164.pddl": {
@@ -60373,7 +60373,7 @@
     "search_time": 60,
     "state_peak_memory_usage_in_bytes": 46572,
     "time_limit": 1800,
-    "total_time": 18903,
+    "total_time": 19,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_165.pddl": {
@@ -60457,7 +60457,7 @@
     "search_time": 64,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 19456,
+    "total_time": 20,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_166.pddl": {
@@ -60541,7 +60541,7 @@
     "search_time": 71,
     "state_peak_memory_usage_in_bytes": 62956,
     "time_limit": 1800,
-    "total_time": 21017,
+    "total_time": 22,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_167.pddl": {
@@ -60625,7 +60625,7 @@
     "search_time": 68,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 20837,
+    "total_time": 21,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_168.pddl": {
@@ -60709,7 +60709,7 @@
     "search_time": 62,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 19524,
+    "total_time": 20,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_169.pddl": {
@@ -60793,7 +60793,7 @@
     "search_time": 69,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 20420,
+    "total_time": 21,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_49.pddl": {
@@ -60877,7 +60877,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 15338,
     "time_limit": 1800,
-    "total_time": 771,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_50.pddl": {
@@ -60961,7 +60961,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 15518,
     "time_limit": 1800,
-    "total_time": 837,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_51.pddl": {
@@ -61045,7 +61045,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 15538,
     "time_limit": 1800,
-    "total_time": 834,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_52.pddl": {
@@ -61129,7 +61129,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 961,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_53.pddl": {
@@ -61213,7 +61213,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 15698,
     "time_limit": 1800,
-    "total_time": 997,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_54.pddl": {
@@ -61297,7 +61297,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 15378,
     "time_limit": 1800,
-    "total_time": 969,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_55.pddl": {
@@ -61381,7 +61381,7 @@
     "search_time": 5,
     "state_peak_memory_usage_in_bytes": 16198,
     "time_limit": 1800,
-    "total_time": 1051,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_56.pddl": {
@@ -61465,7 +61465,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 17510,
     "time_limit": 1800,
-    "total_time": 1097,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_57.pddl": {
@@ -61549,7 +61549,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 17670,
     "time_limit": 1800,
-    "total_time": 1140,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_58.pddl": {
@@ -61633,7 +61633,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1167,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_59.pddl": {
@@ -61717,7 +61717,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1229,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_60.pddl": {
@@ -61801,7 +61801,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1324,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_61.pddl": {
@@ -61885,7 +61885,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1244,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_62.pddl": {
@@ -61969,7 +61969,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 17690,
     "time_limit": 1800,
-    "total_time": 1320,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_63.pddl": {
@@ -62053,7 +62053,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 17710,
     "time_limit": 1800,
-    "total_time": 1513,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_64.pddl": {
@@ -62137,7 +62137,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 18030,
     "time_limit": 1800,
-    "total_time": 1447,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_65.pddl": {
@@ -62221,7 +62221,7 @@
     "search_time": 8,
     "state_peak_memory_usage_in_bytes": 18222,
     "time_limit": 1800,
-    "total_time": 1468,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_66.pddl": {
@@ -62305,7 +62305,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 1635,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_67.pddl": {
@@ -62389,7 +62389,7 @@
     "search_time": 9,
     "state_peak_memory_usage_in_bytes": 18242,
     "time_limit": 1800,
-    "total_time": 1929,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_68.pddl": {
@@ -62473,7 +62473,7 @@
     "search_time": 8,
     "state_peak_memory_usage_in_bytes": 18562,
     "time_limit": 1800,
-    "total_time": 1633,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_69.pddl": {
@@ -62557,7 +62557,7 @@
     "search_time": 8,
     "state_peak_memory_usage_in_bytes": 18582,
     "time_limit": 1800,
-    "total_time": 1710,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_70.pddl": {
@@ -62641,7 +62641,7 @@
     "search_time": 9,
     "state_peak_memory_usage_in_bytes": 19872,
     "time_limit": 1800,
-    "total_time": 1877,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_71.pddl": {
@@ -62725,7 +62725,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 19232,
     "time_limit": 1800,
-    "total_time": 2187,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_72.pddl": {
@@ -62809,7 +62809,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 18612,
     "time_limit": 1800,
-    "total_time": 2164,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_73.pddl": {
@@ -62893,7 +62893,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 2197,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_74.pddl": {
@@ -62977,7 +62977,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 19572,
     "time_limit": 1800,
-    "total_time": 2413,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_75.pddl": {
@@ -63061,7 +63061,7 @@
     "search_time": 9,
     "state_peak_memory_usage_in_bytes": 20232,
     "time_limit": 1800,
-    "total_time": 2126,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_76.pddl": {
@@ -63145,7 +63145,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 19912,
     "time_limit": 1800,
-    "total_time": 2087,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_77.pddl": {
@@ -63229,7 +63229,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 2468,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_78.pddl": {
@@ -63313,7 +63313,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 20552,
     "time_limit": 1800,
-    "total_time": 2599,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_79.pddl": {
@@ -63397,7 +63397,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 20872,
     "time_limit": 1800,
-    "total_time": 2290,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_80.pddl": {
@@ -63481,7 +63481,7 @@
     "search_time": 12,
     "state_peak_memory_usage_in_bytes": 21212,
     "time_limit": 1800,
-    "total_time": 2590,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_81.pddl": {
@@ -63565,7 +63565,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 2822,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_82.pddl": {
@@ -63649,7 +63649,7 @@
     "search_time": 12,
     "state_peak_memory_usage_in_bytes": 20892,
     "time_limit": 1800,
-    "total_time": 2624,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_83.pddl": {
@@ -63733,7 +63733,7 @@
     "search_time": 14,
     "state_peak_memory_usage_in_bytes": 21532,
     "time_limit": 1800,
-    "total_time": 3008,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_84.pddl": {
@@ -63817,7 +63817,7 @@
     "search_time": 13,
     "state_peak_memory_usage_in_bytes": 21572,
     "time_limit": 1800,
-    "total_time": 2880,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_85.pddl": {
@@ -63901,7 +63901,7 @@
     "search_time": 14,
     "state_peak_memory_usage_in_bytes": 31684,
     "time_limit": 1800,
-    "total_time": 3248,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_86.pddl": {
@@ -63985,7 +63985,7 @@
     "search_time": 14,
     "state_peak_memory_usage_in_bytes": 31044,
     "time_limit": 1800,
-    "total_time": 2966,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_87.pddl": {
@@ -64069,7 +64069,7 @@
     "search_time": 16,
     "state_peak_memory_usage_in_bytes": 31364,
     "time_limit": 1800,
-    "total_time": 3790,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_88.pddl": {
@@ -64153,7 +64153,7 @@
     "search_time": 15,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 3479,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_89.pddl": {
@@ -64237,7 +64237,7 @@
     "search_time": 15,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 3417,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_90.pddl": {
@@ -64321,7 +64321,7 @@
     "search_time": 15,
     "state_peak_memory_usage_in_bytes": 31724,
     "time_limit": 1800,
-    "total_time": 3679,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_91.pddl": {
@@ -64405,7 +64405,7 @@
     "search_time": 16,
     "state_peak_memory_usage_in_bytes": 31404,
     "time_limit": 1800,
-    "total_time": 3858,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_92.pddl": {
@@ -64489,7 +64489,7 @@
     "search_time": 17,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 3971,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_93.pddl": {
@@ -64573,7 +64573,7 @@
     "search_time": 18,
     "state_peak_memory_usage_in_bytes": 31764,
     "time_limit": 1800,
-    "total_time": 4355,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_94.pddl": {
@@ -64657,7 +64657,7 @@
     "search_time": 17,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 3994,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_95.pddl": {
@@ -64741,7 +64741,7 @@
     "search_time": 17,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 4349,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_96.pddl": {
@@ -64825,7 +64825,7 @@
     "search_time": 17,
     "state_peak_memory_usage_in_bytes": 31464,
     "time_limit": 1800,
-    "total_time": 4448,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_97.pddl": {
@@ -64909,7 +64909,7 @@
     "search_time": 19,
     "state_peak_memory_usage_in_bytes": 31784,
     "time_limit": 1800,
-    "total_time": 4512,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_98.pddl": {
@@ -64993,7 +64993,7 @@
     "search_time": 21,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 5158,
+    "total_time": 6,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location-Scaled_Move_to_Location_99.pddl": {
@@ -65077,7 +65077,7 @@
     "search_time": 20,
     "state_peak_memory_usage_in_bytes": 31824,
     "time_limit": 1800,
-    "total_time": 4784,
+    "total_time": 5,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_170.pddl": {
@@ -65161,7 +65161,7 @@
     "search_time": 74,
     "state_peak_memory_usage_in_bytes": 63596,
     "time_limit": 1800,
-    "total_time": 24046,
+    "total_time": 25,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_180.pddl": {
@@ -65245,7 +65245,7 @@
     "search_time": 92,
     "state_peak_memory_usage_in_bytes": 63676,
     "time_limit": 1800,
-    "total_time": 30705,
+    "total_time": 31,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_190.pddl": {
@@ -65329,7 +65329,7 @@
     "search_time": 91,
     "state_peak_memory_usage_in_bytes": 63756,
     "time_limit": 1800,
-    "total_time": 30666,
+    "total_time": 31,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_200.pddl": {
@@ -65413,7 +65413,7 @@
     "search_time": 98,
     "state_peak_memory_usage_in_bytes": 63956,
     "time_limit": 1800,
-    "total_time": 32825,
+    "total_time": 33,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_210.pddl": {
@@ -65497,7 +65497,7 @@
     "search_time": 119,
     "state_peak_memory_usage_in_bytes": 64036,
     "time_limit": 1800,
-    "total_time": 44206,
+    "total_time": 45,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_220.pddl": {
@@ -65581,7 +65581,7 @@
     "search_time": 116,
     "state_peak_memory_usage_in_bytes": 64116,
     "time_limit": 1800,
-    "total_time": 44926,
+    "total_time": 45,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_230.pddl": {
@@ -65665,7 +65665,7 @@
     "search_time": 150,
     "state_peak_memory_usage_in_bytes": 71364,
     "time_limit": 1800,
-    "total_time": 59359,
+    "total_time": 60,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_240.pddl": {
@@ -65749,7 +65749,7 @@
     "search_time": 144,
     "state_peak_memory_usage_in_bytes": 72724,
     "time_limit": 1800,
-    "total_time": 60292,
+    "total_time": 61,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_250.pddl": {
@@ -65833,7 +65833,7 @@
     "search_time": 171,
     "state_peak_memory_usage_in_bytes": 71524,
     "time_limit": 1800,
-    "total_time": 75789,
+    "total_time": 76,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_260.pddl": {
@@ -65917,7 +65917,7 @@
     "search_time": 157,
     "state_peak_memory_usage_in_bytes": 78692,
     "time_limit": 1800,
-    "total_time": 72410,
+    "total_time": 73,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_270.pddl": {
@@ -66001,7 +66001,7 @@
     "search_time": 194,
     "state_peak_memory_usage_in_bytes": 85252,
     "time_limit": 1800,
-    "total_time": 98244,
+    "total_time": 99,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_280.pddl": {
@@ -66085,7 +66085,7 @@
     "search_time": 183,
     "state_peak_memory_usage_in_bytes": 91732,
     "time_limit": 1800,
-    "total_time": 87857,
+    "total_time": 88,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_290.pddl": {
@@ -66169,7 +66169,7 @@
     "search_time": 252,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 126188,
+    "total_time": 127,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_300.pddl": {
@@ -66253,7 +66253,7 @@
     "search_time": 246,
     "state_peak_memory_usage_in_bytes": 93012,
     "time_limit": 1800,
-    "total_time": 130688,
+    "total_time": 131,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_310.pddl": {
@@ -66337,7 +66337,7 @@
     "search_time": 248,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 132376,
+    "total_time": 133,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_320.pddl": {
@@ -66421,7 +66421,7 @@
     "search_time": 234,
     "state_peak_memory_usage_in_bytes": 127060,
     "time_limit": 1800,
-    "total_time": 125425,
+    "total_time": 126,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_330.pddl": {
@@ -66505,7 +66505,7 @@
     "search_time": 263,
     "state_peak_memory_usage_in_bytes": 127140,
     "time_limit": 1800,
-    "total_time": 143197,
+    "total_time": 144,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_340.pddl": {
@@ -66589,7 +66589,7 @@
     "search_time": 304,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 178625,
+    "total_time": 179,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_350.pddl": {
@@ -66673,7 +66673,7 @@
     "search_time": 313,
     "state_peak_memory_usage_in_bytes": 127300,
     "time_limit": 1800,
-    "total_time": 180974,
+    "total_time": 181,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_360.pddl": {
@@ -66757,7 +66757,7 @@
     "search_time": 314,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 192329,
+    "total_time": 193,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_370.pddl": {
@@ -66841,7 +66841,7 @@
     "search_time": 351,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 232307,
+    "total_time": 233,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_380.pddl": {
@@ -66925,7 +66925,7 @@
     "search_time": 364,
     "state_peak_memory_usage_in_bytes": 127460,
     "time_limit": 1800,
-    "total_time": 244582,
+    "total_time": 245,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_390.pddl": {
@@ -67009,7 +67009,7 @@
     "search_time": 379,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 261026,
+    "total_time": 262,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_400.pddl": {
@@ -67093,7 +67093,7 @@
     "search_time": 384,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 250421,
+    "total_time": 251,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_410.pddl": {
@@ -67177,7 +67177,7 @@
     "search_time": 423,
     "state_peak_memory_usage_in_bytes": 127780,
     "time_limit": 1800,
-    "total_time": 303612,
+    "total_time": 304,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_420.pddl": {
@@ -67261,7 +67261,7 @@
     "search_time": 444,
     "state_peak_memory_usage_in_bytes": 128100,
     "time_limit": 1800,
-    "total_time": 325399,
+    "total_time": 326,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_430.pddl": {
@@ -67345,7 +67345,7 @@
     "search_time": 454,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 357016,
+    "total_time": 358,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_440.pddl": {
@@ -67429,7 +67429,7 @@
     "search_time": 488,
     "state_peak_memory_usage_in_bytes": 128260,
     "time_limit": 1800,
-    "total_time": 384521,
+    "total_time": 385,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-Scaled_Move_to_Location_extended-Scaled_Move_to_Location_450.pddl": {
@@ -67513,7 +67513,7 @@
     "search_time": 536,
     "state_peak_memory_usage_in_bytes": 142596,
     "time_limit": 1800,
-    "total_time": 399913,
+    "total_time": 400,
     "unsolvable": 0
   }
 }

@@ -1293,7 +1293,7 @@
     "search_time": 18,
     "state_peak_memory_usage_in_bytes": 300614,
     "time_limit": 1800,
-    "total_time": 26,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-counters-pfile10.pddl": {
@@ -2009,7 +2009,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 83398,
     "time_limit": 1800,
-    "total_time": 11,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-counters-pfile20.pddl": {
@@ -2167,7 +2167,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 10892,
     "time_limit": 1800,
-    "total_time": 8,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-counters-pfile4.pddl": {
@@ -2635,7 +2635,7 @@
     "search_time": 4001,
     "state_peak_memory_usage_in_bytes": 9044261,
     "time_limit": 1800,
-    "total_time": 4031,
+    "total_time": 5,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-delivery-pfile10.pddl": {
@@ -3345,7 +3345,7 @@
     "search_time": 673025,
     "state_peak_memory_usage_in_bytes": 994050702,
     "time_limit": 1800,
-    "total_time": 673038,
+    "total_time": 674,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-delivery-pfile20.pddl": {
@@ -5154,7 +5154,7 @@
     "search_time": 140,
     "state_peak_memory_usage_in_bytes": 565576,
     "time_limit": 1800,
-    "total_time": 148,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile10.pddl": {
@@ -5250,7 +5250,7 @@
     "search_time": 139140,
     "state_peak_memory_usage_in_bytes": 144704192,
     "time_limit": 1800,
-    "total_time": 139161,
+    "total_time": 140,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile11.pddl": {
@@ -5895,7 +5895,7 @@
     "search_time": 1807,
     "state_peak_memory_usage_in_bytes": 4522673,
     "time_limit": 1800,
-    "total_time": 1828,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile20.pddl": {
@@ -6052,7 +6052,7 @@
     "search_time": 30785,
     "state_peak_memory_usage_in_bytes": 65537456,
     "time_limit": 1800,
-    "total_time": 30806,
+    "total_time": 31,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile4.pddl": {
@@ -6148,7 +6148,7 @@
     "search_time": 785597,
     "state_peak_memory_usage_in_bytes": 1048579100,
     "time_limit": 1800,
-    "total_time": 785635,
+    "total_time": 786,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile5.pddl": {
@@ -6366,7 +6366,7 @@
     "search_time": 3120,
     "state_peak_memory_usage_in_bytes": 4522307,
     "time_limit": 1800,
-    "total_time": 3130,
+    "total_time": 4,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-expedition-pfile8.pddl": {
@@ -7804,7 +7804,7 @@
     "search_time": 350,
     "state_peak_memory_usage_in_bytes": 7090852,
     "time_limit": 1800,
-    "total_time": 383,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-farmland-pfile10.pddl": {
@@ -8510,7 +8510,7 @@
     "search_time": 95,
     "state_peak_memory_usage_in_bytes": 1775780,
     "time_limit": 1800,
-    "total_time": 105,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-farmland-pfile20.pddl": {
@@ -8667,7 +8667,7 @@
     "search_time": 486,
     "state_peak_memory_usage_in_bytes": 7091012,
     "time_limit": 1800,
-    "total_time": 521,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-farmland-pfile4.pddl": {
@@ -8763,7 +8763,7 @@
     "search_time": 409866,
     "state_peak_memory_usage_in_bytes": 905973244,
     "time_limit": 1800,
-    "total_time": 409892,
+    "total_time": 410,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-farmland-pfile5.pddl": {
@@ -9164,7 +9164,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 650,
     "time_limit": 1800,
-    "total_time": 9,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-counters-pfile10.pddl": {
@@ -9878,7 +9878,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 20988,
     "time_limit": 1800,
-    "total_time": 25,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-counters-pfile20.pddl": {
@@ -10036,7 +10036,7 @@
     "search_time": 121,
     "state_peak_memory_usage_in_bytes": 1343563,
     "time_limit": 1800,
-    "total_time": 148,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-counters-pfile4.pddl": {
@@ -10132,7 +10132,7 @@
     "search_time": 17432,
     "state_peak_memory_usage_in_bytes": 85983307,
     "time_limit": 1800,
-    "total_time": 17442,
+    "total_time": 18,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-counters-pfile5.pddl": {
@@ -11758,7 +11758,7 @@
     "search_time": 35529,
     "state_peak_memory_usage_in_bytes": 192991044,
     "time_limit": 1800,
-    "total_time": 35556,
+    "total_time": 36,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-sailing-pfile10.pddl": {
@@ -12474,7 +12474,7 @@
     "search_time": 69389,
     "state_peak_memory_usage_in_bytes": 343985988,
     "time_limit": 1800,
-    "total_time": 69418,
+    "total_time": 70,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-sailing-pfile20.pddl": {
@@ -12694,7 +12694,7 @@
     "search_time": 332266,
     "state_peak_memory_usage_in_bytes": 1157686084,
     "time_limit": 1800,
-    "total_time": 332280,
+    "total_time": 333,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-fo-sailing-pfile5.pddl": {
@@ -13100,7 +13100,7 @@
     "search_time": 212654,
     "state_peak_memory_usage_in_bytes": 31067972,
     "time_limit": 1800,
-    "total_time": 212680,
+    "total_time": 213,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile10.pddl": {
@@ -13806,7 +13806,7 @@
     "search_time": 407681,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 407707,
+    "total_time": 408,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile20.pddl": {
@@ -13963,7 +13963,7 @@
     "search_time": 538,
     "state_peak_memory_usage_in_bytes": 140964,
     "time_limit": 1800,
-    "total_time": 563,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile4.pddl": {
@@ -14059,7 +14059,7 @@
     "search_time": 27568,
     "state_peak_memory_usage_in_bytes": 4030276,
     "time_limit": 1800,
-    "total_time": 27598,
+    "total_time": 28,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile5.pddl": {
@@ -14155,7 +14155,7 @@
     "search_time": 403336,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 403372,
+    "total_time": 404,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile6.pddl": {
@@ -14251,7 +14251,7 @@
     "search_time": 82980,
     "state_peak_memory_usage_in_bytes": 15531844,
     "time_limit": 1800,
-    "total_time": 83000,
+    "total_time": 83,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile7.pddl": {
@@ -14347,7 +14347,7 @@
     "search_time": 176745,
     "state_peak_memory_usage_in_bytes": 30637892,
     "time_limit": 1800,
-    "total_time": 176791,
+    "total_time": 177,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile8.pddl": {
@@ -14443,7 +14443,7 @@
     "search_time": 590224,
     "state_peak_memory_usage_in_bytes": 121700164,
     "time_limit": 1800,
-    "total_time": 590264,
+    "total_time": 591,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-hydropower-pfile9.pddl": {
@@ -15840,7 +15840,7 @@
     "search_time": 16,
     "state_peak_memory_usage_in_bytes": 129675,
     "time_limit": 1800,
-    "total_time": 54,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-mprime-pfile10.pddl": {
@@ -16546,7 +16546,7 @@
     "search_time": 327,
     "state_peak_memory_usage_in_bytes": 1343573,
     "time_limit": 1800,
-    "total_time": 336,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-mprime-pfile20.pddl": {
@@ -16703,7 +16703,7 @@
     "search_time": 1463,
     "state_peak_memory_usage_in_bytes": 4096100,
     "time_limit": 1800,
-    "total_time": 1491,
+    "total_time": 2,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-mprime-pfile4.pddl": {
@@ -16799,7 +16799,7 @@
     "search_time": 14529,
     "state_peak_memory_usage_in_bytes": 32768243,
     "time_limit": 1800,
-    "total_time": 14543,
+    "total_time": 15,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-mprime-pfile5.pddl": {
@@ -16895,7 +16895,7 @@
     "search_time": 845561,
     "state_peak_memory_usage_in_bytes": 578814037,
     "time_limit": 1800,
-    "total_time": 845588,
+    "total_time": 846,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-mprime-pfile6.pddl": {
@@ -17236,7 +17236,7 @@
     "search_time": 1120941,
     "state_peak_memory_usage_in_bytes": 1897922645,
     "time_limit": 1800,
-    "total_time": 1121003,
+    "total_time": 1122,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-pathwaysmetric-pfile10.pddl": {
@@ -18490,7 +18490,7 @@
     "search_time": 13,
     "state_peak_memory_usage_in_bytes": 142086,
     "time_limit": 1800,
-    "total_time": 25,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-rover-pfile10.pddl": {
@@ -19195,7 +19195,7 @@
     "search_time": 183,
     "state_peak_memory_usage_in_bytes": 1131290,
     "time_limit": 1800,
-    "total_time": 198,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-rover-pfile20.pddl": {
@@ -19351,7 +19351,7 @@
     "search_time": 31674,
     "state_peak_memory_usage_in_bytes": 120849820,
     "time_limit": 1800,
-    "total_time": 31689,
+    "total_time": 32,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-rover-pfile4.pddl": {
@@ -19446,7 +19446,7 @@
     "search_time": 2030,
     "state_peak_memory_usage_in_bytes": 16385396,
     "time_limit": 1800,
-    "total_time": 2045,
+    "total_time": 3,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-rover-pfile5.pddl": {
@@ -22316,7 +22316,7 @@
     "search_time": 170207,
     "state_peak_memory_usage_in_bytes": 236585303,
     "time_limit": 1800,
-    "total_time": 170224,
+    "total_time": 171,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-sugar-pfile10.pddl": {
@@ -23327,7 +23327,7 @@
     "search_time": 168921,
     "state_peak_memory_usage_in_bytes": 237240944,
     "time_limit": 1800,
-    "total_time": 168960,
+    "total_time": 169,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-sugar-pfile7.pddl": {
@@ -23606,7 +23606,7 @@
     "search_time": 8,
     "state_peak_memory_usage_in_bytes": 35496,
     "time_limit": 1800,
-    "total_time": 27,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-tpp-pfile10.pddl": {
@@ -24320,7 +24320,7 @@
     "search_time": 171,
     "state_peak_memory_usage_in_bytes": 512253,
     "time_limit": 1800,
-    "total_time": 183,
+    "total_time": 1,
     "unsolvable": 0
   },
   "exhaustive-propositional-astar-eager-blind-tpp-pfile20.pddl": {
@@ -26134,7 +26134,7 @@
     "search_time": 29,
     "state_peak_memory_usage_in_bytes": 301894,
     "time_limit": 1800,
-    "total_time": 38,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-counters-pfile10.pddl": {
@@ -26850,7 +26850,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 82758,
     "time_limit": 1800,
-    "total_time": 20,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-counters-pfile20.pddl": {
@@ -27008,7 +27008,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 10812,
     "time_limit": 1800,
-    "total_time": 25,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-counters-pfile4.pddl": {
@@ -27476,7 +27476,7 @@
     "search_time": 3957,
     "state_peak_memory_usage_in_bytes": 9044261,
     "time_limit": 1800,
-    "total_time": 3967,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-delivery-pfile10.pddl": {
@@ -28192,7 +28192,7 @@
     "search_time": 621539,
     "state_peak_memory_usage_in_bytes": 994050702,
     "time_limit": 1800,
-    "total_time": 621561,
+    "total_time": 622,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-delivery-pfile20.pddl": {
@@ -28783,7 +28783,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 4507,
     "time_limit": 1800,
-    "total_time": 13,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-drone-pfile10.pddl": {
@@ -29499,7 +29499,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 60922,
     "time_limit": 1800,
-    "total_time": 34,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-drone-pfile20.pddl": {
@@ -29657,7 +29657,7 @@
     "search_time": 950,
     "state_peak_memory_usage_in_bytes": 3685206,
     "time_limit": 1800,
-    "total_time": 961,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-drone-pfile4.pddl": {
@@ -29753,7 +29753,7 @@
     "search_time": 837246,
     "state_peak_memory_usage_in_bytes": 3759800608,
     "time_limit": 1800,
-    "total_time": 837267,
+    "total_time": 838,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-drone-pfile5.pddl": {
@@ -30159,7 +30159,7 @@
     "search_time": 189,
     "state_peak_memory_usage_in_bytes": 565576,
     "time_limit": 1800,
-    "total_time": 199,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile10.pddl": {
@@ -30255,7 +30255,7 @@
     "search_time": 60419,
     "state_peak_memory_usage_in_bytes": 144704192,
     "time_limit": 1800,
-    "total_time": 60433,
+    "total_time": 61,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile11.pddl": {
@@ -30900,7 +30900,7 @@
     "search_time": 1489,
     "state_peak_memory_usage_in_bytes": 4522673,
     "time_limit": 1800,
-    "total_time": 1499,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile20.pddl": {
@@ -31057,7 +31057,7 @@
     "search_time": 22337,
     "state_peak_memory_usage_in_bytes": 65537456,
     "time_limit": 1800,
-    "total_time": 22360,
+    "total_time": 23,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile4.pddl": {
@@ -31153,7 +31153,7 @@
     "search_time": 544629,
     "state_peak_memory_usage_in_bytes": 1048579100,
     "time_limit": 1800,
-    "total_time": 544646,
+    "total_time": 545,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile5.pddl": {
@@ -31371,7 +31371,7 @@
     "search_time": 1455,
     "state_peak_memory_usage_in_bytes": 4522307,
     "time_limit": 1800,
-    "total_time": 1466,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-expedition-pfile8.pddl": {
@@ -32809,7 +32809,7 @@
     "search_time": 718,
     "state_peak_memory_usage_in_bytes": 7090852,
     "time_limit": 1800,
-    "total_time": 731,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-farmland-pfile10.pddl": {
@@ -33515,7 +33515,7 @@
     "search_time": 157,
     "state_peak_memory_usage_in_bytes": 1775780,
     "time_limit": 1800,
-    "total_time": 170,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-farmland-pfile20.pddl": {
@@ -33672,7 +33672,7 @@
     "search_time": 869,
     "state_peak_memory_usage_in_bytes": 7091012,
     "time_limit": 1800,
-    "total_time": 901,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-farmland-pfile4.pddl": {
@@ -33768,7 +33768,7 @@
     "search_time": 477842,
     "state_peak_memory_usage_in_bytes": 905973244,
     "time_limit": 1800,
-    "total_time": 477859,
+    "total_time": 478,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-farmland-pfile5.pddl": {
@@ -34169,7 +34169,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 655,
     "time_limit": 1800,
-    "total_time": 8,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-counters-pfile10.pddl": {
@@ -34882,7 +34882,7 @@
     "search_time": 2,
     "state_peak_memory_usage_in_bytes": 20748,
     "time_limit": 1800,
-    "total_time": 39,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-counters-pfile20.pddl": {
@@ -35039,7 +35039,7 @@
     "search_time": 199,
     "state_peak_memory_usage_in_bytes": 1343563,
     "time_limit": 1800,
-    "total_time": 212,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-counters-pfile4.pddl": {
@@ -35135,7 +35135,7 @@
     "search_time": 21052,
     "state_peak_memory_usage_in_bytes": 85983307,
     "time_limit": 1800,
-    "total_time": 21087,
+    "total_time": 22,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-counters-pfile5.pddl": {
@@ -35541,7 +35541,7 @@
     "search_time": 664,
     "state_peak_memory_usage_in_bytes": 5386756,
     "time_limit": 1800,
-    "total_time": 674,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-farmland-pfile10.pddl": {
@@ -36257,7 +36257,7 @@
     "search_time": 50,
     "state_peak_memory_usage_in_bytes": 677732,
     "time_limit": 1800,
-    "total_time": 59,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-farmland-pfile20.pddl": {
@@ -36477,7 +36477,7 @@
     "search_time": 304424,
     "state_peak_memory_usage_in_bytes": 1375739780,
     "time_limit": 1800,
-    "total_time": 304437,
+    "total_time": 305,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-farmland-pfile5.pddl": {
@@ -36821,7 +36821,7 @@
     "search_time": 25302,
     "state_peak_memory_usage_in_bytes": 85986412,
     "time_limit": 1800,
-    "total_time": 25319,
+    "total_time": 26,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-sailing-pfile1.pddl": {
@@ -36917,7 +36917,7 @@
     "search_time": 43306,
     "state_peak_memory_usage_in_bytes": 192991044,
     "time_limit": 1800,
-    "total_time": 43317,
+    "total_time": 44,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-sailing-pfile10.pddl": {
@@ -37633,7 +37633,7 @@
     "search_time": 119766,
     "state_peak_memory_usage_in_bytes": 343985988,
     "time_limit": 1800,
-    "total_time": 119781,
+    "total_time": 120,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-sailing-pfile20.pddl": {
@@ -37853,7 +37853,7 @@
     "search_time": 420568,
     "state_peak_memory_usage_in_bytes": 1157686084,
     "time_limit": 1800,
-    "total_time": 420602,
+    "total_time": 421,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-fo-sailing-pfile5.pddl": {
@@ -38259,7 +38259,7 @@
     "search_time": 26557,
     "state_peak_memory_usage_in_bytes": 31067972,
     "time_limit": 1800,
-    "total_time": 26573,
+    "total_time": 27,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile10.pddl": {
@@ -38904,7 +38904,7 @@
     "search_time": 1153463,
     "state_peak_memory_usage_in_bytes": 1909718852,
     "time_limit": 1800,
-    "total_time": 1153481,
+    "total_time": 1154,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile2.pddl": {
@@ -39000,7 +39000,7 @@
     "search_time": 47114,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 47138,
+    "total_time": 48,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile20.pddl": {
@@ -39157,7 +39157,7 @@
     "search_time": 66,
     "state_peak_memory_usage_in_bytes": 140964,
     "time_limit": 1800,
-    "total_time": 81,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile4.pddl": {
@@ -39253,7 +39253,7 @@
     "search_time": 3406,
     "state_peak_memory_usage_in_bytes": 4030276,
     "time_limit": 1800,
-    "total_time": 3420,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile5.pddl": {
@@ -39349,7 +39349,7 @@
     "search_time": 52094,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 52110,
+    "total_time": 53,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile6.pddl": {
@@ -39445,7 +39445,7 @@
     "search_time": 11629,
     "state_peak_memory_usage_in_bytes": 15531844,
     "time_limit": 1800,
-    "total_time": 11644,
+    "total_time": 12,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile7.pddl": {
@@ -39541,7 +39541,7 @@
     "search_time": 22360,
     "state_peak_memory_usage_in_bytes": 30637892,
     "time_limit": 1800,
-    "total_time": 22374,
+    "total_time": 23,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile8.pddl": {
@@ -39637,7 +39637,7 @@
     "search_time": 91467,
     "state_peak_memory_usage_in_bytes": 121700164,
     "time_limit": 1800,
-    "total_time": 91487,
+    "total_time": 92,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-hydropower-pfile9.pddl": {
@@ -39733,7 +39733,7 @@
     "search_time": 578828,
     "state_peak_memory_usage_in_bytes": 956563268,
     "time_limit": 1800,
-    "total_time": 578847,
+    "total_time": 579,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-markettrader-pfile1.pddl": {
@@ -41069,7 +41069,7 @@
     "search_time": 28,
     "state_peak_memory_usage_in_bytes": 129355,
     "time_limit": 1800,
-    "total_time": 37,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-mprime-pfile10.pddl": {
@@ -41776,7 +41776,7 @@
     "search_time": 504,
     "state_peak_memory_usage_in_bytes": 1343573,
     "time_limit": 1800,
-    "total_time": 531,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-mprime-pfile20.pddl": {
@@ -41933,7 +41933,7 @@
     "search_time": 1947,
     "state_peak_memory_usage_in_bytes": 4096100,
     "time_limit": 1800,
-    "total_time": 1966,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-mprime-pfile4.pddl": {
@@ -42029,7 +42029,7 @@
     "search_time": 14859,
     "state_peak_memory_usage_in_bytes": 32768243,
     "time_limit": 1800,
-    "total_time": 14876,
+    "total_time": 15,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-mprime-pfile5.pddl": {
@@ -42125,7 +42125,7 @@
     "search_time": 985228,
     "state_peak_memory_usage_in_bytes": 578814037,
     "time_limit": 1800,
-    "total_time": 985254,
+    "total_time": 986,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-mprime-pfile6.pddl": {
@@ -42466,7 +42466,7 @@
     "search_time": 824405,
     "state_peak_memory_usage_in_bytes": 1897922645,
     "time_limit": 1800,
-    "total_time": 824435,
+    "total_time": 825,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-pathwaysmetric-pfile10.pddl": {
@@ -43720,7 +43720,7 @@
     "search_time": 3,
     "state_peak_memory_usage_in_bytes": 38182,
     "time_limit": 1800,
-    "total_time": 19,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-rover-pfile10.pddl": {
@@ -44434,7 +44434,7 @@
     "search_time": 309,
     "state_peak_memory_usage_in_bytes": 1131290,
     "time_limit": 1800,
-    "total_time": 323,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-rover-pfile20.pddl": {
@@ -44591,7 +44591,7 @@
     "search_time": 14027,
     "state_peak_memory_usage_in_bytes": 62129504,
     "time_limit": 1800,
-    "total_time": 14040,
+    "total_time": 15,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-rover-pfile4.pddl": {
@@ -44686,7 +44686,7 @@
     "search_time": 7984,
     "state_peak_memory_usage_in_bytes": 32769436,
     "time_limit": 1800,
-    "total_time": 8003,
+    "total_time": 9,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-rover-pfile5.pddl": {
@@ -47562,7 +47562,7 @@
     "search_time": 191499,
     "state_peak_memory_usage_in_bytes": 236585303,
     "time_limit": 1800,
-    "total_time": 191521,
+    "total_time": 192,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-sugar-pfile10.pddl": {
@@ -48573,7 +48573,7 @@
     "search_time": 158153,
     "state_peak_memory_usage_in_bytes": 237240944,
     "time_limit": 1800,
-    "total_time": 158176,
+    "total_time": 159,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-sugar-pfile7.pddl": {
@@ -48852,7 +48852,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 35656,
     "time_limit": 1800,
-    "total_time": 26,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-tpp-pfile10.pddl": {
@@ -49567,7 +49567,7 @@
     "search_time": 213,
     "state_peak_memory_usage_in_bytes": 512253,
     "time_limit": 1800,
-    "total_time": 247,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-numeric-astar-eager-blind-tpp-pfile20.pddl": {
@@ -51382,7 +51382,7 @@
     "search_time": 34,
     "state_peak_memory_usage_in_bytes": 300614,
     "time_limit": 1800,
-    "total_time": 63,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-counters-pfile10.pddl": {
@@ -52098,7 +52098,7 @@
     "search_time": 6,
     "state_peak_memory_usage_in_bytes": 83398,
     "time_limit": 1800,
-    "total_time": 120,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-counters-pfile20.pddl": {
@@ -52256,7 +52256,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 10892,
     "time_limit": 1800,
-    "total_time": 7,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-counters-pfile4.pddl": {
@@ -52724,7 +52724,7 @@
     "search_time": 4471,
     "state_peak_memory_usage_in_bytes": 9044261,
     "time_limit": 1800,
-    "total_time": 4497,
+    "total_time": 5,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-delivery-pfile10.pddl": {
@@ -53440,7 +53440,7 @@
     "search_time": 621698,
     "state_peak_memory_usage_in_bytes": 994050702,
     "time_limit": 1800,
-    "total_time": 621749,
+    "total_time": 622,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-delivery-pfile20.pddl": {
@@ -54031,7 +54031,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 4487,
     "time_limit": 1800,
-    "total_time": 16,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-drone-pfile10.pddl": {
@@ -54745,7 +54745,7 @@
     "search_time": 14,
     "state_peak_memory_usage_in_bytes": 60962,
     "time_limit": 1800,
-    "total_time": 55,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-drone-pfile20.pddl": {
@@ -54902,7 +54902,7 @@
     "search_time": 1276,
     "state_peak_memory_usage_in_bytes": 3685526,
     "time_limit": 1800,
-    "total_time": 1286,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-drone-pfile4.pddl": {
@@ -54998,7 +54998,7 @@
     "search_time": 1203880,
     "state_peak_memory_usage_in_bytes": 3759800608,
     "time_limit": 1800,
-    "total_time": 1203938,
+    "total_time": 1204,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-drone-pfile5.pddl": {
@@ -55404,7 +55404,7 @@
     "search_time": 192,
     "state_peak_memory_usage_in_bytes": 565576,
     "time_limit": 1800,
-    "total_time": 201,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile10.pddl": {
@@ -55500,7 +55500,7 @@
     "search_time": 69757,
     "state_peak_memory_usage_in_bytes": 144704192,
     "time_limit": 1800,
-    "total_time": 69785,
+    "total_time": 70,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile11.pddl": {
@@ -56145,7 +56145,7 @@
     "search_time": 1815,
     "state_peak_memory_usage_in_bytes": 4522673,
     "time_limit": 1800,
-    "total_time": 1877,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile20.pddl": {
@@ -56302,7 +56302,7 @@
     "search_time": 27639,
     "state_peak_memory_usage_in_bytes": 65537456,
     "time_limit": 1800,
-    "total_time": 27660,
+    "total_time": 28,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile4.pddl": {
@@ -56398,7 +56398,7 @@
     "search_time": 671985,
     "state_peak_memory_usage_in_bytes": 1048579100,
     "time_limit": 1800,
-    "total_time": 672004,
+    "total_time": 673,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile5.pddl": {
@@ -56616,7 +56616,7 @@
     "search_time": 1945,
     "state_peak_memory_usage_in_bytes": 4522307,
     "time_limit": 1800,
-    "total_time": 1966,
+    "total_time": 2,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-expedition-pfile8.pddl": {
@@ -58054,7 +58054,7 @@
     "search_time": 688,
     "state_peak_memory_usage_in_bytes": 7090852,
     "time_limit": 1800,
-    "total_time": 700,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-farmland-pfile10.pddl": {
@@ -58760,7 +58760,7 @@
     "search_time": 157,
     "state_peak_memory_usage_in_bytes": 1775780,
     "time_limit": 1800,
-    "total_time": 187,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-farmland-pfile20.pddl": {
@@ -58917,7 +58917,7 @@
     "search_time": 944,
     "state_peak_memory_usage_in_bytes": 7091012,
     "time_limit": 1800,
-    "total_time": 977,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-farmland-pfile4.pddl": {
@@ -59013,7 +59013,7 @@
     "search_time": 565690,
     "state_peak_memory_usage_in_bytes": 905973244,
     "time_limit": 1800,
-    "total_time": 565715,
+    "total_time": 566,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-farmland-pfile5.pddl": {
@@ -59414,7 +59414,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 650,
     "time_limit": 1800,
-    "total_time": 7,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-counters-pfile10.pddl": {
@@ -60123,7 +60123,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 20988,
     "time_limit": 1800,
-    "total_time": 22,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-counters-pfile20.pddl": {
@@ -60280,7 +60280,7 @@
     "search_time": 197,
     "state_peak_memory_usage_in_bytes": 1343563,
     "time_limit": 1800,
-    "total_time": 206,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-counters-pfile4.pddl": {
@@ -60376,7 +60376,7 @@
     "search_time": 26196,
     "state_peak_memory_usage_in_bytes": 85983307,
     "time_limit": 1800,
-    "total_time": 26220,
+    "total_time": 27,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-counters-pfile5.pddl": {
@@ -60782,7 +60782,7 @@
     "search_time": 608,
     "state_peak_memory_usage_in_bytes": 5386756,
     "time_limit": 1800,
-    "total_time": 618,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-farmland-pfile10.pddl": {
@@ -61498,7 +61498,7 @@
     "search_time": 55,
     "state_peak_memory_usage_in_bytes": 677732,
     "time_limit": 1800,
-    "total_time": 65,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-farmland-pfile20.pddl": {
@@ -61718,7 +61718,7 @@
     "search_time": 332530,
     "state_peak_memory_usage_in_bytes": 1375739780,
     "time_limit": 1800,
-    "total_time": 332541,
+    "total_time": 333,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-farmland-pfile5.pddl": {
@@ -62062,7 +62062,7 @@
     "search_time": 25529,
     "state_peak_memory_usage_in_bytes": 85986412,
     "time_limit": 1800,
-    "total_time": 25538,
+    "total_time": 26,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-sailing-pfile1.pddl": {
@@ -62158,7 +62158,7 @@
     "search_time": 50942,
     "state_peak_memory_usage_in_bytes": 192991044,
     "time_limit": 1800,
-    "total_time": 50975,
+    "total_time": 51,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-sailing-pfile10.pddl": {
@@ -62874,7 +62874,7 @@
     "search_time": 111023,
     "state_peak_memory_usage_in_bytes": 343985988,
     "time_limit": 1800,
-    "total_time": 111069,
+    "total_time": 112,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-sailing-pfile20.pddl": {
@@ -63094,7 +63094,7 @@
     "search_time": 473100,
     "state_peak_memory_usage_in_bytes": 1157686084,
     "time_limit": 1800,
-    "total_time": 473126,
+    "total_time": 474,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-fo-sailing-pfile5.pddl": {
@@ -63499,7 +63499,7 @@
     "search_time": 29400,
     "state_peak_memory_usage_in_bytes": 31067972,
     "time_limit": 1800,
-    "total_time": 29416,
+    "total_time": 30,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile10.pddl": {
@@ -64144,7 +64144,7 @@
     "search_time": 1215180,
     "state_peak_memory_usage_in_bytes": 1909718852,
     "time_limit": 1800,
-    "total_time": 1215200,
+    "total_time": 1216,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile2.pddl": {
@@ -64240,7 +64240,7 @@
     "search_time": 51372,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 51389,
+    "total_time": 52,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile20.pddl": {
@@ -64397,7 +64397,7 @@
     "search_time": 59,
     "state_peak_memory_usage_in_bytes": 140964,
     "time_limit": 1800,
-    "total_time": 72,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile4.pddl": {
@@ -64493,7 +64493,7 @@
     "search_time": 3950,
     "state_peak_memory_usage_in_bytes": 4030276,
     "time_limit": 1800,
-    "total_time": 3965,
+    "total_time": 4,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile5.pddl": {
@@ -64589,7 +64589,7 @@
     "search_time": 55668,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 55700,
+    "total_time": 56,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile6.pddl": {
@@ -64685,7 +64685,7 @@
     "search_time": 10998,
     "state_peak_memory_usage_in_bytes": 15531844,
     "time_limit": 1800,
-    "total_time": 11025,
+    "total_time": 12,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile7.pddl": {
@@ -64781,7 +64781,7 @@
     "search_time": 21860,
     "state_peak_memory_usage_in_bytes": 30637892,
     "time_limit": 1800,
-    "total_time": 21881,
+    "total_time": 22,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile8.pddl": {
@@ -64877,7 +64877,7 @@
     "search_time": 89306,
     "state_peak_memory_usage_in_bytes": 121700164,
     "time_limit": 1800,
-    "total_time": 89320,
+    "total_time": 90,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-hydropower-pfile9.pddl": {
@@ -64973,7 +64973,7 @@
     "search_time": 612687,
     "state_peak_memory_usage_in_bytes": 956563268,
     "time_limit": 1800,
-    "total_time": 612714,
+    "total_time": 613,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-markettrader-pfile1.pddl": {
@@ -66300,7 +66300,7 @@
     "search_time": 27,
     "state_peak_memory_usage_in_bytes": 128715,
     "time_limit": 1800,
-    "total_time": 46,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-mprime-pfile10.pddl": {
@@ -67007,7 +67007,7 @@
     "search_time": 531,
     "state_peak_memory_usage_in_bytes": 1343573,
     "time_limit": 1800,
-    "total_time": 575,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-mprime-pfile20.pddl": {
@@ -67164,7 +67164,7 @@
     "search_time": 2504,
     "state_peak_memory_usage_in_bytes": 4096100,
     "time_limit": 1800,
-    "total_time": 2515,
+    "total_time": 3,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-mprime-pfile4.pddl": {
@@ -67260,7 +67260,7 @@
     "search_time": 17143,
     "state_peak_memory_usage_in_bytes": 32768243,
     "time_limit": 1800,
-    "total_time": 17174,
+    "total_time": 18,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-mprime-pfile5.pddl": {
@@ -67356,7 +67356,7 @@
     "search_time": 1123738,
     "state_peak_memory_usage_in_bytes": 578814037,
     "time_limit": 1800,
-    "total_time": 1123760,
+    "total_time": 1124,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-mprime-pfile6.pddl": {
@@ -67697,7 +67697,7 @@
     "search_time": 1042290,
     "state_peak_memory_usage_in_bytes": 1897922645,
     "time_limit": 1800,
-    "total_time": 1042336,
+    "total_time": 1043,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-pathwaysmetric-pfile10.pddl": {
@@ -68951,7 +68951,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 37702,
     "time_limit": 1800,
-    "total_time": 45,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-rover-pfile10.pddl": {
@@ -69665,7 +69665,7 @@
     "search_time": 357,
     "state_peak_memory_usage_in_bytes": 1131290,
     "time_limit": 1800,
-    "total_time": 411,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-rover-pfile20.pddl": {
@@ -69822,7 +69822,7 @@
     "search_time": 19267,
     "state_peak_memory_usage_in_bytes": 62129504,
     "time_limit": 1800,
-    "total_time": 19291,
+    "total_time": 20,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-rover-pfile4.pddl": {
@@ -69917,7 +69917,7 @@
     "search_time": 11556,
     "state_peak_memory_usage_in_bytes": 32769436,
     "time_limit": 1800,
-    "total_time": 11581,
+    "total_time": 12,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-rover-pfile5.pddl": {
@@ -72782,7 +72782,7 @@
     "search_time": 179204,
     "state_peak_memory_usage_in_bytes": 236585303,
     "time_limit": 1800,
-    "total_time": 179218,
+    "total_time": 180,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-sugar-pfile10.pddl": {
@@ -73793,7 +73793,7 @@
     "search_time": 196328,
     "state_peak_memory_usage_in_bytes": 237240944,
     "time_limit": 1800,
-    "total_time": 196346,
+    "total_time": 197,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-sugar-pfile7.pddl": {
@@ -74072,7 +74072,7 @@
     "search_time": 11,
     "state_peak_memory_usage_in_bytes": 35496,
     "time_limit": 1800,
-    "total_time": 71,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-tpp-pfile10.pddl": {
@@ -74787,7 +74787,7 @@
     "search_time": 208,
     "state_peak_memory_usage_in_bytes": 512253,
     "time_limit": 1800,
-    "total_time": 219,
+    "total_time": 1,
     "unsolvable": 0
   },
   "kpkc-propositional-astar-eager-blind-tpp-pfile20.pddl": {
@@ -76633,7 +76633,7 @@
     "search_time": 19,
     "state_peak_memory_usage_in_bytes": 300614,
     "time_limit": 1800,
-    "total_time": 29,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-counters-pfile10.pddl": {
@@ -77357,7 +77357,7 @@
     "search_time": 3,
     "state_peak_memory_usage_in_bytes": 83398,
     "time_limit": 1800,
-    "total_time": 18,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-counters-pfile20.pddl": {
@@ -77505,7 +77505,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 10892,
     "time_limit": 1800,
-    "total_time": 8,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-counters-pfile4.pddl": {
@@ -77973,7 +77973,7 @@
     "search_time": 1566,
     "state_peak_memory_usage_in_bytes": 9044261,
     "time_limit": 1800,
-    "total_time": 1591,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-delivery-pfile10.pddl": {
@@ -78697,7 +78697,7 @@
     "search_time": 296144,
     "state_peak_memory_usage_in_bytes": 994050702,
     "time_limit": 1800,
-    "total_time": 296170,
+    "total_time": 297,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-delivery-pfile20.pddl": {
@@ -79293,7 +79293,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 4502,
     "time_limit": 1800,
-    "total_time": 32,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-drone-pfile10.pddl": {
@@ -80017,7 +80017,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 61122,
     "time_limit": 1800,
-    "total_time": 24,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-drone-pfile20.pddl": {
@@ -80165,7 +80165,7 @@
     "search_time": 460,
     "state_peak_memory_usage_in_bytes": 3685206,
     "time_limit": 1800,
-    "total_time": 526,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-drone-pfile4.pddl": {
@@ -80249,7 +80249,7 @@
     "search_time": 450346,
     "state_peak_memory_usage_in_bytes": 3759800608,
     "time_limit": 1800,
-    "total_time": 450374,
+    "total_time": 451,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-drone-pfile5.pddl": {
@@ -80653,7 +80653,7 @@
     "search_time": 59,
     "state_peak_memory_usage_in_bytes": 565576,
     "time_limit": 1800,
-    "total_time": 85,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile10.pddl": {
@@ -80737,7 +80737,7 @@
     "search_time": 26361,
     "state_peak_memory_usage_in_bytes": 144704192,
     "time_limit": 1800,
-    "total_time": 26402,
+    "total_time": 27,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile11.pddl": {
@@ -81397,7 +81397,7 @@
     "search_time": 696,
     "state_peak_memory_usage_in_bytes": 4522673,
     "time_limit": 1800,
-    "total_time": 720,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile20.pddl": {
@@ -81545,7 +81545,7 @@
     "search_time": 10518,
     "state_peak_memory_usage_in_bytes": 65537456,
     "time_limit": 1800,
-    "total_time": 10540,
+    "total_time": 11,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile4.pddl": {
@@ -81629,7 +81629,7 @@
     "search_time": 291653,
     "state_peak_memory_usage_in_bytes": 1048579100,
     "time_limit": 1800,
-    "total_time": 291705,
+    "total_time": 292,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile5.pddl": {
@@ -81841,7 +81841,7 @@
     "search_time": 593,
     "state_peak_memory_usage_in_bytes": 4522307,
     "time_limit": 1800,
-    "total_time": 628,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-expedition-pfile8.pddl": {
@@ -83313,7 +83313,7 @@
     "search_time": 265,
     "state_peak_memory_usage_in_bytes": 7090852,
     "time_limit": 1800,
-    "total_time": 277,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-farmland-pfile10.pddl": {
@@ -84027,7 +84027,7 @@
     "search_time": 65,
     "state_peak_memory_usage_in_bytes": 1775780,
     "time_limit": 1800,
-    "total_time": 100,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-farmland-pfile20.pddl": {
@@ -84174,7 +84174,7 @@
     "search_time": 366,
     "state_peak_memory_usage_in_bytes": 7091012,
     "time_limit": 1800,
-    "total_time": 379,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-farmland-pfile4.pddl": {
@@ -84258,7 +84258,7 @@
     "search_time": 353361,
     "state_peak_memory_usage_in_bytes": 905973244,
     "time_limit": 1800,
-    "total_time": 353383,
+    "total_time": 354,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-farmland-pfile5.pddl": {
@@ -84533,7 +84533,7 @@
     "search_time": 1700561,
     "state_peak_memory_usage_in_bytes": 6174021796,
     "time_limit": 1800,
-    "total_time": 1700579,
+    "total_time": 1701,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-farmland-pfile9.pddl": {
@@ -84681,7 +84681,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 650,
     "time_limit": 1800,
-    "total_time": 23,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-counters-pfile10.pddl": {
@@ -85402,7 +85402,7 @@
     "search_time": 1,
     "state_peak_memory_usage_in_bytes": 20988,
     "time_limit": 1800,
-    "total_time": 33,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-counters-pfile20.pddl": {
@@ -85550,7 +85550,7 @@
     "search_time": 136,
     "state_peak_memory_usage_in_bytes": 1343563,
     "time_limit": 1800,
-    "total_time": 176,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-counters-pfile4.pddl": {
@@ -85634,7 +85634,7 @@
     "search_time": 16781,
     "state_peak_memory_usage_in_bytes": 85983307,
     "time_limit": 1800,
-    "total_time": 16818,
+    "total_time": 17,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-counters-pfile5.pddl": {
@@ -86038,7 +86038,7 @@
     "search_time": 308,
     "state_peak_memory_usage_in_bytes": 5386756,
     "time_limit": 1800,
-    "total_time": 335,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-farmland-pfile10.pddl": {
@@ -86762,7 +86762,7 @@
     "search_time": 23,
     "state_peak_memory_usage_in_bytes": 677732,
     "time_limit": 1800,
-    "total_time": 34,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-farmland-pfile20.pddl": {
@@ -86974,7 +86974,7 @@
     "search_time": 176241,
     "state_peak_memory_usage_in_bytes": 1375739780,
     "time_limit": 1800,
-    "total_time": 176281,
+    "total_time": 177,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-farmland-pfile5.pddl": {
@@ -87314,7 +87314,7 @@
     "search_time": 11852,
     "state_peak_memory_usage_in_bytes": 85986412,
     "time_limit": 1800,
-    "total_time": 11863,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-sailing-pfile1.pddl": {
@@ -87398,7 +87398,7 @@
     "search_time": 34726,
     "state_peak_memory_usage_in_bytes": 192991044,
     "time_limit": 1800,
-    "total_time": 34759,
+    "total_time": 35,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-sailing-pfile10.pddl": {
@@ -88122,7 +88122,7 @@
     "search_time": 62258,
     "state_peak_memory_usage_in_bytes": 343985988,
     "time_limit": 1800,
-    "total_time": 62269,
+    "total_time": 63,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-sailing-pfile20.pddl": {
@@ -88334,7 +88334,7 @@
     "search_time": 277906,
     "state_peak_memory_usage_in_bytes": 1157686084,
     "time_limit": 1800,
-    "total_time": 277924,
+    "total_time": 278,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-fo-sailing-pfile5.pddl": {
@@ -88738,7 +88738,7 @@
     "search_time": 3104,
     "state_peak_memory_usage_in_bytes": 31047492,
     "time_limit": 1800,
-    "total_time": 3166,
+    "total_time": 4,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile10.pddl": {
@@ -88950,7 +88950,7 @@
     "search_time": 558468,
     "state_peak_memory_usage_in_bytes": 3840409412,
     "time_limit": 1800,
-    "total_time": 558498,
+    "total_time": 559,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile13.pddl": {
@@ -89418,7 +89418,7 @@
     "search_time": 200783,
     "state_peak_memory_usage_in_bytes": 1909718852,
     "time_limit": 1800,
-    "total_time": 200810,
+    "total_time": 201,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile2.pddl": {
@@ -89502,7 +89502,7 @@
     "search_time": 6332,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 6376,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile20.pddl": {
@@ -89586,7 +89586,7 @@
     "search_time": 347676,
     "state_peak_memory_usage_in_bytes": 1940389700,
     "time_limit": 1800,
-    "total_time": 347726,
+    "total_time": 348,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile3.pddl": {
@@ -89670,7 +89670,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 140964,
     "time_limit": 1800,
-    "total_time": 27,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile4.pddl": {
@@ -89754,7 +89754,7 @@
     "search_time": 291,
     "state_peak_memory_usage_in_bytes": 4030276,
     "time_limit": 1800,
-    "total_time": 329,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile5.pddl": {
@@ -89838,7 +89838,7 @@
     "search_time": 6868,
     "state_peak_memory_usage_in_bytes": 61275972,
     "time_limit": 1800,
-    "total_time": 6893,
+    "total_time": 7,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile6.pddl": {
@@ -89922,7 +89922,7 @@
     "search_time": 1382,
     "state_peak_memory_usage_in_bytes": 15531844,
     "time_limit": 1800,
-    "total_time": 1410,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile7.pddl": {
@@ -90006,7 +90006,7 @@
     "search_time": 2441,
     "state_peak_memory_usage_in_bytes": 30637892,
     "time_limit": 1800,
-    "total_time": 2488,
+    "total_time": 3,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile8.pddl": {
@@ -90090,7 +90090,7 @@
     "search_time": 11115,
     "state_peak_memory_usage_in_bytes": 121700164,
     "time_limit": 1800,
-    "total_time": 11150,
+    "total_time": 12,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-hydropower-pfile9.pddl": {
@@ -90174,7 +90174,7 @@
     "search_time": 97477,
     "state_peak_memory_usage_in_bytes": 956563268,
     "time_limit": 1800,
-    "total_time": 97506,
+    "total_time": 98,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-markettrader-pfile1.pddl": {
@@ -91538,7 +91538,7 @@
     "search_time": 10,
     "state_peak_memory_usage_in_bytes": 129995,
     "time_limit": 1800,
-    "total_time": 20,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-mprime-pfile10.pddl": {
@@ -92254,7 +92254,7 @@
     "search_time": 286,
     "state_peak_memory_usage_in_bytes": 1343573,
     "time_limit": 1800,
-    "total_time": 309,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-mprime-pfile20.pddl": {
@@ -92402,7 +92402,7 @@
     "search_time": 1105,
     "state_peak_memory_usage_in_bytes": 4096100,
     "time_limit": 1800,
-    "total_time": 1153,
+    "total_time": 2,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-mprime-pfile4.pddl": {
@@ -92486,7 +92486,7 @@
     "search_time": 9961,
     "state_peak_memory_usage_in_bytes": 32768243,
     "time_limit": 1800,
-    "total_time": 9980,
+    "total_time": 10,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-mprime-pfile5.pddl": {
@@ -92570,7 +92570,7 @@
     "search_time": 675789,
     "state_peak_memory_usage_in_bytes": 578814037,
     "time_limit": 1800,
-    "total_time": 675826,
+    "total_time": 676,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-mprime-pfile6.pddl": {
@@ -92907,7 +92907,7 @@
     "search_time": 670711,
     "state_peak_memory_usage_in_bytes": 1897922645,
     "time_limit": 1800,
-    "total_time": 670751,
+    "total_time": 671,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-pathwaysmetric-pfile10.pddl": {
@@ -94188,7 +94188,7 @@
     "search_time": 4,
     "state_peak_memory_usage_in_bytes": 132944,
     "time_limit": 1800,
-    "total_time": 51,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-rover-pfile10.pddl": {
@@ -94912,7 +94912,7 @@
     "search_time": 159,
     "state_peak_memory_usage_in_bytes": 2069254,
     "time_limit": 1800,
-    "total_time": 173,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-rover-pfile20.pddl": {
@@ -95060,7 +95060,7 @@
     "search_time": 13152,
     "state_peak_memory_usage_in_bytes": 124257692,
     "time_limit": 1800,
-    "total_time": 13235,
+    "total_time": 14,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-rover-pfile4.pddl": {
@@ -95144,7 +95144,7 @@
     "search_time": 7917,
     "state_peak_memory_usage_in_bytes": 119800622,
     "time_limit": 1800,
-    "total_time": 7936,
+    "total_time": 8,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-rover-pfile5.pddl": {
@@ -98102,7 +98102,7 @@
     "search_time": 114136,
     "state_peak_memory_usage_in_bytes": 236585303,
     "time_limit": 1800,
-    "total_time": 114163,
+    "total_time": 115,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-sugar-pfile10.pddl": {
@@ -99137,7 +99137,7 @@
     "search_time": 117697,
     "state_peak_memory_usage_in_bytes": 237240944,
     "time_limit": 1800,
-    "total_time": 117719,
+    "total_time": 118,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-sugar-pfile7.pddl": {
@@ -99410,7 +99410,7 @@
     "search_time": 7,
     "state_peak_memory_usage_in_bytes": 35656,
     "time_limit": 1800,
-    "total_time": 52,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-tpp-pfile10.pddl": {
@@ -100133,7 +100133,7 @@
     "search_time": 124,
     "state_peak_memory_usage_in_bytes": 512253,
     "time_limit": 1800,
-    "total_time": 159,
+    "total_time": 1,
     "unsolvable": 0
   },
   "mimir-grounded-astar-eager-blind-tpp-pfile20.pddl": {

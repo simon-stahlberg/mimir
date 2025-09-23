@@ -130,11 +130,22 @@ def translate_total_time_to_sec(properties):
         properties["total_time"] = int((properties["total_time"]+999) / 1000)
     return properties
 
-# exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=rename_algorithm_kpkc_numeric)
-# exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-ipc-numeric-eval", name="dtdb-s-fetch-ipc-numeric", filter=rename_algorithm_kpkc_propositional)
+def propositional_filter(properties):
+    props = rename_algorithm_kpkc_propositional(properties)
+    props = translate_total_time_to_sec(props)
+    return props
 
-exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-minepddl-numeric-eval", name="list-fetch-minepddl-numeric", filter=rename_algorithm_kpkc_numeric)
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-minepddl-numeric-eval", name="dtdb-s-fetch-minepddl-numeric", filter=rename_algorithm_kpkc_propositional)
+def numeric_filter(properties):
+    props = rename_algorithm_kpkc_numeric(properties)
+    props = translate_total_time_to_sec(props)
+    return props
+
+
+# exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=numeric_filter)
+# exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-ipc-numeric-eval", name="dtdb-s-fetch-ipc-numeric", filter=propositional_filter)
+
+exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-minepddl-numeric-eval", name="list-fetch-minepddl-numeric", filter=numeric_filter)
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-minepddl-numeric-eval", name="dtdb-s-fetch-minepddl-numeric", filter=propositional_filter)
 
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "exhaustive-propositional-astar-eager-blind", "kpkc-propositional-astar-eager-blind", "kpkc-numeric-astar-eager-blind"]))
