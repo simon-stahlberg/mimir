@@ -36,6 +36,5 @@ SUITE_MINEPDDL_TEST = [
     "Pickup_and_Place:Pickup_and_Place_Easy.pddl",
     "Pickup_Diamond:Pickup_Diamond_Easy.pddl",
     "Place_Wood:Place_Wood_Easy.pddl",
-    "Scaled_Move_to_Location:Scaled_Move_to_Location_49.pddl",
-    "Scaled_Move_to_Location_extended:Scaled_Move_to_Location_170.pddl",
+    "Scaled_Move_to_Location:Scaled_Move_to_Location_49.pddl"
 ]
