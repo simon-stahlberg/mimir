@@ -24,7 +24,7 @@ ATTRIBUTES = [
     "out_of_memory",
     "out_of_time",
     "search_time",
-    "total_time",
+    Attribute("total_time", function=sum),
     "num_generated",
     "num_expanded",
     "num_expanded_until_last_f_layer",
@@ -123,6 +123,11 @@ def rename_algorithm_kpkc_numeric(properties):
     if properties["algorithm"] == "mimir-kpkc-astar-eager-blind":
         properties["algorithm"] = "kpkc-numeric-astar-eager-blind"
         properties["id"][0] = "kpkc-numeric-astar-eager-blind"
+    return properties
+
+def translate_total_time_to_sec(properties):
+    if "total_time" in properties:
+        properties["total_time"] = int((properties["total_time"]+999) / 1000)
     return properties
 
 # exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=rename_algorithm_kpkc_numeric)
