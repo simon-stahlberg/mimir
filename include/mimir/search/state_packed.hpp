@@ -32,8 +32,71 @@
 #include <valla/indexed_hash_set.hpp>
 #include <valla/valla.hpp>
 
+#if MIMIR_STATESET_LIST || MIMIR_STATESET_DTDB_H
+
 namespace mimir::search
 {
+
+/// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
+class PackedStateImpl
+{
+private:
+    Index m_fluent_atoms;
+    Index m_derived_atoms;
+    Index m_numeric_variables;
+
+    PackedStateImpl(Index fluent_atoms, Index derived_atoms, Index numeric_variables);
+
+    friend class StateRepositoryImpl;
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::IndexedHashSet;
+
+public:
+    /**
+     * Getters
+     */
+
+    template<formalism::IsFluentOrDerivedTag P>
+    Index get_atoms() const;
+    Index get_numeric_variables() const;
+};
+
+static_assert(sizeof(PackedStateImpl) == 12);
+
+}
+
+namespace loki
+{
+template<>
+struct Hash<mimir::search::PackedStateImpl>
+{
+    const mimir::formalism::ProblemImpl& problem;
+
+    explicit Hash(const mimir::formalism::ProblemImpl& problem);
+
+    size_t operator()(const mimir::search::PackedStateImpl& el) const;
+};
+
+template<>
+struct EqualTo<mimir::search::PackedStateImpl>
+{
+    bool operator()(const mimir::search::PackedStateImpl& lhs, const mimir::search::PackedStateImpl& rhs) const;
+};
+
+}
+
+namespace mimir::search
+{
+using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Hash<PackedStateImpl>, loki::EqualTo<PackedStateImpl>>;
+}
+
+#elif MIMIR_STATESET_DTDB_S
+
+namespace mimir::search
+{
+
 /// @brief `PackedStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state in a compressed way.
 class PackedStateImpl
 {
@@ -86,5 +149,6 @@ using PackedStateImplMap = absl::node_hash_map<PackedStateImpl, Index, loki::Has
 
 static_assert(sizeof(PackedStateImplMap::value_type) == 28);
 }
+#endif
 
 #endif

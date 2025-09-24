@@ -46,6 +46,17 @@ target_link_libraries(core
     fmt::fmt
 )
 
+if(MIMIR_STATESET STREQUAL "LIST")
+  target_compile_definitions(core PUBLIC MIMIR_STATESET_LIST)
+elseif(MIMIR_STATESET STREQUAL "DTDB_S")
+  target_compile_definitions(core PUBLIC MIMIR_STATESET_DTDB_S)
+elseif(MIMIR_STATESET STREQUAL "DTDB_H")
+  target_compile_definitions(core PUBLIC MIMIR_STATESET_DTDB_H)
+else()
+  message(FATAL_ERROR "MIMIR_STATESET must be one of: LIST, DTDB_S, DTDB_H")
+endif()
+
+
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})
 # target_link_libraries(core ${PYTHON3_LIB_DIRS})
 

@@ -245,11 +245,11 @@ const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_p
  * Additional members
  */
 
-valla::IndexedHashSet<valla::Slot<Index>, Index>& ProblemImpl::get_index_tree_table() { return m_index_tree_table; }
-const valla::IndexedHashSet<valla::Slot<Index>, Index>& ProblemImpl::get_index_tree_table() const { return m_index_tree_table; }
+IndexTreeTable& ProblemImpl::get_index_tree_table() { return m_index_tree_table; }
+const IndexTreeTable& ProblemImpl::get_index_tree_table() const { return m_index_tree_table; }
 
-valla::IndexedHashSet<double, Index>& ProblemImpl::get_double_leaf_table() { return m_double_leaf_table; }
-const valla::IndexedHashSet<double, Index>& ProblemImpl::get_double_leaf_table() const { return m_double_leaf_table; }
+DoubleLeafTable& ProblemImpl::get_double_leaf_table() { return m_double_leaf_table; }
+const DoubleLeafTable& ProblemImpl::get_double_leaf_table() const { return m_double_leaf_table; }
 
 std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
 {
