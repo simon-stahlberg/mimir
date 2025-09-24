@@ -78,7 +78,7 @@ static bool nullary_constraints_hold(const GroundNumericConstraintList& constrai
 
 bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const UnpackedStateImpl& unpacked_state)
 {
-#if MIMIR_KPKC_PROPOSITIONAL
+#if MIMIR_KPKC_CLASSICAL
     return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<FluentTag>(), unpacked_state.get_atoms<FluentTag>())
            && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<DerivedTag>(), unpacked_state.get_atoms<DerivedTag>());
 #elif MIMIR_KPKC_NUMERIC
