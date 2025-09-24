@@ -43,9 +43,17 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
-    IndexList m_index_list;
-
     SharedObjectPool<UnpackedStateImpl> m_unpacked_state_pool;
+
+#if MIMIR_STATESET_LIST
+    FlatIndexList m_state_fluent_atoms;
+    FlatIndexList m_state_derived_atoms;
+
+    Index m_empty_index_list;
+    Index m_empty_double_list;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
+    IndexList m_index_list;
+#endif
 
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
