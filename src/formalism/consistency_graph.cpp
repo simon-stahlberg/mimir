@@ -563,7 +563,7 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                  const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
-#if MIMIR_KPKC_PROPOSITIONAL
+#if MIMIR_KPKC_CLASSICAL
     return true;
 #elif MIMIR_KPKC_NUMERIC
     return consistent_numeric_constraints_helper(numeric_constraints,
@@ -609,7 +609,7 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
-#if MIMIR_KPKC_PROPOSITIONAL
+#if MIMIR_KPKC_CLASSICAL
     return true;
 #elif MIMIR_KPKC_NUMERIC
     return consistent_numeric_constraints_helper(numeric_constraints,
