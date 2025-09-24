@@ -105,7 +105,11 @@ namespace loki
 {
 size_t Hash<mimir::search::State>::operator()(const mimir::search::State& el) const
 {
+#if MIMIR_STATESET_LIST || MIMIR_STATESET_DTDB_H
+    return hash_combine(Hash<mimir::search::PackedStateImpl>(el.get_problem())(*el.get_packed_state()), &el.get_problem());
+#elif MIMIR_STATESET_DTDB_S
     return hash_combine(Hash<mimir::search::PackedStateImpl> {}(*el.get_packed_state()), &el.get_problem());
+#endif
 }
 
 bool EqualTo<mimir::search::State>::operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
