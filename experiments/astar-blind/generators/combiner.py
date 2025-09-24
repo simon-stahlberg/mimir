@@ -116,17 +116,17 @@ ATTRIBUTES = [
 # exp = Experiment("combined-astar-blind-30-ipc")
 exp = Experiment("combined-astar-blind-30-mine")
 
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-grounded-astar30-ipc-numeric-eval", name="fetch-0")
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-exhaustive-astar30-ipc-numeric-eval", name="fetch-1")
-exp.add_fetcher("data-kpkc-numeric/2025-09-19-lifted-kpkc-propositional-astar30-ipc-numeric-eval", name="fetch-2")
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-kpkc-numeric-astar30-ipc-numeric-eval", name="fetch-3")
+exp.add_fetcher("data-grounded/2025-09-19-grounded-astar30-ipc-numeric-eval", name="fetch-0")
+exp.add_fetcher("data-lifted-exhaustive/2025-09-19-lifted-exhaustive-astar30-ipc-numeric-eval", name="fetch-1")
+exp.add_fetcher("data-lifted-kpkc-classical/2025-09-19-lifted-kpkc-classical-astar30-ipc-numeric-eval", name="fetch-2")
+exp.add_fetcher("data-lifted-kpkc-numeric/2025-09-19-lifted-kpkc-numeric-astar30-ipc-numeric-eval", name="fetch-3")
 
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-grounded-astar30-minepddl-numeric-eval", name="fetch-4")
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-exhaustive-astar30-minepddl-numeric-eval", name="fetch-5")
-exp.add_fetcher("data-kpkc-numeric/2025-09-19-lifted-kpkc-propositional-astar30-minepddl-numeric-eval", name="fetch-6")
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-kpkc-numeric-astar30-minepddl-numeric-eval", name="fetch-7")
+exp.add_fetcher("data-grounded/2025-09-19-grounded-astar30-minepddl-numeric-eval", name="fetch-4")
+exp.add_fetcher("data-lifted-exhaustive/2025-09-19-lifted-exhaustive-astar30-minepddl-numeric-eval", name="fetch-5")
+exp.add_fetcher("data-lifted-kpkc-classical/2025-09-19-lifted-kpkc-classical-astar30-minepddl-numeric-eval", name="fetch-6")
+exp.add_fetcher("data-lifted-kpkc-numeric/2025-09-19-lifted-kpkc-numeric-astar30-minepddl-numeric-eval", name="fetch-7")
 
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "mimir-lifted-exhaustive-astar-eager-blind", "mimir-lifted-kpkc-propositional-astar-eager-blind", "mimir-lifted-kpkc-numeric-astar-eager-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "mimir-lifted-exhaustive-astar-eager-blind", "mimir-lifted-kpkc-classical-astar-eager-blind", "mimir-lifted-kpkc-numeric-astar-eager-blind"]))
 
 exp.run_steps()
