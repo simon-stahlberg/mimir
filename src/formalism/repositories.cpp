@@ -22,8 +22,32 @@
 namespace mimir::formalism
 {
 
+static void ground_terms(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
+{
+    out_terms.clear();
+
+    for (const auto& term : terms)
+    {
+        std::visit(
+            [&](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, Object>)
+                {
+                    out_terms.emplace_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, Variable>)
+                {
+                    assert(arg->get_parameter_index() < binding.size());
+                    out_terms.emplace_back(binding[arg->get_parameter_index()]);
+                }
+            },
+            term->get_variant());
+    }
+}
+
 template<IsStaticOrFluentOrDerivedTag P>
-static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, Repositories& pddl_repositories)
+static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, Repositories& repositories)
 {
     auto ground_literals = GroundLiteralList<P> {};
     for (const auto& literal : literals)
@@ -31,13 +55,156 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
         if (literal->get_atom()->get_arity() != 0)
             continue;
 
-        ground_literals.push_back(
-            pddl_repositories.get_or_create_ground_literal(literal->get_polarity(),
-                                                           pddl_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), {})));
+        ground_literals.push_back(repositories.get_or_create_ground_literal(literal->get_polarity(),
+                                                                            repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), {})));
     }
 
     return ground_literals;
 }
+
+static GroundNumericConstraintList ground_nullary_constraints(const NumericConstraintList& constraints, Repositories& repositories)
+{
+    auto ground_constraints = GroundNumericConstraintList {};
+    for (const auto& constraint : constraints)
+    {
+        if (constraint->get_arity() != 0)
+            continue;
+
+        ground_constraints.push_back(repositories.ground(constraint, {}));
+    }
+
+    return ground_constraints;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+GroundLiteral<P> Repositories::ground(Literal<P> literal, const ObjectList& binding)
+{
+    // We have to fetch the literal-relevant part of the binding first.
+    static thread_local auto s_grounded_terms = ObjectList {};
+    ground_terms(literal->get_atom()->get_terms(), binding, s_grounded_terms);
+
+    return get_or_create_ground_literal(literal->get_polarity(), get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms));
+}
+
+template GroundLiteral<StaticTag> Repositories::ground(Literal<StaticTag> literal, const ObjectList& binding);
+template GroundLiteral<FluentTag> Repositories::ground(Literal<FluentTag> literal, const ObjectList& binding);
+template GroundLiteral<DerivedTag> Repositories::ground(Literal<DerivedTag> literal, const ObjectList& binding);
+
+GroundFunctionExpression Repositories::ground(FunctionExpression fexpr, const ObjectList& binding)
+{
+    return std::visit(
+        [&](auto&& arg) -> GroundFunctionExpression
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FunctionExpressionNumber>)
+            {
+                return get_or_create_ground_function_expression(get_or_create_ground_function_expression_number(arg->get_number()));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
+            {
+                const auto op = arg->get_binary_operator();
+                const auto ground_lhs = ground(arg->get_left_function_expression(), binding);
+                const auto ground_rhs = ground(arg->get_right_function_expression(), binding);
+
+                if (std::holds_alternative<GroundFunctionExpressionNumber>(ground_lhs->get_variant())
+                    && std::holds_alternative<GroundFunctionExpressionNumber>(ground_rhs->get_variant()))
+                {
+                    return get_or_create_ground_function_expression(get_or_create_ground_function_expression_number(
+                        evaluate_binary(op,
+                                        std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number(),
+                                        std::get<GroundFunctionExpressionNumber>(ground_rhs->get_variant())->get_number())));
+                }
+
+                return get_or_create_ground_function_expression(get_or_create_ground_function_expression_binary_operator(op, ground_lhs, ground_rhs));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
+            {
+                const auto op = arg->get_multi_operator();
+                auto fexpr_numbers = GroundFunctionExpressionList {};
+                auto fexpr_others = GroundFunctionExpressionList {};
+                for (const auto& child_fexpr : arg->get_function_expressions())
+                {
+                    const auto ground_child_fexpr = ground(child_fexpr, binding);
+                    std::holds_alternative<GroundFunctionExpressionNumber>(ground_child_fexpr->get_variant()) ? fexpr_numbers.push_back(ground_child_fexpr) :
+                                                                                                                fexpr_others.push_back(ground_child_fexpr);
+                }
+
+                if (!fexpr_numbers.empty())
+                {
+                    const auto value =
+                        std::accumulate(std::next(fexpr_numbers.begin()),  // Start from the second expression
+                                        fexpr_numbers.end(),
+                                        std::get<GroundFunctionExpressionNumber>(fexpr_numbers.front()->get_variant())->get_number(),  // Initial bounds
+                                        [op](const auto& value, const auto& child_expr) {
+                                            return evaluate_multi(op, value, std::get<GroundFunctionExpressionNumber>(child_expr->get_variant())->get_number());
+                                        });
+
+                    fexpr_others.push_back(get_or_create_ground_function_expression(get_or_create_ground_function_expression_number(value)));
+                }
+
+                return get_or_create_ground_function_expression(get_or_create_ground_function_expression_multi_operator(op, fexpr_others));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
+            {
+                const auto ground_fexpr = ground(arg->get_function_expression(), binding);
+
+                return std::holds_alternative<GroundFunctionExpressionNumber>(ground_fexpr->get_variant()) ?
+                           get_or_create_ground_function_expression(get_or_create_ground_function_expression_number(
+                               -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
+                           ground_fexpr;
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
+            {
+                return get_or_create_ground_function_expression(
+                    get_or_create_ground_function_expression_function<StaticTag>(ground(arg->get_function(), binding)));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<FluentTag>>)
+            {
+                return get_or_create_ground_function_expression(
+                    get_or_create_ground_function_expression_function<FluentTag>(ground(arg->get_function(), binding)));
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value,
+                              "NumericConstraintGrounder::ground(fexpr, binding): Missing implementation for GroundFunctionExpression type.");
+            }
+        },
+        fexpr->get_variant());
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+GroundFunction<F> Repositories::ground(Function<F> function, const ObjectList& binding)
+{
+    // We have to fetch the function-relevant part of the binding first.
+    static thread_local auto s_grounded_terms = ObjectList {};
+    ground_terms(function->get_terms(), binding, s_grounded_terms);
+
+    return get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
+}
+
+template GroundFunction<StaticTag> Repositories::ground(Function<StaticTag> function, const ObjectList& binding);
+template GroundFunction<FluentTag> Repositories::ground(Function<FluentTag> function, const ObjectList& binding);
+template GroundFunction<AuxiliaryTag> Repositories::ground(Function<AuxiliaryTag> function, const ObjectList& binding);
+
+GroundNumericConstraint Repositories::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
+{
+    return get_or_create_ground_numeric_constraint(numeric_constraint->get_binary_comparator(),
+                                                   ground(numeric_constraint->get_left_function_expression(), binding),
+                                                   ground(numeric_constraint->get_right_function_expression(), binding));
+}
+
+// NumericEffect
+
+template<IsFluentOrAuxiliaryTag F>
+GroundNumericEffect<F> Repositories::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
+{
+    return get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
+                                               ground(numeric_effect->get_function(), binding),
+                                               ground(numeric_effect->get_function_expression(), binding));
+}
+
+template GroundNumericEffect<FluentTag> Repositories::ground(NumericEffect<FluentTag> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<AuxiliaryTag> Repositories::ground(NumericEffect<AuxiliaryTag> numeric_effect, const ObjectList& binding);
 
 Repositories::Repositories(const Repositories* parent) :
     m_repositories(boost::hana::unpack(boost::hana::transform(boost::hana::keys(HanaRepositories {}),
@@ -438,10 +605,19 @@ ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(Parameter
                                         [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
                           });
 
+    auto nullary_ground_constraints = ground_nullary_constraints(numeric_constraints, *this);
+
     std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(nullary_ground_constraints.begin(),
+              nullary_ground_constraints.end(),
+              [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveConditionImpl> {})
-        .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
+        .get_or_create(std::move(parameters),
+                       std::move(literals),
+                       std::move(nullary_ground_literals),
+                       std::move(numeric_constraints),
+                       std::move(nullary_ground_constraints));
 }
 
 GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(

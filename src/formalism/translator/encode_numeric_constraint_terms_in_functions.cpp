@@ -22,44 +22,8 @@
 namespace mimir::formalism
 {
 
-static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)
-{
-    std::visit(
-        [&ref_terms](auto&& arg)
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, FunctionExpressionNumber>) {}
-            else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
-            {
-                collect_terms(arg->get_left_function_expression(), ref_terms);
-                collect_terms(arg->get_right_function_expression(), ref_terms);
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
-            {
-                for (const auto& part : arg->get_function_expressions())
-                {
-                    collect_terms(part, ref_terms);
-                }
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
-            {
-                collect_terms(arg->get_function_expression(), ref_terms);
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>> || std::is_same_v<T, FunctionExpressionFunction<FluentTag>>
-                               || std::is_same_v<T, FunctionExpressionFunction<AuxiliaryTag>>)
-            {
-                ref_terms.insert(ref_terms.end(), arg->get_function()->get_terms().begin(), arg->get_function()->get_terms().end());
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "collect_terms_helper(fexpr, ref_terms): Missing implementation for FunctionExpression type.");
-            }
-        },
-        fexpr->get_variant());
-}
-
 template<IsStaticOrFluentOrAuxiliaryTag F>
-Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<F> function, Repositories& repositories)
+Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2_impl(Function<F> function, Repositories& repositories)
 {
     auto transformed_function_skeleton = this->translate_level_0(function->get_function_skeleton(), repositories);
     auto transformed_terms = this->translate_level_0(function->get_terms(), repositories);
@@ -86,27 +50,34 @@ Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<
     return repositories.get_or_create_function(transformed_function_skeleton, transformed_terms, parent_terms_to_terms_mapping);
 }
 
-template Function<StaticTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<StaticTag> function, Repositories& repositories);
-template Function<FluentTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<FluentTag> function, Repositories& repositories);
-template Function<AuxiliaryTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<AuxiliaryTag> function, Repositories& repositories);
+template Function<StaticTag> EncodeNumericConstraintTermsInFunctions::translate_level_2_impl(Function<StaticTag> function, Repositories& repositories);
+template Function<FluentTag> EncodeNumericConstraintTermsInFunctions::translate_level_2_impl(Function<FluentTag> function, Repositories& repositories);
+template Function<AuxiliaryTag> EncodeNumericConstraintTermsInFunctions::translate_level_2_impl(Function<AuxiliaryTag> function, Repositories& repositories);
+
+Function<StaticTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<StaticTag> function, Repositories& repositories)
+{
+    return translate_level_2_impl(function, repositories);
+}
+
+Function<FluentTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<FluentTag> function, Repositories& repositories)
+{
+    return translate_level_2_impl(function, repositories);
+}
+
+Function<AuxiliaryTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<AuxiliaryTag> function, Repositories& repositories)
+{
+    return translate_level_2_impl(function, repositories);
+}
 
 NumericConstraint EncodeNumericConstraintTermsInFunctions::translate_level_2(NumericConstraint numeric_constraint, Repositories& repositories)
 {
-    assert(numeric_constraint->get_terms().empty());
-    auto terms = TermList {};
-    collect_terms(numeric_constraint->get_left_function_expression(), terms);
-    collect_terms(numeric_constraint->get_right_function_expression(), terms);
-    terms = uniquify_elements(terms);
-    terms = this->translate_level_0(terms, repositories);
-    std::sort(terms.begin(), terms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-
     // Set the member variable to be used in nested tranformations.
-    m_numeric_constraint_terms = terms;
+    m_numeric_constraint_terms = this->translate_level_0(numeric_constraint->get_terms(), repositories);
 
     return repositories.get_or_create_numeric_constraint(numeric_constraint->get_binary_comparator(),
                                                          this->translate_level_0(numeric_constraint->get_left_function_expression(), repositories),
                                                          this->translate_level_0(numeric_constraint->get_right_function_expression(), repositories),
-                                                         terms);
+                                                         m_numeric_constraint_terms);
 }
 
 }

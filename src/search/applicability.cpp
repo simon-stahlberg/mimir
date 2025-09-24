@@ -54,9 +54,20 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
 {
     for (const auto& literal : literals)
     {
-        assert(literal->get_atom()->get_arity() == 0);
-
         if (literal->get_polarity() != atom_indices.get(literal->get_atom()->get_index()))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool nullary_constraints_hold(const GroundNumericConstraintList& constraints, const UnpackedStateImpl& unpacked_state)
+{
+    for (const auto& constraint : constraints)
+    {
+        if (!evaluate(constraint, unpacked_state.get_problem().get_initial_function_to_value<StaticTag>(), unpacked_state.get_numeric_variables()))
         {
             return false;
         }
@@ -69,7 +80,8 @@ bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const U
 {
     // Note: checking nullary constraints doesnt work because its value is problem-dependent!
     return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<FluentTag>(), unpacked_state.get_atoms<FluentTag>())
-           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<DerivedTag>(), unpacked_state.get_atoms<DerivedTag>());
+           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<DerivedTag>(), unpacked_state.get_atoms<DerivedTag>())
+           && nullary_constraints_hold(conjunctive_condition->get_nullary_ground_numeric_constraints(), unpacked_state);
 }
 
 /**

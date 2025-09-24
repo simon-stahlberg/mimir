@@ -125,8 +125,23 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(formalism::Conjunct
 template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const UnpackedStateImpl& unpacked_state, const formalism::ObjectList& binding)
 {
-    return is_valid_binding(m_conjunctive_condition, unpacked_state, binding)  ///< Check applicability of our conjunctive condition.
-           && self().is_valid_binding_impl(unpacked_state, binding);           ///< Check applicability in Derived.
+    const auto base_ok = is_valid_binding(m_conjunctive_condition, unpacked_state, binding);
+    if (!base_ok)
+    {
+        m_event_handler->on_invalid_base_binding(binding);
+        return false;
+    }
+    m_event_handler->on_valid_base_binding(binding);
+
+    const auto derived_ok = self().is_valid_binding_impl(unpacked_state, binding);
+    if (!derived_ok)
+    {
+        m_event_handler->on_invalid_derived_binding(binding);
+        return false;
+    }
+    m_event_handler->on_valid_derived_binding(binding);
+
+    return true;
 }
 
 template<typename Derived_>
@@ -136,15 +151,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
     auto binding = formalism::ObjectList {};
 
     if (is_valid_binding(unpacked_state, binding))
-    {
-        m_event_handler->on_valid_binding(binding);
-
         co_yield std::move(binding);
-    }
-    else
-    {
-        m_event_handler->on_invalid_binding(binding);
-    }
 }
 
 template<typename Derived_>
@@ -169,15 +176,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::u
             auto binding = formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(unpacked_state, binding))
-            {
-                m_event_handler->on_valid_binding(binding);
-
                 co_yield std::move(binding);
-            }
-            else
-            {
-                m_event_handler->on_invalid_binding(binding);
-            }
         }
     }
 }
@@ -256,15 +255,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
         }
 
         if (is_valid_binding(unpacked_state, binding))
-        {
-            m_event_handler->on_valid_binding(binding);
-
             co_yield std::move(binding);
-        }
-        else
-        {
-            m_event_handler->on_invalid_binding(binding);
-        }
     }
 }
 

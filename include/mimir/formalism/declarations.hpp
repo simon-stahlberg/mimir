@@ -290,6 +290,7 @@ using GroundConjunctiveCondition = const GroundConjunctiveConditionImpl*;
 class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
+using TermSet = std::unordered_set<Term>;
 
 static_assert(IsHanaMap<PredicateLists<StaticTag>>);
 

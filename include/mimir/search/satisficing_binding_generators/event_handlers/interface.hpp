@@ -29,9 +29,11 @@ class IEventHandler
 public:
     virtual ~IEventHandler() = default;
 
-    virtual void on_valid_binding(const formalism::ObjectList& binding) = 0;
+    virtual void on_valid_base_binding(const formalism::ObjectList& binding) = 0;
+    virtual void on_valid_derived_binding(const formalism::ObjectList& binding) = 0;
 
-    virtual void on_invalid_binding(const formalism::ObjectList& binding) = 0;
+    virtual void on_invalid_base_binding(const formalism::ObjectList& binding) = 0;
+    virtual void on_invalid_derived_binding(const formalism::ObjectList& binding) = 0;
 
     virtual void on_end_search() = 0;
 
@@ -58,23 +60,43 @@ private:
 public:
     explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_valid_binding(const formalism::ObjectList& binding) override
+    void on_valid_base_binding(const formalism::ObjectList& binding) override
     {
-        m_statistics.increment_num_valid_bindings();
+        m_statistics.increment_num_valid_base_bindings();
 
         if (!m_quiet)
         {
-            self().on_valid_binding_impl(binding);
+            self().on_valid_base_binding_impl(binding);
         }
     }
 
-    void on_invalid_binding(const formalism::ObjectList& binding) override
+    void on_valid_derived_binding(const formalism::ObjectList& binding) override
     {
-        m_statistics.increment_num_invalid_bindings();
+        m_statistics.increment_num_valid_derived_bindings();
 
         if (!m_quiet)
         {
-            self().on_invalid_binding_impl(binding);
+            self().on_valid_derived_binding_impl(binding);
+        }
+    }
+
+    void on_invalid_base_binding(const formalism::ObjectList& binding) override
+    {
+        m_statistics.increment_num_invalid_base_bindings();
+
+        if (!m_quiet)
+        {
+            self().on_invalid_base_binding_impl(binding);
+        }
+    }
+
+    void on_invalid_derived_binding(const formalism::ObjectList& binding) override
+    {
+        m_statistics.increment_num_invalid_derived_bindings();
+
+        if (!m_quiet)
+        {
+            self().on_invalid_derived_binding_impl(binding);
         }
     }
 

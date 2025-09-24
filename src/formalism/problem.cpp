@@ -433,31 +433,6 @@ const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_par
 
 /* Grounding */
 
-// Terms
-static void ground_terms(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
-{
-    out_terms.clear();
-
-    for (const auto& term : terms)
-    {
-        std::visit(
-            [&](auto&& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Object>)
-                {
-                    out_terms.emplace_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Variable>)
-                {
-                    assert(arg->get_parameter_index() < binding.size());
-                    out_terms.emplace_back(binding[arg->get_parameter_index()]);
-                }
-            },
-            term->get_variant());
-    }
-}
-
 // Atom
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -473,93 +448,9 @@ template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate
 // Literal
 
 template<IsStaticOrFluentOrDerivedTag P>
-static void ground_and_fill_bitset(ProblemImpl& problem,
-                                   const std::vector<Literal<P>>& literals,
-                                   FlatBitset& ref_positive_bitset,
-                                   FlatBitset& ref_negative_bitset,
-                                   const ObjectList& binding)
-{
-    for (const auto& literal : literals)
-    {
-        const auto grounded_literal = problem.ground(literal, binding);
-
-        if (grounded_literal->get_polarity())
-        {
-            ref_positive_bitset.set(grounded_literal->get_atom()->get_index());
-        }
-        else
-        {
-            ref_negative_bitset.set(grounded_literal->get_atom()->get_index());
-        }
-    }
-}
-
-template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<StaticTag>>& literals,
-                                     FlatBitset& ref_positive_bitset,
-                                     FlatBitset& ref_negative_bitset,
-                                     const ObjectList& binding);
-template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<FluentTag>>& literals,
-                                     FlatBitset& ref_positive_bitset,
-                                     FlatBitset& ref_negative_bitset,
-                                     const ObjectList& binding);
-template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<DerivedTag>>& literals,
-                                     FlatBitset& ref_positive_bitset,
-                                     FlatBitset& ref_negative_bitset,
-                                     const ObjectList& binding);
-
-template<IsStaticOrFluentOrDerivedTag P>
-static void ground_and_fill_vector(ProblemImpl& problem,
-                                   const std::vector<Literal<P>>& literals,
-                                   FlatIndexList& ref_positive_indices,
-                                   FlatIndexList& ref_negative_indices,
-                                   const ObjectList& binding)
-{
-    for (const auto& literal : literals)
-    {
-        const auto grounded_literal = problem.ground(literal, binding);
-
-        if (grounded_literal->get_polarity())
-        {
-            ref_positive_indices.push_back(grounded_literal->get_atom()->get_index());
-        }
-        else
-        {
-            ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
-        }
-    }
-    std::sort(ref_positive_indices.uncompressed_begin(), ref_positive_indices.uncompressed_end());
-    std::sort(ref_negative_indices.uncompressed_begin(), ref_negative_indices.uncompressed_end());
-}
-
-template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<StaticTag>>& literals,
-                                     FlatIndexList& ref_positive_indices,
-                                     FlatIndexList& ref_negative_indices,
-                                     const ObjectList& binding);
-template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<FluentTag>>& literals,
-                                     FlatIndexList& ref_positive_indices,
-                                     FlatIndexList& ref_negative_indices,
-                                     const ObjectList& binding);
-template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<DerivedTag>>& literals,
-                                     FlatIndexList& ref_positive_indices,
-                                     FlatIndexList& ref_negative_indices,
-                                     const ObjectList& binding);
-
-template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& binding)
 {
-    // We have to fetch the literal-relevant part of the binding first.
-    static thread_local auto s_grounded_terms = ObjectList {};
-    s_grounded_terms.clear();
-    ground_terms(literal->get_atom()->get_terms(), binding, s_grounded_terms);
-
-    return m_repositories.get_or_create_ground_literal(literal->get_polarity(),
-                                                       m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), s_grounded_terms));
+    return m_repositories.ground(literal, binding);
 }
 
 template GroundLiteral<StaticTag> ProblemImpl::ground(Literal<StaticTag> literal, const ObjectList& binding);
@@ -571,11 +462,7 @@ template GroundLiteral<DerivedTag> ProblemImpl::ground(Literal<DerivedTag> liter
 template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& binding)
 {
-    // We have to fetch the function-relevant part of the binding first.
-    static thread_local auto s_grounded_terms = ObjectList {};
-    ground_terms(function->get_terms(), binding, s_grounded_terms);
-
-    return m_repositories.get_or_create_ground_function(function->get_function_skeleton(), s_grounded_terms);
+    return m_repositories.ground(function, binding);
 }
 
 template GroundFunction<StaticTag> ProblemImpl::ground(Function<StaticTag> function, const ObjectList& binding);
@@ -584,107 +471,21 @@ template GroundFunction<AuxiliaryTag> ProblemImpl::ground(Function<AuxiliaryTag>
 
 // FunctionExpression
 
-GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const ObjectList& binding)
-{
-    return std::visit(
-        [&](auto&& arg) -> GroundFunctionExpression
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, FunctionExpressionNumber>)
-            {
-                return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_number(arg->get_number()));
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
-            {
-                const auto op = arg->get_binary_operator();
-                const auto ground_lhs = ground(arg->get_left_function_expression(), binding);
-                const auto ground_rhs = ground(arg->get_right_function_expression(), binding);
-
-                if (std::holds_alternative<GroundFunctionExpressionNumber>(ground_lhs->get_variant())
-                    && std::holds_alternative<GroundFunctionExpressionNumber>(ground_rhs->get_variant()))
-                {
-                    return m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(
-                        evaluate_binary(op,
-                                        std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number(),
-                                        std::get<GroundFunctionExpressionNumber>(ground_rhs->get_variant())->get_number())));
-                }
-
-                return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_binary_operator(op, ground_lhs, ground_rhs));
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
-            {
-                const auto op = arg->get_multi_operator();
-                auto fexpr_numbers = GroundFunctionExpressionList {};
-                auto fexpr_others = GroundFunctionExpressionList {};
-                for (const auto& child_fexpr : arg->get_function_expressions())
-                {
-                    const auto ground_child_fexpr = ground(child_fexpr, binding);
-                    std::holds_alternative<GroundFunctionExpressionNumber>(ground_child_fexpr->get_variant()) ? fexpr_numbers.push_back(ground_child_fexpr) :
-                                                                                                                fexpr_others.push_back(ground_child_fexpr);
-                }
-
-                if (!fexpr_numbers.empty())
-                {
-                    const auto value =
-                        std::accumulate(std::next(fexpr_numbers.begin()),  // Start from the second expression
-                                        fexpr_numbers.end(),
-                                        std::get<GroundFunctionExpressionNumber>(fexpr_numbers.front()->get_variant())->get_number(),  // Initial bounds
-                                        [op](const auto& value, const auto& child_expr) {
-                                            return evaluate_multi(op, value, std::get<GroundFunctionExpressionNumber>(child_expr->get_variant())->get_number());
-                                        });
-
-                    fexpr_others.push_back(
-                        m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(value)));
-                }
-
-                return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_multi_operator(op, fexpr_others));
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
-            {
-                const auto ground_fexpr = ground(arg->get_function_expression(), binding);
-
-                return std::holds_alternative<GroundFunctionExpressionNumber>(ground_fexpr->get_variant()) ?
-                           m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(
-                               -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
-                           ground_fexpr;
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
-            {
-                return m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(
-                    get_initial_function_value<StaticTag>(ground(arg->get_function(), binding))));
-            }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<FluentTag>>)
-            {
-                return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_function<FluentTag>(ground(arg->get_function(), binding)));
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value,
-                              "NumericConstraintGrounder::ground(fexpr, binding): Missing implementation for GroundFunctionExpression type.");
-            }
-        },
-        fexpr->get_variant());
-}
+GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const ObjectList& binding) { return m_repositories.ground(fexpr, binding); }
 
 // NumericConstraint
+
 GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
 {
-    return m_repositories.get_or_create_ground_numeric_constraint(numeric_constraint->get_binary_comparator(),
-                                                                  ground(numeric_constraint->get_left_function_expression(), binding),
-                                                                  ground(numeric_constraint->get_right_function_expression(), binding));
+    return m_repositories.ground(numeric_constraint, binding);
 }
 
 // NumericEffect
+
 template<IsFluentOrAuxiliaryTag F>
 GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
-    return m_repositories.get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
-                                                              ground(numeric_effect->get_function(), binding),
-                                                              ground(numeric_effect->get_function_expression(), binding));
+    return m_repositories.ground(numeric_effect, binding);
 }
 
 template GroundNumericEffect<FluentTag> ProblemImpl::ground(NumericEffect<FluentTag> numeric_effect, const ObjectList& binding);
@@ -725,6 +526,46 @@ static void ground_and_fill_optional(ProblemImpl& problem,
         ref_numeric_effect = problem.ground(numeric_effect.value(), binding);
     }
 }
+
+template<IsStaticOrFluentOrDerivedTag P>
+static void ground_and_fill_vector(ProblemImpl& problem,
+                                   const std::vector<Literal<P>>& literals,
+                                   FlatIndexList& ref_positive_indices,
+                                   FlatIndexList& ref_negative_indices,
+                                   const ObjectList& binding)
+{
+    for (const auto& literal : literals)
+    {
+        const auto grounded_literal = problem.ground(literal, binding);
+
+        if (grounded_literal->get_polarity())
+        {
+            ref_positive_indices.push_back(grounded_literal->get_atom()->get_index());
+        }
+        else
+        {
+            ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
+        }
+    }
+    std::sort(ref_positive_indices.uncompressed_begin(), ref_positive_indices.uncompressed_end());
+    std::sort(ref_negative_indices.uncompressed_begin(), ref_negative_indices.uncompressed_end());
+}
+
+template void ground_and_fill_vector(ProblemImpl& problem,
+                                     const std::vector<Literal<StaticTag>>& literals,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
+                                     const ObjectList& binding);
+template void ground_and_fill_vector(ProblemImpl& problem,
+                                     const std::vector<Literal<FluentTag>>& literals,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
+                                     const ObjectList& binding);
+template void ground_and_fill_vector(ProblemImpl& problem,
+                                     const std::vector<Literal<DerivedTag>>& literals,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
+                                     const ObjectList& binding);
 
 GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_condition, const ObjectList& binding)
 {

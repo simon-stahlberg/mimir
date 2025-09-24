@@ -30,6 +30,7 @@ private:
     LiteralLists<StaticTag, FluentTag, DerivedTag> m_literals;
     GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_nullary_ground_literals;
     NumericConstraintList m_numeric_constraints;
+    GroundNumericConstraintList m_nullary_ground_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -37,12 +38,14 @@ private:
                              ParameterList parameters,
                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                              GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
-                             NumericConstraintList numeric_constraints);
+                             NumericConstraintList numeric_constraints,
+                             GroundNumericConstraintList nullary_ground_numeric_constraints);
 
     static auto identifying_args(const ParameterList& parameters,
                                  const LiteralLists<StaticTag, FluentTag, DerivedTag>& literals,
                                  const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& nullary_ground_literals,
-                                 const NumericConstraintList& numeric_constraints) noexcept
+                                 const NumericConstraintList& numeric_constraints,
+                                 const GroundNumericConstraintList& nullary_ground_numeric_constraints) noexcept
     {
         return std::tuple(std::cref(parameters),
                           std::cref(boost::hana::at_key(literals, boost::hana::type<StaticTag> {})),
@@ -73,6 +76,7 @@ public:
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
     const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_nullary_ground_literals() const;
     const NumericConstraintList& get_numeric_constraints() const;
+    const GroundNumericConstraintList& get_nullary_ground_numeric_constraints() const;
 
     size_t get_arity() const;
 

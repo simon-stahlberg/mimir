@@ -138,7 +138,7 @@ void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& o
 {
     if (!element.get_parameters().empty())
     {
-        out << "(forall (";
+        out << "(exists (";
         for (const auto& parameter : element.get_parameters())
         {
             out << " ";

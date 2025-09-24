@@ -40,7 +40,11 @@ private:
     TermList m_numeric_constraint_terms;
 
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    Function<F> translate_level_2(Function<F> function, Repositories& repositories);
+    Function<F> translate_level_2_impl(Function<F> function, Repositories& repositories);
+    Function<StaticTag> translate_level_2(Function<StaticTag> function, Repositories& repositories);
+    Function<FluentTag> translate_level_2(Function<FluentTag> function, Repositories& repositories);
+    Function<AuxiliaryTag> translate_level_2(Function<AuxiliaryTag> function, Repositories& repositories);
+
     NumericConstraint translate_level_2(NumericConstraint numeric_constraint, Repositories& repositories);
 };
 }

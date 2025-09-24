@@ -45,6 +45,8 @@ FunctionExpression NumericConstraintImpl::get_right_function_expression() const 
 
 const TermList& NumericConstraintImpl::get_terms() const { return m_terms; }
 
+size_t NumericConstraintImpl::get_arity() const { return m_terms.size(); }
+
 std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element)
 {
     write(element, StringFormatter(), out);

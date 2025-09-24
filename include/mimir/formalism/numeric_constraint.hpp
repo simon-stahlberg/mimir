@@ -69,6 +69,7 @@ public:
     FunctionExpression get_left_function_expression() const;
     FunctionExpression get_right_function_expression() const;
     const TermList& get_terms() const;
+    size_t get_arity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

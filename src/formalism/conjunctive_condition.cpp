@@ -32,12 +32,14 @@ ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
                                                    ParameterList parameters,
                                                    LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
-                                                   NumericConstraintList numeric_constraints) :
+                                                   NumericConstraintList numeric_constraints,
+                                                   GroundNumericConstraintList nullary_ground_numeric_constraints) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_literals(std::move(literals)),
     m_nullary_ground_literals(std::move(nullary_ground_literals)),
-    m_numeric_constraints(std::move(numeric_constraints))
+    m_numeric_constraints(std::move(numeric_constraints)),
+    m_nullary_ground_numeric_constraints(std::move(nullary_ground_numeric_constraints))
 {
     assert(is_all_unique(get_parameters()));
     assert(is_all_unique(get_literals<StaticTag>()));
@@ -47,6 +49,7 @@ ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
     assert(is_all_unique(get_nullary_ground_literals<FluentTag>()));
     assert(is_all_unique(get_nullary_ground_literals<DerivedTag>()));
     assert(is_all_unique(get_numeric_constraints()));
+    assert(is_all_unique(get_nullary_ground_numeric_constraints()));
 
     assert(std::is_sorted(get_literals<StaticTag>().begin(),
                           get_literals<StaticTag>().end(),
@@ -68,6 +71,9 @@ ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_numeric_constraints().begin(),
                           get_numeric_constraints().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_nullary_ground_numeric_constraints().begin(),
+                          get_nullary_ground_numeric_constraints().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
@@ -103,6 +109,8 @@ const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ConjunctiveCondition
 }
 
 const NumericConstraintList& ConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
+
+const GroundNumericConstraintList& ConjunctiveConditionImpl::get_nullary_ground_numeric_constraints() const { return m_nullary_ground_numeric_constraints; }
 
 size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
 

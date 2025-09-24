@@ -100,7 +100,9 @@ mimir::generator<GroundAction> ExhaustiveLiftedApplicableActionGeneratorImpl::cr
 
             if (is_applicable(ground_action, state))
             {
-                m_binding_event_handler->on_valid_binding(binding);
+                // TODO(Dominik): This is awkward. Should have separate EventHandler
+                m_binding_event_handler->on_valid_base_binding(binding);
+                m_binding_event_handler->on_valid_derived_binding(binding);
 
                 m_event_handler->on_ground_action(ground_action);
 
@@ -111,7 +113,8 @@ mimir::generator<GroundAction> ExhaustiveLiftedApplicableActionGeneratorImpl::cr
             }
             else
             {
-                m_binding_event_handler->on_invalid_binding(binding);
+                m_binding_event_handler->on_invalid_base_binding(binding);
+                m_binding_event_handler->on_invalid_derived_binding(binding);
             }
         }
     }

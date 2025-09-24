@@ -115,7 +115,9 @@ void ExhaustiveLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedState
 
                     if (is_applicable(ground_axiom, unpacked_state))
                     {
-                        m_binding_event_handler->on_valid_binding(binding);
+                        // TODO(Dominik): This is awkward. Should have separate EventHandler
+                        m_binding_event_handler->on_valid_base_binding(binding);
+                        m_binding_event_handler->on_valid_derived_binding(binding);
 
                         m_event_handler->on_ground_axiom(ground_axiom);
 
@@ -126,7 +128,8 @@ void ExhaustiveLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedState
                     }
                     else
                     {
-                        m_binding_event_handler->on_invalid_binding(binding);
+                        m_binding_event_handler->on_invalid_base_binding(binding);
+                        m_binding_event_handler->on_invalid_derived_binding(binding);
                     }
                 }
             }

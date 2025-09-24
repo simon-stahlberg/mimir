@@ -197,6 +197,23 @@ public:
     const HanaRepositories& get_hana_repositories() const;
 
     ///////////////////////////////////////////////////////////////////////////
+    /// Grounding
+    ///////////////////////////////////////////////////////////////////////////
+
+    template<IsStaticOrFluentOrDerivedTag P>
+    GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
+
+    GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
+
+    template<IsStaticOrFluentOrAuxiliaryTag F>
+    GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
+
+    GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+
+    template<IsFluentOrAuxiliaryTag F>
+    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
+
+    ///////////////////////////////////////////////////////////////////////////
     /// Modifiers
     ///////////////////////////////////////////////////////////////////////////
 

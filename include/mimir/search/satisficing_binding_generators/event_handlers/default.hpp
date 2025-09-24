@@ -28,9 +28,11 @@ private:
     /* Implement EventHandlerBase interface */
     friend class EventHandlerBase<DefaultEventHandlerImpl>;
 
-    void on_valid_binding_impl(const formalism::ObjectList& binding) const;
+    void on_valid_base_binding_impl(const formalism::ObjectList& binding) const;
+    void on_valid_derived_binding_impl(const formalism::ObjectList& binding) const;
 
-    void on_invalid_binding_impl(const formalism::ObjectList& binding) const;
+    void on_invalid_base_binding_impl(const formalism::ObjectList& binding) const;
+    void on_invalid_derived_binding_impl(const formalism::ObjectList& binding) const;
 
     void on_end_search_impl() const;
 

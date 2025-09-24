@@ -44,9 +44,16 @@ private:
 
     // Do not rename within predicates or function skeleton
     template<IsStaticOrFluentOrDerivedTag P>
-    Predicate<P> translate_level_2(Predicate<P> predicate, Repositories& repositories);
+    Predicate<P> translate_level_2_impl(Predicate<P> predicate, Repositories& repositories);
+    Predicate<StaticTag> translate_level_2(Predicate<StaticTag> predicate, Repositories& repositories);
+    Predicate<FluentTag> translate_level_2(Predicate<FluentTag> predicate, Repositories& repositories);
+    Predicate<DerivedTag> translate_level_2(Predicate<DerivedTag> predicate, Repositories& repositories);
+
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories);
+    FunctionSkeleton<F> translate_level_2_impl(FunctionSkeleton<F> function_skeleton, Repositories& repositories);
+    FunctionSkeleton<StaticTag> translate_level_2(FunctionSkeleton<StaticTag> function_skeleton, Repositories& repositories);
+    FunctionSkeleton<FluentTag> translate_level_2(FunctionSkeleton<FluentTag> function_skeleton, Repositories& repositories);
+    FunctionSkeleton<AuxiliaryTag> translate_level_2(FunctionSkeleton<AuxiliaryTag> function_skeleton, Repositories& repositories);
 
     ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories);
     Axiom translate_level_2(Axiom axiom, Repositories& repositories);

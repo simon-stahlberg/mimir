@@ -394,12 +394,57 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpression 
     return std::visit([&](auto&& arg) { return this->translate_lifted(arg, repositories); }, function_expression->get_function_expression());
 }
 
+static void collect_terms(FunctionExpression fexpr, TermSet& ref_terms)
+{
+    std::visit(
+        [&ref_terms](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FunctionExpressionNumber>) {}
+            else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
+            {
+                collect_terms(arg->get_left_function_expression(), ref_terms);
+                collect_terms(arg->get_right_function_expression(), ref_terms);
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
+            {
+                for (const auto& part : arg->get_function_expressions())
+                {
+                    collect_terms(part, ref_terms);
+                }
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
+            {
+                collect_terms(arg->get_function_expression(), ref_terms);
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>> || std::is_same_v<T, FunctionExpressionFunction<FluentTag>>
+                               || std::is_same_v<T, FunctionExpressionFunction<AuxiliaryTag>>)
+            {
+                ref_terms.insert(arg->get_function()->get_terms().begin(), arg->get_function()->get_terms().end());
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "collect_terms_helper(fexpr, ref_terms): Missing implementation for FunctionExpression type.");
+            }
+        },
+        fexpr->get_variant());
+}
+
 NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericConstraint condition, Repositories& repositories)
 {
+    auto translated_left_function_expression = translate_lifted(condition->get_left_function_expression(), repositories);
+    auto translated_right_function_expression = translate_lifted(condition->get_right_function_expression(), repositories);
+
+    auto translated_terms_set = TermSet {};
+    collect_terms(translated_left_function_expression, translated_terms_set);
+    collect_terms(translated_right_function_expression, translated_terms_set);
+    auto translated_terms = TermList(translated_terms_set.begin(), translated_terms_set.end());
+    std::sort(translated_terms.begin(), translated_terms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+
     return repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
-                                                         translate_lifted(condition->get_left_function_expression(), repositories),
-                                                         translate_lifted(condition->get_right_function_expression(), repositories),
-                                                         TermList {});
+                                                         translated_left_function_expression,
+                                                         translated_right_function_expression,
+                                                         translated_terms);
 }
 
 StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Function function, Repositories& repositories)
