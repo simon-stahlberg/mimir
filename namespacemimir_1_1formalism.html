@@ -489,6 +489,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a464fd2852275efe9690c3a507132cf65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af020fb353c583f3a1ebabd01f82e14fd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a> &gt;</td></tr>
 <tr class="separator:af020fb353c583f3a1ebabd01f82e14fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38ce02d70d022d7a431bf21739fbc6af"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a38ce02d70d022d7a431bf21739fbc6af">TermSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a> &gt;</td></tr>
+<tr class="separator:a38ce02d70d022d7a431bf21739fbc6af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26153258a8ca3aaab06d16fbb526229c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a26153258a8ca3aaab06d16fbb526229c">FunctionExpressionVariant</a> = std::variant&lt; <a class="el" href="namespacemimir_1_1formalism.html#abcc61f8a78f4c347d23f79f2e146c1e6">FunctionExpressionNumber</a>, <a class="el" href="namespacemimir_1_1formalism.html#a740a8c5fb1d4dd084c2f8c54c31f606e">FunctionExpressionBinaryOperator</a>, <a class="el" href="namespacemimir_1_1formalism.html#aa9fecc435fa00ad65dd6a4747a422b50">FunctionExpressionMultiOperator</a>, <a class="el" href="namespacemimir_1_1formalism.html#a7c2a5bdfbd7ea800acf6767926766d1d">FunctionExpressionMinus</a>, <a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt;, <a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a> &gt; &gt;</td></tr>
 <tr class="separator:a26153258a8ca3aaab06d16fbb526229c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7d8dc35bf76e09ffc7e3da1c30914a1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ab7d8dc35bf76e09ffc7e3da1c30914a1">GroundFunctionExpressionVariant</a> = std::variant&lt; <a class="el" href="namespacemimir_1_1formalism.html#a8d69307e524dca27b7b6eaea3284c8fd">GroundFunctionExpressionNumber</a>, <a class="el" href="namespacemimir_1_1formalism.html#a9def52777b18d0528f57ede66c2a5810">GroundFunctionExpressionBinaryOperator</a>, <a class="el" href="namespacemimir_1_1formalism.html#a2ea2d70b038da3946ff5f0aadd822d7b">GroundFunctionExpressionMultiOperator</a>, <a class="el" href="namespacemimir_1_1formalism.html#a6a1a59f6990d3144b8ec90dd45426614">GroundFunctionExpressionMinus</a>, <a class="el" href="namespacemimir_1_1formalism.html#a7880ea2a1644989ba4614ae42da29039">GroundFunctionExpressionFunction</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt;, <a class="el" href="namespacemimir_1_1formalism.html#a7880ea2a1644989ba4614ae42da29039">GroundFunctionExpressionFunction</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a> &gt;, <a class="el" href="namespacemimir_1_1formalism.html#a7880ea2a1644989ba4614ae42da29039">GroundFunctionExpressionFunction</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1AuxiliaryTag.html">AuxiliaryTag</a> &gt; &gt;</td></tr>
@@ -2852,6 +2854,20 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1formalism.html#ae326f9f08031f13bcf4af4e4929ce689">mimir::formalism::TermRepository</a> = typedef loki::IndexedHashSet&lt;<a class="el" href="classmimir_1_1formalism_1_1TermImpl.html">TermImpl</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a38ce02d70d022d7a431bf21739fbc6af" name="a38ce02d70d022d7a431bf21739fbc6af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38ce02d70d022d7a431bf21739fbc6af">&#9670;&#160;</a></span>TermSet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1formalism.html#a38ce02d70d022d7a431bf21739fbc6af">mimir::formalism::TermSet</a> = typedef std::unordered_set&lt;<a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
