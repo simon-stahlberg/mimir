@@ -563,11 +563,14 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                  const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
+#if MIMIR_KPKC_PROPOSITIONAL
     return true;
+#elif MIMIR_KPKC_NUMERIC
     return consistent_numeric_constraints_helper(numeric_constraints,
                                                  static_function_skeleton_assignment_sets,
                                                  fluent_function_skeleton_assignment_sets,
                                                  *this);
+#endif
 }
 
 Index Vertex::get_object_if_overlap(const Term& term) const
@@ -606,11 +609,14 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
                                const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets) const
 {
+#if MIMIR_KPKC_PROPOSITIONAL
     return true;
+#elif MIMIR_KPKC_NUMERIC
     return consistent_numeric_constraints_helper(numeric_constraints,
                                                  static_function_skeleton_assignment_sets,
                                                  fluent_function_skeleton_assignment_sets,
                                                  *this);
+#endif
 }
 
 Index Edge::get_object_if_overlap(const Term& term) const

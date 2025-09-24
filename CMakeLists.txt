@@ -25,6 +25,24 @@ option(BUILD_TESTS "Build" OFF)
 option(BUILD_EXECUTABLES "Build" OFF)
 option(BUILD_PROFILING "Build" OFF)
 
+option(MIMIR_KPKC_PROPOSITIONAL "Build" OFF)
+option(MIMIR_KPKC_NUMERIC "Build" ON)
+# Ensure that either MIMIR_KPKC_PROPOSITIONAL or MIMIR_KPKC_NUMERIC is enabled
+# Must be exactly one of them
+if( (MIMIR_KPKC_PROPOSITIONAL AND MIMIR_KPKC_NUMERIC) OR
+    (NOT MIMIR_KPKC_PROPOSITIONAL AND NOT MIMIR_KPKC_NUMERIC) )
+  message(FATAL_ERROR
+    "Select exactly one: set MIMIR_KPKC_PROPOSITIONAL=ON, MIMIR_KPKC_NUMERIC=OFF "
+    "or vice versa.")
+endif()
+
+if(MIMIR_KPKC_PROPOSITIONAL)
+    add_compile_definitions(MIMIR_KPKC_PROPOSITIONAL)
+endif()
+if(MIMIR_KPKC_NUMERIC)
+    add_compile_definitions(MIMIR_KPKC_NUMERIC)
+endif()
+
 ##############################################################
 # Common Settings
 ##############################################################

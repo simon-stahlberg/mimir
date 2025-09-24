@@ -66,19 +66,33 @@ ATTRIBUTES = [
     "length",
     "invalid_plan_reported",
 
-    "num_generated_valid_action_bindings",
-    "num_generated_invalid_action_bindings",
-    "num_generated_valid_axiom_bindings",
-    "num_generated_invalid_axiom_bindings",
-    "num_generated_valid_bindings",
-    "num_generated_invalid_bindings",
+    "num_generated_valid_action_base_bindings",
+    "num_generated_invalid_action_base_bindings",
+    "num_generated_valid_axiom_base_bindings",
+    "num_generated_invalid_axiom_base_bindings",
+    "num_generated_valid_base_bindings",
+    "num_generated_invalid_base_bindings",
 
-    "num_generated_valid_action_bindings_until_last_f_layer",
-    "num_generated_invalid_action_bindings_until_last_f_layer",
-    "num_generated_valid_axiom_bindings_until_last_f_layer",
-    "num_generated_invalid_axiom_bindings_until_last_f_layer",
-    "num_generated_valid_bindings_until_last_f_layer",
-    "num_generated_invalid_bindings_until_last_f_layer",
+    "num_generated_valid_action_base_bindings_until_last_f_layer",
+    "num_generated_invalid_action_base_bindings_until_last_f_layer",
+    "num_generated_valid_axiom_base_bindings_until_last_f_layer",
+    "num_generated_invalid_axiom_base_bindings_until_last_f_layer",
+    "num_generated_valid_base_bindings_until_last_f_layer",
+    "num_generated_invalid_base_bindings_until_last_f_layer",
+
+    "num_generated_valid_action_derived_bindings",
+    "num_generated_invalid_action_derived_bindings",
+    "num_generated_valid_axiom_derived_bindings",
+    "num_generated_invalid_axiom_derived_bindings",
+    "num_generated_valid_derived_bindings",
+    "num_generated_invalid_derived_bindings",
+
+    "num_generated_valid_action_derived_bindings_until_last_f_layer",
+    "num_generated_invalid_action_derived_bindings_until_last_f_layer",
+    "num_generated_valid_axiom_derived_bindings_until_last_f_layer",
+    "num_generated_invalid_axiom_derived_bindings_until_last_f_layer",
+    "num_generated_valid_derived_bindings_until_last_f_layer",
+    "num_generated_invalid_derived_bindings_until_last_f_layer",
 
     Attribute("overapproximation_ratio", function=geometric_mean),
     Attribute("overapproximation_ratio_until_last_f_layer", function=geometric_mean),
@@ -102,52 +116,17 @@ ATTRIBUTES = [
 # exp = Experiment("combined-astar-blind-30-ipc")
 exp = Experiment("combined-astar-blind-30-mine")
 
-def rename_algorithm_kpkc_propositional(properties):
-    """Rename algorithm dynamically during fetching."""
-    if properties["algorithm"] == "mimir-exhaustive-astar-eager-blind":
-        properties["algorithm"] = "exhaustive-propositional-astar-eager-blind"
-        properties["id"][0] = "exhaustive-propositional-astar-eager-blind"
-    if properties["algorithm"] == "mimir-kpkc-astar-eager-blind":
-        properties["algorithm"] = "kpkc-propositional-astar-eager-blind"
-        properties["id"][0] = "kpkc-propositional-astar-eager-blind"
-    if properties["algorithm"] == "mimir-grounded-astar-eager-blind":
-        properties["overapproximation_ratio"] = 0.0
-        properties["overapproximation_ratio_until_last_f_layer"] = 0.0
-    return properties
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-grounded-astar30-ipc-numeric-eval", name="fetch-0")
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-exhaustive-astar30-ipc-numeric-eval", name="fetch-1")
+exp.add_fetcher("data-kpkc-numeric/2025-09-19-lifted-kpkc-propositional-astar30-ipc-numeric-eval", name="fetch-2")
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-kpkc-numeric-astar30-ipc-numeric-eval", name="fetch-3")
 
-def rename_algorithm_kpkc_numeric(properties):
-    """Rename algorithm dynamically during fetching."""
-    if properties["algorithm"] == "mimir-exhaustive-astar-eager-blind":
-        properties["algorithm"] = "exhaustive-numeric-astar-eager-blind"
-        properties["id"][0] = "exhaustive-numeric-astar-eager-blind"
-    if properties["algorithm"] == "mimir-kpkc-astar-eager-blind":
-        properties["algorithm"] = "kpkc-numeric-astar-eager-blind"
-        properties["id"][0] = "kpkc-numeric-astar-eager-blind"
-    return properties
-
-def translate_total_time_to_sec(properties):
-    if "total_time" in properties:
-        properties["total_time"] = int((properties["total_time"]+999) / 1000)
-    return properties
-
-def propositional_filter(properties):
-    props = rename_algorithm_kpkc_propositional(properties)
-    props = translate_total_time_to_sec(props)
-    return props
-
-def numeric_filter(properties):
-    props = rename_algorithm_kpkc_numeric(properties)
-    props = translate_total_time_to_sec(props)
-    return props
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-grounded-astar30-minepddl-numeric-eval", name="fetch-4")
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-exhaustive-astar30-minepddl-numeric-eval", name="fetch-5")
+exp.add_fetcher("data-kpkc-numeric/2025-09-19-lifted-kpkc-propositional-astar30-minepddl-numeric-eval", name="fetch-6")
+exp.add_fetcher("data-kpkc-propositional/2025-09-19-lifted-kpkc-numeric-astar30-minepddl-numeric-eval", name="fetch-7")
 
 
-# exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-ipc-numeric-eval", name="list-fetch-ipc-numeric", filter=numeric_filter)
-# exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-ipc-numeric-eval", name="dtdb-s-fetch-ipc-numeric", filter=propositional_filter)
-
-exp.add_fetcher("data-kpkc-numeric/2025-09-19-generator-astar30-minepddl-numeric-eval", name="list-fetch-minepddl-numeric", filter=numeric_filter)
-exp.add_fetcher("data-kpkc-propositional/2025-09-19-generator-astar30-minepddl-numeric-eval", name="dtdb-s-fetch-minepddl-numeric", filter=propositional_filter)
-
-
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "exhaustive-propositional-astar-eager-blind", "kpkc-propositional-astar-eager-blind", "kpkc-numeric-astar-eager-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-grounded-astar-eager-blind", "mimir-lifted-exhaustive-astar-eager-blind", "mimir-lifted-kpkc-propositional-astar-eager-blind", "mimir-lifted-kpkc-numeric-astar-eager-blind"]))
 
 exp.run_steps()
