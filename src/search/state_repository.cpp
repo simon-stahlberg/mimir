@@ -52,14 +52,38 @@ ContinuousCost compute_state_metric_value(const State& state)
 
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
+#if MIMIR_STATESET_LIST
+    m_states(0, loki::Hash<PackedStateImpl>(*m_axiom_evaluator->get_problem())),
+#elif MIMIR_STATESET_DTDB_S
     m_states(),
+#elif MIMIR_STATESET_DTDB_H
+    m_states(0, loki::Hash<mimir::search::PackedStateImpl>(*m_axiom_evaluator->get_problem())),
+#endif
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
-    m_index_list(),
     m_unpacked_state_pool()
+#if MIMIR_STATESET_LIST
+    ,
+    m_state_fluent_atoms(),
+    m_state_derived_atoms()
+
+    ,
+    m_empty_index_list(),
+    m_empty_double_list()
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
+    ,
+    m_index_list()
+#endif
 {
+#if MIMIR_STATESET_LIST
+    auto tmp_index_list = FlatIndexList {};
+    tmp_index_list.compress();
+    m_empty_index_list = m_axiom_evaluator->get_problem()->get_or_create_index_list(tmp_index_list).second;
+    auto tmp_double_list = FlatDoubleList {};
+    m_empty_double_list = m_axiom_evaluator->get_problem()->get_or_create_double_list(tmp_double_list).second;
+#endif
 }
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
@@ -68,6 +92,12 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_initial_stat
 {
     const auto problem = m_axiom_evaluator->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<FluentTag>());
+}
+
+static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
+{
+    insert_into_vector(dense, ref_sparse);
+    ref_sparse.compress();
 }
 
 static void update_reached_fluent_atoms(const FlatBitset& state_fluent_atoms, FlatBitset& ref_reached_fluent_atoms)
@@ -94,19 +124,38 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     auto& dense_derived_atoms = unpacked_state->get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
+#if MIMIR_STATESET_LIST
+    /* Temporaries */
+    m_state_fluent_atoms.clear();
+    m_state_derived_atoms.clear();
+    /* Sparse state */
+    auto state_fluent_atoms_slot = m_empty_index_list;
+    auto state_derived_atoms_slot = m_empty_index_list;
+    auto state_numeric_variables = m_empty_double_list;
+#elif MIMIR_STATESET_DTDB_S
     /* Sparse state */
     auto state_fluent_atoms_slot = valla::Slot<Index>();
     auto state_derived_atoms_slot = valla::Slot<Index>();
     auto state_numeric_variables = valla::Slot<Index>();
+#elif MIMIR_STATESET_DTDB_H
+    /* Sparse state */
+    auto state_fluent_atoms_slot = Index(0);
+    auto state_derived_atoms_slot = Index(0);
+    auto state_numeric_variables = Index(0);
+#endif
 
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
+#if MIMIR_STATESET_LIST
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
     m_index_list.clear();
     valla::encode_as_unsigned_integrals(dense_fluent_numeric_variables, double_leaf_table, std::back_inserter(m_index_list));
     state_numeric_variables = valla::insert_sequence(m_index_list, index_tree_table);
+#endif
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -114,7 +163,12 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
+#if MIMIR_STATESET_LIST
+    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    state_fluent_atoms_slot = problem.get_or_create_index_list(m_state_fluent_atoms).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
     state_fluent_atoms_slot = valla::insert_sequence(dense_fluent_atoms, index_tree_table);
+#endif
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -122,12 +176,19 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
+#if MIMIR_STATESET_LIST
+        for (const auto index : problem.get_index_list(it->first.get_atoms<DerivedTag>())->compressed_range())
+        {
+            dense_derived_atoms.set(index);
+        }
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
         m_index_list.clear();
         valla::read_sequence(it->first.get_atoms<DerivedTag>(), index_tree_table, std::back_inserter(m_index_list));
         for (const auto index : m_index_list)
         {
             dense_derived_atoms.set(index);
         }
+#endif
 
         auto state = State(it->second, &it->first, std::move(unpacked_state), shared_from_this());
         return { state, compute_state_metric_value(state) };
@@ -140,7 +201,12 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
+#if MIMIR_STATESET_LIST
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            state_derived_atoms_slot = problem.get_or_create_index_list(m_state_derived_atoms).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
             state_derived_atoms_slot = valla::insert_sequence(dense_derived_atoms, index_tree_table);
+#endif
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -290,10 +356,25 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
     /* Temporaries */
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
+#if MIMIR_STATESET_LIST
+    /* Temporaries */
+    m_state_fluent_atoms.clear();
+    m_state_derived_atoms.clear();
+    /* Sparse state */
+    auto state_fluent_atoms_slot = m_empty_index_list;
+    auto state_derived_atoms_slot = m_empty_index_list;
+    auto state_numeric_variables = m_empty_double_list;
+#elif MIMIR_STATESET_DTDB_S
     /* Sparse state */
     auto state_fluent_atoms_slot = valla::Slot<Index>();
     auto state_derived_atoms_slot = valla::Slot<Index>();
     auto state_numeric_variables = valla::Slot<Index>();
+#elif MIMIR_STATESET_DTDB_H
+    /* Sparse state */
+    auto state_fluent_atoms_slot = Index(0);
+    auto state_derived_atoms_slot = Index(0);
+    auto state_numeric_variables = Index(0);
+#endif
 
     auto successor_state_metric_value = state_metric_value;
 
@@ -309,25 +390,42 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
+#if MIMIR_STATESET_LIST
+    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    state_fluent_atoms_slot = problem.get_or_create_index_list(m_state_fluent_atoms).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
     state_fluent_atoms_slot = valla::insert_sequence(dense_fluent_atoms, index_tree_table);
+#endif
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
+#if MIMIR_STATESET_LIST
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
     m_index_list.clear();
     valla::encode_as_unsigned_integrals(dense_fluent_numeric_variables, double_leaf_table, std::back_inserter(m_index_list));
     state_numeric_variables = valla::insert_sequence(m_index_list, index_tree_table);
+#endif
 
     // Check if non-extended state exists in cache
     auto it = m_states.find(PackedStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
         dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before inserting the derived atoms of the successor state.
+#if MIMIR_STATESET_LIST
+        for (const auto index : problem.get_index_list(it->first.get_atoms<DerivedTag>())->compressed_range())
+        {
+            dense_derived_atoms.set(index);
+        }
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
         m_index_list.clear();
         valla::read_sequence(it->first.get_atoms<DerivedTag>(), index_tree_table, std::back_inserter(m_index_list));
         for (const auto index : m_index_list)
         {
             dense_derived_atoms.set(index);
         }
+#endif
+
         auto state = State(it->second, &it->first, std::move(unpacked_state), shared_from_this());
         return { state, successor_state_metric_value };
     }
@@ -340,7 +438,12 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_st
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(*unpacked_state);
 
+#if MIMIR_STATESET_LIST
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            state_derived_atoms_slot = problem.get_or_create_index_list(m_state_derived_atoms).second;
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
             state_derived_atoms_slot = valla::insert_sequence(dense_derived_atoms, index_tree_table);
+#endif
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -362,6 +465,22 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     auto& dense_derived_atoms = unpacked_state->get_atoms<DerivedTag>();
     auto& dense_fluent_numeric_variables = unpacked_state->get_numeric_variables();
 
+#if MIMIR_STATESET_LIST
+    dense_fluent_atoms.unset_all();
+    for (const auto index : problem.get_index_list(state.get_atoms<FluentTag>())->compressed_range())
+    {
+        dense_fluent_atoms.set(index);
+    }
+
+    dense_derived_atoms.unset_all();
+    for (const auto index : problem.get_index_list(state.get_atoms<DerivedTag>())->compressed_range())
+    {
+        dense_derived_atoms.set(index);
+    }
+
+    dense_fluent_numeric_variables.clear();
+    dense_fluent_numeric_variables = *problem.get_double_list(state.get_numeric_variables());
+#elif MIMIR_STATESET_DTDB_S || MIMIR_STATESET_DTDB_H
     dense_fluent_atoms.unset_all();
     m_index_list.clear();
     valla::read_sequence(state.get_atoms<FluentTag>(), problem.get_index_tree_table(), std::back_inserter(m_index_list));
@@ -382,6 +501,8 @@ State StateRepositoryImpl::get_state(const PackedStateImpl& state)
     valla::read_sequence(state.get_numeric_variables(), problem.get_index_tree_table(), std::back_inserter(m_index_list));
     dense_fluent_numeric_variables.clear();
     valla::decode_from_unsigned_integrals(m_index_list, problem.get_double_leaf_table(), std::back_inserter(dense_fluent_numeric_variables));
+
+#endif
 
     return State(m_states.at(state), &state, std::move(unpacked_state), shared_from_this());
 }

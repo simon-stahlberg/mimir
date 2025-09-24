@@ -25,10 +25,18 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-#include <valla/indexed_hash_set.hpp>
+#include <valla/valla.hpp>
 
 namespace mimir::formalism
 {
+#if MIMIR_STATESET_LIST || MIMIR_STATESET_DTDB_S
+using IndexTreeTable = valla::IndexedHashSet<valla::Slot<Index>, Index>;
+#elif MIMIR_STATESET_DTDB_H
+using IndexTreeTable = valla::SimpleTreeHashIDMap<Index, valla::IndexedHashSet<valla::Slot<Index>, Index>>;
+#endif
+
+using DoubleLeafTable = valla::IndexedHashSet<double, Index>;
+
 class ProblemImpl
 {
 private:
@@ -63,8 +71,8 @@ private:
     FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
     std::vector<const FlatDoubleList*> m_flat_double_lists;
 
-    valla::IndexedHashSet<valla::Slot<Index>, Index> m_index_tree_table;
-    valla::IndexedHashSet<double, Index> m_double_leaf_table;
+    IndexTreeTable m_index_tree_table;
+    DoubleLeafTable m_double_leaf_table;
 
     SharedObjectPool<FlatBitset> m_bitset_pool;
     SharedObjectPool<FlatIndexList> m_index_list_pool;
@@ -130,10 +138,10 @@ public:
      * Additional members
      */
 
-    valla::IndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table();
-    const valla::IndexedHashSet<valla::Slot<Index>, Index>& get_index_tree_table() const;
-    valla::IndexedHashSet<double, Index>& get_double_leaf_table();
-    const valla::IndexedHashSet<double, Index>& get_double_leaf_table() const;
+    IndexTreeTable& get_index_tree_table();
+    const IndexTreeTable& get_index_tree_table() const;
+    DoubleLeafTable& get_double_leaf_table();
+    const DoubleLeafTable& get_double_leaf_table() const;
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;
