@@ -17,6 +17,10 @@ if (NOT gtl_FOUND)
             -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
             -DCMAKE_POSITION_INDEPENDENT_CODE=ON
             # -DCMAKE_CXX_FLAGS="-fsanitize=address"
+            # Disable extras that drag in the failing example
+            -DGTL_BUILD_EXAMPLES=OFF
+            -DGTL_BUILD_TESTS=OFF
+            -DGTL_BUILD_BENCHMARKS=OFF
     )
 
     message(STATUS "Preparing external project \"gtl\" with args:")
