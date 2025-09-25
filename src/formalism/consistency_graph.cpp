@@ -358,7 +358,7 @@ compute_tighest_bound(Function<F> function, const Vertex& element, const Functio
 
     for (const auto& assignment : VertexAssignmentRange(terms, element))
     {
-        assert(assignment.is_complete() && assignment.is_ordered());
+        assert(assignment.is_complete());
 
         const auto assignment_bound = function_skeleton_assignment_set[assignment];
 
@@ -380,7 +380,7 @@ compute_tighest_bound(Function<F> function, const Edge& element, const FunctionS
 
     for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
     {
-        assert(assignment.is_complete() && assignment.is_ordered());
+        assert(assignment.is_complete());
 
         const auto assignment_bound = function_skeleton_assignment_set[assignment];
 
@@ -389,7 +389,7 @@ compute_tighest_bound(Function<F> function, const Edge& element, const FunctionS
 
     for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
     {
-        assert(assignment.is_complete() && assignment.is_ordered());
+        assert(assignment.is_complete());
 
         const auto assignment_bound = function_skeleton_assignment_set[assignment];
 
