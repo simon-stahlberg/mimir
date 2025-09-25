@@ -102,7 +102,7 @@ class TestProblem(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         actual_initial_atoms = problem.get_initial_atoms()
-        expected_initial_atoms = ['(arm-empty)', '(clear b2)', '(on-table b2)', '(clear b1)', '(on b1 b3)', '(on-table b3)']
+        expected_initial_atoms = ['(object b1)', '(object b2)', '(object b3)', '(arm-empty)', '(clear b2)', '(on-table b2)', '(clear b1)', '(on b1 b3)', '(on-table b3)']
         assert len(actual_initial_atoms) == len(expected_initial_atoms)
         for initial_atom in actual_initial_atoms:
             assert initial_atom.get_index() is not None
@@ -184,13 +184,13 @@ class TestAction(unittest.TestCase):
             assert parameter.get_index() is not None
             assert parameter.get_name() in expected_parameters
         actual_all_literals = actual_precondition.get_literals()
-        expected_all_literals = ['(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)', '(lift-at ?f1_0_0)', '(not (axiom_8))']
+        expected_all_literals = ['(object ?f1_0_0)', '(object ?f2_0_1)', '(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)', '(lift-at ?f1_0_0)', '(not (axiom_8))']
         assert len(actual_all_literals) == len(expected_all_literals)
         for literal in actual_all_literals:
             assert literal.get_index() is not None
             assert str(literal) in expected_all_literals
         actual_static_literals = actual_precondition.get_literals(False, True, True)
-        expected_static_literals  = ['(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)']
+        expected_static_literals  = ['(object ?f1_0_0)', '(object ?f2_0_1)', '(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)']
         assert len(actual_static_literals) == len(expected_static_literals)
         for literal in actual_static_literals:
             assert literal.get_index() is not None
@@ -243,12 +243,12 @@ class TestAction(unittest.TestCase):
         # First conditional effect
         actual_first_condition = actual_conditional_effect[0].get_condition()
         assert len(actual_first_condition.get_parameters()) == 1
-        assert len(actual_first_condition.get_literals()) == 3
+        assert len(actual_first_condition.get_literals()) == 4
         assert len(actual_first_condition.get_nullary_ground_literals()) == 0
         # Second conditional effect
         actual_second_condition = actual_conditional_effect[1].get_condition()
         assert len(actual_second_condition.get_parameters()) == 1
-        assert len(actual_second_condition.get_literals()) == 3
+        assert len(actual_second_condition.get_literals()) == 4
         assert len(actual_second_condition.get_nullary_ground_literals()) == 0
 
     def test_new_conjunctive_condition(self):
@@ -302,8 +302,8 @@ class TestState(unittest.TestCase):
         initial_static_atoms = initial_state.get_atoms(ignore_fluent=True, ignore_derived=True)
         initial_fluent_atoms = initial_state.get_atoms(ignore_static=True, ignore_derived=True)
         initial_derived_atoms = initial_state.get_atoms(ignore_static=True, ignore_fluent=True)
-        assert len(initial_atoms) == 28
-        assert len(initial_static_atoms) == 22
+        assert len(initial_atoms) == 34
+        assert len(initial_static_atoms) == 28
         assert len(initial_fluent_atoms) == 1
         assert len(initial_derived_atoms) == 5
         for atom in initial_atoms:
@@ -384,7 +384,7 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         blacklist = [domain.get_predicate('ball')]
         all_groundings = pickup_condition.ground(initial_state, blacklist=blacklist)
         assert len(all_groundings) == 4
-        assert len(all_groundings[0]) == 5
+        assert len(all_groundings[0]) == 8
 
     def test_lift(self):
         domain_path = DATA_DIR / 'gripper' / 'domain.pddl'

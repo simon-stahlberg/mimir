@@ -30,6 +30,8 @@ from pymimir.advanced.formalism import GroundNumericConstraintList as AdvancedGr
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
+from pymimir.advanced.formalism import Parameter as AdvancedParameter
+from pymimir.advanced.formalism import ParameterList as AdvancedParameterList
 from pymimir.advanced.formalism import Parser as AdvancedParser
 from pymimir.advanced.formalism import ParserOptions as AdvancedParserOptions
 from pymimir.advanced.formalism import Problem as AdvancedProblem
@@ -43,10 +45,12 @@ from pymimir.advanced.formalism import StaticLiteralList as AdvancedStaticLitera
 from pymimir.advanced.formalism import StaticPredicate as AdvancedStaticPredicate
 from pymimir.advanced.formalism import Term as AdvancedTerm
 from pymimir.advanced.formalism import TermList as AdvancedTermList
+from pymimir.advanced.formalism import Type as AdvancedType
+from pymimir.advanced.formalism import TypeList as AdvancedTypeList
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
-from pymimir.advanced.search import GroundedOptions, LiftedOptions, SearchContext, SearchContextOptions
+from pymimir.advanced.search import GroundedOptions, LiftedOptions, LiftedGeneratorKind, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
 from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpression
 
@@ -114,15 +118,18 @@ def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiter
 class Variable:
     """Class representing variables."""
 
-    def __init__(self, advanced_variable: 'AdvancedVariable') -> None:
+    def __init__(self, advanced_variable: 'Union[AdvancedVariable, AdvancedParameter]') -> None:
         """
         Internal constructor for the Variable class; to create a variable, use the new() method.
 
         :param advanced_variable: An instance of an advanced variable.
         :type advanced_variable: AdvancedVariable
         """
-        assert isinstance(advanced_variable, AdvancedVariable), "Invalid variable type."
-        self._advanced_variable = advanced_variable
+        assert isinstance(advanced_variable, AdvancedParameter) or isinstance(advanced_variable, AdvancedVariable), "Invalid variable type."
+        if isinstance(advanced_variable, AdvancedParameter):
+            self._advanced_variable = advanced_variable.get_variable()
+        else:
+            self._advanced_variable = advanced_variable
 
     @staticmethod
     def new(name: 'str', parameter_index: 'int', problem: 'Problem') -> 'Variable':
@@ -1743,9 +1750,12 @@ class Problem:
         assert isinstance(domain, Domain), "Invalid domain type."
         assert isinstance(problem_path, (Path, str)), "Invalid problem path type."
         assert isinstance(mode, str), "Invalid mode type."
-        if mode not in ['lifted', 'grounded']:
+        if mode == 'grounded':
+            search_mode = GroundedOptions()
+        elif mode == 'lifted':
+            search_mode = LiftedOptions(LiftedGeneratorKind.KPKC)
+        else:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
-        search_mode = SearchMode.LIFTED if mode == 'lifted' else SearchMode.GROUNDED
         self._domain = domain
         self._advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
         self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
@@ -2005,10 +2015,11 @@ class Problem:
         """
         assert isinstance(variables, list), "Invalid variables type."
         assert isinstance(literals, list), "Invalid literals type."
-        advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
+        advanced_variables = AdvancedVariableList(x._advanced_variable for x in variables)
+        advanced_parameters = AdvancedParameterList(self._advanced_problem.get_or_create_parameter(x, AdvancedTypeList()) for x in advanced_variables)
         advanced_static_literals, advanced_fluent_literals, advanced_derived_literals = _split_literal_list(literals)
         advanced_numeric_constraints = AdvancedNumericConstraintList()
-        advanced_conjunctive_condition = self._advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
+        advanced_conjunctive_condition = self._advanced_problem.get_or_create_conjunctive_condition(advanced_parameters,
                                                                                                     advanced_static_literals,
                                                                                                     advanced_fluent_literals,
                                                                                                     advanced_derived_literals,

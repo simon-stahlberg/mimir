@@ -222,6 +222,8 @@ public:
 
     Variable get_or_create_variable(std::string name, size_t parameter_index);
 
+    Parameter get_or_create_parameter(Variable variable, TypeList types);
+
     Term get_or_create_term(Variable variable);
     Term get_or_create_term(Object object);
 

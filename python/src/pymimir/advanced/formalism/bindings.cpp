@@ -917,6 +917,7 @@ void bind_module_definitions(nb::module_& m)
             "binding"_a,
             nb::rv_policy::reference_internal)
         .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, "name"_a, "parameter_index"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_parameter", &ProblemImpl::get_or_create_parameter, "variable"_a, "types"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), "variable"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), "object"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, "predicate"_a, "terms"_a, nb::rv_policy::reference_internal)

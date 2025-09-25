@@ -765,6 +765,11 @@ Variable ProblemImpl::get_or_create_variable(std::string name, size_t parameter_
     return m_repositories.get_or_create_variable(std::move(name), std::move(parameter_index));
 }
 
+Parameter ProblemImpl::get_or_create_parameter(Variable variable, TypeList types)
+{
+    return m_repositories.get_or_create_parameter(variable, std::move(types));
+}
+
 Term ProblemImpl::get_or_create_term(Variable variable) { return m_repositories.get_or_create_term(variable); }
 
 Term ProblemImpl::get_or_create_term(Object object) { return m_repositories.get_or_create_term(object); }
