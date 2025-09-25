@@ -11,6 +11,7 @@ endif()
 
 
 nanobind_add_module(pymimir
+    NB_DOMAIN pymimir_abi_domain
     advanced/main.cpp
     advanced/common/bindings.cpp
     advanced/formalism/bindings.cpp
