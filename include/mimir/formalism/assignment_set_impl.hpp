@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -61,7 +62,7 @@ inline PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& paramet
     }
 }
 
-inline size_t PerfectAssignmentHash::get_empty_assignment_rank() const noexcept { return 0; }
+inline size_t PerfectAssignmentHash::get_empty_assignment_rank() noexcept { return 0; }
 
 inline size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const noexcept
 {
@@ -222,7 +223,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 
-    auto& empty_assignment_bound = m_set[m_hash.get_empty_assignment_rank()];
+    auto& empty_assignment_bound = m_set[PerfectAssignmentHash::get_empty_assignment_rank()];
     empty_assignment_bound = Bounds(
         (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value),
         (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.get_upper(), value));
@@ -252,10 +253,10 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             // Ordered complete edge.
             auto& double_assignment_bound =
                 m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()))];
-            double_assignment_bound = Bounds((single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?
+            double_assignment_bound = Bounds((double_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?
                                                  value :
                                                  std::min(double_assignment_bound.get_lower(), value),
-                                             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ?
+                                             (double_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ?
                                                  value :
                                                  std::max(double_assignment_bound.get_upper(), value));
         }

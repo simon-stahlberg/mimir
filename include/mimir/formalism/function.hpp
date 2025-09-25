@@ -33,11 +33,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping = IndexList {});
+    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms);
 
-    static auto identifying_args(FunctionSkeleton<F> function_skeleton, const TermList& terms, const IndexList& parent_terms_to_terms_mapping) noexcept
+    static auto identifying_args(FunctionSkeleton<F> function_skeleton, const TermList& terms) noexcept
     {
-        return std::tuple(function_skeleton, std::cref(terms), std::cref(parent_terms_to_terms_mapping));
+        return std::tuple(function_skeleton, std::cref(terms));
     }
 
     // Give access to the constructor.
@@ -56,15 +56,11 @@ public:
     Index get_index() const;
     FunctionSkeleton<F> get_function_skeleton() const;
     const TermList& get_terms() const;
-    const IndexList& get_parent_terms_to_terms_mapping() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const noexcept
-    {
-        return std::tuple(get_function_skeleton(), std::cref(get_terms()), std::cref(get_parent_terms_to_terms_mapping()));
-    }
+    auto identifying_members() const noexcept { return std::tuple(get_function_skeleton(), std::cref(get_terms())); }
 };
 
 static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);

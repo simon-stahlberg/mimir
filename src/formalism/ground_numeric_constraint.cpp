@@ -54,7 +54,7 @@ bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_n
     const auto right_value = evaluate(constraint->get_right_function_expression(), static_numeric_variables, fluent_numeric_variables);
 
     /* Constraint is not satisfied for NaN values. */
-    if (left_value == UNDEFINED_CONTINUOUS_COST || right_value == UNDEFINED_CONTINUOUS_COST)
+    if (std::isnan(left_value) || std::isnan(right_value))
         return false;
 
     switch (constraint->get_binary_comparator())

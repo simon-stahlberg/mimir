@@ -157,7 +157,7 @@ static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, Conti
 {
     const auto [assign_operator, value] = numeric_effect;
 
-    assert(assign_operator == loki::AssignOperatorEnum::ASSIGN || ref_value != UNDEFINED_CONTINUOUS_COST);
+    assert(assign_operator == loki::AssignOperatorEnum::ASSIGN || !std::isnan(ref_value));
 
     switch (assign_operator)
     {
@@ -220,7 +220,7 @@ static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<
                                                       ContinuousCost& ref_successor_state_metric_score)
 {
     const auto assign_operator_and_value = evaluate(numeric_effect, static_numeric_variables, fluent_numeric_variables);
-    assert(assign_operator_and_value.second != UNDEFINED_CONTINUOUS_COST);
+    assert(!std::isnan(assign_operator_and_value.second));
 
     apply_numeric_effect(assign_operator_and_value, ref_successor_state_metric_score);
 }

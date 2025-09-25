@@ -450,7 +450,7 @@ NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericCons
 StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Function function, Repositories& repositories)
 {
     return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryFunction
-                      { return repositories.get_or_create_function(function_skeleton, translate_lifted(function->get_terms(), repositories), IndexList {}); },
+                      { return repositories.get_or_create_function(function_skeleton, translate_lifted(function->get_terms(), repositories)); },
                       translate_common(function->get_function_skeleton(), repositories));
 }
 

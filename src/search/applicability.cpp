@@ -169,14 +169,14 @@ static bool is_applicable(GroundNumericEffect<FluentTag> effect,
     recorded_change = effect->get_assign_operator();
 
     const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
-    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || fluent_numeric_variables[effect_index] == UNDEFINED_CONTINUOUS_COST);
+    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
 
     if (modifies_undefined && is_update)
     {
         return false;
     }
 
-    return (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return !std::isnan(evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables));
 }
 
 static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
@@ -192,7 +192,7 @@ static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
     recorded_change = effect->get_assign_operator();
 
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
-    return (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return !std::isnan(evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables));
 }
 
 /// @brief Return true iff the fluent numeric effects are applicable, i.e., all numeric effects are well-defined.

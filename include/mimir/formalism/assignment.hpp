@@ -39,19 +39,6 @@ struct VertexAssignment
 
     VertexAssignment(Index index, Index object) : index(index), object(object) {}
 
-    VertexAssignment(const VertexAssignment& assignment, const IndexList& remapping)
-    {
-        assert(assignment.is_complete());
-
-        index = remapping.at(assignment.index);
-        object = assignment.object;
-
-        if (index == MAX_INDEX)
-        {
-            object = MAX_INDEX;
-        }
-    }
-
     inline bool is_complete() const noexcept { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
@@ -75,33 +62,6 @@ struct EdgeAssignment
         second_index(second_index),
         second_object(second_object)
     {
-    }
-
-    EdgeAssignment(const EdgeAssignment& assignment, const IndexList& remapping)
-    {
-        assert(assignment.is_complete() && assignment.is_ordered());
-
-        first_index = remapping.at(assignment.first_index);
-        second_index = remapping.at(assignment.second_index);
-        first_object = assignment.first_object;
-        second_object = assignment.second_object;
-
-        if (first_index == MAX_INDEX)
-        {
-            first_object = MAX_INDEX;
-        }
-        if (second_index == MAX_INDEX)
-        {
-            second_object = MAX_INDEX;
-        }
-
-        if (first_index > second_index)
-        {
-            std::swap(first_index, second_index);
-            std::swap(first_object, second_object);
-        }
-
-        assert(assignment.is_ordered());
     }
 
     inline bool is_complete() const noexcept

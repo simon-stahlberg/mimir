@@ -234,7 +234,7 @@ public:
     Literal<P> get_or_create_literal(bool polarity, Atom<P> atom);
 
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms);
 
     FunctionExpressionNumber get_or_create_function_expression_number(double number);
 

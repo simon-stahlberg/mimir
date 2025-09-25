@@ -307,7 +307,7 @@ public:
 
     /// @brief Get or create a function for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>
-    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms);
 
     /// @brief Get or create a function for the given parameters.
     template<IsStaticOrFluentOrAuxiliaryTag F>

@@ -73,14 +73,14 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
     const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
-    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || fluent_numeric_variables[effect_index] == UNDEFINED_CONTINUOUS_COST);
+    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
 
     if (modifies_undefined && is_update)
     {
         return false;
     }
 
-    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return !std::isnan(evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables));
 }
 
 template<>
@@ -98,7 +98,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
-    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return !std::isnan(evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables));
 }
 
 template<IsFluentOrAuxiliaryTag F>

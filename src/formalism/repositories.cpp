@@ -468,18 +468,14 @@ template GroundFunctionExpression Repositories::get_or_create_ground_function_ex
 template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<AuxiliaryTag> fexpr);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-Function<F> Repositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping)
+Function<F> Repositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {})
-        .get_or_create(std::move(function_skeleton), std::move(terms), std::move(m_parent_terms_to_terms_mapping));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {}).get_or_create(std::move(function_skeleton), std::move(terms));
 }
 
-template Function<StaticTag>
-Repositories::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
-template Function<FluentTag>
-Repositories::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
-template Function<AuxiliaryTag>
-Repositories::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<StaticTag> Repositories::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms);
+template Function<FluentTag> Repositories::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms);
+template Function<AuxiliaryTag> Repositories::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> Repositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, const ObjectList& binding)

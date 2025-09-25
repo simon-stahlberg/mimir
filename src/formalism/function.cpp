@@ -24,11 +24,10 @@
 namespace mimir::formalism
 {
 template<IsStaticOrFluentOrAuxiliaryTag F>
-FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping) :
+FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
-    m_terms(std::move(terms)),
-    m_parent_terms_to_terms_mapping(std::move(parent_terms_to_terms_mapping))
+    m_terms(std::move(terms))
 {
 }
 
@@ -48,12 +47,6 @@ template<IsStaticOrFluentOrAuxiliaryTag F>
 const TermList& FunctionImpl<F>::get_terms() const
 {
     return m_terms;
-}
-
-template<IsStaticOrFluentOrAuxiliaryTag F>
-const IndexList& FunctionImpl<F>::get_parent_terms_to_terms_mapping() const
-{
-    return m_parent_terms_to_terms_mapping;
 }
 
 template class FunctionImpl<StaticTag>;

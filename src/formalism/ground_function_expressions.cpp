@@ -154,7 +154,7 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
             {
                 const auto val = evaluate(arg->get_function_expression(), static_numeric_variables, fluent_numeric_variables);
-                if (val == UNDEFINED_CONTINUOUS_COST)
+                if (std::isnan(val))
                 {
                     return UNDEFINED_CONTINUOUS_COST;
                 }

@@ -57,7 +57,7 @@ using ContinuousCostList = std::vector<ContinuousCost>;
 using ContinuousCostMatrix = std::vector<ContinuousCostList>;
 using ContinuousCostMap = std::unordered_map<Index, ContinuousCost>;
 
-static constexpr const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
+static constexpr const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::quiet_NaN();
 static constexpr const ContinuousCost INFINITY_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::infinity();
 
 /**

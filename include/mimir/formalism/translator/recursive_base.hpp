@@ -468,8 +468,7 @@ protected:
     Function<F> translate_level_2(Function<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_function(this->translate_level_0(function->get_function_skeleton(), repositories),
-                                                   this->translate_level_0(function->get_terms(), repositories),
-                                                   function->get_parent_terms_to_terms_mapping());
+                                                   this->translate_level_0(function->get_terms(), repositories));
     }
     template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> translate_level_2(GroundFunction<F> function, Repositories& repositories)

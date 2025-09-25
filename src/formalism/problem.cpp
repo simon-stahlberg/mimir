@@ -765,10 +765,7 @@ Variable ProblemImpl::get_or_create_variable(std::string name, size_t parameter_
     return m_repositories.get_or_create_variable(std::move(name), std::move(parameter_index));
 }
 
-Parameter ProblemImpl::get_or_create_parameter(Variable variable, TypeList types)
-{
-    return m_repositories.get_or_create_parameter(variable, std::move(types));
-}
+Parameter ProblemImpl::get_or_create_parameter(Variable variable, TypeList types) { return m_repositories.get_or_create_parameter(variable, std::move(types)); }
 
 Term ProblemImpl::get_or_create_term(Variable variable) { return m_repositories.get_or_create_term(variable); }
 
@@ -795,17 +792,14 @@ template Literal<FluentTag> ProblemImpl::get_or_create_literal(bool polarity, At
 template Literal<DerivedTag> ProblemImpl::get_or_create_literal(bool polarity, Atom<DerivedTag> atom);
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-Function<F> ProblemImpl::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping)
+Function<F> ProblemImpl::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms)
 {
-    return m_repositories.get_or_create_function(function_skeleton, std::move(terms), std::move(parent_terms_to_terms_mapping));
+    return m_repositories.get_or_create_function(function_skeleton, std::move(terms));
 }
 
-template Function<StaticTag>
-ProblemImpl::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
-template Function<FluentTag>
-ProblemImpl::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
-template Function<AuxiliaryTag>
-ProblemImpl::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+template Function<StaticTag> ProblemImpl::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms);
+template Function<FluentTag> ProblemImpl::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms);
+template Function<AuxiliaryTag> ProblemImpl::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms);
 
 FunctionExpressionNumber ProblemImpl::get_or_create_function_expression_number(double number)
 {

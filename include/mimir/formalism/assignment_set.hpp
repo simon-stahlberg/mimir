@@ -41,7 +41,7 @@ struct PerfectAssignmentHash
 
     inline PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
 
-    inline size_t get_empty_assignment_rank() const noexcept;
+    static inline size_t get_empty_assignment_rank() noexcept;
 
     inline size_t get_assignment_rank(const VertexAssignment& assignment) const noexcept;
 

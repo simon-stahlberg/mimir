@@ -152,7 +152,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto standard_openlist = Queue();
     auto openlist = AlternatingOpenList<Queue, Queue>(preferred_openlist, standard_openlist, openlist_weights);
 
-    if (start_g_value == UNDEFINED_CONTINUOUS_COST)
+    if (std::isnan(start_g_value))
     {
         throw std::runtime_error("find_solution_astar(...): evaluating the metric on the start state yielded NaN.");
     }
@@ -275,7 +275,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
             const auto action_cost = successor_state_metric_value - search_node.g_value;
 
-            if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
+            if (std::isnan(successor_state_metric_value))
             {
                 throw std::runtime_error("find_solution_astar(...): evaluating the metric on the successor state yielded NaN.");
             }
