@@ -29,7 +29,6 @@ private:
     Index m_index;
     FunctionSkeleton<F> m_function_skeleton;
     TermList m_terms;
-    IndexList m_parent_terms_to_terms_mapping;  ///< remaps parent terms, e.g., from NumericConstraint, to this terms. It may be empty if not needed in context.
 
     // Below: add additional members if needed and initialize them in the constructor
 
