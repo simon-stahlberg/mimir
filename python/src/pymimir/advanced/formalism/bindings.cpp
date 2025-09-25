@@ -926,24 +926,9 @@ void bind_module_definitions(nb::module_& m)
         .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
-        .def("get_or_create_function",
-             &ProblemImpl::get_or_create_function<StaticTag>,
-             "function_skeleton"_a,
-             "terms"_a,
-             "mapping"_a,
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_function",
-             &ProblemImpl::get_or_create_function<FluentTag>,
-             "function_skeleton"_a,
-             "terms"_a,
-             "mapping"_a,
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_function",
-             &ProblemImpl::get_or_create_function<AuxiliaryTag>,
-             "function_skeleton"_a,
-             "terms"_a,
-             "mapping"_a,
-             nb::rv_policy::reference_internal)
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<StaticTag>, "function_skeleton"_a, "terms"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<FluentTag>, "function_skeleton"_a, "terms"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<AuxiliaryTag>, "function_skeleton"_a, "terms"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_number", &ProblemImpl::get_or_create_function_expression_number, "number"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_binary_operator",
              &ProblemImpl::get_or_create_function_expression_binary_operator,
