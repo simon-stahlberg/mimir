@@ -5,17 +5,7 @@ include pyproject.toml
 include README.md
 include setup.py
 include Config.cmake.in
-include dependencies/abseil/CMakeLists.txt
-include dependencies/argparse/CMakeLists.txt
-include dependencies/benchmark/CMakeLists.txt
-include dependencies/boost/CMakeLists.txt
-include dependencies/flatmemory/CMakeLists.txt
-include dependencies/fmt/CMakeLists.txt
-include dependencies/googletest/CMakeLists.txt
-include dependencies/loki/CMakeLists.txt
-include dependencies/nanobind/CMakeLists.txt
-include dependencies/nauty/CMakeLists.txt
-include dependencies/CMakeLists.txt
+recursive-include dependencies/ *
 recursive-include cmake/ *
 recursive-include exe/ *
 recursive-include include/ *
