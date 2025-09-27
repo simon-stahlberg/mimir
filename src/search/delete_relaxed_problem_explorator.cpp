@@ -81,8 +81,6 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
         reached_delete_free_explore_fixpoint = true;
 
         auto num_atoms_before = ground_atoms.size();
-        auto num_actions_before =
-            boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<ActionImpl> {}).size();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.

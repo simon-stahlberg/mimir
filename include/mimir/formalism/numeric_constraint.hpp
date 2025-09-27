@@ -91,23 +91,23 @@ inline bool evaluate(loki::BinaryComparatorEnum comparator, const Bounds<A>& lhs
     {
         case loki::BinaryComparatorEnum::EQUAL:
         {
-            return lhs == rhs;
+            return overlaps(lhs, rhs);
         }
         case loki::BinaryComparatorEnum::GREATER:
         {
-            return lhs > rhs;
+            return possibly_after(lhs, rhs);
         }
         case loki::BinaryComparatorEnum::GREATER_EQUAL:
         {
-            return lhs >= rhs;
+            return possibly_after_or_meets(lhs, rhs);
         }
         case loki::BinaryComparatorEnum::LESS:
         {
-            return lhs < rhs;
+            return possibly_before(lhs, rhs);
         }
         case loki::BinaryComparatorEnum::LESS_EQUAL:
         {
-            return lhs <= rhs;
+            return possibly_before_or_meets(lhs, rhs);
         }
         default:
         {

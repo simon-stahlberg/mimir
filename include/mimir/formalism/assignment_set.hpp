@@ -41,13 +41,11 @@ struct PerfectAssignmentHash
 
     inline PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
 
-    static inline size_t get_empty_assignment_rank() noexcept;
-
     inline size_t get_assignment_rank(const VertexAssignment& assignment) const noexcept;
 
     inline size_t get_assignment_rank(const EdgeAssignment& assignment) const noexcept;
 
-    inline size_t get_num_assignments() const noexcept;
+    inline size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -112,6 +110,7 @@ public:
 
     void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
 
+    inline Bounds<ContinuousCost> operator[](const EmptyAssignment& assignment) const noexcept;
     inline Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
     inline Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
 

@@ -62,43 +62,43 @@ inline PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& paramet
     }
 }
 
-inline size_t PerfectAssignmentHash::get_empty_assignment_rank() noexcept { return 0; }
-
 inline size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const noexcept
 {
+    assert(assignment.is_valid());
+
     const auto o = m_remapping[assignment.index + 1][assignment.object + 1];
 
     const auto result = m_offsets[assignment.index + 1] + o;
 
     assert(result < m_num_assignments);
-    assert(result == get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, assignment.index, assignment.object)));
 
     return result;
 }
 
 inline size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const noexcept
 {
+    assert(assignment.is_valid());
+
     const auto o1 = m_remapping[assignment.first_index + 1][assignment.first_object + 1];
     const auto o2 = m_remapping[assignment.second_index + 1][assignment.second_object + 1];
 
     const auto j1 = m_offsets[assignment.first_index + 1] + o1;
     const auto j2 = m_offsets[assignment.second_index + 1] + o2;
 
-    assert(assignment.is_ordered());
     const auto result = j1 * m_num_assignments + j2;
 
-    assert(result < get_num_assignments());
+    assert(result < m_num_assignments * m_num_assignments);
 
     return result;
 }
 
-inline size_t PerfectAssignmentHash::get_num_assignments() const noexcept { return m_num_assignments * m_num_assignments; }
+inline size_t PerfectAssignmentHash::size() const noexcept { return m_num_assignments * m_num_assignments; }
 
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate) :
     m_predicate(predicate),
     m_hash(PerfectAssignmentHash(predicate->get_parameters(), objects)),
-    m_set(m_hash.get_num_assignments(), false)
+    m_set(m_hash.size(), false)
 {
 }
 
@@ -122,12 +122,6 @@ void PredicateAssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 
         // Complete vertex.
         m_set.set(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())));
-
-        // Partial edge with first assignment.
-        m_set.set(m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX)));
-        // Partial edge with second assignment is implicit in VertexAssignment.
-        assert(m_set.test(m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index())))
-               == m_set.test(m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
@@ -205,7 +199,7 @@ template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
     m_function_skeleton(function_skeleton),
     m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), objects)),
-    m_set(m_hash.get_num_assignments(), Bounds<ContinuousCost>::unbounded)
+    m_set(m_hash.size(), Bounds<ContinuousCost>::unbounded)
 {
 }
 
@@ -223,7 +217,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 
-    auto& empty_assignment_bound = m_set[PerfectAssignmentHash::get_empty_assignment_rank()];
+    auto& empty_assignment_bound = m_set[EmptyAssignment::rank];
     empty_assignment_bound = Bounds(
         (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value),
         (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.get_upper(), value));
@@ -240,12 +234,6 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
                                                                                                        std::max(single_assignment_bound.get_upper(), value));
 
-        // Partial edge with first assignment.
-        m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), MAX_INDEX, MAX_INDEX))] = single_assignment_bound;
-        // Partial edge with second assignment is implicit in VertexAssignment.
-        assert(m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))]
-               == m_set[m_hash.get_assignment_rank(EdgeAssignment(MAX_INDEX, MAX_INDEX, first_index, first_object->get_index()))]);
-
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
@@ -261,6 +249,12 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
                                                  std::max(double_assignment_bound.get_upper(), value));
         }
     }
+}
+
+template<IsStaticOrFluentTag F>
+inline Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EmptyAssignment& assignment) const noexcept
+{
+    return m_set[EmptyAssignment::rank];
 }
 
 template<IsStaticOrFluentTag F>

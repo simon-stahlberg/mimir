@@ -27,6 +27,15 @@ namespace mimir::formalism
 {
 
 /**
+ * EmptyAssignment
+ */
+
+struct EmptyAssignment
+{
+    static constexpr Index rank = 0;
+};
+
+/**
  * VertexAssignment
  */
 
@@ -39,7 +48,7 @@ struct VertexAssignment
 
     VertexAssignment(Index index, Index object) : index(index), object(object) {}
 
-    inline bool is_complete() const noexcept { return index != MAX_INDEX && object != MAX_INDEX; }
+    inline bool is_valid() const noexcept { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
 /**
@@ -64,12 +73,11 @@ struct EdgeAssignment
     {
     }
 
-    inline bool is_complete() const noexcept
+    inline bool is_valid() const noexcept
     {
-        return (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX) && (second_object != MAX_INDEX);
+        return (first_index < second_index) && (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX)
+               && (second_object != MAX_INDEX);
     }
-
-    inline bool is_ordered() const noexcept { return first_index == MAX_INDEX || second_index == MAX_INDEX || first_index < second_index; }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const VertexAssignment& assignment)

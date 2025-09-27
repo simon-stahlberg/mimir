@@ -29,25 +29,28 @@ template<IsArithmetic A>
 class Bounds
 {
 public:
-    Bounds() : Bounds(unbounded) {}
-    
-    Bounds(A lower, A upper) : m_lower(lower), m_upper(upper) {}
+    constexpr Bounds() : Bounds(unbounded) {}
 
-    /// @brief Return true iff there exist x in lhs and exists y in rhs : x = y.
-    friend bool operator==(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower <= rhs.m_upper && lhs.m_upper >= rhs.m_lower; }
-    /// @brief Return true iff there forall x in lhs and forall y in rhs : x != y.
-    friend bool operator!=(const Bounds& lhs, const Bounds& rhs) { return !(lhs == rhs); }
-    /// @brief Return true iff there exist x in lhs and exists y in rhs : x > y.
-    friend bool operator>(const Bounds& lhs, const Bounds& rhs) { return lhs.m_upper > rhs.m_lower; }
-    /// @brief Return true iff there exist x in lhs and exists y in rhs : x >= y.
-    friend bool operator>=(const Bounds& lhs, const Bounds& rhs) { return lhs.m_upper >= rhs.m_lower; }
-    /// @brief Return true iff there exist x in lhs and exists y in rhs : x < y.
-    friend bool operator<(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower < rhs.m_upper; }
-    /// @brief Return true iff there exist x in lhs and exists y in rhs : x <= y.
-    friend bool operator<=(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower <= rhs.m_upper; }
+    constexpr Bounds(A lower, A upper) : m_lower(lower), m_upper(upper) {}
+
+    friend constexpr bool operator==(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_lower == rhs.m_lower && lhs.m_upper == rhs.m_upper; }
+    friend constexpr bool operator!=(const Bounds& lhs, const Bounds& rhs) noexcept { return !(lhs == rhs); }
+
+    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x = y.
+    friend constexpr bool overlaps(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_lower <= rhs.m_upper && lhs.m_upper >= rhs.m_lower; }
+    /// @brief ∀ x ∈ lhs, ∀ y ∈ rhs : x != y.
+    friend constexpr bool disjoint(const Bounds& lhs, const Bounds& rhs) noexcept { return !overlaps(lhs, rhs); }
+    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x > y.
+    friend constexpr bool possibly_after(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_upper > rhs.m_lower; }
+    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x >= y.
+    friend constexpr bool possibly_after_or_meets(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_upper >= rhs.m_lower; }
+    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x < y.
+    friend constexpr bool possibly_before(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_lower < rhs.m_upper; }
+    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x <= y.
+    friend constexpr bool possibly_before_or_meets(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_lower <= rhs.m_upper; }
 
     // Static unbounded instance
-    inline static const Bounds unbounded = []
+    inline static constexpr Bounds unbounded = []
     {
         if constexpr (std::is_floating_point_v<A>)
         {
@@ -59,8 +62,8 @@ public:
         }
     }();
 
-    bool is_bounded() const { return m_lower <= m_upper; }
-    bool is_unbounded() const
+    constexpr bool is_bounded() const noexcept { return m_lower <= m_upper; }
+    constexpr bool is_unbounded() const noexcept
     {
         if constexpr (std::is_floating_point_v<A>)
         {
@@ -72,8 +75,8 @@ public:
         }
     }
 
-    A get_lower() const {return m_lower; }
-    A get_upper() const {return m_upper; }
+    constexpr A get_lower() const noexcept { return m_lower; }
+    constexpr A get_upper() const noexcept { return m_upper; }
 
 private:
     A m_lower;
