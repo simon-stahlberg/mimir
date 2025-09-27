@@ -49,8 +49,7 @@ public:
     /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x <= y.
     friend constexpr bool possibly_before_or_meets(const Bounds& lhs, const Bounds& rhs) noexcept { return lhs.m_lower <= rhs.m_upper; }
 
-    // Static unbounded instance
-    inline static constexpr Bounds unbounded = []
+    static constexpr Bounds unbounded_bounds() noexcept
     {
         if constexpr (std::is_floating_point_v<A>)
         {
@@ -60,7 +59,9 @@ public:
         {
             return Bounds(std::numeric_limits<A>::lowest(), std::numeric_limits<A>::max());
         }
-    }();
+    }
+
+    inline static constexpr Bounds unbounded = unbounded_bounds();
 
     constexpr bool is_bounded() const noexcept { return m_lower <= m_upper; }
     constexpr bool is_unbounded() const noexcept
