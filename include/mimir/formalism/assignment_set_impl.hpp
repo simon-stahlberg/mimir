@@ -199,14 +199,14 @@ template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
     m_function_skeleton(function_skeleton),
     m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), objects)),
-    m_set(m_hash.size(), Bounds<ContinuousCost>::unbounded)
+    m_set(m_hash.size(), Bounds<ContinuousCost>())
 {
 }
 
 template<IsStaticOrFluentTag F>
 void FunctionSkeletonAssignmentSet<F>::reset() noexcept
 {
-    std::fill(m_set.begin(), m_set.end(), Bounds<ContinuousCost>::unbounded);
+    std::fill(m_set.begin(), m_set.end(), Bounds<ContinuousCost>());
 }
 
 template<IsStaticOrFluentTag F>

@@ -20,7 +20,9 @@
 
 #include "mimir/common/types.hpp"
 
+#include <limits>
 #include <ostream>
+#include <type_traits>
 
 namespace mimir
 {
@@ -29,7 +31,7 @@ template<IsArithmetic A>
 class Bounds
 {
 public:
-    constexpr Bounds() : Bounds(unbounded) {}
+    constexpr Bounds() : Bounds(unbounded_bounds()) {}
 
     constexpr Bounds(A lower, A upper) : m_lower(lower), m_upper(upper) {}
 
@@ -58,21 +60,6 @@ public:
         else
         {
             return Bounds(std::numeric_limits<A>::lowest(), std::numeric_limits<A>::max());
-        }
-    }
-
-    inline static constexpr Bounds unbounded = unbounded_bounds();
-
-    constexpr bool is_bounded() const noexcept { return m_lower <= m_upper; }
-    constexpr bool is_unbounded() const noexcept
-    {
-        if constexpr (std::is_floating_point_v<A>)
-        {
-            return m_lower == -std::numeric_limits<A>::infinity() && m_upper == std::numeric_limits<A>::infinity();
-        }
-        else
-        {
-            return m_lower == std::numeric_limits<A>::lowest() && m_upper == std::numeric_limits<A>::max();
         }
     }
 
