@@ -80,7 +80,7 @@ $(function() {
   <div class="headertitle"><div class="title">numeric_constraint.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/bounds.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/closed_interval.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &lt;absl/container/flat_hash_map.h&gt;</code><br />
 </div>
@@ -100,9 +100,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2904ee2c243093a9a6bff2dae9af96c2"><td class="memTemplParams" colspan="2">template&lt;IsArithmetic A&gt; </td></tr>
-<tr class="memitem:a2904ee2c243093a9a6bff2dae9af96c2"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a2904ee2c243093a9a6bff2dae9af96c2">mimir::formalism::evaluate</a> (loki::BinaryComparatorEnum comparator, const Bounds&lt; A &gt; &amp;lhs, const Bounds&lt; A &gt; &amp;rhs)</td></tr>
-<tr class="separator:a2904ee2c243093a9a6bff2dae9af96c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a337c9f3899b48c9c91612f69d98dc2e2"><td class="memTemplParams" colspan="2">template&lt;IsArithmetic A&gt; </td></tr>
+<tr class="memitem:a337c9f3899b48c9c91612f69d98dc2e2"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a337c9f3899b48c9c91612f69d98dc2e2">mimir::formalism::evaluate</a> (loki::BinaryComparatorEnum comparator, const ClosedInterval&lt; A &gt; &amp;lhs, const ClosedInterval&lt; A &gt; &amp;rhs)</td></tr>
+<tr class="separator:a337c9f3899b48c9c91612f69d98dc2e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6840fdbfce4f71299a9549009d06b4d1"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a6840fdbfce4f71299a9549009d06b4d1">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const NumericConstraintImpl &amp;element)</td></tr>
 <tr class="separator:a6840fdbfce4f71299a9549009d06b4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8150d7e74d082c829e00c97d3b7c48f6"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a8150d7e74d082c829e00c97d3b7c48f6">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, NumericConstraint element)</td></tr>

@@ -81,9 +81,10 @@ $(function() {
   <div class="headertitle"><div class="title">function_expressions.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/bounds.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/closed_interval.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 </div>
 <p><a href="function__expressions_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -120,12 +121,6 @@ Functions</h2></td></tr>
 <tr class="separator:a925ab70a9bd37ef2447b9f249e6c6440"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab691ac76023ad90195c0fce5f142bdf9"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ab691ac76023ad90195c0fce5f142bdf9">mimir::formalism::evaluate_multi</a> (loki::MultiOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)</td></tr>
 <tr class="separator:ab691ac76023ad90195c0fce5f142bdf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5bae0a1d83d159616f7c090249878ea"><td class="memTemplParams" colspan="2">template&lt;IsArithmetic A&gt; </td></tr>
-<tr class="memitem:aa5bae0a1d83d159616f7c090249878ea"><td class="memTemplItemLeft" align="right" valign="top">Bounds&lt; A &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#aa5bae0a1d83d159616f7c090249878ea">mimir::formalism::evaluate_binary_bounds</a> (loki::BinaryOperatorEnum op, const Bounds&lt; A &gt; &amp;lhs, const Bounds&lt; A &gt; &amp;rhs)</td></tr>
-<tr class="separator:aa5bae0a1d83d159616f7c090249878ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41f4b03a63c4d89f2eb333fffded7060"><td class="memTemplParams" colspan="2">template&lt;IsArithmetic A&gt; </td></tr>
-<tr class="memitem:a41f4b03a63c4d89f2eb333fffded7060"><td class="memTemplItemLeft" align="right" valign="top">Bounds&lt; A &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a41f4b03a63c4d89f2eb333fffded7060">mimir::formalism::evaluate_multi_bounds</a> (loki::MultiOperatorEnum op, const Bounds&lt; A &gt; &amp;lhs, const Bounds&lt; A &gt; &amp;rhs)</td></tr>
-<tr class="separator:a41f4b03a63c4d89f2eb333fffded7060"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5050a7ff6de869a93660f2e425e60b65"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a5050a7ff6de869a93660f2e425e60b65">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const FunctionExpressionNumberImpl &amp;element)</td></tr>
 <tr class="separator:a5050a7ff6de869a93660f2e425e60b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3fc0e5ae78b4752cdc0711f598185de"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#af3fc0e5ae78b4752cdc0711f598185de">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const FunctionExpressionBinaryOperatorImpl &amp;element)</td></tr>
