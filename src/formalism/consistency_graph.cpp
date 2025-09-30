@@ -346,97 +346,84 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Pre
     return true;
 }
 
+template<std::ranges::forward_range Range, IsStaticOrFluentOrAuxiliaryTag F>
+static inline ClosedInterval<ContinuousCost>
+compute_tightest_closed_interval_helper(ClosedInterval<ContinuousCost> bounds, const FunctionSkeletonAssignmentSet<F>& sets, const Range& range) noexcept
+{
+    if (bounds.is_undefined())
+        return bounds;
+
+    for (const auto& assignment : range)
+    {
+        assert(assignment.is_valid());
+
+        bounds = intersect(bounds, sets[assignment]);
+        if (bounds.is_undefined())
+            break;  // early exit
+    }
+    return bounds;
+}
+
 template<IsStaticOrFluentOrAuxiliaryTag F>
-static Bounds<ContinuousCost>
-compute_tighest_bound(Function<F> function, const Vertex& element, const FunctionSkeletonAssignmentSets<F>& function_skeleton_assignment_sets)
+static ClosedInterval<ContinuousCost>
+compute_tightest_closed_interval(Function<F> function, const Vertex& element, const FunctionSkeletonAssignmentSets<F>& function_skeleton_assignment_sets)
 {
     const auto& function_skeleton_assignment_set = function_skeleton_assignment_sets.get_set(function->get_function_skeleton());
     const auto& terms = function->get_terms();
 
-    // Compute tightest bound obtainable through an assignment of the edge substitutions
     auto bounds = function_skeleton_assignment_set[EmptyAssignment()];
 
-    for (const auto& assignment : VertexAssignmentRange(terms, element))
-    {
-        assert(assignment.is_valid());
-
-        const auto assignment_bound = function_skeleton_assignment_set[assignment];
-
-        bounds = Bounds<ContinuousCost>(std::max(bounds.get_lower(), assignment_bound.get_lower()), std::min(bounds.get_upper(), assignment_bound.get_upper()));
-    }
+    bounds = compute_tightest_closed_interval_helper(bounds, function_skeleton_assignment_set, VertexAssignmentRange(terms, element));
 
     return bounds;
 }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
-static Bounds<ContinuousCost>
-compute_tighest_bound(Function<F> function, const Edge& element, const FunctionSkeletonAssignmentSets<F>& function_skeleton_assignment_sets)
+static ClosedInterval<ContinuousCost>
+compute_tightest_closed_interval(Function<F> function, const Edge& element, const FunctionSkeletonAssignmentSets<F>& function_skeleton_assignment_sets)
 {
     const auto& function_skeleton_assignment_set = function_skeleton_assignment_sets.get_set(function->get_function_skeleton());
     const auto& terms = function->get_terms();
 
-    // Compute tightest bound obtainable through an assignment of the edge substitutions
     auto bounds = function_skeleton_assignment_set[EmptyAssignment()];
 
-    for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
-    {
-        assert(assignment.is_valid());
-
-        const auto assignment_bound = function_skeleton_assignment_set[assignment];
-
-        bounds = Bounds<ContinuousCost>(std::max(bounds.get_lower(), assignment_bound.get_lower()), std::min(bounds.get_upper(), assignment_bound.get_upper()));
-    }
-
-    for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
-    {
-        assert(assignment.is_valid());
-
-        const auto assignment_bound = function_skeleton_assignment_set[assignment];
-
-        bounds = Bounds<ContinuousCost>(std::max(bounds.get_lower(), assignment_bound.get_lower()), std::min(bounds.get_upper(), assignment_bound.get_upper()));
-    }
-
-    for (const auto& assignment : EdgeAssignmentRange(terms, element))
-    {
-        assert(assignment.is_valid());
-
-        const auto assignment_bound = function_skeleton_assignment_set[assignment];
-
-        bounds = Bounds<ContinuousCost>(std::max(bounds.get_lower(), assignment_bound.get_lower()), std::min(bounds.get_upper(), assignment_bound.get_upper()));
-    }
+    bounds = compute_tightest_closed_interval_helper(bounds, function_skeleton_assignment_set, VertexAssignmentRange(terms, element.get_src()));
+    bounds = compute_tightest_closed_interval_helper(bounds, function_skeleton_assignment_set, VertexAssignmentRange(terms, element.get_dst()));
+    bounds = compute_tightest_closed_interval_helper(bounds, function_skeleton_assignment_set, EdgeAssignmentRange(terms, element));
 
     return bounds;
 }
 
 template<typename StructureType>
-static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExpression fexpr,
-                                                                     const StructureType& element,
-                                                                     const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
-                                                                     const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets)
+static ClosedInterval<ContinuousCost>
+evaluate_function_expression_partially(FunctionExpression fexpr,
+                                       const StructureType& element,
+                                       const FunctionSkeletonAssignmentSets<StaticTag>& static_function_skeleton_assignment_sets,
+                                       const FunctionSkeletonAssignmentSets<FluentTag>& fluent_function_skeleton_assignment_sets)
 {
     return std::visit(
-        [&](auto&& arg) -> Bounds<ContinuousCost>
+        [&](auto&& arg) -> ClosedInterval<ContinuousCost>
         {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, FunctionExpressionNumber>)
             {
-                return Bounds<ContinuousCost>(arg->get_number(), arg->get_number());
+                return ClosedInterval<ContinuousCost>(arg->get_number(), arg->get_number());
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
             {
-                return evaluate_binary_bounds(arg->get_binary_operator(),
-                                              evaluate_function_expression_partially(arg->get_left_function_expression(),
-                                                                                     element,
-                                                                                     static_function_skeleton_assignment_sets,
-                                                                                     fluent_function_skeleton_assignment_sets),
-                                              evaluate_function_expression_partially(arg->get_right_function_expression(),
-                                                                                     element,
-                                                                                     static_function_skeleton_assignment_sets,
-                                                                                     fluent_function_skeleton_assignment_sets));
+                return evaluate(arg->get_binary_operator(),
+                                evaluate_function_expression_partially(arg->get_left_function_expression(),
+                                                                       element,
+                                                                       static_function_skeleton_assignment_sets,
+                                                                       fluent_function_skeleton_assignment_sets),
+                                evaluate_function_expression_partially(arg->get_right_function_expression(),
+                                                                       element,
+                                                                       static_function_skeleton_assignment_sets,
+                                                                       fluent_function_skeleton_assignment_sets));
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
             {
-                auto left_values = std::vector<Bounds<ContinuousCost>> {};
+                auto left_values = std::vector<ClosedInterval<ContinuousCost>> {};
                 for (const auto& f : arg->get_function_expressions())
                 {
                     left_values.push_back(
@@ -451,12 +438,12 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                                                                               fluent_function_skeleton_assignment_sets),
                                        [&](const auto& value, const auto& child_expr)
                                        {
-                                           return evaluate_multi_bounds(arg->get_multi_operator(),
-                                                                        value,
-                                                                        evaluate_function_expression_partially(child_expr,
-                                                                                                               element,
-                                                                                                               static_function_skeleton_assignment_sets,
-                                                                                                               fluent_function_skeleton_assignment_sets));
+                                           return evaluate(arg->get_multi_operator(),
+                                                           value,
+                                                           evaluate_function_expression_partially(child_expr,
+                                                                                                  element,
+                                                                                                  static_function_skeleton_assignment_sets,
+                                                                                                  fluent_function_skeleton_assignment_sets));
                                        });
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
@@ -466,15 +453,15 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                                                                            static_function_skeleton_assignment_sets,
                                                                            fluent_function_skeleton_assignment_sets);
                 assert(-bounds.get_upper() < -bounds.get_lower());
-                return Bounds<ContinuousCost>(-bounds.get_upper(), -bounds.get_lower());
+                return ClosedInterval<ContinuousCost>(-bounds.get_upper(), -bounds.get_lower());
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
             {
-                return compute_tighest_bound(arg->get_function(), element, static_function_skeleton_assignment_sets);
+                return compute_tightest_closed_interval(arg->get_function(), element, static_function_skeleton_assignment_sets);
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<FluentTag>>)
             {
-                return compute_tighest_bound(arg->get_function(), element, fluent_function_skeleton_assignment_sets);
+                return compute_tightest_closed_interval(arg->get_function(), element, fluent_function_skeleton_assignment_sets);
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<AuxiliaryTag>>)
             {
@@ -514,8 +501,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 {
     for (const auto& numeric_constraint : numeric_constraints)
     {
-        const auto& terms = numeric_constraint->get_terms();
-        const auto& arity = terms.size();
+        const auto arity = numeric_constraint->get_arity();
 
         if (arity < 1)
         {
@@ -541,8 +527,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 {
     for (const auto& numeric_constraint : numeric_constraints)
     {
-        const auto& terms = numeric_constraint->get_terms();
-        const auto& arity = terms.size();
+        const auto arity = numeric_constraint->get_arity();
 
         if (arity < 2)
         {

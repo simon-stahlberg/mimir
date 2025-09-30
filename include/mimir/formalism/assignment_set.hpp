@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
-#include "mimir/common/bounds.hpp"
+#include "mimir/common/closed_interval.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment.hpp"
@@ -99,7 +99,7 @@ private:
     FunctionSkeleton<F> m_function_skeleton;
 
     PerfectAssignmentHash m_hash;
-    std::vector<Bounds<ContinuousCost>> m_set;
+    std::vector<ClosedInterval<ContinuousCost>> m_set;
 
 public:
     FunctionSkeletonAssignmentSet() = default;
@@ -110,9 +110,9 @@ public:
 
     void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
 
-    inline Bounds<ContinuousCost> operator[](const EmptyAssignment& assignment) const noexcept;
-    inline Bounds<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
-    inline Bounds<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
+    inline ClosedInterval<ContinuousCost> operator[](const EmptyAssignment& assignment) const noexcept;
+    inline ClosedInterval<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
+    inline ClosedInterval<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
 
     inline size_t size() const noexcept;
 };

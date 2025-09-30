@@ -39,6 +39,9 @@ struct dependent_false : std::false_type
 template<typename T>
 concept IsArithmetic = std::is_arithmetic_v<T>;
 
+template<typename T>
+concept IsFloatingPoint = std::is_floating_point_v<T>;
+
 template<typename T, typename Value>
 concept IsRangeOver = std::ranges::range<T> && std::convertible_to<std::ranges::range_value_t<T>, Value>;
 

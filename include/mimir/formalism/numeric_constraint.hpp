@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_NUMERIC_CONSTRAINT_HPP_
 #define MIMIR_FORMALISM_NUMERIC_CONSTRAINT_HPP_
 
-#include "mimir/common/bounds.hpp"
+#include "mimir/common/closed_interval.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <absl/container/flat_hash_map.h>
@@ -85,7 +85,7 @@ public:
  */
 
 template<IsArithmetic A>
-inline bool evaluate(loki::BinaryComparatorEnum comparator, const Bounds<A>& lhs, const Bounds<A>& rhs)
+inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
 {
     switch (comparator)
     {

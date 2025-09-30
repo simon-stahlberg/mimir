@@ -18,9 +18,11 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
-#include "mimir/common/bounds.hpp"
+#include "mimir/common/closed_interval.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
+
+#include <algorithm>
 
 namespace mimir::formalism
 {
@@ -269,11 +271,6 @@ public:
 
 inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
-    if (std::isnan(val_left) || std::isnan(val_right))
-    {
-        return UNDEFINED_CONTINUOUS_COST;
-    }
-
     switch (op)
     {
         case loki::BinaryOperatorEnum::DIV:
@@ -304,11 +301,6 @@ inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCos
 
 inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
-    if (std::isnan(val_left) || std::isnan(val_right))
-    {
-        return UNDEFINED_CONTINUOUS_COST;
-    }
-
     switch (op)
     {
         case loki::MultiOperatorEnum::MUL:
@@ -324,28 +316,6 @@ inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost 
             throw std::logic_error("Evaluation of multi operator is undefined.");
         }
     }
-}
-
-template<IsArithmetic A>
-inline Bounds<A> evaluate_binary_bounds(loki::BinaryOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
-{
-    const auto alternative1 = evaluate_binary(op, lhs.get_lower(), rhs.get_lower());
-    const auto alternative2 = evaluate_binary(op, lhs.get_upper(), rhs.get_lower());
-    const auto alternative3 = evaluate_binary(op, lhs.get_lower(), rhs.get_upper());
-    const auto alternative4 = evaluate_binary(op, lhs.get_upper(), rhs.get_upper());
-    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
-    return Bounds<A>(std::isnan(result.first) ? -INFINITY_CONTINUOUS_COST : result.first, std::isnan(result.second) ? INFINITY_CONTINUOUS_COST : result.second);
-}
-
-template<IsArithmetic A>
-inline Bounds<A> evaluate_multi_bounds(loki::MultiOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
-{
-    const auto alternative1 = evaluate_multi(op, lhs.get_lower(), rhs.get_lower());
-    const auto alternative2 = evaluate_multi(op, lhs.get_upper(), rhs.get_lower());
-    const auto alternative3 = evaluate_multi(op, lhs.get_lower(), rhs.get_upper());
-    const auto alternative4 = evaluate_multi(op, lhs.get_upper(), rhs.get_upper());
-    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
-    return Bounds<A>(std::isnan(result.first) ? -INFINITY_CONTINUOUS_COST : result.first, std::isnan(result.second) ? INFINITY_CONTINUOUS_COST : result.second);
 }
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);

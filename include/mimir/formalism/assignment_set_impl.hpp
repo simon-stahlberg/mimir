@@ -199,14 +199,14 @@ template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
     m_function_skeleton(function_skeleton),
     m_hash(PerfectAssignmentHash(function_skeleton->get_parameters(), objects)),
-    m_set(m_hash.size(), Bounds<ContinuousCost>())
+    m_set(m_hash.size(), ClosedInterval<ContinuousCost>::undefined())
 {
 }
 
 template<IsStaticOrFluentTag F>
 void FunctionSkeletonAssignmentSet<F>::reset() noexcept
 {
-    std::fill(m_set.begin(), m_set.end(), Bounds<ContinuousCost>());
+    std::fill(m_set.begin(), m_set.end(), ClosedInterval<ContinuousCost>::undefined());
 }
 
 template<IsStaticOrFluentTag F>
@@ -218,9 +218,8 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 
     auto& empty_assignment_bound = m_set[EmptyAssignment::rank];
-    empty_assignment_bound = Bounds(
-        (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value),
-        (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.get_upper(), value));
+    empty_assignment_bound = ClosedInterval(std::isnan(empty_assignment_bound.get_lower()) ? value : std::min(empty_assignment_bound.get_lower(), value),
+                                            std::isnan(empty_assignment_bound.get_upper()) ? value : std::max(empty_assignment_bound.get_upper(), value));
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
@@ -228,11 +227,9 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 
         // Complete vertex.
         auto& single_assignment_bound = m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))];
-        single_assignment_bound = Bounds(
-            (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value :
-                                                                                                        std::min(single_assignment_bound.get_lower(), value),
-            (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value :
-                                                                                                       std::max(single_assignment_bound.get_upper(), value));
+        single_assignment_bound =
+            ClosedInterval(std::isnan(single_assignment_bound.get_lower()) ? value : std::min(single_assignment_bound.get_lower(), value),
+                           std::isnan(single_assignment_bound.get_upper()) ? value : std::max(single_assignment_bound.get_upper(), value));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
@@ -241,30 +238,27 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             // Ordered complete edge.
             auto& double_assignment_bound =
                 m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()))];
-            double_assignment_bound = Bounds((double_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ?
-                                                 value :
-                                                 std::min(double_assignment_bound.get_lower(), value),
-                                             (double_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ?
-                                                 value :
-                                                 std::max(double_assignment_bound.get_upper(), value));
+            double_assignment_bound =
+                ClosedInterval(std::isnan(double_assignment_bound.get_lower()) ? value : std::min(double_assignment_bound.get_lower(), value),
+                               std::isnan(double_assignment_bound.get_upper()) ? value : std::max(double_assignment_bound.get_upper(), value));
         }
     }
 }
 
 template<IsStaticOrFluentTag F>
-inline Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EmptyAssignment& assignment) const noexcept
+inline ClosedInterval<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EmptyAssignment& assignment) const noexcept
 {
     return m_set[EmptyAssignment::rank];
 }
 
 template<IsStaticOrFluentTag F>
-Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const VertexAssignment& assignment) const noexcept
+ClosedInterval<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const VertexAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }
 
 template<IsStaticOrFluentTag F>
-Bounds<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EdgeAssignment& assignment) const noexcept
+ClosedInterval<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EdgeAssignment& assignment) const noexcept
 {
     return m_set[m_hash.get_assignment_rank(assignment)];
 }

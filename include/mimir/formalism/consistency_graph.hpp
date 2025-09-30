@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
 #define MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
 
-#include "mimir/common/bounds.hpp"
+#include "mimir/common/closed_interval.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
