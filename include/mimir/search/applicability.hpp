@@ -20,6 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/applicability_utils.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search
@@ -52,12 +53,12 @@ extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_cond
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
                           const UnpackedStateImpl& unpacked_state,
                           const formalism::ProblemImpl& problem,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                          std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                          detail::EffectFamily& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
                           const State& state,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                          std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                          detail::EffectFamily& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const State& state);
 
@@ -72,12 +73,12 @@ extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect,
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
                           const UnpackedStateImpl& unpacked_state,
                           const formalism::ProblemImpl& problem,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                          std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                          detail::EffectFamily& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
                           const State& state,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                          std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                          detail::EffectFamily& s_auxiliary_numeric_change);
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const State& state);
 
@@ -93,13 +94,13 @@ extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect,
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect,
                                    const UnpackedStateImpl& unpacked_state,
                                    const formalism::ProblemImpl& problem,
-                                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                                   detail::EffectFamily& s_auxiliary_numeric_change);
 
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect,
                                    const State& state,
-                                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change);
+                                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                                   detail::EffectFamily& s_auxiliary_numeric_change);
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state);
 extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const State& state);
 

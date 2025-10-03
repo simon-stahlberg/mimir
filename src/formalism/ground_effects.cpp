@@ -133,15 +133,6 @@ evaluate(GroundNumericEffect<FluentTag> effect, const FlatDoubleList& static_num
 template std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<AuxiliaryTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
-bool is_compatible_numeric_effect(loki::AssignOperatorEnum lhs, loki::AssignOperatorEnum rhs)
-{
-    if (lhs == rhs)
-    {
-        return lhs != loki::AssignOperatorEnum::ASSIGN;  ///< disallow double assignment.
-    }
-    return false;  ///< disallow mixing, e.g., INCREASE + DECREASE
-}
-
 /**
  * Pretty printing
  */

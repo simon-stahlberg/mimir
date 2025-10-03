@@ -157,6 +157,7 @@ static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, Conti
 {
     const auto [assign_operator, value] = numeric_effect;
 
+    assert(!std::isnan(value));
     assert(assign_operator == loki::AssignOperatorEnum::ASSIGN || !std::isnan(ref_value));
 
     switch (assign_operator)

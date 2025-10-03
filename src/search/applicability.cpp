@@ -42,8 +42,8 @@ namespace mimir::search
 /**
  * Thread-local scratch-pad to check conflicting effect changes
  */
-static thread_local std::vector<std::optional<loki::AssignOperatorEnum>> s_fluent_numeric_changes;
-static thread_local std::optional<loki::AssignOperatorEnum> s_auxiliary_numeric_change;
+static thread_local std::vector<detail::EffectFamily> s_fluent_numeric_changes;
+static thread_local detail::EffectFamily s_auxiliary_numeric_change;
 
 /**
  * ConjunctiveCondition
@@ -156,25 +156,27 @@ bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const State
 static bool is_applicable(GroundNumericEffect<FluentTag> effect,
                           const FlatDoubleList& static_numeric_variables,
                           const FlatDoubleList& fluent_numeric_variables,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes)
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes)
 {
     const auto effect_index = effect->get_function()->get_index();
 
-    s_fluent_numeric_changes.resize(effect_index + 1, std::nullopt);
-    auto& recorded_change = s_fluent_numeric_changes.at(effect_index);
-    const bool is_incompatible_change = (recorded_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+    s_fluent_numeric_changes.resize(effect_index + 1, detail::EffectFamily::NONE);
+
+    auto& recorded_effect_family = s_fluent_numeric_changes.at(effect_index);
+    const auto effect_family = detail::get_effect_family(effect->get_assign_operator());
+
+    const bool is_incompatible_change = (!detail::is_compatible_effect_family(recorded_effect_family, effect_family));
 
     if (is_incompatible_change)
         return false;
-    recorded_change = effect->get_assign_operator();
 
-    const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
-    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
+    recorded_effect_family = effect_family;
 
-    if (modifies_undefined && is_update)
-    {
+    const auto is_assignment_operator = (effect->get_assign_operator() == loki::AssignOperatorEnum::ASSIGN);
+    const auto is_undefined_value = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
+
+    if (is_undefined_value && !is_assignment_operator)
         return false;
-    }
 
     return !std::isnan(evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables));
 }
@@ -182,14 +184,17 @@ static bool is_applicable(GroundNumericEffect<FluentTag> effect,
 static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
                           const FlatDoubleList& static_numeric_variables,
                           const FlatDoubleList& fluent_numeric_variables,
-                          std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                          detail::EffectFamily& s_auxiliary_numeric_change)
 {
-    auto& recorded_change = s_auxiliary_numeric_change;
-    const bool is_incompatible_change = (s_auxiliary_numeric_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+    auto& recorded_effect_family = s_auxiliary_numeric_change;
+    const auto effect_family = detail::get_effect_family(effect->get_assign_operator());
+
+    const bool is_incompatible_change = (!detail::is_compatible_effect_family(recorded_effect_family, effect_family));
 
     if (is_incompatible_change)
         return false;
-    recorded_change = effect->get_assign_operator();
+
+    recorded_effect_family = effect_family;
 
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     return !std::isnan(evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables));
@@ -199,7 +204,7 @@ static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
 static bool is_applicable(const GroundNumericEffectList<FluentTag>& effects,
                           const FlatDoubleList& static_numeric_variables,
                           const FlatDoubleList& fluent_numeric_variables,
-                          std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes)
+                          std::vector<detail::EffectFamily>& s_fluent_numeric_changes)
 {
     for (const auto& effect : effects)
     {
@@ -213,8 +218,8 @@ static bool is_applicable(const GroundNumericEffectList<FluentTag>& effects,
 
 bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
                    const UnpackedStateImpl& unpacked_state,
-                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                   detail::EffectFamily& s_auxiliary_numeric_change)
 {
     assert(s_fluent_numeric_changes.size() == unpacked_state.get_numeric_variables().size());
 
@@ -231,16 +236,16 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
 
 bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
                    const State& state,
-                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                   detail::EffectFamily& s_auxiliary_numeric_change)
 {
     return is_applicable(conjunctive_effect, state.get_unpacked_state(), s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
 bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const UnpackedStateImpl& unpacked_state)
 {
-    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    s_auxiliary_numeric_change = std::nullopt;
+    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    s_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return is_applicable(conjunctive_effect, unpacked_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
@@ -253,8 +258,8 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const State& stat
 
 bool is_applicable(GroundConditionalEffect conditional_effect,
                    const UnpackedStateImpl& unpacked_state,
-                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                   detail::EffectFamily& s_auxiliary_numeric_change)
 {
     assert(s_fluent_numeric_changes.size() == unpacked_state.get_numeric_variables().size());
 
@@ -264,16 +269,16 @@ bool is_applicable(GroundConditionalEffect conditional_effect,
 
 bool is_applicable(GroundConditionalEffect conditional_effect,
                    const State& state,
-                   std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                   std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                   std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                   detail::EffectFamily& s_auxiliary_numeric_change)
 {
     return is_applicable(conditional_effect, state.get_unpacked_state(), s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
 bool is_applicable(GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state)
 {
-    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    s_auxiliary_numeric_change = std::nullopt;
+    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    s_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return is_applicable(conditional_effect, unpacked_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
@@ -282,8 +287,8 @@ bool is_applicable(GroundConditionalEffect conditional_effect, const State& stat
 
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
                             const UnpackedStateImpl& unpacked_state,
-                            std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                            std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                            std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                            detail::EffectFamily& s_auxiliary_numeric_change)
 {
     assert(s_fluent_numeric_changes.size() == unpacked_state.get_numeric_variables().size());
 
@@ -293,16 +298,16 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
 
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
                             const State& state,
-                            std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
-                            std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
+                            std::vector<detail::EffectFamily>& s_fluent_numeric_changes,
+                            detail::EffectFamily& s_auxiliary_numeric_change)
 {
     return is_applicable_if_fires(conditional_effect, state.get_unpacked_state(), s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const UnpackedStateImpl& unpacked_state)
 {
-    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    s_auxiliary_numeric_change = std::nullopt;
+    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    s_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return is_applicable_if_fires(conditional_effect, unpacked_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
@@ -318,8 +323,8 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const St
 
 bool is_dynamically_applicable(GroundAction action, const UnpackedStateImpl& unpacked_state)
 {
-    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    s_auxiliary_numeric_change = std::nullopt;
+    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    s_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return is_dynamically_applicable(action->get_conjunctive_condition(), unpacked_state)  //
            && std::all_of(action->get_conditional_effects().begin(),
@@ -329,8 +334,8 @@ bool is_dynamically_applicable(GroundAction action, const UnpackedStateImpl& unp
 
 bool is_applicable(GroundAction action, const UnpackedStateImpl& unpacked_state)
 {
-    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    s_auxiliary_numeric_change = std::nullopt;
+    s_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    s_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return is_applicable(action->get_conjunctive_condition(), unpacked_state)  //
            && std::all_of(action->get_conditional_effects().begin(),

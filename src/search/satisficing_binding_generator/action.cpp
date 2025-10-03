@@ -30,7 +30,7 @@ ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action acti
     SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, event_handler),
     m_action(action),
     m_fluent_numeric_changes(),
-    m_auxiliary_numeric_change()
+    m_auxiliary_numeric_change(detail::EffectFamily::NONE)
 {
 }
 
@@ -38,8 +38,9 @@ const Action& ActionSatisficingBindingGenerator::get_action() const { return m_a
 
 bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const UnpackedStateImpl& unpacked_state, const ObjectList& binding)
 {
-    m_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), std::nullopt);
-    m_auxiliary_numeric_change = std::nullopt;
+    // Reset
+    m_fluent_numeric_changes.assign(unpacked_state.get_numeric_variables().size(), detail::EffectFamily::NONE);
+    m_auxiliary_numeric_change = detail::EffectFamily::NONE;
 
     return std::all_of(m_action->get_conditional_effects().begin(),
                        m_action->get_conditional_effects().end(),
@@ -62,23 +63,24 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag
 
     const auto effect_index = ground_target_function->get_index();
 
-    m_fluent_numeric_changes.resize(effect_index + 1, std::nullopt);
-    auto& recorded_change = m_fluent_numeric_changes.at(effect_index);
-    const bool is_incompatible_change = (recorded_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+    m_fluent_numeric_changes.resize(effect_index + 1, detail::EffectFamily::NONE);
+    auto& recorded_effect_family = m_fluent_numeric_changes.at(effect_index);
+    const auto effect_family = detail::get_effect_family(effect->get_assign_operator());
+
+    const bool is_incompatible_change = (!detail::is_compatible_effect_family(recorded_effect_family, effect_family));
 
     if (is_incompatible_change)
         return false;
-    recorded_change = effect->get_assign_operator();
+
+    recorded_effect_family = effect_family;
 
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
-    const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
-    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
+    const auto is_assignment_operator = (effect->get_assign_operator() == loki::AssignOperatorEnum::ASSIGN);
+    const auto is_undefined_value = (effect_index >= fluent_numeric_variables.size() || std::isnan(fluent_numeric_variables[effect_index]));
 
-    if (modifies_undefined && is_update)
-    {
+    if (is_undefined_value && !is_assignment_operator)
         return false;
-    }
 
     return !std::isnan(evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables));
 }
@@ -88,12 +90,15 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
 {
-    auto& recorded_change = m_auxiliary_numeric_change;
-    const bool is_incompatible_change = (m_auxiliary_numeric_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+    auto& recorded_effect_family = m_auxiliary_numeric_change;
+    const auto effect_family = detail::get_effect_family(effect->get_assign_operator());
+
+    const bool is_incompatible_change = (!detail::is_compatible_effect_family(recorded_effect_family, effect_family));
 
     if (is_incompatible_change)
         return false;
-    recorded_change = effect->get_assign_operator();
+
+    recorded_effect_family = effect_family;
 
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
