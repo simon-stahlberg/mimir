@@ -218,8 +218,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
     assert(ground_function->get_function_skeleton() == m_function_skeleton);
 
     auto& empty_assignment_bound = m_set[EmptyAssignment::rank];
-    empty_assignment_bound = ClosedInterval(std::isnan(empty_assignment_bound.get_lower()) ? value : std::min(empty_assignment_bound.get_lower(), value),
-                                            std::isnan(empty_assignment_bound.get_upper()) ? value : std::max(empty_assignment_bound.get_upper(), value));
+    empty_assignment_bound = hull(empty_assignment_bound, ClosedInterval<ContinuousCost>(value, value));
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
@@ -227,9 +226,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 
         // Complete vertex.
         auto& single_assignment_bound = m_set[m_hash.get_assignment_rank(VertexAssignment(first_index, first_object->get_index()))];
-        single_assignment_bound =
-            ClosedInterval(std::isnan(single_assignment_bound.get_lower()) ? value : std::min(single_assignment_bound.get_lower(), value),
-                           std::isnan(single_assignment_bound.get_upper()) ? value : std::max(single_assignment_bound.get_upper(), value));
+        single_assignment_bound = hull(single_assignment_bound, ClosedInterval<ContinuousCost>(value, value));
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
@@ -238,9 +235,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
             // Ordered complete edge.
             auto& double_assignment_bound =
                 m_set[m_hash.get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()))];
-            double_assignment_bound =
-                ClosedInterval(std::isnan(double_assignment_bound.get_lower()) ? value : std::min(double_assignment_bound.get_lower(), value),
-                               std::isnan(double_assignment_bound.get_upper()) ? value : std::max(double_assignment_bound.get_upper(), value));
+            double_assignment_bound = hull(double_assignment_bound, ClosedInterval<ContinuousCost>(value, value));
         }
     }
 }

@@ -50,9 +50,9 @@ public:
      * Constructors
      */
 
-    constexpr ClosedInterval() : m_interval(Interval<A>::empty()) {}
-    constexpr ClosedInterval(A lower, A upper) : m_interval(lower, upper) {}
-    constexpr ClosedInterval(Interval<A> interval) : m_interval(interval) {}
+    ClosedInterval() : m_interval(Interval<A>::empty()) {}
+    ClosedInterval(A lower, A upper) : m_interval(lower, upper) {}
+    ClosedInterval(Interval<A> interval) : m_interval(interval) {}
 
     /**
      * Operators
@@ -62,6 +62,8 @@ public:
     {
         if (empty(lhs) && empty(rhs))
             return true;
+        if (empty(lhs) ^ empty(rhs))
+            return false;
         return lhs.get_lower() == rhs.get_lower() && lhs.get_upper() == rhs.get_upper();
     }
 

@@ -97,7 +97,10 @@ inline Plan extract_total_ordered_plan(State start_state,
                 }
             }
         }
-        assert(lowest_state && lowest_action);
+
+        if (!(lowest_state && lowest_action))
+            throw std::runtime_error("Failed to reconstruct plan from solution trace.");
+
         actions.push_back(lowest_action);
         states.push_back(lowest_state.value());
         state = lowest_state.value();
