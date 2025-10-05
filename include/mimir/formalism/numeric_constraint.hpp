@@ -81,42 +81,6 @@ public:
 };
 
 /**
- * Utils
- */
-
-template<IsArithmetic A>
-inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
-{
-    switch (comparator)
-    {
-        case loki::BinaryComparatorEnum::EQUAL:
-        {
-            return overlaps(lhs, rhs);
-        }
-        case loki::BinaryComparatorEnum::GREATER:
-        {
-            return possibly_after(lhs, rhs);
-        }
-        case loki::BinaryComparatorEnum::GREATER_EQUAL:
-        {
-            return possibly_after_or_meets(lhs, rhs);
-        }
-        case loki::BinaryComparatorEnum::LESS:
-        {
-            return possibly_before(lhs, rhs);
-        }
-        case loki::BinaryComparatorEnum::LESS_EQUAL:
-        {
-            return possibly_before_or_meets(lhs, rhs);
-        }
-        default:
-        {
-            throw std::logic_error("evaluate(comparator, lhs, rhs): Unexpected BinaryComparatorEnum.");
-        }
-    }
-}
-
-/**
  * Printing
  */
 

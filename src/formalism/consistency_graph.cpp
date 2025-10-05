@@ -350,7 +350,7 @@ template<std::ranges::forward_range Range, IsStaticOrFluentOrAuxiliaryTag F>
 static inline ClosedInterval<ContinuousCost>
 compute_tightest_closed_interval_helper(ClosedInterval<ContinuousCost> bounds, const FunctionSkeletonAssignmentSet<F>& sets, const Range& range) noexcept
 {
-    if (bounds.is_undefined())
+    if (empty(bounds))
         return bounds;
 
     for (const auto& assignment : range)
@@ -358,7 +358,7 @@ compute_tightest_closed_interval_helper(ClosedInterval<ContinuousCost> bounds, c
         assert(assignment.is_valid());
 
         bounds = intersect(bounds, sets[assignment]);
-        if (bounds.is_undefined())
+        if (empty(bounds))
             break;  // early exit
     }
     return bounds;

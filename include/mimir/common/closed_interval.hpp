@@ -20,6 +20,7 @@
 
 #include "mimir/common/types.hpp"
 
+#include <boost/numeric/interval.hpp>
 #include <cmath>
 #include <limits>
 #include <loki/loki.hpp>
@@ -28,110 +29,91 @@
 
 namespace mimir
 {
+namespace bn = boost::numeric;
+namespace ivl = bn::interval_lib;
+
+template<IsFloatingPoint A>
+using IntervalPolicies = ivl::policies<ivl::save_state<ivl::rounded_transc_std<A>>,  // sound rounding
+                                       ivl::checking_base<A>                         // no throws on empty/∞
+                                       >;
+
+template<IsFloatingPoint A>
+using Interval = bn::interval<A, IntervalPolicies<A>>;
+
+static_assert(sizeof(Interval<double>) == 16);
 
 template<IsFloatingPoint A>
 class ClosedInterval
 {
 public:
-    constexpr ClosedInterval(A lower, A upper) : m_lower(lower), m_upper(upper) { assert(is_wellformed()); }
+    /**
+     * Constructors
+     */
 
-    friend constexpr bool operator==(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
+    constexpr ClosedInterval() : m_interval(Interval<A>::empty()) {}
+    constexpr ClosedInterval(A lower, A upper) : m_interval(lower, upper) {}
+    constexpr ClosedInterval(Interval<A> interval) : m_interval(interval) {}
+
+    /**
+     * Operators
+     */
+
+    friend bool operator==(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        if (lhs.is_undefined() && rhs.is_undefined())
+        if (empty(lhs) && empty(rhs))
             return true;
-        return lhs.m_lower == rhs.m_lower && lhs.m_upper == rhs.m_upper;
-    }
-    friend constexpr bool operator!=(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept { return !(lhs == rhs); }
-
-    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x = y.
-    friend constexpr bool overlaps(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return lhs.m_lower <= rhs.m_upper && lhs.m_upper >= rhs.m_lower;
-    }
-    /// @brief ∀ x ∈ lhs, ∀ y ∈ rhs : x != y.
-    friend constexpr bool disjoint(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return !overlaps(lhs, rhs);
-    }
-    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x > y.
-    friend constexpr bool possibly_after(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return lhs.m_upper > rhs.m_lower;
-    }
-    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x >= y.
-    friend constexpr bool possibly_after_or_meets(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return lhs.m_upper >= rhs.m_lower;
-    }
-    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x < y.
-    friend constexpr bool possibly_before(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return lhs.m_lower < rhs.m_upper;
-    }
-    /// @brief ∃ x ∈ lhs, ∃ y ∈ rhs : x <= y.
-    friend constexpr bool possibly_before_or_meets(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
-    {
-        if (lhs.is_undefined() || rhs.is_undefined())
-            return false;
-        return lhs.m_lower <= rhs.m_upper;
+        return lhs.get_lower() == rhs.get_lower() && lhs.get_upper() == rhs.get_upper();
     }
 
-    static constexpr ClosedInterval zero() noexcept { return ClosedInterval(A(0), A(0)); }
-    static constexpr ClosedInterval undefined() noexcept { return ClosedInterval(-std::numeric_limits<A>::quiet_NaN(), std::numeric_limits<A>::quiet_NaN()); }
-    static constexpr ClosedInterval reals() noexcept { return ClosedInterval(-std::numeric_limits<A>::infinity(), std::numeric_limits<A>::infinity()); }
+    friend bool operator!=(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept { return !(lhs == rhs); }
 
-    inline bool is_wellformed() const noexcept { return (std::isnan(m_lower) && std::isnan(m_upper)) || (m_lower <= m_upper); }
-    inline bool is_undefined() const noexcept { return std::isnan(m_lower) && std::isnan(m_upper); }
-    inline bool contains_zero() const noexcept { return m_lower <= A(0) && m_upper >= A(0); }
-    inline bool strictly_pos() const noexcept { return m_lower > A(0); }
-    inline bool strictly_neg() const noexcept { return m_upper < A(0); }
-    inline bool nonneg_only() const noexcept { return m_lower >= A(0); }
-    inline bool nonpos_only() const noexcept { return m_upper <= A(0); }
-    inline bool is_point_zero() const noexcept { return m_lower == A(0) && m_upper == A(0); }
-    inline bool crosses_zero() const noexcept { return m_lower < A(0) && m_upper > A(0); }
-    inline bool unbounded_pos() const noexcept { return std::isinf(m_upper) && m_lower >= A(0); }
-    inline bool unbounded_neg() const noexcept { return std::isinf(m_lower) && m_upper <= A(0); }
-    inline bool unbounded_both() const noexcept { return std::isinf(m_lower) && std::isinf(m_upper); }
-    inline bool has_pos_inf() const noexcept { return std::isinf(m_upper) && m_upper > A(0); }
-    inline bool has_neg_inf() const noexcept { return std::isinf(m_lower) && m_lower < A(0); }
-
-    constexpr A get_lower() const noexcept { return m_lower; }
-    constexpr A get_upper() const noexcept { return m_upper; }
-
-    // --- Utilities ---
-    friend constexpr ClosedInterval intersect(const ClosedInterval& a, const ClosedInterval& b) noexcept
+    friend ClosedInterval operator+(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        if (a.is_undefined() || b.is_undefined())
-            return ClosedInterval::undefined();
-        const A lo = std::max(a.get_lower(), b.get_lower());
-        const A hi = std::min(a.get_upper(), b.get_upper());
-        return (lo <= hi) ? ClosedInterval(lo, hi) : ClosedInterval::undefined();
+        return ClosedInterval(lhs.get_interval() + rhs.get_interval());
     }
 
-    friend constexpr ClosedInterval hull(const ClosedInterval& a, const ClosedInterval& b) noexcept
+    friend ClosedInterval operator-(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        if (a.is_undefined())
-            return b;
-        if (b.is_undefined())
-            return a;
-        const A lo = std::min(a.get_lower(), b.get_lower());
-        const A hi = std::max(a.get_upper(), b.get_upper());
-        return ClosedInterval(lo, hi);
+        return ClosedInterval(lhs.get_interval() - rhs.get_interval());
     }
+
+    friend ClosedInterval operator*(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
+    {
+        return ClosedInterval(lhs.get_interval() * rhs.get_interval());
+    }
+
+    friend ClosedInterval operator/(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
+    {
+        return ClosedInterval(lhs.get_interval() / rhs.get_interval());
+    }
+
+    friend ClosedInterval intersect(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
+    {
+        return ClosedInterval(bn::intersect(lhs.m_interval, rhs.m_interval));
+    }
+
+    friend ClosedInterval hull(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
+    {
+        return ClosedInterval(bn::hull(lhs.m_interval, rhs.m_interval));
+    }
+
+    /**
+     * Accessors
+     */
+
+    friend bool empty(const ClosedInterval& x) noexcept { return bn::empty(x.m_interval); }
+
+    /**
+     * Getters
+     */
+
+    constexpr const Interval<A>& get_interval() const noexcept { return m_interval; }
+
+    A get_lower() const noexcept { return lower(m_interval); }
+    A get_upper() const noexcept { return upper(m_interval); }
 
 private:
-    A m_lower;
-    A m_upper;
+    Interval<A> m_interval;
 };
 
 /**
@@ -141,102 +123,29 @@ private:
 template<IsFloatingPoint A>
 inline ClosedInterval<A> evaluate(loki::BinaryOperatorEnum op, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
 {
-    if (lhs.is_undefined() || rhs.is_undefined())
-        return ClosedInterval<A>::undefined();  // undefined sentinel
+    if (empty(lhs) || empty(rhs))
+        return ClosedInterval<A>();  // undefined sentinel
 
     switch (op)
     {
         case loki::BinaryOperatorEnum::DIV:
         {
-            // 0 not in rhs -> standard 4-corner envelope
-            if (!rhs.contains_zero())
-            {
-                const A a = lhs.get_lower() / rhs.get_lower();
-                const A b = lhs.get_lower() / rhs.get_upper();
-                const A c = lhs.get_upper() / rhs.get_lower();
-                const A d = lhs.get_upper() / rhs.get_upper();
-                const auto mm = std::minmax({ a, b, c, d });
-                return ClosedInterval<A>(mm.first, mm.second);
-            }
-
-            // rhs == {0}
-            else if (rhs.is_point_zero())
-                return ClosedInterval<A>::undefined();
-
-            // rhs touches 0 on + side: (0, b] with b>0
-            else if (rhs.get_lower() == A(0) && rhs.get_upper() > A(0))
-            {
-                if (lhs.is_point_zero())
-                    return ClosedInterval<A>::zero();
-                if (lhs.strictly_pos())
-                    return ClosedInterval<A>(lhs.get_lower() / rhs.get_upper(), std::numeric_limits<A>::infinity());
-                if (lhs.strictly_neg())
-                    return ClosedInterval<A>(-std::numeric_limits<A>::infinity(), lhs.get_upper() / rhs.get_upper());
-                return ClosedInterval<A>::reals();
-            }
-
-            // rhs touches 0 on - side: [a, 0) with a<0
-            else if (rhs.get_lower() < A(0) && rhs.get_upper() == A(0))
-            {
-                if (lhs.is_point_zero())
-                    return ClosedInterval<A>::zero();
-                if (lhs.strictly_pos())
-                    return ClosedInterval<A>(-std::numeric_limits<A>::infinity(), lhs.get_lower() / rhs.get_lower());
-                if (lhs.strictly_neg())
-                    return ClosedInterval<A>(lhs.get_upper() / rhs.get_lower(), std::numeric_limits<A>::infinity());
-                return ClosedInterval<A>::reals();
-            }
-
-            // rhs spans negative & positive (a<0<b): unless lhs=={0}, whole line
-            else if (lhs.is_point_zero())
-                return ClosedInterval<A>::zero();
-
-            return ClosedInterval<A>::reals();
+            return lhs / rhs;
         }
 
         case loki::BinaryOperatorEnum::MINUS:
         {
-            const A lo = lhs.get_lower() - rhs.get_upper();  // l - r'
-            const A hi = lhs.get_upper() - rhs.get_lower();  // r - l'
-            return { std::isnan(lo) ? -std::numeric_limits<A>::infinity() : lo, std::isnan(hi) ? std::numeric_limits<A>::infinity() : hi };
+            return lhs - rhs;
         }
 
         case loki::BinaryOperatorEnum::MUL:
         {
-            if (lhs.is_point_zero() || rhs.is_point_zero())
-                return ClosedInterval<A>(A(0), A(0));
-
-            const A c1 = lhs.get_lower() * rhs.get_lower();
-            const A c2 = lhs.get_lower() * rhs.get_upper();
-            const A c3 = lhs.get_upper() * rhs.get_lower();
-            const A c4 = lhs.get_upper() * rhs.get_upper();
-
-            A lo = std::numeric_limits<A>::infinity();
-            A hi = -std::numeric_limits<A>::infinity();
-            auto consider = [&](A v)
-            {
-                if (!std::isnan(v))
-                {
-                    lo = std::min(lo, v);
-                    hi = std::max(hi, v);
-                }
-            };
-            consider(c1);
-            consider(c2);
-            consider(c3);
-            consider(c4);
-
-            if (hi < lo)  // all corners were NaN (e.g., 0*inf only)
-                return ClosedInterval<A>::reals();
-
-            return ClosedInterval<A>(lo, hi);
+            return lhs * rhs;
         }
 
         case loki::BinaryOperatorEnum::PLUS:
         {
-            const A lo = lhs.get_lower() + rhs.get_lower();
-            const A hi = lhs.get_upper() + rhs.get_upper();
-            return ClosedInterval<A>(std::isnan(lo) ? -std::numeric_limits<A>::infinity() : lo, std::isnan(hi) ? std::numeric_limits<A>::infinity() : hi);
+            return lhs + rhs;
         }
 
         default:
@@ -247,8 +156,8 @@ inline ClosedInterval<A> evaluate(loki::BinaryOperatorEnum op, const ClosedInter
 template<IsFloatingPoint A>
 inline ClosedInterval<A> evaluate(loki::MultiOperatorEnum op, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
 {
-    if (lhs.is_undefined() || rhs.is_undefined())
-        return ClosedInterval<A>::undefined();
+    if (empty(lhs) || empty(rhs))
+        return ClosedInterval<A>();
 
     switch (op)
     {
@@ -264,6 +173,46 @@ inline ClosedInterval<A> evaluate(loki::MultiOperatorEnum op, const ClosedInterv
 
         default:
             throw std::logic_error("Evaluation of multi operator is undefined.");
+    }
+}
+
+template<IsArithmetic A>
+inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
+{
+    if (empty(lhs) || empty(rhs))
+        return false;
+
+    switch (comparator)
+    {
+        case loki::BinaryComparatorEnum::EQUAL:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x = y.
+            return lhs.get_lower() <= rhs.get_upper() && lhs.get_upper() >= rhs.get_lower();
+        }
+        case loki::BinaryComparatorEnum::GREATER:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x > y.
+            return lhs.get_upper() > rhs.get_lower();
+        }
+        case loki::BinaryComparatorEnum::GREATER_EQUAL:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x >= y.
+            return lhs.get_upper() >= rhs.get_lower();
+        }
+        case loki::BinaryComparatorEnum::LESS:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x < y.
+            return lhs.get_lower() < rhs.get_upper();
+        }
+        case loki::BinaryComparatorEnum::LESS_EQUAL:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x <= y.
+            return lhs.get_lower() <= rhs.get_upper();
+        }
+        default:
+        {
+            throw std::logic_error("evaluate(comparator, lhs, rhs): Unexpected BinaryComparatorEnum.");
+        }
     }
 }
 
