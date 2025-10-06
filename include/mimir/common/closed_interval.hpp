@@ -29,30 +29,25 @@
 
 namespace mimir
 {
-namespace bn = boost::numeric;
-namespace ivl = bn::interval_lib;
-
-template<IsFloatingPoint A>
-using IntervalPolicies = ivl::policies<ivl::save_state<ivl::rounded_transc_std<A>>,  // sound rounding
-                                       ivl::checking_base<A>                         // no throws on empty/∞
-                                       >;
-
-template<IsFloatingPoint A>
-using Interval = bn::interval<A, IntervalPolicies<A>>;
-
-static_assert(sizeof(Interval<double>) == 16);
 
 template<IsFloatingPoint A>
 class ClosedInterval
 {
 public:
+    using IntervalPolicies =
+        boost::numeric::interval_lib::policies<boost::numeric::interval_lib::save_state<boost::numeric::interval_lib::rounded_transc_std<A>>,  // sound rounding
+                                               boost::numeric::interval_lib::checking_base<A>  // no throws on empty/∞
+                                               >;
+
+    using Interval = boost::numeric::interval<A, IntervalPolicies>;
+
     /**
      * Constructors
      */
 
-    ClosedInterval() : m_interval(Interval<A>::empty()) {}
+    ClosedInterval() : m_interval(Interval::empty()) {}
     ClosedInterval(A lower, A upper) : m_interval(lower, upper) {}
-    ClosedInterval(Interval<A> interval) : m_interval(interval) {}
+    ClosedInterval(Interval interval) : m_interval(interval) {}
 
     /**
      * Operators
@@ -64,59 +59,63 @@ public:
             return true;
         if (empty(lhs) ^ empty(rhs))
             return false;
-        return lhs.get_lower() == rhs.get_lower() && lhs.get_upper() == rhs.get_upper();
+        return lower(lhs) == lower(rhs) && upper(lhs) == upper(rhs);
     }
 
     friend bool operator!=(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept { return !(lhs == rhs); }
 
     friend ClosedInterval operator+(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(lhs.get_interval() + rhs.get_interval());
+        return ClosedInterval(boost::numeric::operator+(lhs.get_interval(), rhs.get_interval()));
     }
 
     friend ClosedInterval operator-(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(lhs.get_interval() - rhs.get_interval());
+        return ClosedInterval(boost::numeric::operator-(lhs.get_interval(), rhs.get_interval()));
     }
+
+    friend ClosedInterval operator-(const ClosedInterval& el) noexcept { return ClosedInterval(boost::numeric::operator-(el.get_interval())); }
 
     friend ClosedInterval operator*(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(lhs.get_interval() * rhs.get_interval());
+        return ClosedInterval(boost::numeric::operator*(lhs.get_interval(), rhs.get_interval()));
     }
 
     friend ClosedInterval operator/(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(lhs.get_interval() / rhs.get_interval());
+        return ClosedInterval(boost::numeric::operator/(lhs.get_interval(), rhs.get_interval()));
     }
 
     friend ClosedInterval intersect(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(bn::intersect(lhs.m_interval, rhs.m_interval));
+        return ClosedInterval(boost::numeric::intersect(lhs.m_interval, rhs.m_interval));
     }
 
     friend ClosedInterval hull(const ClosedInterval& lhs, const ClosedInterval& rhs) noexcept
     {
-        return ClosedInterval(bn::hull(lhs.m_interval, rhs.m_interval));
+        return ClosedInterval(boost::numeric::hull(lhs.m_interval, rhs.m_interval));
     }
 
     /**
      * Accessors
      */
 
-    friend bool empty(const ClosedInterval& x) noexcept { return bn::empty(x.m_interval); }
+    friend bool empty(const ClosedInterval& x) noexcept { return boost::numeric::empty(x.m_interval); }
 
     /**
      * Getters
      */
 
-    constexpr const Interval<A>& get_interval() const noexcept { return m_interval; }
+    constexpr const Interval& get_interval() const noexcept { return m_interval; }
 
-    A get_lower() const noexcept { return lower(m_interval); }
-    A get_upper() const noexcept { return upper(m_interval); }
+    friend A lower(const ClosedInterval& el) noexcept { return lower(el.get_interval()); }
+    friend A upper(const ClosedInterval& el) noexcept { return upper(el.get_interval()); }
 
 private:
-    Interval<A> m_interval;
+    Interval m_interval;
 };
+
+static_assert(sizeof(ClosedInterval<double>) == 16);
 
 /**
  * ClosedInterval arithmetics
@@ -189,27 +188,27 @@ inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval
         case loki::BinaryComparatorEnum::EQUAL:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x = y.
-            return lhs.get_lower() <= rhs.get_upper() && lhs.get_upper() >= rhs.get_lower();
+            return lower(lhs) <= upper(rhs) && upper(lhs) >= lower(rhs);
         }
         case loki::BinaryComparatorEnum::GREATER:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x > y.
-            return lhs.get_upper() > rhs.get_lower();
+            return upper(lhs) > lower(rhs);
         }
         case loki::BinaryComparatorEnum::GREATER_EQUAL:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x >= y.
-            return lhs.get_upper() >= rhs.get_lower();
+            return upper(lhs) >= lower(rhs);
         }
         case loki::BinaryComparatorEnum::LESS:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x < y.
-            return lhs.get_lower() < rhs.get_upper();
+            return lower(lhs) < upper(rhs);
         }
         case loki::BinaryComparatorEnum::LESS_EQUAL:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x <= y.
-            return lhs.get_lower() <= rhs.get_upper();
+            return lower(lhs) <= upper(rhs);
         }
         default:
         {
@@ -225,7 +224,7 @@ inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval
 template<IsFloatingPoint A>
 inline std::ostream& operator<<(std::ostream& out, const ClosedInterval<A>& element)
 {
-    out << "[" << element.get_lower() << "," << element.get_upper() << "]";
+    out << "[" << lower(element) << "," << upper(element) << "]";
     return out;
 }
 

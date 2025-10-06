@@ -452,8 +452,7 @@ evaluate_function_expression_partially(FunctionExpression fexpr,
                                                                            element,
                                                                            static_function_skeleton_assignment_sets,
                                                                            fluent_function_skeleton_assignment_sets);
-                assert(-bounds.get_upper() < -bounds.get_lower());
-                return ClosedInterval<ContinuousCost>(-bounds.get_upper(), -bounds.get_lower());
+                return -bounds;
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
             {
