@@ -117,7 +117,8 @@ std::ostream& operator<<(std::ostream& os, const search::State& state)
     std::sort(static_ground_atoms.begin(), static_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
     std::sort(derived_ground_atoms.begin(), derived_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state.get_index() << ", " << "fluent atoms=";
+    os << "State(" << "index=" << state.get_index();
+    os << ", " << "fluent atoms=";
     mimir::operator<<(os, fluent_ground_atoms);
     os << ", " << "static atoms=";
     mimir::operator<<(os, static_ground_atoms);

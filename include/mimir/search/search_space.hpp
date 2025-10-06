@@ -19,6 +19,8 @@
 #define MIMIR_SEARCH_SEARCH_SPACE_HPP_
 
 #include "mimir/common/segmented_vector.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -85,8 +87,11 @@ inline Plan extract_total_ordered_plan(State start_state,
 
         for (const auto& action : context->get_applicable_action_generator()->create_applicable_action_generator(state))
         {
+            assert(is_applicable(action, state));
+
             const auto [successor_state, successor_state_metric_value] =
                 context->get_state_repository()->get_or_create_successor_state(state, action, state_metric_value);
+
             if (successor_state.get_index() == state_trajectory.at(i + 1))
             {
                 if (successor_state_metric_value < lowest_metric_value)

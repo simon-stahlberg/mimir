@@ -25,6 +25,7 @@
 #include "mimir/search/algorithms/astar_eager/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
@@ -256,6 +257,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
+            assert(is_applicable(action, state));
+
             const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, search_node.g_value);
             auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
             const auto action_cost = successor_state_metric_value - search_node.g_value;

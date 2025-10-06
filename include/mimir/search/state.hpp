@@ -112,7 +112,7 @@ bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_a
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& os, const search::State& state);
+std::ostream& operator<<(std::ostream& os, const State& state);
 
 }
 

@@ -62,6 +62,8 @@ public:
 
 static_assert(sizeof(PackedStateImpl) == 24);
 
+std::ostream& operator<<(std::ostream& os, const PackedStateImpl& state);
+
 }
 
 namespace loki
