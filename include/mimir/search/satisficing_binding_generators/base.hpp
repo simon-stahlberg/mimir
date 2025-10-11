@@ -49,9 +49,10 @@ public:
 
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    mimir::generator<formalism::ObjectList> create_binding_generator(const State& state);
+    mimir::generator<formalism::ObjectList> create_binding_generator(const State& state, const formalism::DynamicAssignmentSets& dynamic_assignment_sets);
 
-    mimir::generator<formalism::ObjectList> create_binding_generator(const UnpackedStateImpl& unpacked_state);
+    mimir::generator<formalism::ObjectList> create_binding_generator(const UnpackedStateImpl& unpacked_state,
+                                                                     const formalism::DynamicAssignmentSets& dynamic_assignment_sets);
 
     mimir::generator<std::pair<formalism::ObjectList,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
@@ -102,9 +103,11 @@ protected:
 
     mimir::generator<formalism::ObjectList> nullary_case(const UnpackedStateImpl& unpacked_state);
 
-    mimir::generator<formalism::ObjectList> unary_case(const UnpackedStateImpl& unpacked_state);
+    mimir::generator<formalism::ObjectList> unary_case(const UnpackedStateImpl& unpacked_state,
+                                                       const formalism::DynamicAssignmentSets& dynamic_assignment_sets);
 
-    mimir::generator<formalism::ObjectList> general_case(const UnpackedStateImpl& unpacked_state);
+    mimir::generator<formalism::ObjectList> general_case(const UnpackedStateImpl& unpacked_state,
+                                                         const formalism::DynamicAssignmentSets& dynamic_assignment_sets);
 };
 
 }

@@ -20,7 +20,6 @@
 
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
-#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/axiom_partitioning.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
@@ -109,34 +108,6 @@ struct AxiomDetails
 };
 
 /**
- * ConsistencyGraph
- */
-
-struct StaticConsistencyGraphDetails
-{
-    const ProblemImpl* parent;
-
-    PredicateAssignmentSets<StaticTag> static_predicate_assignment_sets;
-    FunctionSkeletonAssignmentSets<StaticTag> static_function_skeleton_assignment_sets;
-
-    StaticConsistencyGraphDetails();
-    StaticConsistencyGraphDetails(const ProblemImpl& problem, const InitialDetails& initial);
-};
-
-struct DynamicConsistencyGraphDetails
-{
-    const ProblemImpl* parent;
-
-    PredicateAssignmentSets<FluentTag> fluent_predicate_assignment_sets;
-    PredicateAssignmentSets<DerivedTag> derived_predicate_assignment_sets;
-
-    FunctionSkeletonAssignmentSets<FluentTag> fluent_function_skeleton_assignment_sets;
-
-    DynamicConsistencyGraphDetails();
-    DynamicConsistencyGraphDetails(const ProblemImpl& problem);
-};
-
-/**
  * Grounding
  */
 
@@ -191,8 +162,6 @@ struct Details
     InitialDetails initial;
     GoalDetails goal;
     AxiomDetails axiom;
-    StaticConsistencyGraphDetails static_consistency_graph;
-    DynamicConsistencyGraphDetails dynamic_consistency_graph;
     GroundingDetails grounding;
 
     Details();

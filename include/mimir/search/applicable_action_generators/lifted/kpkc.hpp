@@ -18,7 +18,9 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem_details.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
@@ -26,7 +28,6 @@
 
 namespace mimir::search
 {
-
 /// @brief `KPKCLiftedApplicableActionGeneratorImpl` implements lifted applicable action generation
 /// using maximum clique enumeration by Stahlberg (ECAI2023).
 /// Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
@@ -75,6 +76,8 @@ private:
     satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
+
+    formalism::DynamicAssignmentSets m_dynamic_assignment_sets;
 };
 
 }  // namespace mimir

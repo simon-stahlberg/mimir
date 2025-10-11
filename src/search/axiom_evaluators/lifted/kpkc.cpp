@@ -23,9 +23,9 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
+#include "mimir/search/assignment_set_utils.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/interface.hpp"
-#include "mimir/search/consistency_graph_utils.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
@@ -43,7 +43,8 @@ KPKCLiftedAxiomEvaluatorImpl::KPKCLiftedAxiomEvaluatorImpl(Problem problem,
     m_problem(problem),
     m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
     m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
-    m_condition_grounders()
+    m_condition_grounders(),
+    m_dynamic_assignment_sets(*m_problem)
 {
     /* 3. Initialize condition grounders */
     const auto& axioms = m_problem->get_problem_and_domain_axioms();
@@ -63,7 +64,7 @@ KPKCLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler
 
 void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
 {
-    initialize(unpacked_state, m_problem->get_dynamic_consistency_graph_details());
+    initialize(unpacked_state, m_dynamic_assignment_sets);
 
     /* 2. Fixed point computation */
 
@@ -99,7 +100,7 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
 
                 auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
-                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state))
+                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state, m_dynamic_assignment_sets))
                 {
                     const auto num_ground_axioms = ground_axiom_repository.size();
 
@@ -133,7 +134,7 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
                     reached_partition_fixed_point = false;
 
                     // Update the assignment set
-                    m_problem->get_dynamic_consistency_graph_details().derived_predicate_assignment_sets.insert_ground_atom(new_ground_atom);
+                    m_dynamic_assignment_sets.derived_predicate_assignment_sets.insert_ground_atom(new_ground_atom);
                     // Update the state
                     unpacked_state.get_atoms<DerivedTag>().set(grounded_atom_index);
 

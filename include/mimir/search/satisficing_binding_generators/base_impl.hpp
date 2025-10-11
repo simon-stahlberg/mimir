@@ -29,7 +29,7 @@
 #include "mimir/formalism/tags.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/consistency_graph_utils.hpp"
+#include "mimir/search/assignment_set_utils.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/base.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
@@ -156,24 +156,21 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state,
+                                                                                          const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
 {
-    m_static_consistency_graph.for_each_consistent_vertex(m_problem->get_static_consistency_graph_details(),
-                                                          m_problem->get_dynamic_consistency_graph_details(),
-                                                          [&](auto&& vertex) -> mimir::generator<formalism::ObjectList>
-                                                          {
-                                                              auto binding =
-                                                                  formalism::ObjectList { m_problem->get_repositories().get_object(vertex.get_object_index()) };
+    for (const auto& vertex : m_static_consistency_graph.consistent_vertices(m_problem->get_static_assignment_sets(), dynamic_assignment_sets))
+    {
+        auto binding = formalism::ObjectList { m_problem->get_repositories().get_object(vertex.get_object_index()) };
 
-                                                              if (is_valid_binding(unpacked_state, binding))
-                                                                  co_yield std::move(binding);
-                                                          });
-
-    co_return;
+        if (is_valid_binding(unpacked_state, binding))
+            co_yield std::move(binding);
+    }
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state,
+                                                                                            const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
 {
     if (m_static_consistency_graph.get_num_edges() == 0)
     {
@@ -182,16 +179,8 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
 
     clear_full_consistency_graph(m_full_consistency_graph);
 
-    /* Build the full consistency graph.
-       Restricts statically consistent assignments based on the assignments in the current state and builds the consistency graph as an adjacency matrix
-    */
-
-    // Optimization: test vertices first, then exclude edges with inconsistent vertices immediately.
-    // This effectively avoids testing vertices multiple times, effectively speeding up some problem by more than factor of 3.
-    // In the best case, we get a quadratic speedup.
-
-    m_static_consistency_graph.for_each_consistent_edge(m_problem->get_static_consistency_graph_details(),
-                                                        m_problem->get_dynamic_consistency_graph_details(),
+    m_static_consistency_graph.for_each_consistent_edge(m_problem->get_static_assignment_sets(),
+                                                        dynamic_assignment_sets,
                                                         [&](auto&& edge)
                                                         {
                                                             const auto first_index = edge.get_src().get_index();
@@ -232,7 +221,7 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
                                                                    formalism::Problem problem,
                                                                    EventHandler event_handler) :
     m_conjunctive_condition(conjunctive_condition),
-    m_problem(std::move(problem)),
+    m_problem(problem),
     m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandlerImpl>()),
     m_static_consistency_graph(*m_problem, m_conjunctive_condition, 0, m_conjunctive_condition->get_parameters().size()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size()))
@@ -240,13 +229,16 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state)
+mimir::generator<formalism::ObjectList>
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state, const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
 {
-    return create_binding_generator(state.get_unpacked_state());
+    return create_binding_generator(state.get_unpacked_state(), dynamic_assignment_sets);
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedStateImpl& unpacked_state)
+mimir::generator<formalism::ObjectList>
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedStateImpl& unpacked_state,
+                                                                const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -259,11 +251,11 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::c
     }
     else if (m_conjunctive_condition->get_arity() == 1)
     {
-        return unary_case(unpacked_state);
+        return unary_case(unpacked_state, dynamic_assignment_sets);
     }
     else
     {
-        return general_case(unpacked_state);
+        return general_case(unpacked_state, dynamic_assignment_sets);
     }
 }
 
@@ -284,7 +276,9 @@ mimir::generator<std::pair<formalism::ObjectList,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
 SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const UnpackedStateImpl& unpacked_state)
 {
-    initialize(unpacked_state, m_problem->get_dynamic_consistency_graph_details());
+    formalism::DynamicAssignmentSets dynamic_assignment_sets(*m_problem);
+
+    initialize(unpacked_state, dynamic_assignment_sets);
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
     if (!nullary_conditions_hold(m_conjunctive_condition, unpacked_state))
@@ -292,7 +286,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
         co_return;
     }
 
-    for (const auto& binding : create_binding_generator(unpacked_state))
+    for (const auto& binding : create_binding_generator(unpacked_state, dynamic_assignment_sets))
     {
         formalism::GroundLiteralList<formalism::StaticTag> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::StaticTag>())

@@ -18,6 +18,7 @@
 #include "mimir/formalism/assignment_set.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -333,5 +334,26 @@ GroundFunctionList<F>& FunctionSkeletonAssignmentSets<F>::get_functions_scratch(
 
 template class FunctionSkeletonAssignmentSets<StaticTag>;
 template class FunctionSkeletonAssignmentSets<FluentTag>;
+
+StaticAssignmentSets::StaticAssignmentSets() {}
+
+StaticAssignmentSets::StaticAssignmentSets(const ProblemImpl& problem) :
+    static_predicate_assignment_sets(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>()),
+    static_function_skeleton_assignment_sets(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<StaticTag>())
+{
+    static_predicate_assignment_sets.insert_ground_atoms(problem.get_static_initial_atoms());
+
+    static_function_skeleton_assignment_sets.insert_ground_function_values(problem.get_static_initial_functions(),
+                                                                           problem.get_initial_function_to_value<StaticTag>());
+}
+
+DynamicAssignmentSets::DynamicAssignmentSets() {}
+
+DynamicAssignmentSets::DynamicAssignmentSets(const ProblemImpl& problem) :
+    fluent_predicate_assignment_sets(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<FluentTag>()),
+    derived_predicate_assignment_sets(problem.get_problem_and_domain_objects(), problem.get_problem_and_domain_derived_predicates()),
+    fluent_function_skeleton_assignment_sets(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<FluentTag>())
+{
+}
 
 }

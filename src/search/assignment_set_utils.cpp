@@ -15,33 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/consistency_graph_utils.hpp"
+#include "mimir/search/assignment_set_utils.hpp"
 
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
 namespace mimir::search
 {
-void initialize(const UnpackedStateImpl& unpacked_state, formalism::problem::DynamicConsistencyGraphDetails& out_details)
+void initialize(const UnpackedStateImpl& unpacked_state, formalism::DynamicAssignmentSets& out_dynamic_assignment_sets)
 {
     const auto& pddl_repositories = unpacked_state.get_problem().get_repositories();
     const auto& dense_fluent_atoms = unpacked_state.get_atoms<formalism::FluentTag>();
     const auto& dense_derived_atoms = unpacked_state.get_atoms<formalism::DerivedTag>();
     const auto& dense_numeric_variables = unpacked_state.get_numeric_variables();
 
-    auto& fluent_predicate_assignment_set = out_details.fluent_predicate_assignment_sets;
+    auto& fluent_predicate_assignment_set = out_dynamic_assignment_sets.fluent_predicate_assignment_sets;
     auto& fluent_atoms = fluent_predicate_assignment_set.get_atoms_scratch();
     pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, fluent_atoms);
     fluent_predicate_assignment_set.reset();
     fluent_predicate_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_predicate_assignment_set = out_details.derived_predicate_assignment_sets;
+    auto& derived_predicate_assignment_set = out_dynamic_assignment_sets.derived_predicate_assignment_sets;
     auto& derived_atoms = derived_predicate_assignment_set.get_atoms_scratch();
     pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, derived_atoms);
     derived_predicate_assignment_set.reset();
     derived_predicate_assignment_set.insert_ground_atoms(derived_atoms);
 
-    auto& fluent_function_assignment_set = out_details.fluent_function_skeleton_assignment_sets;
+    auto& fluent_function_assignment_set = out_dynamic_assignment_sets.fluent_function_skeleton_assignment_sets;
     auto& fluent_functions = fluent_function_assignment_set.get_functions_scratch();
     pddl_repositories.get_ground_functions(dense_numeric_variables.size(), fluent_functions);
     fluent_function_assignment_set.reset();

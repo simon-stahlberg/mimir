@@ -149,6 +149,26 @@ public:
     GroundFunctionList<F>& get_functions_scratch();
 };
 
+struct StaticAssignmentSets
+{
+    PredicateAssignmentSets<StaticTag> static_predicate_assignment_sets;
+    FunctionSkeletonAssignmentSets<StaticTag> static_function_skeleton_assignment_sets;
+
+    StaticAssignmentSets();
+    StaticAssignmentSets(const ProblemImpl& problem);
+};
+
+struct DynamicAssignmentSets
+{
+    PredicateAssignmentSets<FluentTag> fluent_predicate_assignment_sets;
+    PredicateAssignmentSets<DerivedTag> derived_predicate_assignment_sets;
+
+    FunctionSkeletonAssignmentSets<FluentTag> fluent_function_skeleton_assignment_sets;
+
+    DynamicAssignmentSets();
+    DynamicAssignmentSets(const ProblemImpl& problem);
+};
+
 }
 
 #endif

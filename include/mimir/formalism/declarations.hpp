@@ -52,6 +52,8 @@ template<IsStaticOrFluentOrDerivedTag P>
 class PredicateAssignmentSets;
 template<IsStaticOrFluentTag F>
 class FunctionSkeletonAssignmentSets;
+struct StaticAssignmentSets;
+struct DynamicAssignmentSets;
 
 class ActionImpl;
 using Action = const ActionImpl*;
@@ -263,13 +265,6 @@ class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
 class ProblemBuilder;
-
-namespace problem
-{
-struct Details;
-struct StaticConsistencyGraphDetails;
-struct DynamicConsistencyGraphDetails;
-};
 
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;

@@ -84,6 +84,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
     m_details(),
+    m_static_assignment_sets(),
     m_flat_index_list_map(),
     m_flat_index_lists(),
     m_flat_double_list_map(),
@@ -168,6 +169,8 @@ ProblemImpl::ProblemImpl(Index index,
      */
 
     m_details = problem::Details(*this);
+
+    m_static_assignment_sets = StaticAssignmentSets(*this);
 }
 
 Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
@@ -329,6 +332,8 @@ const FlatIndexList& ProblemImpl::get_positive_static_initial_atoms_indices() co
 
 const GroundAtomList<FluentTag>& ProblemImpl::get_fluent_initial_atoms() const { return m_details.initial.positive_fluent_initial_atoms; }
 
+const GroundFunctionList<StaticTag>& ProblemImpl::get_static_initial_functions() const { return m_details.initial.static_initial_functions; }
+
 template<IsStaticOrFluentTag F>
 const FlatDoubleList& ProblemImpl::get_initial_function_to_value() const
 {
@@ -420,9 +425,7 @@ const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_par
 
 /* ConsistencyGraph */
 
-const problem::StaticConsistencyGraphDetails& ProblemImpl::get_static_consistency_graph_details() const { return m_details.static_consistency_graph; }
-
-problem::DynamicConsistencyGraphDetails& ProblemImpl::get_dynamic_consistency_graph_details() { return m_details.dynamic_consistency_graph; }
+const StaticAssignmentSets& ProblemImpl::get_static_assignment_sets() const { return m_static_assignment_sets; }
 
 /**
  * Modifiers
@@ -1114,35 +1117,6 @@ problem::AxiomDetails::AxiomDetails(const ProblemImpl& problem) : parent(&proble
         compute_axiom_partitioning(problem.get_problem_and_domain_axioms(), problem.get_problem_and_domain_derived_predicates());
 }
 
-problem::StaticConsistencyGraphDetails::StaticConsistencyGraphDetails() : parent(nullptr) {}
-
-problem::StaticConsistencyGraphDetails::StaticConsistencyGraphDetails(const ProblemImpl& problem, const InitialDetails& initial) :
-    parent(&problem),
-    static_predicate_assignment_sets(
-        PredicateAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>())),
-    static_function_skeleton_assignment_sets(
-        FunctionSkeletonAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<StaticTag>()))
-{
-    static_predicate_assignment_sets.insert_ground_atoms(initial.positive_static_initial_atoms);
-
-    static_function_skeleton_assignment_sets.insert_ground_function_values(
-        initial.static_initial_functions,
-        boost::hana::at_key(initial.initial_function_to_value, boost::hana::type<StaticTag> {}));
-}
-
-problem::DynamicConsistencyGraphDetails::DynamicConsistencyGraphDetails() : parent(nullptr) {}
-
-problem::DynamicConsistencyGraphDetails::DynamicConsistencyGraphDetails(const ProblemImpl& problem) :
-    parent(&problem),
-    fluent_predicate_assignment_sets(
-        PredicateAssignmentSets<FluentTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<FluentTag>())),
-    derived_predicate_assignment_sets(
-        PredicateAssignmentSets<DerivedTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<DerivedTag>())),
-    fluent_function_skeleton_assignment_sets(
-        FunctionSkeletonAssignmentSets<FluentTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<FluentTag>()))
-{
-}
-
 problem::GroundingDetails::GroundingDetails() : parent(nullptr) {}
 
 problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) : parent(&problem), action_infos(std::nullopt) {}
@@ -1156,8 +1130,6 @@ problem::Details::Details(const ProblemImpl& problem) :
     initial(problem),
     goal(problem, initial),
     axiom(problem),
-    static_consistency_graph(problem, initial),
-    dynamic_consistency_graph(problem),
     grounding(problem)
 {
 }

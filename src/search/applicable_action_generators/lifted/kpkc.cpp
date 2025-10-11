@@ -26,7 +26,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/interface.hpp"
-#include "mimir/search/consistency_graph_utils.hpp"
+#include "mimir/search/assignment_set_utils.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
@@ -52,7 +52,8 @@ KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl
     m_problem(problem),
     m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
     m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
-    m_action_grounding_data()
+    m_action_grounding_data(),
+    m_dynamic_assignment_sets(*m_problem)
 {
     /* 2. Initialize the condition grounders for each action schema. */
     const auto& actions = problem->get_domain()->get_actions();
@@ -72,7 +73,7 @@ KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler ev
 
 mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
-    initialize(state.get_unpacked_state(), m_problem->get_dynamic_consistency_graph_details());
+    initialize(state.get_unpacked_state(), m_dynamic_assignment_sets);
 
     /* Generate applicable actions */
 
@@ -89,7 +90,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(state))
+        for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
         {
             const auto num_ground_actions = ground_action_repository.size();
 

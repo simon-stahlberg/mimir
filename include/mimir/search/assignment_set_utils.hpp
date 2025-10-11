@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONSISTENCY_GRAPH_UTILS_HPP_
-#define MIMIR_SEARCH_CONSISTENCY_GRAPH_UTILS_HPP_
+#ifndef MIMIR_SEARCH_ASSIGNMENT_SET_UTILS_HPP_
+#define MIMIR_SEARCH_ASSIGNMENT_SET_UTILS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
@@ -26,7 +26,7 @@ namespace mimir::search
 /// @brief Initializes the assignment sets in the dynamic consistency graph details with the given state.
 /// @param unpacked_state
 /// @param out_details
-extern void initialize(const UnpackedStateImpl& unpacked_state, formalism::problem::DynamicConsistencyGraphDetails& out_details);
+extern void initialize(const UnpackedStateImpl& unpacked_state, formalism::DynamicAssignmentSets& out_dynamic_assignment_sets);
 }
 
 #endif

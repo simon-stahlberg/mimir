@@ -644,7 +644,7 @@ Index Edge::get_object_if_overlap(const Term& term) const
 std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
 StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index)
 {
-    const auto& static_predicate_assignment_sets = problem.get_static_consistency_graph_details().static_predicate_assignment_sets;
+    const auto& static_predicate_assignment_sets = problem.get_static_assignment_sets().static_predicate_assignment_sets;
 
     auto vertices = Vertices {};
     auto vertices_by_parameter_index = std::vector<IndexList> {};
@@ -679,7 +679,7 @@ StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem, Conjunctive
 std::tuple<IndexList, IndexList, IndexList>
 StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices)
 {
-    const auto& static_predicate_assignment_sets = problem.get_static_consistency_graph_details().static_predicate_assignment_sets;
+    const auto& static_predicate_assignment_sets = problem.get_static_assignment_sets().static_predicate_assignment_sets;
 
     auto sources = IndexList {};
 

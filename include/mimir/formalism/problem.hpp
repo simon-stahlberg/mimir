@@ -20,6 +20,7 @@
 
 #include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -53,6 +54,8 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     problem::Details m_details;  ///< We hide the details in a struct.
+
+    StaticAssignmentSets m_static_assignment_sets;
 
     FlatIndexListMap m_flat_index_list_map;  ///< Stores all created atom lists.
     std::vector<const FlatIndexList*> m_flat_index_lists;
@@ -164,6 +167,7 @@ public:
 
     const GroundAtomList<FluentTag>& get_fluent_initial_atoms() const;
 
+    const GroundFunctionList<StaticTag>& get_static_initial_functions() const;
     template<IsStaticOrFluentTag F>
     const FlatDoubleList& get_initial_function_to_value() const;
     const FlatDoubleLists<StaticTag, FluentTag>& get_hana_initial_function_to_value() const;
@@ -190,8 +194,7 @@ public:
 
     /* ConsistencyGraph */
 
-    const problem::StaticConsistencyGraphDetails& get_static_consistency_graph_details() const;
-    problem::DynamicConsistencyGraphDetails& get_dynamic_consistency_graph_details();
+    const StaticAssignmentSets& get_static_assignment_sets() const;
 
     /* Grounding */
 

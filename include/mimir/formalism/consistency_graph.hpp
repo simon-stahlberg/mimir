@@ -22,12 +22,14 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>
+#include <ranges>
 #include <sstream>
 #include <vector>
 
@@ -175,41 +177,29 @@ public:
 
     static std::tuple<IndexList, IndexList, IndexList> compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices);
 
-    template<typename Callback>
-    void for_each_consistent_vertex(const problem::StaticConsistencyGraphDetails& static_details,
-                                    const problem::DynamicConsistencyGraphDetails& dynamic_details,
-                                    const Callback& callback)
+    auto consistent_vertices(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
     {
-        for (const auto& vertex : get_vertices())
-        {
-            if (vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
-                && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
-                && vertex.consistent_literals(m_condition->get_numeric_constraints(),
-                                              static_details.static_function_skeleton_assignment_sets,
-                                              dynamic_details.fluent_function_skeleton_assignment_sets))
-            {
-                callback(vertex);
-            }
-        }
+        return get_vertices()
+               | std::views::filter(
+                   [this, &static_details, &dynamic_details](auto& vertex)
+                   {
+                       return vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                              && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(),
+                                                            dynamic_details.derived_predicate_assignment_sets)
+                              && vertex.consistent_literals(m_condition->get_numeric_constraints(),
+                                                            static_details.static_function_skeleton_assignment_sets,
+                                                            dynamic_details.fluent_function_skeleton_assignment_sets);
+                   });
     }
 
     template<typename Callback>
-    void for_each_consistent_edge(const problem::StaticConsistencyGraphDetails& static_details,
-                                  const problem::DynamicConsistencyGraphDetails& dynamic_details,
-                                  const Callback& callback)
+    void for_each_consistent_edge(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details, const Callback& callback)
     {
         m_consistent_vertices.reset();
 
-        for (const auto& vertex : get_vertices())
+        for (const auto& vertex : consistent_vertices(static_details, dynamic_details))
         {
-            if (vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
-                && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
-                && vertex.consistent_literals(m_condition->get_numeric_constraints(),
-                                              static_details.static_function_skeleton_assignment_sets,
-                                              dynamic_details.fluent_function_skeleton_assignment_sets))
-            {
-                m_consistent_vertices.set(vertex.get_index());
-            }
+            m_consistent_vertices.set(vertex.get_index());
         }
 
         for (const auto& edge : get_edges())

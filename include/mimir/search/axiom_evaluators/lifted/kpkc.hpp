@@ -73,6 +73,8 @@ private:
     satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     AxiomSatisficingBindingGeneratorList m_condition_grounders;
+
+    formalism::DynamicAssignmentSets m_dynamic_assignment_sets;
 };
 
 }  // namespace mimir
