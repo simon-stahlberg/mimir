@@ -111,12 +111,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3abeedc9035db887e6ceefd475bc8522"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfcc250cc13c31c8ac9ee4c1deb7111d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abfcc250cc13c31c8ac9ee4c1deb7111d">StaticConsistencyGraph</a> (const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a> &amp;problem, <a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a> condition, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> begin_parameter_index, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> end_parameter_index)</td></tr>
 <tr class="separator:abfcc250cc13c31c8ac9ee4c1deb7111d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c8aef06e35c065daf0d20468b344474"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
-<tr class="memitem:a0c8aef06e35c065daf0d20468b344474"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a0c8aef06e35c065daf0d20468b344474">for_each_consistent_vertex</a> (const problem::StaticConsistencyGraphDetails &amp;static_details, const problem::DynamicConsistencyGraphDetails &amp;dynamic_details, const Callback &amp;callback)</td></tr>
-<tr class="separator:a0c8aef06e35c065daf0d20468b344474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eabae7e6be16e8088b3ce81f2ee3261"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
-<tr class="memitem:a8eabae7e6be16e8088b3ce81f2ee3261"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a8eabae7e6be16e8088b3ce81f2ee3261">for_each_consistent_edge</a> (const problem::StaticConsistencyGraphDetails &amp;static_details, const problem::DynamicConsistencyGraphDetails &amp;dynamic_details, const Callback &amp;callback)</td></tr>
-<tr class="separator:a8eabae7e6be16e8088b3ce81f2ee3261"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d8cade013c482d117ef74b612ca2e76"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a2d8cade013c482d117ef74b612ca2e76">consistent_vertices</a> (const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp;static_details, const <a class="el" href="structmimir_1_1formalism_1_1DynamicAssignmentSets.html">DynamicAssignmentSets</a> &amp;dynamic_details) const</td></tr>
+<tr class="separator:a2d8cade013c482d117ef74b612ca2e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf11e150e5c3327a51223115d6dda5c3"><td class="memTemplParams" colspan="2">template&lt;typename Callback &gt; </td></tr>
+<tr class="memitem:abf11e150e5c3327a51223115d6dda5c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#abf11e150e5c3327a51223115d6dda5c3">for_each_consistent_edge</a> (const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp;static_details, const <a class="el" href="structmimir_1_1formalism_1_1DynamicAssignmentSets.html">DynamicAssignmentSets</a> &amp;dynamic_details, const Callback &amp;callback)</td></tr>
+<tr class="separator:abf11e150e5c3327a51223115d6dda5c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d6da7f043fad7c50766c11a7ced0229"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a9d6da7f043fad7c50766c11a7ced0229">get_num_vertices</a> () const</td></tr>
 <tr class="separator:a9d6da7f043fad7c50766c11a7ced0229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a367f7c2eea0b7b80b0ece8a339c0b080"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#a367f7c2eea0b7b80b0ece8a339c0b080">get_num_edges</a> () const</td></tr>
@@ -287,8 +286,44 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a8eabae7e6be16e8088b3ce81f2ee3261" name="a8eabae7e6be16e8088b3ce81f2ee3261"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8eabae7e6be16e8088b3ce81f2ee3261">&#9670;&#160;</a></span>for_each_consistent_edge()</h2>
+<a id="a2d8cade013c482d117ef74b612ca2e76" name="a2d8cade013c482d117ef74b612ca2e76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d8cade013c482d117ef74b612ca2e76">&#9670;&#160;</a></span>consistent_vertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto mimir::formalism::StaticConsistencyGraph::consistent_vertices </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp;&#160;</td>
+          <td class="paramname"><em>static_details</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmimir_1_1formalism_1_1DynamicAssignmentSets.html">DynamicAssignmentSets</a> &amp;&#160;</td>
+          <td class="paramname"><em>dynamic_details</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abf11e150e5c3327a51223115d6dda5c3" name="abf11e150e5c3327a51223115d6dda5c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf11e150e5c3327a51223115d6dda5c3">&#9670;&#160;</a></span>for_each_consistent_edge()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -301,57 +336,13 @@ template&lt;typename Callback &gt; </div>
         <tr>
           <td class="memname">void mimir::formalism::StaticConsistencyGraph::for_each_consistent_edge </td>
           <td>(</td>
-          <td class="paramtype">const problem::StaticConsistencyGraphDetails &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp;&#160;</td>
           <td class="paramname"><em>static_details</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const problem::DynamicConsistencyGraphDetails &amp;&#160;</td>
-          <td class="paramname"><em>dynamic_details</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Callback &amp;&#160;</td>
-          <td class="paramname"><em>callback</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0c8aef06e35c065daf0d20468b344474" name="a0c8aef06e35c065daf0d20468b344474"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c8aef06e35c065daf0d20468b344474">&#9670;&#160;</a></span>for_each_consistent_vertex()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Callback &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mimir::formalism::StaticConsistencyGraph::for_each_consistent_vertex </td>
-          <td>(</td>
-          <td class="paramtype">const problem::StaticConsistencyGraphDetails &amp;&#160;</td>
-          <td class="paramname"><em>static_details</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const problem::DynamicConsistencyGraphDetails &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structmimir_1_1formalism_1_1DynamicAssignmentSets.html">DynamicAssignmentSets</a> &amp;&#160;</td>
           <td class="paramname"><em>dynamic_details</em>, </td>
         </tr>
         <tr>

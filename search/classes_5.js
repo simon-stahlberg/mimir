@@ -14,5 +14,7 @@ var searchData=
   ['functionimpl_11',['FunctionImpl',['../classmimir_1_1formalism_1_1FunctionImpl.html',1,'mimir::formalism']]],
   ['functionskeletonassignmentset_12',['FunctionSkeletonAssignmentSet',['../classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSet.html',1,'mimir::formalism']]],
   ['functionskeletonassignmentsets_13',['FunctionSkeletonAssignmentSets',['../classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSets.html',1,'mimir::formalism']]],
-  ['functionskeletonimpl_14',['FunctionSkeletonImpl',['../classmimir_1_1formalism_1_1FunctionSkeletonImpl.html',1,'mimir::formalism']]]
+  ['functionskeletonassignmentsets_3c_20mimir_3a_3aformalism_3a_3afluenttag_20_3e_14',['FunctionSkeletonAssignmentSets&lt; mimir::formalism::FluentTag &gt;',['../classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSets.html',1,'mimir::formalism']]],
+  ['functionskeletonassignmentsets_3c_20mimir_3a_3aformalism_3a_3astatictag_20_3e_15',['FunctionSkeletonAssignmentSets&lt; mimir::formalism::StaticTag &gt;',['../classmimir_1_1formalism_1_1FunctionSkeletonAssignmentSets.html',1,'mimir::formalism']]],
+  ['functionskeletonimpl_16',['FunctionSkeletonImpl',['../classmimir_1_1formalism_1_1FunctionSkeletonImpl.html',1,'mimir::formalism']]]
 ];

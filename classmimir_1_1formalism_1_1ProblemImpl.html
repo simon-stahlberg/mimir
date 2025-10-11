@@ -188,6 +188,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a135bdcfe80dbc95b2dad5875c7793c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fcacf06c20fea64da19f9c18258520d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a4fcacf06c20fea64da19f9c18258520d">get_fluent_initial_atoms</a> () const</td></tr>
 <tr class="separator:a4fcacf06c20fea64da19f9c18258520d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0e1a6ef9b800463d9a74998356584b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a6f4b740a6ff82aee9ad26f0c912922b7">GroundFunctionList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aaa0e1a6ef9b800463d9a74998356584b">get_static_initial_functions</a> () const</td></tr>
+<tr class="separator:aaa0e1a6ef9b800463d9a74998356584b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f761d029a6e5b24bed853c927f4fabf"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentTag F&gt; </td></tr>
 <tr class="memitem:a8f761d029a6e5b24bed853c927f4fabf"><td class="memTemplItemLeft" align="right" valign="top">const FlatDoubleList &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a8f761d029a6e5b24bed853c927f4fabf">get_initial_function_to_value</a> () const</td></tr>
 <tr class="separator:a8f761d029a6e5b24bed853c927f4fabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,10 +217,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7158b43d0321bb7d2e76376f0f175598"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78038f255758c88bf8a747b6151960ed"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; AxiomPartition &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a78038f255758c88bf8a747b6151960ed">get_problem_and_domain_axiom_partitioning</a> () const</td></tr>
 <tr class="separator:a78038f255758c88bf8a747b6151960ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88228f2c9f193b765a4a30b7c6bc8b06"><td class="memItemLeft" align="right" valign="top">const problem::StaticConsistencyGraphDetails &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a88228f2c9f193b765a4a30b7c6bc8b06">get_static_consistency_graph_details</a> () const</td></tr>
-<tr class="separator:a88228f2c9f193b765a4a30b7c6bc8b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac880ec16f53309989d5c547482b43d98"><td class="memItemLeft" align="right" valign="top">problem::DynamicConsistencyGraphDetails &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ac880ec16f53309989d5c547482b43d98">get_dynamic_consistency_graph_details</a> ()</td></tr>
-<tr class="separator:ac880ec16f53309989d5c547482b43d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f6a7c458de4712a7869de781a60326b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a4f6a7c458de4712a7869de781a60326b">get_static_assignment_sets</a> () const</td></tr>
+<tr class="separator:a4f6a7c458de4712a7869de781a60326b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad34432800e5683ebeb6318199b76d898"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:ad34432800e5683ebeb6318199b76d898"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a6138c3dd23d47ca2ba928221d30421d9">GroundAtom</a>&lt; P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ad34432800e5683ebeb6318199b76d898">get_or_create_ground_atom</a> (<a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt; predicate, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;objects)</td></tr>
 <tr class="separator:ad34432800e5683ebeb6318199b76d898"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -563,23 +563,6 @@ Friends</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">SharedObjectPool&lt; FlatDoubleList &gt; &amp; mimir::formalism::ProblemImpl::get_double_list_pool </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac880ec16f53309989d5c547482b43d98" name="ac880ec16f53309989d5c547482b43d98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac880ec16f53309989d5c547482b43d98">&#9670;&#160;</a></span>get_dynamic_consistency_graph_details()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">problem::DynamicConsistencyGraphDetails &amp; mimir::formalism::ProblemImpl::get_dynamic_consistency_graph_details </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1894,14 +1877,14 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="a88228f2c9f193b765a4a30b7c6bc8b06" name="a88228f2c9f193b765a4a30b7c6bc8b06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88228f2c9f193b765a4a30b7c6bc8b06">&#9670;&#160;</a></span>get_static_consistency_graph_details()</h2>
+<a id="a4f6a7c458de4712a7869de781a60326b" name="a4f6a7c458de4712a7869de781a60326b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f6a7c458de4712a7869de781a60326b">&#9670;&#160;</a></span>get_static_assignment_sets()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const problem::StaticConsistencyGraphDetails &amp; mimir::formalism::ProblemImpl::get_static_consistency_graph_details </td>
+          <td class="memname">const <a class="el" href="structmimir_1_1formalism_1_1StaticAssignmentSets.html">StaticAssignmentSets</a> &amp; mimir::formalism::ProblemImpl::get_static_assignment_sets </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1919,6 +1902,23 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp; mimir::formalism::ProblemImpl::get_static_initial_atoms </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa0e1a6ef9b800463d9a74998356584b" name="aaa0e1a6ef9b800463d9a74998356584b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0e1a6ef9b800463d9a74998356584b">&#9670;&#160;</a></span>get_static_initial_functions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a6f4b740a6ff82aee9ad26f0c912922b7">GroundFunctionList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp; mimir::formalism::ProblemImpl::get_static_initial_functions </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
