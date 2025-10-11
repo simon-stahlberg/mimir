@@ -12,7 +12,6 @@ from pymimir.pymimir.advanced.formalism import (
     DerivedPredicate,
     DerivedPredicateList,
     DerivedPredicateMap,
-    DerivedPredicateAssignmentSets,
 
     FluentAtom,
     FluentAtomList,
@@ -25,7 +24,6 @@ from pymimir.pymimir.advanced.formalism import (
     FluentPredicate,
     FluentPredicateList,
     FluentPredicateMap,
-    FluentPredicateAssignmentSets,
 
     StaticAtom,
     StaticAtomList,
@@ -38,7 +36,6 @@ from pymimir.pymimir.advanced.formalism import (
     StaticPredicate,
     StaticPredicateList,
     StaticPredicateMap,
-    StaticPredicateAssignmentSets,
 )
 
 from pymimir.pymimir.advanced.formalism import (
@@ -65,7 +62,6 @@ from pymimir.pymimir.advanced.formalism import (
     FluentFunctionExpressionFunction,
     FluentGroundFunctionExpressionFunction,
     FluentGroundNumericEffect,
-    FluentFunctionSkeletonAssignmentSets,
 
     StaticFunction,
     StaticFunctionList,
@@ -75,7 +71,6 @@ from pymimir.pymimir.advanced.formalism import (
     StaticFunctionSkeleton,
     StaticFunctionSkeletonList,
     StaticGroundFunctionExpressionFunction,
-    StaticFunctionSkeletonAssignmentSets,
     StaticFunctionExpressionFunction,
 )
 

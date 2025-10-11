@@ -15,27 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
-#define MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
+#ifndef MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
+#define MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/common/closed_interval.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem_details.hpp"
 
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>
 #include <sstream>
 #include <vector>
 
 namespace mimir::formalism
 {
-/**
- * StaticConsistencyGraph
- */
 
-/// @brief The StaticConsistencyGraph encodes the assignments to static conditions,
-/// and hence, it is an overapproximation of the actual consistency graph.
 class StaticConsistencyGraph
 {
 public:
@@ -107,27 +105,6 @@ public:
 
     using Vertices = std::vector<Vertex>;
 
-public:
-    /// @brief Construct a static consistency graph
-    /// @param problem The problem.
-    /// @param begin_parameter_index The first parameter index for which consistent assignments are represented.
-    /// @param end_parameter_index The last parameter index plus one for which consistent assignments are represented.
-    /// @param static_conditions The static literals for which a bindings must be found.
-    ///
-    /// For universal effects, we can set first and last parameter indices respectively
-    /// to find consistent assignments irrespective of the action parameter bindings.
-    /// More specifically:
-    ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
-    ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
-    StaticConsistencyGraph(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
-
-    /// @brief Useful to compute possible substitutions for conditional effects
-    static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
-    compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
-
-    static std::tuple<IndexList, IndexList, IndexList>
-    compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
-
     class EdgeIterator
     {
     private:
@@ -189,16 +166,75 @@ public:
 
     auto get_edges() const { return std::ranges::subrange(EdgeIterator(*this, true), EdgeIterator(*this, false)); }
 
+public:
+    StaticConsistencyGraph(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
+
+    /// @brief Useful to compute possible substitutions for conditional effects
+    static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
+    compute_vertices(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
+
+    static std::tuple<IndexList, IndexList, IndexList> compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices);
+
+    template<typename Callback>
+    void for_each_consistent_vertex(const problem::StaticConsistencyGraphDetails& static_details,
+                                    const problem::DynamicConsistencyGraphDetails& dynamic_details,
+                                    const Callback& callback)
+    {
+        for (const auto& vertex : get_vertices())
+        {
+            if (vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
+                && vertex.consistent_literals(m_condition->get_numeric_constraints(),
+                                              static_details.static_function_skeleton_assignment_sets,
+                                              dynamic_details.fluent_function_skeleton_assignment_sets))
+            {
+                callback(vertex);
+            }
+        }
+    }
+
+    template<typename Callback>
+    void for_each_consistent_edge(const problem::StaticConsistencyGraphDetails& static_details,
+                                  const problem::DynamicConsistencyGraphDetails& dynamic_details,
+                                  const Callback& callback)
+    {
+        m_consistent_vertices.reset();
+
+        for (const auto& vertex : get_vertices())
+        {
+            if (vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
+                && vertex.consistent_literals(m_condition->get_numeric_constraints(),
+                                              static_details.static_function_skeleton_assignment_sets,
+                                              dynamic_details.fluent_function_skeleton_assignment_sets))
+            {
+                m_consistent_vertices.set(vertex.get_index());
+            }
+        }
+
+        for (const auto& edge : get_edges())
+        {
+            if (m_consistent_vertices.test(edge.get_src().get_index()) && m_consistent_vertices.test(edge.get_dst().get_index())
+                && edge.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                && edge.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
+                && edge.consistent_literals(m_condition->get_numeric_constraints(),
+                                            static_details.static_function_skeleton_assignment_sets,
+                                            dynamic_details.fluent_function_skeleton_assignment_sets))
+            {
+                callback(edge);
+            }
+        }
+    }
+
     size_t get_num_vertices() const { return m_vertices.size(); }
     size_t get_num_edges() const { return m_targets.size(); }
 
     /// @brief Get the vertex indices partitioned by the parameter index.
     const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
 
-    /// @brief Get the object_index indices partitioned by the parameter index.
-    const std::vector<IndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
-
 private:
+    ConjunctiveCondition m_condition;
+
     /* The data member of the consistency graph. */
     Vertices m_vertices;
     std::vector<IndexList> m_vertices_by_parameter_index;
@@ -208,6 +244,8 @@ private:
     IndexList m_sources;  ///< sources with non-zero out-degree
     IndexList m_target_offsets;
     IndexList m_targets;
+
+    boost::dynamic_bitset<> m_consistent_vertices;  ///< preallocated memory to pre-filter vertices when iterating consistent edges.
 };
 
 }

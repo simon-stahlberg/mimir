@@ -72,6 +72,8 @@ using Atom = const AtomImpl<P>*;
 template<IsStaticOrFluentOrDerivedTag P>
 using AtomList = std::vector<Atom<P>>;
 
+class AxiomPartition;
+
 class AxiomImpl;
 using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
@@ -261,6 +263,13 @@ class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
 class ProblemBuilder;
+
+namespace problem
+{
+struct Details;
+struct StaticConsistencyGraphDetails;
+struct DynamicConsistencyGraphDetails;
+};
 
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;

@@ -161,8 +161,6 @@ public:
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
     const FlatBitset& get_positive_static_initial_atoms_bitset() const;
     const FlatIndexList& get_positive_static_initial_atoms_indices() const;
-    const PredicateAssignmentSets<StaticTag>& get_positive_static_initial_predicate_assignment_sets() const;
-    const FunctionSkeletonAssignmentSets<StaticTag>& get_static_initial_function_skeleton_assignment_sets() const;
 
     const GroundAtomList<FluentTag>& get_fluent_initial_atoms() const;
 
@@ -189,6 +187,11 @@ public:
     /* Axioms */
 
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
+
+    /* ConsistencyGraph */
+
+    const problem::StaticConsistencyGraphDetails& get_static_consistency_graph_details() const;
+    problem::DynamicConsistencyGraphDetails& get_dynamic_consistency_graph_details();
 
     /* Grounding */
 

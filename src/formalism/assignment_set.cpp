@@ -15,8 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
-#define MIMIR_FORMALISM_ASSIGNMENT_SET_IMPL_HPP_
+#include "mimir/formalism/assignment_set.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/object.hpp"
@@ -30,10 +29,7 @@
 namespace mimir::formalism
 {
 
-inline PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) :
-    m_num_assignments(0),
-    m_remapping(),
-    m_offsets()
+PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects) : m_num_assignments(0), m_remapping(), m_offsets()
 {
     const auto num_parameters = parameters.size();
     const auto num_objects = objects.size();
@@ -62,7 +58,7 @@ inline PerfectAssignmentHash::PerfectAssignmentHash(const ParameterList& paramet
     }
 }
 
-inline size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const noexcept
+size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment& assignment) const noexcept
 {
     assert(assignment.is_valid());
 
@@ -75,7 +71,7 @@ inline size_t PerfectAssignmentHash::get_assignment_rank(const VertexAssignment&
     return result;
 }
 
-inline size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const noexcept
+size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& assignment) const noexcept
 {
     assert(assignment.is_valid());
 
@@ -92,7 +88,7 @@ inline size_t PerfectAssignmentHash::get_assignment_rank(const EdgeAssignment& a
     return result;
 }
 
-inline size_t PerfectAssignmentHash::size() const noexcept { return m_num_assignments * m_num_assignments; }
+size_t PerfectAssignmentHash::size() const noexcept { return m_num_assignments * m_num_assignments; }
 
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateAssignmentSet<P>::PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate) :
@@ -151,6 +147,10 @@ size_t PredicateAssignmentSet<P>::size() const noexcept
     return m_set.size();
 }
 
+template class PredicateAssignmentSet<StaticTag>;
+template class PredicateAssignmentSet<FluentTag>;
+template class PredicateAssignmentSet<DerivedTag>;
+
 template<IsStaticOrFluentOrDerivedTag P>
 PredicateAssignmentSets<P>::PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates)
 {
@@ -194,6 +194,16 @@ size_t PredicateAssignmentSets<P>::size() const noexcept
 {
     return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
+
+template<IsStaticOrFluentOrDerivedTag P>
+GroundAtomList<P>& PredicateAssignmentSets<P>::get_atoms_scratch()
+{
+    return m_atoms_scratch;
+}
+
+template class PredicateAssignmentSets<StaticTag>;
+template class PredicateAssignmentSets<FluentTag>;
+template class PredicateAssignmentSets<DerivedTag>;
 
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSet<F>::FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton) :
@@ -241,7 +251,7 @@ void FunctionSkeletonAssignmentSet<F>::insert_ground_function_value(GroundFuncti
 }
 
 template<IsStaticOrFluentTag F>
-inline ClosedInterval<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EmptyAssignment& assignment) const noexcept
+ClosedInterval<ContinuousCost> FunctionSkeletonAssignmentSet<F>::operator[](const EmptyAssignment& assignment) const noexcept
 {
     return m_set[EmptyAssignment::rank];
 }
@@ -264,8 +274,14 @@ size_t FunctionSkeletonAssignmentSet<F>::size() const noexcept
     return m_set.size();
 }
 
+template class FunctionSkeletonAssignmentSet<StaticTag>;
+template class FunctionSkeletonAssignmentSet<FluentTag>;
+
 template<IsStaticOrFluentTag F>
-FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons)
+FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons) :
+    m_sets(),
+    m_ground_function_to_value(),
+    m_functions_scratch()
 {
     for (const auto& function_skeleton : function_skeletons)
         m_sets.emplace_back(FunctionSkeletonAssignmentSet<F>(objects, function_skeleton));
@@ -309,6 +325,13 @@ size_t FunctionSkeletonAssignmentSets<F>::size() const noexcept
     return std::accumulate(m_sets.begin(), m_sets.end(), size_t { 0 }, [](auto&& lhs, auto&& rhs) { return lhs + rhs.size(); });
 }
 
+template<IsStaticOrFluentTag F>
+GroundFunctionList<F>& FunctionSkeletonAssignmentSets<F>::get_functions_scratch()
+{
+    return m_functions_scratch;
 }
 
-#endif
+template class FunctionSkeletonAssignmentSets<StaticTag>;
+template class FunctionSkeletonAssignmentSets<FluentTag>;
+
+}

@@ -23,6 +23,7 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
@@ -326,16 +327,6 @@ const FlatIndexList& ProblemImpl::get_positive_static_initial_atoms_indices() co
     return m_details.initial.positive_static_initial_atoms_indices;
 }
 
-const PredicateAssignmentSets<StaticTag>& ProblemImpl::get_positive_static_initial_predicate_assignment_sets() const
-{
-    return m_details.initial.positive_static_initial_predicate_assignment_sets;
-}
-
-const FunctionSkeletonAssignmentSets<StaticTag>& ProblemImpl::get_static_initial_function_skeleton_assignment_sets() const
-{
-    return m_details.initial.static_initial_function_skeleton_assignment_sets;
-}
-
 const GroundAtomList<FluentTag>& ProblemImpl::get_fluent_initial_atoms() const { return m_details.initial.positive_fluent_initial_atoms; }
 
 template<IsStaticOrFluentTag F>
@@ -426,6 +417,12 @@ const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_par
 {
     return m_details.axiom.problem_and_domain_axiom_partitioning;
 }
+
+/* ConsistencyGraph */
+
+const problem::StaticConsistencyGraphDetails& ProblemImpl::get_static_consistency_graph_details() const { return m_details.static_consistency_graph; }
+
+problem::DynamicConsistencyGraphDetails& ProblemImpl::get_dynamic_consistency_graph_details() { return m_details.dynamic_consistency_graph; }
 
 /**
  * Modifiers
@@ -944,9 +941,9 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
             {
                 conditional_effect_infos.emplace_back(
                     std::get<2>(StaticConsistencyGraph::compute_vertices(*parent,
+                                                                         conditional_effect->get_conjunctive_condition(),
                                                                          action->get_arity(),
-                                                                         action->get_arity() + conditional_effect->get_arity(),
-                                                                         conditional_effect->get_conjunctive_condition()->get_literals<StaticTag>())));
+                                                                         action->get_arity() + conditional_effect->get_arity())));
             }
 
             action_infos->emplace_back(std::move(conditional_effect_infos));
@@ -998,11 +995,8 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
     positive_static_initial_atoms(to_ground_atoms(problem.get_initial_literals<StaticTag>())),
     positive_static_initial_atoms_bitset(),
     positive_static_initial_atoms_indices(),
-    positive_static_initial_predicate_assignment_sets(
-        PredicateAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>())),
-    static_initial_function_skeleton_assignment_sets(
-        FunctionSkeletonAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<StaticTag>())),
     positive_fluent_initial_atoms(to_ground_atoms(problem.get_initial_literals<FluentTag>())),
+    static_initial_functions(),
     initial_function_to_value()
 {
     for (const auto& literal : problem.get_initial_literals<StaticTag>())
@@ -1017,8 +1011,6 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
                    positive_static_initial_atoms_bitset.end(),
                    std::back_inserter(positive_static_initial_atoms_indices),
                    [](unsigned long val) { return static_cast<Index>(val); });
-
-    positive_static_initial_predicate_assignment_sets.insert_ground_atoms(positive_static_initial_atoms);
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
@@ -1044,21 +1036,16 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
                               }
                           });
 
-    auto static_functions = GroundFunctionList<StaticTag> {};
     for (const auto& function_value : problem.get_initial_function_values<StaticTag>())
     {
         const auto function = function_value->get_function();
         const auto index = function->get_index();
-        if (index >= static_functions.size())
+        if (index >= static_initial_functions.size())
         {
-            static_functions.resize(index + 1, nullptr);
+            static_initial_functions.resize(index + 1, nullptr);
         }
-        static_functions[index] = function;
+        static_initial_functions[index] = function;
     }
-
-    const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<StaticTag> {});
-
-    static_initial_function_skeleton_assignment_sets.insert_ground_function_values(static_functions, static_function_to_values);
 }
 
 problem::GoalDetails::GoalDetails() : parent(nullptr) {}
@@ -1127,6 +1114,35 @@ problem::AxiomDetails::AxiomDetails(const ProblemImpl& problem) : parent(&proble
         compute_axiom_partitioning(problem.get_problem_and_domain_axioms(), problem.get_problem_and_domain_derived_predicates());
 }
 
+problem::StaticConsistencyGraphDetails::StaticConsistencyGraphDetails() : parent(nullptr) {}
+
+problem::StaticConsistencyGraphDetails::StaticConsistencyGraphDetails(const ProblemImpl& problem, const InitialDetails& initial) :
+    parent(&problem),
+    static_predicate_assignment_sets(
+        PredicateAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<StaticTag>())),
+    static_function_skeleton_assignment_sets(
+        FunctionSkeletonAssignmentSets<StaticTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<StaticTag>()))
+{
+    static_predicate_assignment_sets.insert_ground_atoms(initial.positive_static_initial_atoms);
+
+    static_function_skeleton_assignment_sets.insert_ground_function_values(
+        initial.static_initial_functions,
+        boost::hana::at_key(initial.initial_function_to_value, boost::hana::type<StaticTag> {}));
+}
+
+problem::DynamicConsistencyGraphDetails::DynamicConsistencyGraphDetails() : parent(nullptr) {}
+
+problem::DynamicConsistencyGraphDetails::DynamicConsistencyGraphDetails(const ProblemImpl& problem) :
+    parent(&problem),
+    fluent_predicate_assignment_sets(
+        PredicateAssignmentSets<FluentTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<FluentTag>())),
+    derived_predicate_assignment_sets(
+        PredicateAssignmentSets<DerivedTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_predicates<DerivedTag>())),
+    fluent_function_skeleton_assignment_sets(
+        FunctionSkeletonAssignmentSets<FluentTag>(problem.get_problem_and_domain_objects(), problem.get_domain()->get_function_skeletons<FluentTag>()))
+{
+}
+
 problem::GroundingDetails::GroundingDetails() : parent(nullptr) {}
 
 problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) : parent(&problem), action_infos(std::nullopt) {}
@@ -1140,6 +1156,8 @@ problem::Details::Details(const ProblemImpl& problem) :
     initial(problem),
     goal(problem, initial),
     axiom(problem),
+    static_consistency_graph(problem, initial),
+    dynamic_consistency_graph(problem),
     grounding(problem)
 {
 }

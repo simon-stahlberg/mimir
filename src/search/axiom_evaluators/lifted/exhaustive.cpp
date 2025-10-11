@@ -50,8 +50,8 @@ ExhaustiveLiftedAxiomEvaluatorImpl::ExhaustiveLiftedAxiomEvaluatorImpl(Problem p
     {
         assert(axiom->get_index() == m_parameters_bindings_per_axiom.size());
 
-        auto objects_by_parameter_index = std::get<2>(
-            StaticConsistencyGraph::compute_vertices(*m_problem, 0, axiom->get_arity(), axiom->get_conjunctive_condition()->get_literals<StaticTag>()));
+        auto objects_by_parameter_index =
+            std::get<2>(StaticConsistencyGraph::compute_vertices(*m_problem, axiom->get_conjunctive_condition(), 0, axiom->get_arity()));
 
         auto parameters_bindings = AxiomParameterBindings {};
         parameters_bindings.reserve(objects_by_parameter_index.size());

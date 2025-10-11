@@ -49,19 +49,9 @@ public:
 
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
-    mimir::generator<formalism::ObjectList>
-    create_binding_generator(const State& state,
-                             const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-                             const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-                             const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-                             const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
+    mimir::generator<formalism::ObjectList> create_binding_generator(const State& state);
 
-    mimir::generator<formalism::ObjectList>
-    create_binding_generator(const UnpackedStateImpl& unpacked_state,
-                             const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-                             const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-                             const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-                             const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
+    mimir::generator<formalism::ObjectList> create_binding_generator(const UnpackedStateImpl& unpacked_state);
 
     mimir::generator<std::pair<formalism::ObjectList,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
@@ -92,14 +82,7 @@ protected:
     formalism::StaticConsistencyGraph m_static_consistency_graph;
 
     /* Memory for reuse */
-    formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
-    formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
-    formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
-    formalism::PredicateAssignmentSets<formalism::FluentTag> m_fluent_predicate_assignment_sets;
-    formalism::PredicateAssignmentSets<formalism::DerivedTag> m_derived_predicate_assignment_sets;
-    formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag> m_fluent_function_skeleton_assignment_sets;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
-    boost::dynamic_bitset<> m_consistent_vertices;
 
     /// @brief Helper to cast to Derived_.
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
@@ -119,19 +102,9 @@ protected:
 
     mimir::generator<formalism::ObjectList> nullary_case(const UnpackedStateImpl& unpacked_state);
 
-    mimir::generator<formalism::ObjectList>
-    unary_case(const UnpackedStateImpl& unpacked_state,
-               const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-               const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-               const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-               const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
+    mimir::generator<formalism::ObjectList> unary_case(const UnpackedStateImpl& unpacked_state);
 
-    mimir::generator<formalism::ObjectList>
-    general_case(const UnpackedStateImpl& unpacked_state,
-                 const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-                 const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-                 const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-                 const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets);
+    mimir::generator<formalism::ObjectList> general_case(const UnpackedStateImpl& unpacked_state);
 };
 
 }

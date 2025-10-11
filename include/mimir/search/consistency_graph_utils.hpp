@@ -15,22 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_AXIOM_STRATIFICATION_HPP_
-#define MIMIR_FORMALISM_AXIOM_STRATIFICATION_HPP_
+#ifndef MIMIR_SEARCH_CONSISTENCY_GRAPH_UTILS_HPP_
+#define MIMIR_SEARCH_CONSISTENCY_GRAPH_UTILS_HPP_
 
-#include "mimir/formalism/axiom_partitioning.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 
-namespace mimir::formalism
+namespace mimir::search
 {
-
-/// @brief Compute axiom partitioning using stratification.
-/// An implementation of Algorithm 1 by Thiébaux-et-al-ijcai2003
-/// Source: https://users.cecs.anu.edu.au/~thiebaux/papers/ijcai03.pdf
-/// @param axioms
-/// @return
-extern std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList<DerivedTag>& derived_predicates);
-
+/// @brief Initializes the assignment sets in the dynamic consistency graph details with the given state.
+/// @param unpacked_state
+/// @param out_details
+extern void initialize(const UnpackedStateImpl& unpacked_state, formalism::problem::DynamicConsistencyGraphDetails& out_details);
 }
 
 #endif

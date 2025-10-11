@@ -25,6 +25,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted/kpkc/event_handlers/interface.hpp"
+#include "mimir/search/consistency_graph_utils.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
@@ -69,38 +70,16 @@ KPKCLiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler
 
 void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& unpacked_state)
 {
-    const auto& dense_fluent_atoms = unpacked_state.get_atoms<FluentTag>();
-    auto& dense_derived_atoms = unpacked_state.get_atoms<DerivedTag>();
-    auto& dense_numeric_variables = unpacked_state.get_numeric_variables();
-
-    /* 1. Initialize assignment set */
-
-    m_event_handler->on_start_generating_applicable_axioms();
-
-    const auto& problem = *m_problem;
-    const auto& pddl_repositories = problem.get_repositories();
-
-    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_predicate_assignment_sets.reset();
-    m_fluent_predicate_assignment_sets.insert_ground_atoms(m_fluent_atoms);
-
-    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_predicate_assignment_sets.reset();
-    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
-
-    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
-    m_fluent_function_skeleton_assignment_sets.reset();
-    m_fluent_function_skeleton_assignment_sets.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
-
-    const auto& static_function_skeleton_assignment_sets = problem.get_static_initial_function_skeleton_assignment_sets();
+    initialize(unpacked_state, m_problem->get_dynamic_consistency_graph_details());
 
     /* 2. Fixed point computation */
 
-    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
+    const auto& ground_axiom_repository =
+        boost::hana::at_key(unpacked_state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
 
     auto applicable_axioms = GroundAxiomList {};
 
-    for (const auto& partition : problem.get_problem_and_domain_axiom_partitioning())
+    for (const auto& partition : unpacked_state.get_problem().get_problem_and_domain_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
 
@@ -127,11 +106,7 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
 
                 auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
-                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state,
-                                                                                  m_fluent_predicate_assignment_sets,
-                                                                                  m_derived_predicate_assignment_sets,
-                                                                                  static_function_skeleton_assignment_sets,
-                                                                                  m_fluent_function_skeleton_assignment_sets))
+                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state))
                 {
                     const auto num_ground_axioms = ground_axiom_repository.size();
 
@@ -158,16 +133,16 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
 
                 const auto grounded_atom_index = grounded_axiom->get_literal()->get_atom()->get_index();
 
-                if (!dense_derived_atoms.get(grounded_atom_index))
+                if (!unpacked_state.get_atoms<DerivedTag>().get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = pddl_repositories.get_ground_atom<DerivedTag>(grounded_atom_index);
+                    const auto new_ground_atom = m_problem->get_repositories().get_ground_atom<DerivedTag>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // Update the assignment set
-                    m_derived_predicate_assignment_sets.insert_ground_atom(new_ground_atom);
+                    m_problem->get_dynamic_consistency_graph_details().derived_predicate_assignment_sets.insert_ground_atom(new_ground_atom);
                     // Update the state
-                    dense_derived_atoms.set(grounded_atom_index);
+                    unpacked_state.get_atoms<DerivedTag>().set(grounded_atom_index);
 
                     // Retrieve relevant axioms
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);

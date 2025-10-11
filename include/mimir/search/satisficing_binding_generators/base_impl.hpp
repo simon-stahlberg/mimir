@@ -29,6 +29,7 @@
 #include "mimir/formalism/tags.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/applicability.hpp"
+#include "mimir/search/consistency_graph_utils.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/base.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
@@ -155,39 +156,24 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(
-    const UnpackedStateImpl& unpacked_state,
-    const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-    const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state)
 {
-    const auto& problem = *m_problem;
-    const auto& pddl_repositories = problem.get_repositories();
+    m_static_consistency_graph.for_each_consistent_vertex(m_problem->get_static_consistency_graph_details(),
+                                                          m_problem->get_dynamic_consistency_graph_details(),
+                                                          [&](auto&& vertex) -> mimir::generator<formalism::ObjectList>
+                                                          {
+                                                              auto binding =
+                                                                  formalism::ObjectList { m_problem->get_repositories().get_object(vertex.get_object_index()) };
 
-    for (const auto& vertex : m_static_consistency_graph.get_vertices())
-    {
-        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_predicate_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_predicate_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(),
-                                          static_function_skeleton_assignment_sets,
-                                          fluent_function_skeleton_assignment_sets))
-        {
-            auto binding = formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) };
+                                                              if (is_valid_binding(unpacked_state, binding))
+                                                                  co_yield std::move(binding);
+                                                          });
 
-            if (is_valid_binding(unpacked_state, binding))
-                co_yield std::move(binding);
-        }
-    }
+    co_return;
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(
-    const UnpackedStateImpl& unpacked_state,
-    const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-    const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state)
 {
     if (m_static_consistency_graph.get_num_edges() == 0)
     {
@@ -203,36 +189,18 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
     // Optimization: test vertices first, then exclude edges with inconsistent vertices immediately.
     // This effectively avoids testing vertices multiple times, effectively speeding up some problem by more than factor of 3.
     // In the best case, we get a quadratic speedup.
-    m_consistent_vertices.reset();
-    for (const auto& vertex : m_static_consistency_graph.get_vertices())
-    {
-        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_predicate_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_predicate_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(),
-                                          static_function_skeleton_assignment_sets,
-                                          fluent_function_skeleton_assignment_sets))
-        {
-            m_consistent_vertices.set(vertex.get_index());
-        }
-    }
 
-    for (const auto& edge : m_static_consistency_graph.get_edges())
-    {
-        if (m_consistent_vertices.test(edge.get_src().get_index()) && m_consistent_vertices.test(edge.get_dst().get_index())
-            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_predicate_assignment_sets)
-            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_predicate_assignment_sets)
-            && edge.consistent_literals(m_conjunctive_condition->get_numeric_constraints(),
-                                        static_function_skeleton_assignment_sets,
-                                        fluent_function_skeleton_assignment_sets))
-        {
-            const auto first_index = edge.get_src().get_index();
-            const auto second_index = edge.get_dst().get_index();
-            auto& first_row = m_full_consistency_graph[first_index];
-            auto& second_row = m_full_consistency_graph[second_index];
-            first_row[second_index] = 1;
-            second_row[first_index] = 1;
-        }
-    }
+    m_static_consistency_graph.for_each_consistent_edge(m_problem->get_static_consistency_graph_details(),
+                                                        m_problem->get_dynamic_consistency_graph_details(),
+                                                        [&](auto&& edge)
+                                                        {
+                                                            const auto first_index = edge.get_src().get_index();
+                                                            const auto second_index = edge.get_dst().get_index();
+                                                            auto& first_row = m_full_consistency_graph[first_index];
+                                                            auto& second_row = m_full_consistency_graph[second_index];
+                                                            first_row[second_index] = 1;
+                                                            second_row[first_index] = 1;
+                                                        });
 
     // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
@@ -266,41 +234,19 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_conjunctive_condition(conjunctive_condition),
     m_problem(std::move(problem)),
     m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandlerImpl>()),
-    m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::StaticTag>()),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_fluent_functions(),
-    m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
-                                               m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
-    m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
-    m_consistent_vertices(m_static_consistency_graph.get_vertices().size())
+    m_static_consistency_graph(*m_problem, m_conjunctive_condition, 0, m_conjunctive_condition->get_parameters().size()),
+    m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size()))
 {
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(
-    const State& state,
-    const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-    const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state)
 {
-    return create_binding_generator(state.get_unpacked_state(),
-                                    fluent_predicate_assignment_sets,
-                                    derived_predicate_assignment_sets,
-                                    static_function_skeleton_assignment_sets,
-                                    fluent_function_skeleton_assignment_sets);
+    return create_binding_generator(state.get_unpacked_state());
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(
-    const UnpackedStateImpl& unpacked_state,
-    const formalism::PredicateAssignmentSets<formalism::FluentTag>& fluent_predicate_assignment_sets,
-    const formalism::PredicateAssignmentSets<formalism::DerivedTag>& derived_predicate_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::StaticTag>& static_function_skeleton_assignment_sets,
-    const formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag>& fluent_function_skeleton_assignment_sets)
+mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedStateImpl& unpacked_state)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -313,19 +259,11 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::c
     }
     else if (m_conjunctive_condition->get_arity() == 1)
     {
-        return unary_case(unpacked_state,
-                          fluent_predicate_assignment_sets,
-                          derived_predicate_assignment_sets,
-                          static_function_skeleton_assignment_sets,
-                          fluent_function_skeleton_assignment_sets);
+        return unary_case(unpacked_state);
     }
     else
     {
-        return general_case(unpacked_state,
-                            fluent_predicate_assignment_sets,
-                            derived_predicate_assignment_sets,
-                            static_function_skeleton_assignment_sets,
-                            fluent_function_skeleton_assignment_sets);
+        return general_case(unpacked_state);
     }
 }
 
@@ -346,12 +284,7 @@ mimir::generator<std::pair<formalism::ObjectList,
                                       formalism::GroundLiteralList<formalism::DerivedTag>>>>
 SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const UnpackedStateImpl& unpacked_state)
 {
-    auto& dense_fluent_atoms = unpacked_state.get_atoms<formalism::FluentTag>();
-    auto& dense_derived_atoms = unpacked_state.get_atoms<formalism::DerivedTag>();
-    auto& dense_numeric_variables = unpacked_state.get_numeric_variables();
-
-    auto& problem = *m_problem;
-    const auto& pddl_repositories = problem.get_repositories();
+    initialize(unpacked_state, m_problem->get_dynamic_consistency_graph_details());
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
     if (!nullary_conditions_hold(m_conjunctive_condition, unpacked_state))
@@ -359,42 +292,24 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
         co_return;
     }
 
-    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_predicate_assignment_sets.reset();
-    m_fluent_predicate_assignment_sets.insert_ground_atoms(m_fluent_atoms);
-
-    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_predicate_assignment_sets.reset();
-    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
-
-    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
-    m_fluent_function_skeleton_assignment_sets.reset();
-    m_fluent_function_skeleton_assignment_sets.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
-
-    const auto& static_function_skeleton_assignment_sets = problem.get_static_initial_function_skeleton_assignment_sets();
-
-    for (const auto& binding : create_binding_generator(unpacked_state,
-                                                        m_fluent_predicate_assignment_sets,
-                                                        m_derived_predicate_assignment_sets,
-                                                        static_function_skeleton_assignment_sets,
-                                                        m_fluent_function_skeleton_assignment_sets))
+    for (const auto& binding : create_binding_generator(unpacked_state))
     {
         formalism::GroundLiteralList<formalism::StaticTag> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::StaticTag>())
         {
-            static_grounded_literals.emplace_back(problem.ground(static_literal, binding));
+            static_grounded_literals.emplace_back(m_problem->ground(static_literal, binding));
         }
 
         formalism::GroundLiteralList<formalism::FluentTag> fluent_grounded_literals;
         for (const auto& fluent_literal : m_conjunctive_condition->get_literals<formalism::FluentTag>())
         {
-            fluent_grounded_literals.emplace_back(problem.ground(fluent_literal, binding));
+            fluent_grounded_literals.emplace_back(m_problem->ground(fluent_literal, binding));
         }
 
         formalism::GroundLiteralList<formalism::DerivedTag> derived_grounded_literals;
         for (const auto& derived_literal : m_conjunctive_condition->get_literals<formalism::DerivedTag>())
         {
-            derived_grounded_literals.emplace_back(problem.ground(derived_literal, binding));
+            derived_grounded_literals.emplace_back(m_problem->ground(derived_literal, binding));
         }
 
         co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));

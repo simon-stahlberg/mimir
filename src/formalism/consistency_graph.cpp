@@ -641,12 +641,10 @@ Index Edge::get_object_if_overlap(const Term& term) const
  * StaticConsistencyGraph
  */
 
-std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem,
-                                                                                                              Index begin_parameter_index,
-                                                                                                              Index end_parameter_index,
-                                                                                                              const LiteralList<StaticTag>& static_conditions)
+std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
+StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index)
 {
-    const auto& static_predicate_assignment_sets = problem.get_positive_static_initial_predicate_assignment_sets();
+    const auto& static_predicate_assignment_sets = problem.get_static_consistency_graph_details().static_predicate_assignment_sets;
 
     auto vertices = Vertices {};
     auto vertices_by_parameter_index = std::vector<IndexList> {};
@@ -664,7 +662,7 @@ std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsi
 
             auto vertex = Vertex(vertex_index, parameter_index, object_index);
 
-            if (vertex.consistent_literals(static_conditions, static_predicate_assignment_sets))
+            if (vertex.consistent_literals(condition->get_literals<StaticTag>(), static_predicate_assignment_sets))
             {
                 vertex_partition.push_back(vertex_index);
                 object_partition.push_back(object_index);
@@ -679,9 +677,9 @@ std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsi
 }
 
 std::tuple<IndexList, IndexList, IndexList>
-StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices)
+StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices)
 {
-    const auto& static_predicate_assignment_sets = problem.get_positive_static_initial_predicate_assignment_sets();
+    const auto& static_predicate_assignment_sets = problem.get_static_consistency_graph_details().static_predicate_assignment_sets;
 
     auto sources = IndexList {};
 
@@ -703,7 +701,7 @@ StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralL
 
             // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
             if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index()
-                && Edge(first_vertex, second_vertex).consistent_literals(static_conditions, static_predicate_assignment_sets))
+                && Edge(first_vertex, second_vertex).consistent_literals(condition->get_literals<StaticTag>(), static_predicate_assignment_sets))
             {
                 targets.push_back(second_vertex_index);
             }
@@ -720,22 +718,32 @@ StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralL
 }
 
 StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
+                                               ConjunctiveCondition condition,
                                                Index begin_parameter_index,
-                                               Index end_parameter_index,
-                                               const LiteralList<StaticTag>& static_conditions)
+                                               Index end_parameter_index) :
+    m_condition(condition),
+    m_vertices(),
+    m_vertices_by_parameter_index(),
+    m_objects_by_parameter_index(),
+    m_sources(),
+    m_target_offsets(),
+    m_targets(),
+    m_consistent_vertices()
 {
     auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-        compute_vertices(problem, begin_parameter_index, end_parameter_index, static_conditions);
+        compute_vertices(problem, condition, begin_parameter_index, end_parameter_index);
 
     m_vertices = std::move(vertices_);
     m_vertices_by_parameter_index = std::move(vertices_by_parameter_index_);
     m_objects_by_parameter_index = std::move(objects_by_parameter_index_);
 
-    auto [sources_, target_offsets_, targets_] = compute_edges(problem, static_conditions, m_vertices);
+    auto [sources_, target_offsets_, targets_] = compute_edges(problem, condition, m_vertices);
 
     m_sources = std::move(sources_);
     m_target_offsets = std::move(target_offsets_);
     m_targets = std::move(targets_);
+
+    m_consistent_vertices.resize(m_vertices.size());
 }
 
 }

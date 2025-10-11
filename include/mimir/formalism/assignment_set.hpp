@@ -39,13 +39,13 @@ struct PerfectAssignmentHash
     std::vector<std::vector<uint32_t>> m_remapping;  ///< The remapping of o in O to index for each type legal [i/o]
     std::vector<uint32_t> m_offsets;                 ///< The offsets of i
 
-    inline PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
+    PerfectAssignmentHash(const ParameterList& parameters, const ObjectList& objects);
 
-    inline size_t get_assignment_rank(const VertexAssignment& assignment) const noexcept;
+    size_t get_assignment_rank(const VertexAssignment& assignment) const noexcept;
 
-    inline size_t get_assignment_rank(const EdgeAssignment& assignment) const noexcept;
+    size_t get_assignment_rank(const EdgeAssignment& assignment) const noexcept;
 
-    inline size_t size() const noexcept;
+    size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -60,14 +60,14 @@ private:
 public:
     PredicateAssignmentSet(const ObjectList& objects, Predicate<P> predicate);
 
-    inline void reset() noexcept;
+    void reset() noexcept;
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    inline bool operator[](const VertexAssignment& assignment) const noexcept;
-    inline bool operator[](const EdgeAssignment& assignment) const noexcept;
+    bool operator[](const VertexAssignment& assignment) const noexcept;
+    bool operator[](const EdgeAssignment& assignment) const noexcept;
 
-    inline size_t size() const noexcept;
+    size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -76,20 +76,24 @@ class PredicateAssignmentSets
 private:
     std::vector<PredicateAssignmentSet<P>> m_sets;
 
+    GroundAtomList<P> m_atoms_scratch;
+
 public:
     PredicateAssignmentSets() = default;
 
     PredicateAssignmentSets(const ObjectList& objects, const PredicateList<P>& predicates);
 
-    inline void reset() noexcept;
+    void reset() noexcept;
 
     void insert_ground_atoms(const GroundAtomList<P>& ground_atoms);
 
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    inline const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const noexcept;
+    const PredicateAssignmentSet<P>& get_set(Predicate<P> predicate) const noexcept;
 
-    inline size_t size() const noexcept;
+    size_t size() const noexcept;
+
+    GroundAtomList<P>& get_atoms_scratch();
 };
 
 template<IsStaticOrFluentTag F>
@@ -106,15 +110,15 @@ public:
 
     FunctionSkeletonAssignmentSet(const ObjectList& objects, FunctionSkeleton<F> function_skeleton);
 
-    inline void reset() noexcept;
+    void reset() noexcept;
 
     void insert_ground_function_value(GroundFunction<F> ground_function, ContinuousCost value);
 
-    inline ClosedInterval<ContinuousCost> operator[](const EmptyAssignment& assignment) const noexcept;
-    inline ClosedInterval<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
-    inline ClosedInterval<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
+    ClosedInterval<ContinuousCost> operator[](const EmptyAssignment& assignment) const noexcept;
+    ClosedInterval<ContinuousCost> operator[](const VertexAssignment& assignment) const noexcept;
+    ClosedInterval<ContinuousCost> operator[](const EdgeAssignment& assignment) const noexcept;
 
-    inline size_t size() const noexcept;
+    size_t size() const noexcept;
 };
 
 template<IsStaticOrFluentTag F>
@@ -127,22 +131,24 @@ private:
     // followed by computing lower and upper bounds using minimization and maximization.
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
 
+    GroundFunctionList<F> m_functions_scratch;
+
 public:
     FunctionSkeletonAssignmentSets() = default;
 
     FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons);
 
-    inline void reset() noexcept;
+    void reset() noexcept;
 
     void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
-    inline const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const noexcept;
+    const FunctionSkeletonAssignmentSet<F>& get_set(FunctionSkeleton<F> function_skeleton) const noexcept;
 
-    inline size_t size() const noexcept;
+    size_t size() const noexcept;
+
+    GroundFunctionList<F>& get_functions_scratch();
 };
 
 }
-
-#include "mimir/formalism/assignment_set_impl.hpp"
 
 #endif

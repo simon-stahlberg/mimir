@@ -58,8 +58,8 @@ ExhaustiveLiftedApplicableActionGeneratorImpl::ExhaustiveLiftedApplicableActionG
     {
         assert(action->get_index() == m_parameters_bindings_per_action.size());
 
-        auto objects_by_parameter_index = std::get<2>(
-            StaticConsistencyGraph::compute_vertices(*m_problem, 0, action->get_arity(), action->get_conjunctive_condition()->get_literals<StaticTag>()));
+        auto objects_by_parameter_index =
+            std::get<2>(StaticConsistencyGraph::compute_vertices(*m_problem, action->get_conjunctive_condition(), 0, action->get_arity()));
 
         auto parameters_bindings = ActionParameterBindings {};
         parameters_bindings.reserve(objects_by_parameter_index.size());

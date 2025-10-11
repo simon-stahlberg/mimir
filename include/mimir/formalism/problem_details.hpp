@@ -21,7 +21,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/axiom_stratification.hpp"
+#include "mimir/formalism/axiom_partitioning.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
@@ -67,12 +67,9 @@ struct InitialDetails
     GroundAtomList<StaticTag> positive_static_initial_atoms;
     FlatBitset positive_static_initial_atoms_bitset;
     FlatIndexList positive_static_initial_atoms_indices;
-
-    PredicateAssignmentSets<StaticTag> positive_static_initial_predicate_assignment_sets;
-    FunctionSkeletonAssignmentSets<StaticTag> static_initial_function_skeleton_assignment_sets;
-
     GroundAtomList<FluentTag> positive_fluent_initial_atoms;
 
+    GroundFunctionList<StaticTag> static_initial_functions;
     FlatDoubleLists<StaticTag, FluentTag> initial_function_to_value;
 
     InitialDetails();
@@ -109,6 +106,34 @@ struct AxiomDetails
 
     AxiomDetails();
     AxiomDetails(const ProblemImpl& problem);
+};
+
+/**
+ * ConsistencyGraph
+ */
+
+struct StaticConsistencyGraphDetails
+{
+    const ProblemImpl* parent;
+
+    PredicateAssignmentSets<StaticTag> static_predicate_assignment_sets;
+    FunctionSkeletonAssignmentSets<StaticTag> static_function_skeleton_assignment_sets;
+
+    StaticConsistencyGraphDetails();
+    StaticConsistencyGraphDetails(const ProblemImpl& problem, const InitialDetails& initial);
+};
+
+struct DynamicConsistencyGraphDetails
+{
+    const ProblemImpl* parent;
+
+    PredicateAssignmentSets<FluentTag> fluent_predicate_assignment_sets;
+    PredicateAssignmentSets<DerivedTag> derived_predicate_assignment_sets;
+
+    FunctionSkeletonAssignmentSets<FluentTag> fluent_function_skeleton_assignment_sets;
+
+    DynamicConsistencyGraphDetails();
+    DynamicConsistencyGraphDetails(const ProblemImpl& problem);
 };
 
 /**
@@ -166,6 +191,8 @@ struct Details
     InitialDetails initial;
     GoalDetails goal;
     AxiomDetails axiom;
+    StaticConsistencyGraphDetails static_consistency_graph;
+    DynamicConsistencyGraphDetails dynamic_consistency_graph;
     GroundingDetails grounding;
 
     Details();

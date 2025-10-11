@@ -26,6 +26,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/interface.hpp"
+#include "mimir/search/consistency_graph_utils.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
@@ -78,32 +79,14 @@ KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler ev
 
 mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
-    const auto& dense_fluent_atoms = state.get_atoms<FluentTag>();
-    const auto& dense_derived_atoms = state.get_atoms<DerivedTag>();
-    const auto& dense_numeric_variables = state.get_numeric_variables();
-
-    const auto& problem = *m_problem;
-    const auto& pddl_repositories = problem.get_repositories();
-
-    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_predicate_assignment_sets.reset();
-    m_fluent_predicate_assignment_sets.insert_ground_atoms(m_fluent_atoms);
-
-    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_predicate_assignment_sets.reset();
-    m_derived_predicate_assignment_sets.insert_ground_atoms(m_derived_atoms);
-
-    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
-    m_fluent_function_skeleton_assignment_sets.reset();
-    m_fluent_function_skeleton_assignment_sets.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
-
-    const auto& static_function_skeleton_assignment_sets = problem.get_static_initial_function_skeleton_assignment_sets();
+    initialize(state.get_unpacked_state(), m_problem->get_dynamic_consistency_graph_details());
 
     /* Generate applicable actions */
 
     m_event_handler->on_start_generating_applicable_actions();
 
-    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
+    const auto& ground_action_repository =
+        boost::hana::at_key(state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
 
     for (auto& condition_grounder : m_action_grounding_data)
     {
@@ -113,11 +96,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(state,
-                                                                          m_fluent_predicate_assignment_sets,
-                                                                          m_derived_predicate_assignment_sets,
-                                                                          static_function_skeleton_assignment_sets,
-                                                                          m_fluent_function_skeleton_assignment_sets))
+        for (auto&& binding : condition_grounder.create_binding_generator(state))
         {
             const auto num_ground_actions = ground_action_repository.size();
 
