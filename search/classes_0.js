@@ -12,6 +12,5 @@ var searchData=
   ['atomimpl_9',['AtomImpl',['../classmimir_1_1formalism_1_1AtomImpl.html',1,'mimir::formalism']]],
   ['auxiliarytag_10',['AuxiliaryTag',['../structmimir_1_1formalism_1_1AuxiliaryTag.html',1,'mimir::formalism']]],
   ['axiomimpl_11',['AxiomImpl',['../classmimir_1_1formalism_1_1AxiomImpl.html',1,'mimir::formalism']]],
-  ['axiompartition_12',['AxiomPartition',['../classmimir_1_1formalism_1_1AxiomPartition.html',1,'mimir::formalism']]],
-  ['axiomsatisficingbindinggenerator_13',['AxiomSatisficingBindingGenerator',['../classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html',1,'mimir::search']]]
+  ['axiomsatisficingbindinggenerator_12',['AxiomSatisficingBindingGenerator',['../classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html',1,'mimir::search']]]
 ];
