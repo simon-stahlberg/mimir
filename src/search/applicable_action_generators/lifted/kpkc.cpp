@@ -52,14 +52,7 @@ KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl
     m_problem(problem),
     m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
     m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
-    m_action_grounding_data(),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_fluent_functions(),
-    m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
-                                               m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>())
+    m_action_grounding_data()
 {
     /* 2. Initialize the condition grounders for each action schema. */
     const auto& actions = problem->get_domain()->get_actions();

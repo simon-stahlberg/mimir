@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 
-#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/statistics.hpp"
@@ -76,14 +75,6 @@ private:
     satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
-
-    /* Memory for reuse */
-    formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
-    formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
-    formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
-    formalism::PredicateAssignmentSets<formalism::FluentTag> m_fluent_predicate_assignment_sets;
-    formalism::PredicateAssignmentSets<formalism::DerivedTag> m_derived_predicate_assignment_sets;
-    formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag> m_fluent_function_skeleton_assignment_sets;
 };
 
 }  // namespace mimir

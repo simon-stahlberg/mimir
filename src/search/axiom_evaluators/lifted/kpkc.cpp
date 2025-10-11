@@ -43,14 +43,7 @@ KPKCLiftedAxiomEvaluatorImpl::KPKCLiftedAxiomEvaluatorImpl(Problem problem,
     m_problem(problem),
     m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
     m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
-    m_condition_grounders(),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_fluent_functions(),
-    m_fluent_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
-    m_derived_predicate_assignment_sets(m_problem->get_problem_and_domain_objects(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_fluent_function_skeleton_assignment_sets(m_problem->get_problem_and_domain_objects(),
-                                               m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>())
+    m_condition_grounders()
 {
     /* 3. Initialize condition grounders */
     const auto& axioms = m_problem->get_problem_and_domain_axioms();

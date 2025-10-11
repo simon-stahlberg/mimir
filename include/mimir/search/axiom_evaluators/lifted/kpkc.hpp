@@ -73,14 +73,6 @@ private:
     satisficing_binding_generator::EventHandler m_binding_event_handler;
 
     AxiomSatisficingBindingGeneratorList m_condition_grounders;
-
-    /* Memory for reuse */
-    formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
-    formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
-    formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
-    formalism::PredicateAssignmentSets<formalism::FluentTag> m_fluent_predicate_assignment_sets;
-    formalism::PredicateAssignmentSets<formalism::DerivedTag> m_derived_predicate_assignment_sets;
-    formalism::FunctionSkeletonAssignmentSets<formalism::FluentTag> m_fluent_function_skeleton_assignment_sets;
 };
 
 }  // namespace mimir
