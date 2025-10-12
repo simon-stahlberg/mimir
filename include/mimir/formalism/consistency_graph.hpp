@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
 #define MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
 
+#include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/closed_interval.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
@@ -107,6 +108,72 @@ public:
 
     using Vertices = std::vector<Vertex>;
 
+    /// @brief Get an forward_range over immutable Vertices.
+    auto get_vertices() const { return std::ranges::subrange(m_vertices.cbegin(), m_vertices.cend()); }
+
+    auto get_edges() const { return std::ranges::subrange(EdgeIterator(*this, true), EdgeIterator(*this, false)); }
+
+public:
+    StaticConsistencyGraph(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
+
+    /// @brief Useful to compute possible substitutions for conditional effects
+    static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
+    compute_vertices(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
+
+    static std::tuple<IndexList, IndexList, IndexList> compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices);
+
+    /// @brief Return an iterator over all vertices consistent with the precondition.
+    /// @param static_details is the static assignment sets.
+    /// @param dynamic_details is the dynamic assignment sets representing the given state.
+    /// @return
+    auto consistent_vertices(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
+    {
+        return get_vertices()
+               | std::views::filter(
+                   [this, &static_details, &dynamic_details](auto&& vertex)
+                   {
+                       return vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                              && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(),
+                                                            dynamic_details.derived_predicate_assignment_sets)
+                              && vertex.consistent_literals(m_condition->get_numeric_constraints(),
+                                                            static_details.static_function_skeleton_assignment_sets,
+                                                            dynamic_details.fluent_function_skeleton_assignment_sets);
+                   });
+    }
+
+    /// @brief Return an iterator over all edges consistent with the precondition.
+    /// @param static_details is the static assignment sets.
+    /// @param dynamic_details is the dynamic assignment sets representing the given state.
+    /// @return
+    auto consistent_edges(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
+    {
+        static thread_local SharedObjectPool<boost::dynamic_bitset<>> s_pool;
+        auto vertex_mask = s_pool.get_or_allocate();
+        vertex_mask->resize(get_num_vertices());
+        vertex_mask->reset();
+        for (const auto& v : consistent_vertices(static_details, dynamic_details))
+            vertex_mask->set(v.get_index());
+
+        return get_edges()
+               | std::views::filter(
+                   [this, mask = std::move(vertex_mask), &static_details, &dynamic_details](auto&& edge)
+                   {
+                       return mask->test(edge.get_src().get_index()) && mask->test(edge.get_dst().get_index())
+                              && edge.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                              && edge.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
+                              && edge.consistent_literals(m_condition->get_numeric_constraints(),
+                                                          static_details.static_function_skeleton_assignment_sets,
+                                                          dynamic_details.fluent_function_skeleton_assignment_sets);
+                   });
+    }
+
+    size_t get_num_vertices() const { return m_vertices.size(); }
+    size_t get_num_edges() const { return m_targets.size(); }
+
+    /// @brief Get the vertex indices partitioned by the parameter index.
+    const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+
+private:
     class EdgeIterator
     {
     private:
@@ -163,65 +230,6 @@ public:
 
     friend class EdgeIterator;
 
-    /// @brief Get an forward_range over immutable Vertices.
-    auto get_vertices() const { return std::ranges::subrange(m_vertices.cbegin(), m_vertices.cend()); }
-
-    auto get_edges() const { return std::ranges::subrange(EdgeIterator(*this, true), EdgeIterator(*this, false)); }
-
-public:
-    StaticConsistencyGraph(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
-
-    /// @brief Useful to compute possible substitutions for conditional effects
-    static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
-    compute_vertices(const ProblemImpl& problem, ConjunctiveCondition condition, Index begin_parameter_index, Index end_parameter_index);
-
-    static std::tuple<IndexList, IndexList, IndexList> compute_edges(const ProblemImpl& problem, ConjunctiveCondition condition, const Vertices& vertices);
-
-    auto consistent_vertices(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
-    {
-        return get_vertices()
-               | std::views::filter(
-                   [this, &static_details, &dynamic_details](auto& vertex)
-                   {
-                       return vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
-                              && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(),
-                                                            dynamic_details.derived_predicate_assignment_sets)
-                              && vertex.consistent_literals(m_condition->get_numeric_constraints(),
-                                                            static_details.static_function_skeleton_assignment_sets,
-                                                            dynamic_details.fluent_function_skeleton_assignment_sets);
-                   });
-    }
-
-    template<typename Callback>
-    void for_each_consistent_edge(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details, const Callback& callback)
-    {
-        m_consistent_vertices.reset();
-
-        for (const auto& vertex : consistent_vertices(static_details, dynamic_details))
-        {
-            m_consistent_vertices.set(vertex.get_index());
-        }
-
-        for (const auto& edge : get_edges())
-        {
-            if (m_consistent_vertices.test(edge.get_src().get_index()) && m_consistent_vertices.test(edge.get_dst().get_index())
-                && edge.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
-                && edge.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(), dynamic_details.derived_predicate_assignment_sets)
-                && edge.consistent_literals(m_condition->get_numeric_constraints(),
-                                            static_details.static_function_skeleton_assignment_sets,
-                                            dynamic_details.fluent_function_skeleton_assignment_sets))
-            {
-                callback(edge);
-            }
-        }
-    }
-
-    size_t get_num_vertices() const { return m_vertices.size(); }
-    size_t get_num_edges() const { return m_targets.size(); }
-
-    /// @brief Get the vertex indices partitioned by the parameter index.
-    const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
-
 private:
     ConjunctiveCondition m_condition;
 
@@ -234,8 +242,6 @@ private:
     IndexList m_sources;  ///< sources with non-zero out-degree
     IndexList m_target_offsets;
     IndexList m_targets;
-
-    boost::dynamic_bitset<> m_consistent_vertices;  ///< preallocated memory to pre-filter vertices when iterating consistent edges.
 };
 
 }

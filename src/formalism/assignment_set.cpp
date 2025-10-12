@@ -281,7 +281,6 @@ template class FunctionSkeletonAssignmentSet<FluentTag>;
 template<IsStaticOrFluentTag F>
 FunctionSkeletonAssignmentSets<F>::FunctionSkeletonAssignmentSets(const ObjectList& objects, const FunctionSkeletonList<F>& function_skeletons) :
     m_sets(),
-    m_ground_function_to_value(),
     m_functions_scratch()
 {
     for (const auto& function_skeleton : function_skeletons)
@@ -303,15 +302,9 @@ void FunctionSkeletonAssignmentSets<F>::insert_ground_function_values(const Grou
     for (Index i = 0; i < ground_functions.size(); ++i)
         assert(ground_functions[i]->get_index() == i);
 
-    /* Initialize bookkeeping. */
-    m_ground_function_to_value.clear();
-    for (size_t i = 0; i < ground_functions.size(); ++i)
-        m_ground_function_to_value.emplace_back(ground_functions[i], numeric_values[i]);
-    std::sort(m_ground_function_to_value.begin(), m_ground_function_to_value.end(), [](auto&& lhs, auto&& rhs) { return lhs.second < rhs.second; });
-
     /* Initialize sets. */
-    for (const auto& [function, value] : m_ground_function_to_value)
-        m_sets[function->get_function_skeleton()->get_index()].insert_ground_function_value(function, value);
+    for (size_t i = 0; i < ground_functions.size(); ++i)
+        m_sets[ground_functions[i]->get_function_skeleton()->get_index()].insert_ground_function_value(ground_functions[i], numeric_values[i]);
 }
 
 template<IsStaticOrFluentTag F>

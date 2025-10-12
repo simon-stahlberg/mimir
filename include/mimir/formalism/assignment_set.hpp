@@ -127,10 +127,6 @@ class FunctionSkeletonAssignmentSets
 private:
     std::vector<FunctionSkeletonAssignmentSet<F>> m_sets;
 
-    // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
-    // followed by computing lower and upper bounds using minimization and maximization.
-    std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
-
     GroundFunctionList<F> m_functions_scratch;
 
 public:

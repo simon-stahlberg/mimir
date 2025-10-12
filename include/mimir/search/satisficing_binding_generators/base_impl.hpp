@@ -179,17 +179,15 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
 
     clear_full_consistency_graph(m_full_consistency_graph);
 
-    m_static_consistency_graph.for_each_consistent_edge(m_problem->get_static_assignment_sets(),
-                                                        dynamic_assignment_sets,
-                                                        [&](auto&& edge)
-                                                        {
-                                                            const auto first_index = edge.get_src().get_index();
-                                                            const auto second_index = edge.get_dst().get_index();
-                                                            auto& first_row = m_full_consistency_graph[first_index];
-                                                            auto& second_row = m_full_consistency_graph[second_index];
-                                                            first_row[second_index] = 1;
-                                                            second_row[first_index] = 1;
-                                                        });
+    for (const auto& edge : m_static_consistency_graph.consistent_edges(m_problem->get_static_assignment_sets(), dynamic_assignment_sets))
+    {
+        const auto first_index = edge.get_src().get_index();
+        const auto second_index = edge.get_dst().get_index();
+        auto& first_row = m_full_consistency_graph[first_index];
+        auto& second_row = m_full_consistency_graph[second_index];
+        first_row[second_index] = 1;
+        second_row[first_index] = 1;
+    }
 
     // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#

@@ -727,8 +727,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
     m_objects_by_parameter_index(),
     m_sources(),
     m_target_offsets(),
-    m_targets(),
-    m_consistent_vertices()
+    m_targets()
 {
     auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
         compute_vertices(problem, condition, begin_parameter_index, end_parameter_index);
@@ -742,8 +741,6 @@ StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
     m_sources = std::move(sources_);
     m_target_offsets = std::move(target_offsets_);
     m_targets = std::move(targets_);
-
-    m_consistent_vertices.resize(m_vertices.size());
 }
 
 }
