@@ -140,6 +140,18 @@ class TestProblem(unittest.TestCase):
         assert actual_new_ground_literal.get_index() is not None
         assert str(actual_new_ground_literal) == expected_new_ground_literal
 
+    def test_new_ground_action(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        action = domain.get_action('stack')
+        objects = [problem.get_object('b1'), problem.get_object('b2')]
+        new_ground_action = problem.new_ground_action(action, objects)
+        assert new_ground_action.get_index() is not None
+        assert not new_ground_action.is_applicable(problem.get_initial_state())
+        assert str(new_ground_action) == '(stack b1 b2)'
+
     def test_goal_condition(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'

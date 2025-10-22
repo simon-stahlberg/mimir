@@ -1426,6 +1426,22 @@ class GroundAction:
         self._advanced_ground_action = advanced_ground_action
         self._problem = problem
 
+    @staticmethod
+    def new(action: 'Action', objects: 'list[Object]', problem: 'Problem') -> 'GroundAction':
+        """
+        Create a new ground action with the given action schema and objects.
+
+        :param action: The action schema of the ground action.
+        :type action: Action
+        :param objects: The objects of the ground action.
+        :type objects: list[Object]
+        :param problem: The problem instance to which the ground action belongs.
+        :type problem: Problem
+        :return: A new GroundAction instance.
+        :rtype: GroundAction
+        """
+        return problem.new_ground_action(action, objects)
+
     def get_index(self) -> 'int':
         """
         Get the index of the ground action.
@@ -2041,6 +2057,23 @@ class Problem:
         static_literals, fluent_literals, derived_literals = _split_ground_literal_list(ground_literals)
         advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_literals, fluent_literals, derived_literals)
         return GroundConjunctiveCondition(advanced_condition, self)
+
+    def new_ground_action(self, action: 'Action', objects: 'list[Object]') -> 'GroundAction':
+        """
+        Create a new ground action with the given action schema and objects.
+
+        :param action: The action schema of the ground action.
+        :type action: Action
+        :param objects: The objects of the ground action.
+        :type objects: list[Object]
+        :return: A new GroundAction instance.
+        :rtype: GroundAction
+        """
+        assert isinstance(action, Action), "Invalid action type."
+        assert isinstance(objects, list), "Invalid objects type."
+        advanced_objects = AdvancedObjectList([x._advanced_object for x in objects])
+        advanced_ground_action = self._advanced_problem.ground(action._advanced_action, advanced_objects)
+        return GroundAction(advanced_ground_action, self)
 
 
 class State:
