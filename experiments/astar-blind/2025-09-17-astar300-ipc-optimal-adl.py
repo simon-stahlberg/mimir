@@ -20,7 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_IPC_OPTIMAL_ADL
+from suite import SUITE_IPC_OPTIMAL_ADL
+from suite_test import SUITE_IPC_OPTIMAL_ADL_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -47,10 +48,7 @@ if REMOTE:
     TIME_LIMIT = 300 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "miconic-fulladl:f1-0.pddl",
-        "miconic-fulladl:f14-0.pddl",
-    ]
+    SUITE = SUITE_IPC_OPTIMAL_ADL_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

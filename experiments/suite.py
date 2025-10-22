@@ -234,7 +234,6 @@ SUITE_MINEPDDL = [
     "Pickup_Diamond",
     "Place_Wood",
     "Scaled_Move_to_Location",
-    "Scaled_Move_to_Location_extended",
 ]
 
 SUITE_IPC_SATISFICING_STRIPS = [

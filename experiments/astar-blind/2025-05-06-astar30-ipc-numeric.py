@@ -20,8 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_IPC2023_NUMERIC
-
+from suite import SUITE_IPC2023_NUMERIC
+from suite_test import SUITE_IPC2023_NUMERIC_TEST
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
     INFO_ATTRIBUTES = ["time_limit", "memory_limit"]
@@ -47,10 +47,7 @@ if REMOTE:
     TIME_LIMIT = 30 * 60 
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "delivery:pfile1.pddl",        # easy
-        "block-grouping:pfile1.pddl",  # hard
-    ]
+    SUITE = SUITE_IPC2023_NUMERIC_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

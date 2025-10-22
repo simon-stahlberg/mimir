@@ -20,8 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_AUTOSCALE_OPTIMAL_STRIPS
-
+from suite import SUITE_AUTOSCALE_OPTIMAL_STRIPS
+from suite_test import SUITE_AUTOSCALE_OPTIMAL_STRIPS_TEST
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
     INFO_ATTRIBUTES = ["time_limit", "memory_limit"]
@@ -47,9 +47,7 @@ if REMOTE:
     TIME_LIMIT = 5 * 60  # 5 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "miconic:p01.pddl",
-    ]
+    SUITE = SUITE_AUTOSCALE_OPTIMAL_STRIPS_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

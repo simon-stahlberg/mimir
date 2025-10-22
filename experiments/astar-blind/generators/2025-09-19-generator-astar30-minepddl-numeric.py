@@ -21,7 +21,8 @@ sys.path.append(str(DIR.parent))
 from search_parser import SearchParser
 from error_parser import ErrorParser
 from generator_parser import GeneratorParser
-from utils import SUITE_MINEPDDL
+from suite import SUITE_MINEPDDL
+from suite_test import SUITE_MINEPDDL_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -48,9 +49,7 @@ if REMOTE:
     TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "Pickup_Diamond:Pickup_Diamond_Easy.pddl",
-    ]
+    SUITE = SUITE_MINEPDDL_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

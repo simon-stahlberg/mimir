@@ -20,7 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_HTG
+from suite import SUITE_HTG
+from suite_test import SUITE_HTG_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -47,9 +48,7 @@ if REMOTE:
     TIME_LIMIT = 300 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "blocksworld-large-simple:p-100-2-goal-2.pddl",
-    ]
+    SUITE = SUITE_HTG_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

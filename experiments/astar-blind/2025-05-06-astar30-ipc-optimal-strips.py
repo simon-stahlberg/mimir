@@ -20,7 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_IPC_OPTIMAL_STRIPS
+from suite import SUITE_IPC_OPTIMAL_STRIPS
+from suite_test import SUITE_IPC_OPTIMAL_STRIPS_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -47,10 +48,7 @@ if REMOTE:
     TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "gripper:prob01.pddl",
-        "gripper:prob10.pddl",
-    ]
+    SUITE = SUITE_IPC_OPTIMAL_STRIPS_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",

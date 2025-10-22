@@ -20,7 +20,8 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_PUSHWORLD
+from suite import SUITE_PUSHWORLD
+from suite_test import SUITE_PUSHWORLD_TEST
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -47,9 +48,7 @@ if REMOTE:
     TIME_LIMIT = 5 * 60  # 5 minutes
 else:
     ENV = LocalEnvironment(processes=12)
-    SUITE = [
-        "level1:2 Obstacle.pddl",
-    ]
+    SUITE = SUITE_PUSHWORLD_TEST
     TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",
