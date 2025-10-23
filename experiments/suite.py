@@ -1,7 +1,7 @@
 SUITE_CNOT_SYNTHESIS = [
-    "cnot_synthesis-lifted",
-    "cnot_synthesis-lifted-hard",
-    "cnot_synthesis-lifted-map",
+    "cnot-synthesis-lifted",
+    "cnot-synthesis-lifted-hard",
+    "cnot-synthesis-lifted-map",
 ]
 
 SUITE_IPC_OPTIMAL_STRIPS = [
