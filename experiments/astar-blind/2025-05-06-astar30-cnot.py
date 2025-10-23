@@ -36,7 +36,7 @@ class BaseReport(AbsoluteReport):
     ]
 
 
-BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "pushworld"
+BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "cnot-synthesis"
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)

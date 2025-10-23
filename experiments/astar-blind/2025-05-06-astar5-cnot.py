@@ -46,7 +46,7 @@ if REMOTE:
         memory_per_cpu="4G",
         extra_options="#SBATCH --account=naiss2025-5-382")
     SUITE = SUITE_CNOT_SYNTHESIS
-    TIME_LIMIT = 60 * 60  # 60 minutes
+    TIME_LIMIT = 5 * 60
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = SUITE_CNOT_SYNTHESIS_TEST
