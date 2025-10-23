@@ -1,3 +1,9 @@
+SUITE_CNOT_SYNTHESIS_TEST = [
+    "cnot_synthesis-lifted:p001.pddl",
+    "cnot_synthesis-lifted-hard:p001.pddl",
+    "cnot_synthesis-lifted-map:p001.pddl",
+]
+
 SUITE_IPC_OPTIMAL_STRIPS_TEST = [
     "agricola-opt18-strips:p01.pddl", 
     "airport:p01-airport1-p1.pddl", 

@@ -1,3 +1,8 @@
+SUITE_CNOT_SYNTHESIS = [
+    "cnot_synthesis-lifted",
+    "cnot_synthesis-lifted-hard",
+    "cnot_synthesis-lifted-map",
+]
 
 SUITE_IPC_OPTIMAL_STRIPS = [
     "agricola-opt18-strips", 
