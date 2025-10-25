@@ -29,9 +29,9 @@ namespace mimir::formalism
 class Parser
 {
 public:
-    Parser(const fs::path& domain_filepath, const loki::Options& options = loki::Options());
+    Parser(const fs::path& domain_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
-    Problem parse_problem(const fs::path& problem_filepath, const loki::Options& options = loki::Options());
+    Problem parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
     const Domain& get_domain() const;
 

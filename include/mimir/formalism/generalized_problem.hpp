@@ -32,8 +32,9 @@ private:
 
 public:
     static GeneralizedProblem
-    create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options = loki::Options());
-    static GeneralizedProblem create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options = loki::Options());
+    create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::ParserOptions& options = loki::ParserOptions());
+    static GeneralizedProblem
+    create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::ParserOptions& options = loki::ParserOptions());
     static GeneralizedProblem create(Domain domain, ProblemList problems);
 
     const Domain& get_domain() const;

@@ -33,13 +33,13 @@ Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
 
 std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
 {
-    write_typed(element, StringFormatter(), out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Variable element)
 {
-    write_typed(*element, StringFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

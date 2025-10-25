@@ -99,7 +99,7 @@ public:
     ProblemImpl(ProblemImpl&& other) = delete;
     ProblemImpl& operator=(ProblemImpl&& other) = delete;
 
-    static Problem create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options = loki::Options());
+    static Problem create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
     Index get_index() const;
     const Repositories& get_repositories() const;

@@ -31,7 +31,8 @@ GeneralizedProblemImpl::GeneralizedProblemImpl(Domain domain, ProblemList proble
     }
 }
 
-GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
+GeneralizedProblem
+GeneralizedProblemImpl::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::ParserOptions& options)
 {
     auto parser = Parser(domain_filepath, options);
 
@@ -44,7 +45,7 @@ GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepat
     return create(parser.get_domain(), std::move(problems));
 }
 
-GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
+GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::ParserOptions& options)
 {
     auto problem_filepaths = std::vector<fs::path> {};
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))

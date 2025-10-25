@@ -27,7 +27,7 @@
 namespace mimir::formalism
 {
 
-Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
+Parser::Parser(const fs::path& domain_filepath, const loki::ParserOptions& options) :
     m_loki_parser(domain_filepath, options),
     m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain())),
     m_domain()
@@ -43,7 +43,7 @@ Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
     m_domain = encode_parameter_index_in_variables_translator.translate_level_0(m_domain, builder);
 }
 
-Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Options& options)
+Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options)
 {
     auto loki_problem = m_loki_parser.parse_problem(problem_filepath, options);
     auto loki_translated_problem = loki::translate(loki_problem, m_loki_domain_translation_result);

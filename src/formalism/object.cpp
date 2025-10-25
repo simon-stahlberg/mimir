@@ -31,13 +31,13 @@ const TypeList& ObjectImpl::get_bases() const { return m_types; }
 
 std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
 {
-    write_typed(element, StringFormatter(), out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Object element)
 {
-    write_typed(*element, StringFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 }

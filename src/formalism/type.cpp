@@ -61,13 +61,13 @@ bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs)
 
 std::ostream& operator<<(std::ostream& out, const TypeImpl& element)
 {
-    write_typed(element, StringFormatter(), out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Type element)
 {
-    write_typed(*element, StringFormatter(), out);
+    write(*element, StringFormatter(), out);
     return out;
 }
 

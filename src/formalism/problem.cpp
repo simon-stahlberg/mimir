@@ -173,7 +173,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_static_assignment_sets = StaticAssignmentSets(*this);
 }
 
-Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
+Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::ParserOptions& options)
 {
     return Parser(domain_filepath, options).parse_problem(problem_filepath, options);
 }

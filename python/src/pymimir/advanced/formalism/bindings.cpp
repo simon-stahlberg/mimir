@@ -60,10 +60,10 @@ void bind_module_definitions(nb::module_& m)
         .value("MAXIMIZE", loki::OptimizationMetricEnum::MAXIMIZE)
         .export_values();
 
-    nb::class_<loki::Options>(m, "ParserOptions")
+    nb::class_<loki::ParserOptions>(m, "ParserOptions")
         .def(nb::init<>())
-        .def_rw("strict", &loki::Options::strict, "Enable strict mode")
-        .def_rw("quiet", &loki::Options::quiet, "Suppress output");
+        .def_rw("strict", &loki::ParserOptions::strict, "Enable strict mode")
+        .def_rw("quiet", &loki::ParserOptions::quiet, "Suppress output");
 
     nb::class_<RequirementsImpl>(m, "Requirements")  //
         .def("__str__", [](const RequirementsImpl& self) { return to_string(self); })
@@ -997,14 +997,14 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GeneralizedProblemImpl>(m, "GeneralizedProblem")
         .def_static(
             "create",
-            [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
+            [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::ParserOptions& options)
             { return GeneralizedProblemImpl::create(domain_filepath, problem_filepaths, options); },
             "domain_filepath"_a,
             "problem_filepaths"_a,
             "options"_a)
         .def_static(
             "create",
-            [](const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
+            [](const fs::path& domain_filepath, const fs::path& problems_directory, const loki::ParserOptions& options)
             { return GeneralizedProblemImpl::create(domain_filepath, problems_directory, options); },
             "domain_filepath"_a,
             "problems_directory"_a,
@@ -1023,7 +1023,7 @@ void bind_module_definitions(nb::module_& m)
      */
 
     nb::class_<Parser>(m, "Parser")
-        .def(nb::init<const fs::path&, const loki::Options&>(), "domain_filepath"_a, "options"_a)
+        .def(nb::init<const fs::path&, const loki::ParserOptions&>(), "domain_filepath"_a, "options"_a)
         .def("parse_problem", &Parser::parse_problem, "problem_filepath"_a, "options"_a)
         .def("get_domain", &Parser::get_domain);
 }

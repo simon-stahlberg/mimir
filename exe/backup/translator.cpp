@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     const auto domain_file = std::string { argv[1] };
     const auto problem_file = std::string { argv[2] };
 
-    auto options = loki::Options();
+    auto options = loki::ParserOptions();
     options.quiet = false;
     options.strict = true;
 
