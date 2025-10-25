@@ -137,9 +137,17 @@ exp.add_fetcher("data-list/2025-09-17-astar300-ipc-optimal-adl-eval", name="list
 exp.add_fetcher("data-dtdb-s/2025-09-17-astar300-ipc-optimal-adl-eval", name="dtdb-s-fetch-ipc-optimal-adl", filter=rename_algorithm_tree_swiss)
 exp.add_fetcher("data-dtdb-h/2025-09-17-astar300-ipc-optimal-adl-eval", name="dtdb-h-fetch-ipc-optimal-adl", filter=rename_algorithm_tree_hashid)
 
+exp.add_fetcher("data-list/2025-09-17-astar300-ipc-learning-eval", name="list-fetch-ipc-learning", filter=rename_algorithm_list)
+exp.add_fetcher("data-dtdb-s/2025-09-17-astar300-ipc-learning-eval", name="dtdb-s-fetch-ipc-learning", filter=rename_algorithm_tree_swiss)
+exp.add_fetcher("data-dtdb-h/2025-09-17-astar300-ipc-learning-eval", name="dtdb-h-fetch-ipc-learning", filter=rename_algorithm_tree_hashid)
+
 exp.add_fetcher("data-list/2025-09-17-astar300-htg-eval", name="list-fetch-htg", filter=rename_algorithm_list)
 exp.add_fetcher("data-dtdb-s/2025-09-17-astar300-htg-eval", name="dtdb-s-fetch-htg", filter=rename_algorithm_tree_swiss)
 exp.add_fetcher("data-dtdb-h/2025-09-17-astar300-htg-eval", name="dtdb-h-fetch-htg", filter=rename_algorithm_tree_hashid)
+
+exp.add_fetcher("data-list/2025-09-17-astar300-cnot-eval", name="list-fetch-cnot", filter=rename_algorithm_list)
+exp.add_fetcher("data-dtdb-s/2025-09-17-astar300-cnot-eval", name="dtdb-s-fetch-cnot", filter=rename_algorithm_tree_swiss)
+exp.add_fetcher("data-dtdb-h/2025-09-17-astar300-cnot-eval", name="dtdb-h-fetch-cnot", filter=rename_algorithm_tree_hashid)
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["list-grounded-astar-eager-blind", "dtdb-s-grounded-astar-eager-blind", "dtdb-h-grounded-astar-eager-blind", "list-lifted-astar-eager-blind", "dtdb-s-lifted-astar-eager-blind", "dtdb-h-lifted-astar-eager-blind"]))
 
