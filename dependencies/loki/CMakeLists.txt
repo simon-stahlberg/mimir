@@ -27,7 +27,7 @@ if (NOT loki_FOUND)
             GIT_REPOSITORY https://github.com/drexlerd/Loki.git
             GIT_TAG 2a3fd328ccd952b1399f32b7a3579044f77071cd
             PREFIX ${CMAKE_BINARY_DIR}/loki
-            DEPENDS boost abseil
+            DEPENDS boost abseil fmt argparse
             CMAKE_ARGS ${CMAKE_ARGS}
     )
 else()
