@@ -19,12 +19,10 @@
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
-#include <loki/details/utils/equal_to.hpp>
-#include <loki/details/utils/hash.hpp>
+#include <loki/loki.hpp>
 #include <tuple>
 
 namespace mimir::graphs
@@ -32,7 +30,7 @@ namespace mimir::graphs
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
 /// @tparam ...VertexProperties are additional vertex properties.
-template<typename... VertexProperties>
+template<Property... VertexProperties>
 class Vertex
 {
 public:
@@ -61,7 +59,7 @@ private:
     std::tuple<VertexProperties...> m_properties;
 };
 
-template<typename... VertexProperties>
+template<Property... VertexProperties>
 std::ostream& operator<<(std::ostream& os, const Vertex<VertexProperties...>& vertex)
 {
     os << "index=" << vertex.get_index() << ", properties=";
@@ -75,14 +73,6 @@ std::ostream& operator<<(std::ostream& os, const Vertex<VertexProperties...>& ve
 
 /// @brief `EmptyVertex` is a vertex without `VertexProperties`.
 using EmptyVertex = Vertex<>;
-
-/**
- * ColoredVertex
- */
-
-using ColoredVertex = Vertex<Color>;
-
-inline const auto& get_color(const Vertex<Color>& vertex) { return vertex.get_property<0>(); }
 
 }
 

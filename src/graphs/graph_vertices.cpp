@@ -22,6 +22,4 @@ namespace mimir::graphs
 
 template class Vertex<>;
 
-template class Vertex<Color>;
-
 }

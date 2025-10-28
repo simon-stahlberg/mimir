@@ -18,19 +18,19 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
-#include "mimir/graphs/color.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 
-#include <loki/details/utils/equal_to.hpp>
-#include <loki/details/utils/hash.hpp>
+#include <loki/loki.hpp>
+#include <tuple>
 
 namespace mimir::graphs
 {
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
 /// @tparam ...EdgeProperties are additional edge properties.
-template<typename... EdgeProperties>
+template<Property... EdgeProperties>
 class Edge
 {
 public:
@@ -73,7 +73,7 @@ private:
     std::tuple<EdgeProperties...> m_properties;
 };
 
-template<typename... EdgeProperties>
+template<Property... EdgeProperties>
 std::ostream& operator<<(std::ostream& os, const Edge<EdgeProperties...>& edge)
 {
     os << "index=" << edge.get_index() << ", properties=";
@@ -87,14 +87,6 @@ std::ostream& operator<<(std::ostream& os, const Edge<EdgeProperties...>& edge)
 
 /// @brief `EmptyEdge` is an edge without `EdgeProperties`.
 using EmptyEdge = Edge<>;
-
-/**
- * ColoredEdge
- */
-
-using ColoredEdge = Edge<Color>;
-
-inline const auto& get_color(const Edge<Color>& edge) { return edge.get_property<0>(); }
 
 }
 

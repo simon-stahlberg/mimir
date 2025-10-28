@@ -24,7 +24,6 @@
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -48,11 +47,11 @@ namespace mimir::graphs::kfwl
 
 /// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
-template<size_t K>
+template<typename... Ts, size_t K>
 class CertificateImpl
 {
 public:
-    using CanonicalColorCompressionFunction = std::map<Color, ColorIndex>;
+    using CanonicalColorCompressionFunction = std::map<Properties<Ts...>, ColorIndex>;
 
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexArrayList<K>>, ColorIndex>;
@@ -124,7 +123,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices);
 /// @tparam G is the vertex-colored graph.
 /// @return the `Certicate`
 template<std::size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
 std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
 
 /**
@@ -212,7 +211,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
 /// @param iso_type_function is the function that tracks assigned colors to canonical subgraphs.
 /// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
 template<size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
 auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     const auto num_vertices = graph.get_num_vertices();
@@ -240,10 +239,10 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
 
     /* Canonize and compress the IColors to a list of integers. */
     auto c = typename CertificateImpl<K>::CanonicalColorCompressionFunction {};
-    auto canonical_coloring = ColorList {};
+    auto canonical_coloring = PropertiesList {};
     for (const auto& vertex : graph.get_vertices())
     {
-        canonical_coloring.push_back(get_color(vertex));
+        canonical_coloring.push_back(vertex.get_properties());
     }
     std::sort(canonical_coloring.begin(), canonical_coloring.end());
     for (const auto& color : canonical_coloring)
@@ -270,7 +269,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         auto subgraph = graphs::StaticVertexColoredGraph();
         for (const auto [v1, i1] : v_to_i)
         {
-            subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));
+            subgraph.add_vertex(graph.get_vertex(v_to_vertex.at(v1)).get_properties());
         }
         for (const auto [v1, i1] : v_to_i)
         {
@@ -295,7 +294,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
 }
 
 template<size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
 std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     if (!is_undirected(graph))

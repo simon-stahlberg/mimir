@@ -86,16 +86,6 @@ concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
     { a.template get_degree<BackwardTag>(vertex) } -> std::same_as<Degree>;
 };
 
-template<typename T>
-concept IsVertexColoredGraph = requires(T::VertexType vertex) {
-    { get_color(vertex) };
-};
-
-template<typename T>
-concept IsEdgeColoredGraph = requires(T::EdgeType edge) {
-    { get_color(edge) };
-};
-
 }
 
 #endif

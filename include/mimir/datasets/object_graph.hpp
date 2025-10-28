@@ -20,7 +20,6 @@
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <ostream>

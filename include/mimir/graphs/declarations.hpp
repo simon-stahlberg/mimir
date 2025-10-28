@@ -18,13 +18,24 @@
 #ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
 #define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
-#include <memory>
+#include <concepts>
+#include <cstddef>
+#include <loki/loki.hpp>
+#include <tuple>
 #include <vector>
 
 namespace mimir::graphs
 {
-class Color;
-using ColorList = std::vector<Color>;
+template<class T>
+concept Property = requires(const T& a, const T& b) {
+    { loki::Hash<T> {}(a) } -> std::convertible_to<std::size_t>;
+    { loki::EqualTo<T> {}(a, b) } -> std::same_as<bool>;
+};
+
+template<Property... Ts>
+using Properties = std::tuple<Ts...>;
+template<Property... Ts>
+using PropertiesList = std::vector<Properties<Ts...>>;
 }
 
 #endif

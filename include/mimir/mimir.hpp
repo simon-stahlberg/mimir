@@ -120,8 +120,6 @@
 #include "mimir/graphs/bgl/property_maps.hpp"
 #include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/concrete/digraph.hpp"
-#include "mimir/graphs/concrete/edge_colored_graph.hpp"
-#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"

@@ -21,6 +21,4 @@ namespace mimir::graphs
 {
 
 template class Edge<>;
-
-template class Edge<Color>;
 }
