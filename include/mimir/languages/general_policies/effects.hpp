@@ -112,6 +112,7 @@ private:
 
     friend class EffectBase<UnchangedNumericalEffectImpl, dl::NumericalTag>;
 };
+
 }
 
 #endif

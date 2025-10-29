@@ -65,8 +65,10 @@ private:
 template<Property P>
 std::ostream& operator<<(std::ostream& os, const Vertex<P>& vertex)
 {
+    using ::mimir::operator<<;
+
     os << "index=" << vertex.get_index() << ", properties=";
-    mimir::operator<<(os, vertex.get_properties());
+    os << vertex.get_properties();
     return os;
 }
 

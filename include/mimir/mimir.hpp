@@ -129,6 +129,7 @@
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
 #include "mimir/graphs/types.hpp"

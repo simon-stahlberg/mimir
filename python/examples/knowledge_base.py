@@ -16,7 +16,7 @@ def main():
 
     # Create GeneralizedSearchContext
     search_context_options = search.SearchContextOptions()
-    search_context_options.mode = search.SearchMode.GROUNDED
+    search_context_options.mode = search.GroundedOptions()
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
     # Create KnowledgeBase

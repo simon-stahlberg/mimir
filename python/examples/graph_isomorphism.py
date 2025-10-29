@@ -4,20 +4,26 @@
 
 import pymimir.advanced.graphs as graphs 
 
+
+def property(args):
+    """ Helper to construct the runtime properties. """
+    return graphs.PropertyValue(graphs.PyProperty(args))
+
+
 def main():
-    graph1 = graphs.StaticVertexColoredGraph()
-    v1_1 = graph1.add_vertex(graphs.Color(1, "a"))
-    v2_1 = graph1.add_vertex(graphs.Color(2, "b"))
-    v3_1 = graph1.add_vertex(graphs.Color(3, "c"))
-    graph1.add_undirected_edge(v1_1, v3_1)
+    graph1 = graphs.StaticPyGraph()
+    v1_1 = graph1.add_vertex(property((1, "a")))
+    v2_1 = graph1.add_vertex(property((2, "b")))
+    v3_1 = graph1.add_vertex(property((3, "c")))
+    graph1.add_undirected_edge(v1_1, v3_1, property(()))
     print(graph1)  # print dot representation of graph1
  
     # graph2 is isomorphic to graph1 but it is vertices are added in a different order.
-    graph2 = graphs.StaticVertexColoredGraph()
-    v1_2 = graph2.add_vertex(graphs.Color(2, "b"))
-    v2_2 = graph2.add_vertex(graphs.Color(1, "a"))
-    v3_2 = graph2.add_vertex(graphs.Color(3, "c"))
-    graph2.add_undirected_edge(v2_2, v3_2)
+    graph2 = graphs.StaticPyGraph()
+    v1_2 = graph2.add_vertex(property((2, "b")))
+    v2_2 = graph2.add_vertex(property((1, "a")))
+    v3_2 = graph2.add_vertex(property((3, "c")))
+    graph2.add_undirected_edge(v2_2, v3_2, property(()))
     print(graph2)  # print dot representation of graph2
 
     # Exact graph isomorphism via nauty with Traces

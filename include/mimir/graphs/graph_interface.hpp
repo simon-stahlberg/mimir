@@ -87,18 +87,6 @@ concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
     { a.template get_degree<BackwardTag>(vertex) } -> std::same_as<Degree>;
 };
 
-template<typename T>
-concept IsVertexColoredGraph = requires {
-    typename T::VertexType;
-    requires std::is_same_v<typename T::VertexType::PropertyType, mimir::graphs::PropertyValue>;
-};
-
-template<typename T>
-concept IsEdgeColoredGraph = requires {
-    typename T::EdgeType;
-    requires std::is_same_v<typename T::EdgeType::PropertyType, mimir::graphs::PropertyValue>;
-};
-
 }
 
 #endif

@@ -38,6 +38,8 @@ public:
     virtual void accept(IVisitor& visitor) const = 0;
 };
 
+extern std::ostream& operator<<(std::ostream& out, const ICondition& element);
+
 }
 
 #endif

@@ -87,7 +87,7 @@ struct PyVertexProperties
 {
 };
 
-using PyVertex = Vertex<PyProperty>;
+using PyVertex = Vertex<PropertyValue>;
 
 template<>
 struct PyVertexProperties<PyVertex>
@@ -100,7 +100,7 @@ struct PyEdgeProperties
 {
 };
 
-using PyEdge = Edge<PyProperty>;
+using PyEdge = Edge<PropertyValue>;
 
 template<>
 struct PyEdgeProperties<PyEdge>
@@ -322,7 +322,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
         .def("compute_strong_components",
              [](const TranslatedGraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
 
-    if constexpr (IsVertexColoredGraph<TranslatedGraphType>)
+    if constexpr (std::is_same_v<typename GraphType::VertexType::PropertyType, PropertyValue>)
     {
         m.def("compute_color_refinement_certificate", &color_refinement::compute_certificate<TranslatedGraphType>, "vertex_colored_graph"_a);
         m.def("compute_2fwl_certificate",
@@ -544,7 +544,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("compute_strong_components",
              [](const GraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
 
-    if constexpr (IsVertexColoredGraph<GraphType>)
+    if constexpr (std::is_same_v<typename GraphType::VertexType::PropertyType, PropertyValue>)
     {
         m.def("compute_color_refinement_certificate", &color_refinement::compute_certificate<GraphType>, "vertex_colored_graph"_a);
         m.def("compute_2fwl_certificate", &kfwl::compute_certificate<2, GraphType>, "vertex_colored_graph"_a, "isomorphism_type_compression_function"_a);
@@ -768,7 +768,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("compute_strong_components",
              [](const PyImmutable<GraphType>& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self.obj_, ForwardTag {})); });
 
-    if constexpr (IsVertexColoredGraph<GraphType>)
+    if constexpr (std::is_same_v<typename GraphType::VertexType::PropertyType, PropertyValue>)
     {
         m.def("compute_color_refinement_certificate",
               [](const PyImmutable<GraphType>& self) { return color_refinement::compute_certificate<GraphType>(self.obj_); });

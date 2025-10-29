@@ -70,7 +70,7 @@ public:
     SparseGraph();
 
     template<typename Graph>
-        requires IsVertexListGraph<Graph> && IsEdgeListGraph<Graph> && IsVertexColoredGraph<Graph>
+        requires IsVertexListGraph<Graph> && IsEdgeListGraph<Graph>
     explicit SparseGraph(const Graph& graph) : SparseGraph()
     {
         if (is_multi(graph))

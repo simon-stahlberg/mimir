@@ -72,8 +72,10 @@ private:
 template<Property P>
 std::ostream& operator<<(std::ostream& os, const Edge<P>& edge)
 {
+    using ::mimir::operator<<;
+
     os << "index=" << edge.get_index() << ", properties=";
-    mimir::operator<<(os, edge.get_properties());
+    os << edge.get_properties();
     return os;
 }
 

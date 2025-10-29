@@ -83,6 +83,7 @@ private:
 
     friend class ConditionBase<EqualNumericalConditionImpl, dl::NumericalTag>;
 };
+
 }
 
 #endif

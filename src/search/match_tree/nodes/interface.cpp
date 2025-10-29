@@ -17,8 +17,7 @@
 
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
-#include "mimir/formalism/ground_action.hpp"
-#include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"

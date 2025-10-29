@@ -124,7 +124,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices);
 /// @tparam G is the vertex-colored graph.
 /// @return the `Certicate`
 template<std::size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
 std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
 
 /**
@@ -212,7 +212,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
 /// @param iso_type_function is the function that tracks assigned colors to canonical subgraphs.
 /// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
 template<size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
 auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     const auto num_vertices = graph.get_num_vertices();
@@ -270,7 +270,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         auto subgraph = StaticGraph<Vertex<PropertyValue>, Edge<>>();
         for (const auto [v1, i1] : v_to_i)
         {
-            subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));
+            subgraph.add_vertex(graph.get_vertex(v_to_vertex.at(v1)).get_properties());
         }
         for (const auto [v1, i1] : v_to_i)
         {
@@ -295,7 +295,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
 }
 
 template<size_t K, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
 std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     if (!is_undirected(graph))

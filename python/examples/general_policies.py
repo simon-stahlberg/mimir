@@ -86,7 +86,7 @@ def main():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-1-0.pddl")
 
     search_context_options = search.SearchContextOptions()
-    search_context_options.mode = search.SearchMode.GROUNDED
+    search_context_options.mode = search.GroundedOptions()
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath], search_context_options)
 
     state_space_options = datasets.StateSpaceOptions()

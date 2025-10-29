@@ -17,6 +17,8 @@
 
 #include "mimir/languages/general_policies/repositories.hpp"
 
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
+#include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "parser.hpp"
 
 namespace mimir::languages::general_policies

@@ -84,7 +84,7 @@ extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& elemen
 /// @tparam G is the vertex-colored graph.
 /// @return the `Certicate`
 template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
 std::shared_ptr<CertificateImpl> compute_certificate(const G& graph);
 
 /**
@@ -204,7 +204,7 @@ void split_color_classes(const std::vector<std::tuple<ColorIndex, std::vector<Co
 }
 
 template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
 std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
 {
     if (!is_undirected(graph))
@@ -224,7 +224,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     auto canonical_coloring = PropertyValueList {};
     for (const auto& vertex : graph.get_vertices())
     {
-        canonical_coloring.push_back(get_color(vertex));
+        canonical_coloring.push_back(vertex.get_properties());
     }
     std::sort(canonical_coloring.begin(), canonical_coloring.end());
     for (const auto& color : canonical_coloring)
@@ -246,7 +246,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
         vertex_to_hash.emplace(vertex.get_index(), hash);
         hash_to_vertex.emplace(hash, vertex.get_index());
 
-        const auto color = c.at(get_color(vertex));
+        const auto color = c.at(vertex.get_properties());
         max_color = std::max(max_color, color);
         hash_to_color[hash] = color;
         color_to_hashes[color].push_back(hash);

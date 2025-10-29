@@ -5,17 +5,22 @@
 import pymimir.advanced.graphs as graphs
 
 
+def property(args):
+    """ Helper to construct the runtime properties. """
+    return graphs.PropertyValue(graphs.PyProperty(args))
+
+
 def main():
     graph = graphs.DynamicPyGraph()
-    vx = graph.add_vertex(("to_be_removed",))
-    v1 = graph.add_vertex((0,0))
-    v2 = graph.add_vertex((0,1))
-    v3 = graph.add_vertex((1,1))
-    v4 = graph.add_vertex((1,0))
-    graph.add_undirected_edge(v1, v2, ("a",1))
-    graph.add_undirected_edge(v2, v3, ("b",2))
-    graph.add_undirected_edge(v3, v4, ("c",3))
-    graph.add_undirected_edge(v4, v1, ("d",4))
+    vx = graph.add_vertex(property(("to_be_removed",)))
+    v1 = graph.add_vertex(property((0,0)))
+    v2 = graph.add_vertex(property((0,1)))
+    v3 = graph.add_vertex(property((1,1)))
+    v4 = graph.add_vertex(property((1,0)))
+    graph.add_undirected_edge(v1, v2, property(("a",1)))
+    graph.add_undirected_edge(v2, v3, property(("b",2)))
+    graph.add_undirected_edge(v3, v4, property(("c",3)))
+    graph.add_undirected_edge(v4, v1, property(("d",4)))
     graph.remove_vertex(vx)
     assert(v1 == 1)
     assert(v2 == 2)
@@ -62,7 +67,7 @@ def main():
     for v_idx, vertex in graph.get_vertices().items():
         # Access vertex properties through generic member
         vertex.get_index()      
-        vertex.get_property_0()  # python tuple
+        vertex.get_properties()
 
         # Iterate over adjacent structures
         for adj_vertex in graph.get_forward_adjacent_vertices(vertex.get_index()):
@@ -95,7 +100,7 @@ def main():
         edge.get_index()  
         edge.get_source()   
         edge.get_target()   
-        edge.get_property_0()  # python tuple
+        edge.get_properties()
 
 
 

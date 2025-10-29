@@ -2,45 +2,26 @@
 
 
 from pymimir.pymimir.advanced.graphs import (
-    # Color and graph isomorphism (nauty)
-    Color,
-    NautySparseGraph,
+    # Properties
+    IProperty,
+    PyProperty,
+    PropertyValue,
 
     # Vertices
     PyVertex,
-    EmptyVertex,
-    ColoredVertex,
 
     # Edges
     PyEdge,
-    EmptyEdge,
-    ColoredEdge,
+
+    # Nauty
+    NautySparseGraph,
 
     # StaticPyGraph
     StaticPyGraph,
     ImmutableStaticPyGraph,
     ForwardStaticPyGraph,
     BidirectionalStaticPyGraph,
-    # DynamicPyGraph
     DynamicPyGraph,
-
-    # StaticEmptyGraph
-    StaticEmptyGraph,
-    ImmutableStaticEmptyGraph,
-    ForwardStaticEmptyGraph,
-    BidirectionalStaticEmptyGraph,
-
-    # StaticVertexColoredGraph
-    StaticVertexColoredGraph,
-    ImmutableStaticVertexColoredGraph,
-    ForwardStaticVertexColoredGraph,
-    BidirectionalStaticVertexColoredGraph,
-
-    # StaticEdgeColoredGraph
-    StaticEdgeColoredGraph,
-    ImmutableStaticEdgeColoredGraph,
-    ForwardStaticEdgeColoredGraph,
-    BidirectionalStaticEdgeColoredGraph,
 )
 
 # Coloring

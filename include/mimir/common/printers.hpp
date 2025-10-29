@@ -21,6 +21,9 @@
 #include "mimir/common/concepts.hpp"
 
 #include <array>
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -41,18 +44,6 @@ struct DotPrinterTag
 struct ConsolePrinterTag
 {
 };
-
-/**
- * Utility to write elements to a string using operator<< overload.
- */
-
-template<typename T>
-std::string to_string(const T& element)
-{
-    auto os = std::stringstream();
-    os << element;
-    return os.str();
-}
 
 /**
  * Forward declarations
@@ -95,57 +86,60 @@ template<IsHanaMap Map>
 std::ostream& operator<<(std::ostream& os, const Map& map);
 
 /**
+ * Helpers to materialize strings
+ */
+
+template<typename T>
+std::string to_string(const T& element)
+{
+    std::stringstream ss;
+    if constexpr (std::is_pointer_v<std::decay_t<decltype(element)>>)
+        ss << *element;
+    else
+        ss << element;
+    return ss.str();
+}
+
+template<std::ranges::input_range Range>
+std::vector<std::string> to_strings(const Range& range)
+{
+    auto result = std::vector<std::string> {};
+    if constexpr (std::ranges::sized_range<Range>)
+        result.reserve(std::ranges::size(range));
+    for (const auto& element : range)
+        result.push_back(to_string(element));
+    return result;
+}
+
+/**
  * Definitions
  */
 
 template<typename T, size_t N>
 std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr)
 {
-    os << "<";
-    for (size_t i = 0; i < arr.size(); ++i)
-    {
-        if (i != 0)
-            os << ", ";
-        os << arr[i];
-    }
-    os << ">";
+    fmt::print(os, "<{}>", fmt::join(to_strings(arr), ", "));
     return os;
 }
 
 template<typename Key, typename T, typename Compare, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map)
 {
-    os << "{";
-    for (auto it = map.begin(); it != map.end(); ++it)
-    {
-        if (it != map.begin())
-            os << ", ";
-        os << *it;
-    }
-    os << "}";
+    fmt::print(os, "{{{}}}", fmt::join(to_strings(map), ", "));
     return os;
 }
 
 template<typename T1, typename T2>
 std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair)
 {
-    os << "<" << pair.first << "," << pair.second << ">";
+    fmt::print(os, "<{},{}>", to_string(pair.first), to_string(pair.second));
     return os;
 }
 
 template<typename Key, typename Compare, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::set<Key, Compare, Allocator>& set)
 {
-    os << "{";
-    size_t i = 0;
-    for (const auto& element : set)
-    {
-        if (i != 0)
-            os << ", ";
-        os << element;
-        ++i;
-    }
-    os << "}";
+    fmt::print(os, "{{{}}}", fmt::join(to_strings(set), ", "));
     return os;
 }
 
@@ -165,44 +159,21 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
 template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map)
 {
-    os << "{";
-    for (auto it = map.begin(); it != map.end(); ++it)
-    {
-        if (it != map.begin())
-            os << ", ";
-        os << *it;
-    }
-    os << "}";
+    fmt::print(os, "{{{}}}", fmt::join(to_strings(map), ", "));
     return os;
 }
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set)
 {
-    os << "{";
-    size_t i = 0;
-    for (const auto& element : set)
-    {
-        if (i != 0)
-            os << ", ";
-        os << element;
-        ++i;
-    }
-    os << "}";
+    fmt::print(os, "{{{}}}", fmt::join(to_strings(set), ", "));
     return os;
 }
 
 template<typename T, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec)
 {
-    os << "[";
-    for (size_t i = 0; i < vec.size(); ++i)
-    {
-        if (i != 0)
-            os << ", ";
-        os << vec[i];
-    }
-    os << "]";
+    fmt::print(os, "[{}]", fmt::join(to_strings(vec), ", "));
     return os;
 }
 
