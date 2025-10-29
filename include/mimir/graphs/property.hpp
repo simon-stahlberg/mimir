@@ -23,7 +23,13 @@
 #include <concepts>
 #include <cstddef>
 #include <loki/loki.hpp>
+#include <memory>
+#include <ostream>
+#include <sstream>
+#include <string>
 #include <tuple>
+#include <typeinfo>
+#include <utility>
 #include <vector>
 
 namespace mimir::graphs
@@ -36,7 +42,7 @@ template<class T>
 concept Property = requires(const T& a, const T& b, std::ostream& os) {
     { loki::Hash<T> {}(a) } -> std::convertible_to<std::size_t>;
     { loki::EqualTo<T> {}(a, b) } -> std::same_as<bool>;
-    { os << a } -> std::same_as<std::ostream&>;
+    // { os << a } -> std::same_as<std::ostream&>;
 };
 
 /**
@@ -84,8 +90,10 @@ public:
     }
     std::string str() const override
     {
+        using mimir::operator<<;
+
         auto ss = std::stringstream {};
-        mimir::operator<<(ss, m_properties);
+        ss << m_properties;
         return ss.str();
     }
     size_t hash() const override { return loki::Hash<std::tuple<Ps...>>()(m_properties); }
