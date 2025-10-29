@@ -23,6 +23,7 @@
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/property.hpp"
 #include "mimir/graphs/types.hpp"
 
 #include <boost/hana.hpp>
@@ -455,15 +456,15 @@ void DynamicGraph<V, E>::clear()
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... VertexProperties>
-    requires HasVertexProperties<V, VertexProperties...>
-VertexIndex DynamicGraph<V, E>::add_vertex(VertexProperties&&... properties)
+template<Property P>
+    requires HasVertexProperty<V, P>
+VertexIndex DynamicGraph<V, E>::add_vertex(P&& properties)
 {
     /* Get the vertex index. */
     auto index = m_free_vertices.empty() ? m_next_vertex_index++ : m_free_vertices.back();
 
     /* Create the vertex. */
-    m_vertices.emplace(index, V(index, std::forward<VertexProperties>(properties)...));
+    m_vertices.emplace(index, V(index, std::forward<P>(properties)));
 
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
@@ -491,17 +492,17 @@ VertexIndex DynamicGraph<V, E>::add_vertex(VertexProperties&&... properties)
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... VertexProperties>
-    requires HasVertexProperties<V, VertexProperties...>
-VertexIndex DynamicGraph<V, E>::add_vertex(const Vertex<VertexProperties...>& vertex)
+template<Property P>
+    requires HasVertexProperty<V, P>
+VertexIndex DynamicGraph<V, E>::add_vertex(const Vertex<P>& vertex)
 {
-    return std::apply([this](auto&&... properties) { return this->add_vertex(std::forward<decltype(properties)>(properties)...); }, vertex.get_properties());
+    return this->add_vertex(vertex.get_properties());
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, P&& properties)
 {
     vertex_index_check(source, "DynamicGraph<V, E>::add_directed_edge(...): Source vertex does not exist.");
     vertex_index_check(target, "DynamicGraph<V, E>::add_directed_edge(...): Target vertex does not exist.");
@@ -510,7 +511,7 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
     const auto index = m_free_edges.empty() ? m_next_edge_index++ : m_free_edges.back();
 
     /* Create the edge */
-    m_edges.emplace(index, E(index, source, target, std::forward<EdgeProperties>(properties)...));
+    m_edges.emplace(index, E(index, source, target, std::forward<P>(properties)));
 
     /* Initialize the data structures. */
     boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).at(source).insert(index);
@@ -528,29 +529,22 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<P>& edge)
 {
-    return std::apply([this, source, target](auto&&... properties)
-                      { return this->add_directed_edge(source, target, std::forward<decltype(properties)>(properties)...); },
-                      edge.get_properties());
+    return this->add_directed_edge(source, target, edge.get_properties());
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-std::pair<EdgeIndex, EdgeIndex> DynamicGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+std::pair<EdgeIndex, EdgeIndex> DynamicGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, P&& properties)
 {
-    auto properties_tuple = std::make_tuple(std::forward<EdgeProperties>(properties)...);
-    auto properties_tuple_copy = properties_tuple;
+    auto properties_copy = P(std::forward<P>(properties));
 
-    const auto forward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(source, target, std::forward<decltype(args)>(args)...); },
-                   std::move(properties_tuple_copy));
-    const auto backward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(target, source, std::forward<decltype(args)>(args)...); },
-                   std::move(properties_tuple));
+    const auto forward_edge_index = this->add_directed_edge(source, target, std::forward<P>(properties));
+    const auto backward_edge_index = this->add_directed_edge(target, source, std::move(properties_copy));
 
     return std::make_pair(forward_edge_index, backward_edge_index);
 }

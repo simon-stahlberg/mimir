@@ -27,16 +27,16 @@ namespace mimir::graphs
 
 template<typename T>
 concept IsEdge = requires(T a) {
-    typename T::EdgePropertiesTypes;
+    typename T::PropertyType;
 
     { a.get_index() } -> std::convertible_to<EdgeIndex>;
     { a.get_source() } -> std::convertible_to<VertexIndex>;
     { a.get_target() } -> std::convertible_to<VertexIndex>;
 };
 
-/// Check whether `T` is an Edge with the given `EdgeProperties`s.
-template<typename T, typename... EdgeProperties>
-concept HasEdgeProperties = IsEdge<T> && std::is_same_v<typename T::EdgePropertiesTypes, std::tuple<std::decay_t<EdgeProperties>...>>;
+/// Check whether `T` is an Edge with the given properties `P`.
+template<typename T, typename P>
+concept HasEdgeProperty = IsEdge<T> && std::is_same_v<typename T::PropertyType, std::decay_t<P>>;
 
 }
 

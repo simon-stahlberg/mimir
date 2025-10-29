@@ -19,8 +19,8 @@
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/property.hpp"
 
 #include <loki/loki.hpp>
 #include <tuple>
@@ -30,17 +30,24 @@ namespace mimir::graphs
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
 /// @tparam ...EdgeProperties are additional edge properties.
-template<Property... EdgeProperties>
+template<Property P = std::tuple<>>
 class Edge
 {
 public:
-    using EdgePropertiesTypes = std::tuple<EdgeProperties...>;
+    using PropertyType = P;
 
-    Edge(EdgeIndex index, VertexIndex source, VertexIndex target, EdgeProperties... properties) :
+    Edge(EdgeIndex index, VertexIndex source, VertexIndex target, P properties) :
         m_index(index),
         m_source(source),
         m_target(target),
-        m_properties(std::move(properties)...)
+        m_properties(std::move(properties))
+    {
+    }
+
+    // Convenience: construct with only index if P is default-constructible
+    template<class Q = P>
+        requires std::is_default_constructible_v<Q>
+    Edge(EdgeIndex index, VertexIndex source, VertexIndex target) : m_index(index), m_source(source), m_target(target), m_properties()
     {
     }
 
@@ -48,18 +55,7 @@ public:
     VertexIndex get_source() const { return m_source; }
     VertexIndex get_target() const { return m_target; }
 
-    /// @brief Get a reference to the I-th `EdgeProperties`.
-    /// We recommend providing free inline functions to access properties with more meaningful names.
-    /// @tparam I the index of the property in the parameter pack.
-    /// @return a reference to the I-th property.
-    template<size_t I>
-    const auto& get_property() const
-    {
-        static_assert(I < sizeof...(EdgeProperties), "Index out of bounds for EdgeProperties");
-        return std::get<I>(m_properties);
-    }
-
-    const std::tuple<EdgeProperties...>& get_properties() const { return m_properties; }
+    const P& get_properties() const { return m_properties; }
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -70,11 +66,11 @@ private:
     EdgeIndex m_index;
     VertexIndex m_source;
     VertexIndex m_target;
-    std::tuple<EdgeProperties...> m_properties;
+    [[no_unique_address]] P m_properties;
 };
 
-template<Property... EdgeProperties>
-std::ostream& operator<<(std::ostream& os, const Edge<EdgeProperties...>& edge)
+template<Property P>
+std::ostream& operator<<(std::ostream& os, const Edge<P>& edge)
 {
     os << "index=" << edge.get_index() << ", properties=";
     mimir::operator<<(os, edge.get_properties());

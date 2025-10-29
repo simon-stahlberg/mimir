@@ -218,17 +218,17 @@ public:
     /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
     /// @param ...properties the vertex properties.
     /// @return the index of the newly created vertex.
-    template<typename... VertexProperties>
-        requires HasVertexProperties<V, VertexProperties...>
-    VertexIndex add_vertex(VertexProperties&&... properties);
+    template<Property P>
+        requires HasVertexProperty<V, P>
+    VertexIndex add_vertex(P&& properties);
 
     /// @brief Add a vertex to the graph that has the same properties as the given vertex.
     /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
     /// @param vertex is the given vertex.
     /// @return the index of the newly created vertex.
-    template<typename... VertexProperties>
-        requires HasVertexProperties<V, VertexProperties...>
-    VertexIndex add_vertex(const Vertex<VertexProperties...>& vertex);
+    template<Property P>
+        requires HasVertexProperty<V, P>
+    VertexIndex add_vertex(const Vertex<P>& vertex);
 
     /// @brief Add a directed edge from source to target to the graph with edge properties args.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
@@ -236,9 +236,9 @@ public:
     /// @param target the target vertex.
     /// @param ...properties the edge properties.
     /// @return the index of the newly created edge.
-    template<typename... EdgeProperties>
-        requires HasEdgeProperties<E, EdgeProperties...>
-    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
+    template<Property P>
+        requires HasEdgeProperty<E, P>
+    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, P&& properties);
 
     /// @brief Add an edge to the graph that has the same properties as the given edge.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
@@ -246,9 +246,9 @@ public:
     /// @param target the target vertex.
     /// @param edge is the given edge.
     /// @return the index of the newly created edge.
-    template<typename... EdgeProperties>
-        requires HasEdgeProperties<E, EdgeProperties...>
-    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge);
+    template<Property P>
+        requires HasEdgeProperty<E, P>
+    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, const Edge<P>& edge);
 
     /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
     ///
@@ -261,9 +261,9 @@ public:
     /// @param target the target vertex.
     /// @param ...properties the edge properties.
     /// @return the index pair of the two newly created edges.
-    template<typename... EdgeProperties>
-        requires HasEdgeProperties<E, EdgeProperties...>
-    std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
+    template<Property P>
+        requires HasEdgeProperty<E, P>
+    std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, P&& properties);
 
     /**
      * Destructible functionality.

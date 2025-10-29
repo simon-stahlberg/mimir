@@ -25,6 +25,7 @@
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph_decl.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
 
@@ -611,12 +612,12 @@ StaticGraph<V, E>::StaticGraph() : m_vertices(), m_edges(), m_degrees()
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... VertexProperties>
-    requires HasVertexProperties<V, VertexProperties...>
-VertexIndex StaticGraph<V, E>::add_vertex(VertexProperties&&... properties)
+template<Property P>
+    requires HasVertexProperty<V, P>
+VertexIndex StaticGraph<V, E>::add_vertex(P&& properties)
 {
     const auto index = m_vertices.size();
-    m_vertices.emplace_back(index, std::forward<VertexProperties>(properties)...);
+    m_vertices.emplace_back(index, std::forward<P>(properties));
 
     boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).resize(index + 1, 0);
     boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).resize(index + 1, 0);
@@ -625,23 +626,23 @@ VertexIndex StaticGraph<V, E>::add_vertex(VertexProperties&&... properties)
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... VertexProperties>
-    requires HasVertexProperties<V, VertexProperties...>
-VertexIndex StaticGraph<V, E>::add_vertex(const Vertex<VertexProperties...>& vertex)
+template<Property P>
+    requires HasVertexProperty<V, P>
+VertexIndex StaticGraph<V, E>::add_vertex(const Vertex<P>& vertex)
 {
-    return std::apply([this](auto&&... properties) { return this->add_vertex(std::forward<decltype(properties)>(properties)...); }, vertex.get_properties());
+    return this->add_vertex(vertex.get_properties());
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, P&& properties)
 {
     vertex_index_check(source, "StaticGraph<V, E>::add_directed_edge(...): Source vertex out of range");
     vertex_index_check(target, "StaticGraph<V, E>::add_directed_edge(...): Source vertex out of range");
 
     const auto index = m_edges.size();
-    m_edges.emplace_back(index, source, target, std::forward<EdgeProperties>(properties)...);
+    m_edges.emplace_back(index, source, target, std::forward<P>(properties));
     ++boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(source);
     ++boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(target);
     m_slice.push_back(index);
@@ -650,29 +651,22 @@ EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex t
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<P>& edge)
 {
-    return std::apply([this, source, target](auto&&... properties)
-                      { return this->add_directed_edge(source, target, std::forward<decltype(properties)>(properties)...); },
-                      edge.get_properties());
+    return this->add_directed_edge(source, target, edge.get_properties());
 }
 
 template<IsVertex V, IsEdge E>
-template<typename... EdgeProperties>
-    requires HasEdgeProperties<E, EdgeProperties...>
-std::pair<EdgeIndex, EdgeIndex> StaticGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+template<Property P>
+    requires HasEdgeProperty<E, P>
+std::pair<EdgeIndex, EdgeIndex> StaticGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, P&& properties)
 {
-    auto properties_tuple = std::make_tuple(std::forward<EdgeProperties>(properties)...);
-    auto properties_tuple_copy = properties_tuple;
+    auto properties_copy = P(std::forward<P>(properties));
 
-    const auto forward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(source, target, std::forward<decltype(args)>(args)...); },
-                   std::move(properties_tuple_copy));
-    const auto backward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(target, source, std::forward<decltype(args)>(args)...); },
-                   std::move(properties_tuple));
+    const auto forward_edge_index = this->add_directed_edge(source, target, std::forward<P>(properties));
+    const auto backward_edge_index = this->add_directed_edge(target, source, std::move(properties_copy));
 
     return std::make_pair(forward_edge_index, backward_edge_index);
 }

@@ -19,35 +19,38 @@
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/property.hpp"
 
 #include <loki/loki.hpp>
+#include <ostream>
 #include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace mimir::graphs
 {
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
-/// @tparam ...VertexProperties are additional vertex properties.
-template<Property... VertexProperties>
+/// @tparam P are additional vertex properties.
+template<Property P = std::tuple<>>
 class Vertex
 {
 public:
-    using VertexPropertiesTypes = std::tuple<VertexProperties...>;
+    using PropertyType = P;
 
-    Vertex(VertexIndex index, VertexProperties... properties) : m_index(index), m_properties(std::move(properties)...) {}
+    Vertex(VertexIndex index, P properties) : m_index(index), m_properties(std::move(properties)) {}
+
+    // Convenience: construct with only index if P is default-constructible
+    template<class Q = P>
+        requires std::is_default_constructible_v<Q>
+    explicit Vertex(VertexIndex index) : m_index(index), m_properties()
+    {
+    }
 
     VertexIndex get_index() const { return m_index; }
 
-    template<size_t I>
-    const auto& get_property() const
-    {
-        static_assert(I < sizeof...(VertexProperties), "Index out of bounds for VertexProperties");
-        return std::get<I>(m_properties);
-    }
-
-    const std::tuple<VertexProperties...>& get_properties() const { return m_properties; }
+    const P& get_properties() const { return m_properties; }
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -56,11 +59,11 @@ public:
 
 private:
     VertexIndex m_index;
-    std::tuple<VertexProperties...> m_properties;
+    [[no_unique_address]] P m_properties;
 };
 
-template<Property... VertexProperties>
-std::ostream& operator<<(std::ostream& os, const Vertex<VertexProperties...>& vertex)
+template<Property P>
+std::ostream& operator<<(std::ostream& os, const Vertex<P>& vertex)
 {
     os << "index=" << vertex.get_index() << ", properties=";
     mimir::operator<<(os, vertex.get_properties());
