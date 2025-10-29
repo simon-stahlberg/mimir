@@ -51,11 +51,5 @@ static_assert(IsStaticGraph<StaticBidirectionalDigraph>);
 
 static_assert(IsDynamicGraph<DynamicDigraph>);
 
-/**
- * Pretty printing
- */
-
-extern std::ostream& operator<<(std::ostream& out, const StaticDigraph& digraph);
-
 }
 #endif

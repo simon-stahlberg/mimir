@@ -286,7 +286,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                               for (size_t i = 0; i < top_sort.size(); ++i)
                               {
                                   const auto& vertex = graph.get_vertex(top_sort.at(i));
-                                  const auto nonterminal = vertex.template get_property<0>();
+                                  const auto nonterminal = vertex.get_properties();
                                   non_terminal_to_vertex.at(nonterminal) = i;
                               }
 

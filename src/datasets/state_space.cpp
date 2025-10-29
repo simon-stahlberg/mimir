@@ -150,7 +150,7 @@ private:
             const auto target_v_idx = it->second;
             if (m_symm_data.m_edges.emplace(source_v_idx, target_v_idx).second)  ///< avoid adding parallel edges
             {
-                m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
+                m_graph.add_directed_edge(source_v_idx, target_v_idx, std::make_tuple(action, m_problem, action_cost));
             }
 
             /* Always mark symmetric states as prunable. */
@@ -162,14 +162,14 @@ private:
 
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
-            const auto target_v_idx =
-                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+            const auto target_v_idx = m_graph.add_vertex(
+                std::make_tuple(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false));
 
             m_symm_data.certificate_maps.state_to_cert.emplace(successor_state, certificate);
             m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, target_v_idx);
 
             m_state_to_vertex_index.emplace(successor_state.get_index(), target_v_idx);
-            m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
+            m_graph.add_directed_edge(source_v_idx, target_v_idx, std::make_tuple(action, m_problem, action_cost));
         }
     }
 
@@ -181,8 +181,8 @@ private:
 
     void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx =
-            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx = m_graph.add_vertex(
+            std::make_tuple(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false));
         m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
 
         const auto certificate = compute_canonical_graph(start_state);
@@ -249,9 +249,10 @@ private:
         const auto target_vertex_index =
             m_state_to_vertex_index.contains(successor_state.get_index()) ?
                 m_state_to_vertex_index.at(successor_state.get_index()) :
-                m_graph.add_vertex(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+                m_graph.add_vertex(
+                    std::make_tuple(successor_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false));
         m_state_to_vertex_index.emplace(successor_state.get_index(), target_vertex_index);
-        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
+        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, std::make_tuple(action, m_problem, action_cost));
     }
 
     void on_generate_state_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
@@ -262,8 +263,8 @@ private:
 
     void on_start_search_impl(const State& start_state)
     {
-        const auto v_idx =
-            m_graph.add_vertex(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx = m_graph.add_vertex(
+            std::make_tuple(start_state.get_packed_state(), m_state_repository, DiscreteCost(0), ContinuousCost(0), false, false, false, false));
         m_state_to_vertex_index.emplace(start_state.get_index(), v_idx);
     }
 
@@ -352,14 +353,14 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         const auto is_unsolvable = unsolvable_vertices.contains(problem_v_idx);
         const auto is_alive = (!(is_goal || is_unsolvable));
 
-        final_graph.add_vertex(graphs::get_packed_state(v),
-                               graphs::get_state_repository(v),
-                               unit_goal_distance,
-                               action_goal_distance,
-                               is_initial,
-                               is_goal,
-                               is_unsolvable,
-                               is_alive);
+        final_graph.add_vertex(std::make_tuple(graphs::get_packed_state(v),
+                                               graphs::get_state_repository(v),
+                                               unit_goal_distance,
+                                               action_goal_distance,
+                                               is_initial,
+                                               is_goal,
+                                               is_unsolvable,
+                                               is_alive));
     }
     for (const auto& e : bidir_graph.get_edges())
     {

@@ -7,50 +7,11 @@
 namespace mimir::graphs
 {
 
-class PyColor : public IColor
-{
-public:
-    PyColor(nb::args args) : m_tuple(nb::tuple(args)) {}
-
-    bool operator==(const IColor& other) const override
-    {
-        if (typeid(*this) == typeid(other))
-        {
-            const auto& other_derived = static_cast<const PyColor&>(other);
-
-            return m_tuple.equal(other_derived.m_tuple);
-        }
-        return false;
-    }
-    bool operator<(const IColor& other) const override
-    {
-        if (typeid(*this) == typeid(other))
-        {
-            const auto& other_derived = static_cast<const PyColor&>(other);
-
-            return bool(nb::bool_(m_tuple.attr("__lt__")(other_derived.m_tuple)));
-        }
-        return typeid(*this).before(typeid(other));
-    }
-    std::string str() const override { return nb::str(m_tuple).c_str(); }
-    size_t hash() const override { return nb::hash(m_tuple); }
-
-private:
-    nb::tuple m_tuple;
-};
-
 void bind_module_definitions(nb::module_& m)
 {
     bind_vertex<PyVertex>(m, PyVertexProperties<PyVertex>::name);
-    bind_vertex<EmptyVertex>(m, PyVertexProperties<EmptyVertex>::name);
-    bind_vertex<ColoredVertex>(m, PyVertexProperties<ColoredVertex>::name);
     bind_edge<PyEdge>(m, PyEdgeProperties<PyEdge>::name);
-    bind_edge<EmptyEdge>(m, PyEdgeProperties<EmptyEdge>::name);
-    bind_edge<ColoredEdge>(m, PyEdgeProperties<ColoredEdge>::name);
     bind_static_graph<PyVertex, PyEdge>(m, "StaticPyGraph");
-    bind_static_graph<EmptyVertex, EmptyEdge>(m, "StaticEmptyGraph");
-    bind_static_graph<ColoredVertex, EmptyEdge>(m, "StaticVertexColoredGraph");
-    bind_static_graph<ColoredVertex, ColoredEdge>(m, "StaticEdgeColoredGraph");
     bind_dynamic_graph<PyVertex, PyEdge>(m, "DynamicPyGraph");
 
     nb::class_<color_refinement::CertificateImpl>(m, "CertificateColorRefinement")
@@ -84,17 +45,36 @@ void bind_module_definitions(nb::module_& m)
     bind_kfwl_certificate<3>(m, "Certficate3FWL");
     bind_kfwl_certificate<4>(m, "Certficate4FWL");
 
-    nb::class_<Color>(m, "Color")  //
-        .def(nb::new_([](nb::args args) { return Color(std::shared_ptr<IColor>(std::make_shared<PyColor>(args))); }))
-        .def("__str__", &Color::str)
-        .def("__eq__", &Color::operator==)
-        .def("__lt__", &Color::operator<)
-        .def("__hash__", &Color::hash);
+    nb::class_<IProperty>(m, "IProperty")
+        .def("__str__", &IProperty::str)
+        .def("__repr__", [](const IProperty& p) { return p.str(); })
+        .def("__hash__", [](const IProperty& p) { return (nb::ssize_t) p.hash(); })
+        .def("__eq__", [](const IProperty& a, const IProperty& b) { return a == b; })
+        .def("__lt__", [](const IProperty& a, const IProperty& b) { return a < b; });
+
+    nb::class_<PyProperty, IProperty>(m, "PyProperty")
+        .def(nb::init<nb::object>(), "obj"_a, "Wrap any Python object as a runtime property")
+        .def("__str__", &PyProperty::str)
+        .def("__repr__", [](const PyProperty& p) { return p.str(); })
+        .def("__hash__", [](const PyProperty& p) { return (nb::ssize_t) p.hash(); })
+        .def(
+            "__eq__",
+            [](const PyProperty& a, const IProperty& b) { return a == b; },
+            nb::is_operator())
+        .def("__lt__", [](const PyProperty& a, const IProperty& b) { return a < b; }, nb::is_operator());
+
+    nb::class_<PropertyValue>(m, "PropertyValue")
+        .def(nb::init<std::shared_ptr<IProperty>>(), "impl"_a)
+        .def("__str__", &PropertyValue::str)
+        .def("__repr__", [](const PropertyValue& v) { return v.str(); })
+        .def("__hash__", [](const PropertyValue& v) { return v.hash(); })
+        .def("__eq__", &PropertyValue::operator==, nb::is_operator())
+        .def("__lt__", &PropertyValue::operator<, nb::is_operator());
 
     nb::class_<nauty::SparseGraph>(m, "NautySparseGraph")
-        .def(nb::init<const StaticGraph<ColoredVertex, EmptyEdge>&>())
-        .def(nb::init<const StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
-        .def(nb::init<const StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
+        .def(nb::init<const StaticGraph<PyVertex, PyEdge>&>())
+        .def(nb::init<const StaticForwardGraph<StaticGraph<PyVertex, PyEdge>>&>())
+        .def(nb::init<const StaticBidirectionalGraph<StaticGraph<PyVertex, PyEdge>>&>())
         .def("__str__", [](const nauty::SparseGraph& self) { return to_string(self); })
         .def("__repr__", [](const nauty::SparseGraph& self) { return to_string(self); })
         .def("__eq__", [](const nauty::SparseGraph& lhs, const nauty::SparseGraph& rhs) { return loki::EqualTo<nauty::SparseGraph>()(lhs, rhs); })

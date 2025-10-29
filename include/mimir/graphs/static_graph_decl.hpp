@@ -193,6 +193,10 @@ public:
         requires HasVertexProperty<V, P>
     VertexIndex add_vertex(P&& properties);
 
+    template<Property P = std::tuple<>>
+        requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+    VertexIndex add_vertex();
+
     /// @brief Add a vertex to the graph that has the same properties as the given vertex.
     /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
     /// @param vertex is the given vertex.
@@ -210,6 +214,10 @@ public:
     template<Property P>
         requires HasEdgeProperty<E, P>
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, P&& properties);
+
+    template<Property P = std::tuple<>>
+        requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target);
 
     /// @brief Add an edge to the graph that has the same properties as the given edge.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
@@ -230,6 +238,10 @@ public:
     template<Property P>
         requires HasEdgeProperty<E, P>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, P&& properties);
+
+    template<Property P = std::tuple<>>
+        requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+    std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target);
 
     /// @brief Compute the subgraph induced by the given vertex indices.
     /// @param vertices The vertex indices from the original graph to include in the subgraph.

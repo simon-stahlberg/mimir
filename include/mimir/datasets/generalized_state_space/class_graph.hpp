@@ -36,33 +36,33 @@ namespace mimir::graphs
 
 /// @typedef ClassVertex
 /// @brief `ClassVertex` encapsulates information about a vertex in a `ClassGraph`.
-using ClassVertex = Vertex<Index, Index>;
+using ClassVertex = Vertex<std::tuple<Index, Index>>;
 using ClassVertexList = std::vector<ClassVertex>;
 
 /// @brief Get the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 /// @param vertex is a `ClassVertex`.
 /// @return the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
-inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
+inline Index get_problem_vertex_index(const ClassVertex& vertex) { return std::get<0>(vertex.get_properties()); }
 
 /// @brief Get the index of the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 /// @param vertex is a `ClassVertex`.
 /// @return the index of the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
-inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
+inline Index get_problem_index(const ClassVertex& vertex) { return std::get<1>(vertex.get_properties()); }
 
 /// @typedef ClassEdge
 /// @brief `ClassEdge` encapsulates information about an edge in a `ClassGraph`.
-using ClassEdge = Edge<Index, Index>;
+using ClassEdge = Edge<std::tuple<Index, Index>>;
 using ClassEdgeList = std::vector<ClassEdge>;
 
 /// @brief Get the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 /// @param edge is a `ClassEdge`.
 /// @return the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
-inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_property<0>(); }
+inline Index get_problem_edge_index(const ClassEdge& edge) { return std::get<0>(edge.get_properties()); }
 
 /// @brief Get the index of the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 /// @param edge is a `ClassEdge`.
 /// @return the index of the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
-inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<1>(); }
+inline Index get_problem_index(const ClassEdge& edge) { return std::get<1>(edge.get_properties()); }
 
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 /// @typedef ClassGraph

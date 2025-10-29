@@ -7,14 +7,87 @@
 namespace mimir::graphs
 {
 
-using PyVertex = Vertex<nanobind::tuple>;
+struct with_gil_t
+{
+    template<class F>
+    decltype(auto) operator()(F&& f) const
+    {
+        nb::gil_scoped_acquire gil;
+        return std::forward<F>(f)();
+    }
+};
+inline constexpr with_gil_t with_gil {};
 
-using PyEdge = Edge<nanobind::tuple>;
+class PyProperty final : public IProperty
+{
+public:
+    explicit PyProperty(nb::object obj) : obj_(std::move(obj)) {}
+
+    bool operator==(const IProperty& o) const override
+    {
+        if (auto rhs = dynamic_cast<const PyProperty*>(&o))
+        {
+            return with_gil(
+                [&]() -> bool
+                {
+                    nb::object r = obj_.attr("__eq__")(rhs->obj_);
+                    if (r.ptr() == Py_NotImplemented)
+                    {
+                        throw std::runtime_error("__eq__ returned NotImplemented");
+                    }
+                    return nb::cast<bool>(r);
+                });
+        }
+        return false;
+    }
+
+    bool operator<(const IProperty& o) const override
+    {
+        if (auto rhs = dynamic_cast<const PyProperty*>(&o))
+        {
+            return with_gil(
+                [&]
+                {
+                    nb::object r = obj_.attr("__lt__")(rhs->obj_);
+                    if (r.ptr() == Py_NotImplemented)
+                    {
+                        throw std::runtime_error("__lt__ returned NotImplemented");
+                    }
+                    return nb::cast<bool>(r);
+                });
+        }
+        return typeid(*this).before(typeid(o));
+    }
+
+    std::string str() const override
+    {
+        return with_gil([&] { return std::string(nb::str(obj_).c_str()); });
+    }
+
+    std::size_t hash() const override
+    {
+        return with_gil([&] { return static_cast<std::size_t>(nb::hash(obj_)); });
+    }
+
+private:
+    nb::object obj_;
+};
+
+inline std::ostream& operator<<(std::ostream& out, const PyProperty& property)
+{
+    std::stringstream ss;
+    ss << property.str();
+    return out;
+}
+
+static_assert(Property<PyProperty>);
 
 template<IsVertex V>
 struct PyVertexProperties
 {
 };
+
+using PyVertex = Vertex<PyProperty>;
 
 template<>
 struct PyVertexProperties<PyVertex>
@@ -22,22 +95,12 @@ struct PyVertexProperties<PyVertex>
     static constexpr const char* name = "PyVertex";
 };
 
-template<>
-struct PyVertexProperties<EmptyVertex>
-{
-    static constexpr const char* name = "EmptyVertex";
-};
-
-template<>
-struct PyVertexProperties<ColoredVertex>
-{
-    static constexpr const char* name = "ColoredVertex";
-};
-
 template<IsEdge E>
 struct PyEdgeProperties
 {
 };
+
+using PyEdge = Edge<PyProperty>;
 
 template<>
 struct PyEdgeProperties<PyEdge>
@@ -45,47 +108,21 @@ struct PyEdgeProperties<PyEdge>
     static constexpr const char* name = "PyEdge";
 };
 
-template<>
-struct PyEdgeProperties<EmptyEdge>
-{
-    static constexpr const char* name = "EmptyEdge";
-};
-
-template<>
-struct PyEdgeProperties<ColoredEdge>
-{
-    static constexpr const char* name = "ColoredEdge";
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 /// Vertex
 ///////////////////////////////////////////////////////////////////////////////
-
-template<IsVertex V, std::size_t... Is>
-void bind_vertex_get_properties(nb::class_<V>& cls, std::index_sequence<Is...>)
-{
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const V& v) { return v.template get_property<Is>(); }, nb::rv_policy::reference_internal), ...);
-}
 
 template<IsVertex V>
 void bind_vertex(nb::module_& m, const std::string& name)
 {
     auto cls = nb::class_<V>(m, name.c_str())  //
-                   .def("get_index", &V::get_index);
-
-    constexpr std::size_t N = std::tuple_size<typename V::VertexPropertiesTypes>::value;
-    bind_vertex_get_properties<V>(cls, std::make_index_sequence<N> {});
+                   .def("get_index", &V::get_index)
+                   .def("get_properties", &V::get_properties, nb::rv_policy::copy);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Edge
 ///////////////////////////////////////////////////////////////////////////////
-
-template<IsEdge E, std::size_t... Is>
-void bind_edge_get_properties(nb::class_<E>& cls, std::index_sequence<Is...>)
-{
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const E& v) { return v.template get_property<Is>(); }, nb::rv_policy::reference_internal), ...);
-}
 
 template<IsEdge E>
 void bind_edge(nb::module_& m, const std::string& name)
@@ -93,10 +130,8 @@ void bind_edge(nb::module_& m, const std::string& name)
     auto cls = nb::class_<E>(m, name.c_str())  //
                    .def("get_index", &E::get_index)
                    .def("get_source", &E::get_source)
-                   .def("get_target", &E::get_target);
-
-    constexpr std::size_t N = std::tuple_size<typename E::EdgePropertiesTypes>::value;
-    bind_edge_get_properties<E>(cls, std::make_index_sequence<N> {});
+                   .def("get_target", &E::get_target)
+                   .def("get_properties", &E::get_properties, nb::rv_policy::copy);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -326,32 +361,16 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("create_undirected_graph", &GraphType::create_undirected_graph)
         .def("__str__", [](const GraphType& self) { return to_string(self); })
         .def("clear", &GraphType::clear)
-        .def("add_vertex",
-             [](GraphType& self, nb::args args)
-             {
-                 using PropertiesTuple = typename V::VertexPropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args) { return self.add_vertex(std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+        .def("add_vertex", [](GraphType& self, typename V::PropertyType property) { return self.add_vertex(property); })
         .def("add_vertex", [](GraphType& self, const V& vertex) { return self.add_vertex(vertex); })
         .def("add_directed_edge",
-             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
-             {
-                 using PropertiesTuple = typename E::EdgePropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args)
-                                   { return self.add_directed_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+             [](GraphType& self, VertexIndex source, VertexIndex target, typename E::PropertyType property)
+             { return self.add_directed_edge(source, target, property); })
         .def("add_directed_edge",
              [](GraphType& self, VertexIndex source, VertexIndex target, const E& edge) { return self.add_directed_edge(source, target, edge); })
         .def("add_undirected_edge",
-             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
-             {
-                 using PropertiesTuple = typename E::EdgePropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args)
-                                   { return self.add_undirected_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+             [](GraphType& self, VertexIndex source, VertexIndex target, typename E::PropertyType property)
+             { return self.add_undirected_edge(source, target, property); })
         .def(
             "get_vertex_indices",
             [](const GraphType& self)
@@ -813,32 +832,16 @@ void bind_dynamic_graph(nb::module_& m, const std::string& name)
         .def(nb::init<>())
         .def("__str__", [](const GraphType& self) { return to_string(self); })
         .def("clear", &GraphType::clear)
-        .def("add_vertex",
-             [](GraphType& self, nb::args args)
-             {
-                 using PropertiesTuple = typename V::VertexPropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args) { return self.add_vertex(std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+        .def("add_vertex", [](GraphType& self, typename V::PropertyType property) { return self.add_vertex(property); })
         .def("add_vertex", [](GraphType& self, const V& vertex) { return self.add_vertex(vertex); })
         .def("add_directed_edge",
-             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
-             {
-                 using PropertiesTuple = typename E::EdgePropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args)
-                                   { return self.add_directed_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+             [](GraphType& self, VertexIndex source, VertexIndex target, typename E::PropertyType property)
+             { self.add_directed_edge(source, target, property); })
         .def("add_directed_edge",
              [](GraphType& self, VertexIndex source, VertexIndex target, const E& edge) { return self.add_directed_edge(source, target, edge); })
         .def("add_undirected_edge",
-             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
-             {
-                 using PropertiesTuple = typename E::EdgePropertiesTypes;
-                 return std::apply([&](auto&&... unpacked_args)
-                                   { return self.add_undirected_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
-                                   cast<PropertiesTuple>(args));
-             })
+             [](GraphType& self, VertexIndex source, VertexIndex target, typename E::PropertyType property)
+             { self.add_undirected_edge(source, target, property); })
         .def(
             "remove_vertex",
             [](GraphType& self, VertexIndex vertex) { self.remove_vertex(vertex); },
@@ -1061,7 +1064,6 @@ void bind_kfwl_certificate(nb::module_& m, const std::string& name)
              })
         .def("get_hash_to_color", &kfwl::CertificateImpl<k>::get_hash_to_color);
 }
-
 }
 
 #endif

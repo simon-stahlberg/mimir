@@ -20,9 +20,9 @@
 namespace mimir::graphs
 {
 
-template class Vertex<search::State, formalism::Problem, std::shared_ptr<nauty::SparseGraph>, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+template class Vertex<std::tuple<search::State, formalism::Problem, std::shared_ptr<nauty::SparseGraph>, DiscreteCost, ContinuousCost, bool, bool, bool, bool>>;
 
-template class Edge<formalism::GroundAction, formalism::Problem, ContinuousCost>;
+template class Edge<std::tuple<formalism::GroundAction, formalism::Problem, ContinuousCost>>;
 
 template class StaticGraph<ProblemVertex, ProblemEdge>;
 

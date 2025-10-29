@@ -38,18 +38,18 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<search::PackedState, search::StateRepository, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+using ProblemVertex = Vertex<std::tuple<search::PackedState, search::StateRepository, DiscreteCost, ContinuousCost, bool, bool, bool, bool>>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the `PackedState` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `PackedState` of the given `ProblemVertex` in the `ProblemGraph`.
-inline search::PackedState get_packed_state(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
+inline search::PackedState get_packed_state(const ProblemVertex& vertex) { return std::get<0>(vertex.get_properties()); }
 
 /// @brief Get the `StateRepository` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `StateRepository` of the given `ProblemVertex` in the `ProblemGraph`.
-inline const search::StateRepository& get_state_repository(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+inline const search::StateRepository& get_state_repository(const ProblemVertex& vertex) { return std::get<1>(vertex.get_properties()); }
 
 /// @brief Get the `State` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
@@ -64,52 +64,52 @@ inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { retu
 /// @brief Get the unit goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the unit goal distance of the given `ProblemVertex`.
-inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
+inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return std::get<2>(vertex.get_properties()); }
 
 /// @brief Get the action cost goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`
 /// @return the action cost goal distance of the given `ProblemVertex`.
-inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<3>(); }
+inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return std::get<3>(vertex.get_properties()); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an initial vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an initial vertex, and false otherwise.
-inline bool is_initial(const ProblemVertex& vertex) { return vertex.get_property<4>(); }
+inline bool is_initial(const ProblemVertex& vertex) { return std::get<4>(vertex.get_properties()); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is a goal vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is a goal vertex, and false otherwise.
-inline bool is_goal(const ProblemVertex& vertex) { return vertex.get_property<5>(); }
+inline bool is_goal(const ProblemVertex& vertex) { return std::get<5>(vertex.get_properties()); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an unsolvable vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an unsolvable vertex, and false otherwise.
-inline bool is_unsolvable(const ProblemVertex& vertex) { return vertex.get_property<6>(); }
+inline bool is_unsolvable(const ProblemVertex& vertex) { return std::get<6>(vertex.get_properties()); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an alive vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an alive vertex, and false otherwise.
-inline bool is_alive(const ProblemVertex& vertex) { return vertex.get_property<7>(); }
+inline bool is_alive(const ProblemVertex& vertex) { return std::get<7>(vertex.get_properties()); }
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
-using ProblemEdge = Edge<formalism::GroundAction, formalism::Problem, ContinuousCost>;
+using ProblemEdge = Edge<std::tuple<formalism::GroundAction, formalism::Problem, ContinuousCost>>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
 
 /// @brief Get the `GroundAction` of the given `ProblemEdge`.
 /// @param edge is a `ProblemEdge`.
 /// @return the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
-inline formalism::GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<0>(); }
+inline formalism::GroundAction get_action(const ProblemEdge& edge) { return std::get<0>(edge.get_properties()); }
 
 /// @brief Get the `formalism::Problem` of the given `ProblemEdge`.
 /// @param vertex is a `ProblemEdge`.
 /// @return the `formalism::Problem` of the given `ProblemEdge` in the `ProblemGraph`.
-inline const formalism::Problem& get_problem(const ProblemEdge& edge) { return edge.get_property<1>(); }
+inline const formalism::Problem& get_problem(const ProblemEdge& edge) { return std::get<1>(edge.get_properties()); }
 
 /// @brief Get the action cost associated with the `GroundAction` of the given `ProblemEdge`
 /// @param edge is a `ProblemEdge`.
 /// @return the action cost of associated with the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
-inline ContinuousCost get_action_cost(const ProblemEdge& edge) { return edge.get_property<2>(); }
+inline ContinuousCost get_action_cost(const ProblemEdge& edge) { return std::get<2>(edge.get_properties()); }
 
 using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
 using StaticProblemGraphList = std::vector<StaticProblemGraph>;

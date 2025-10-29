@@ -29,9 +29,9 @@ using PolicyVertex = Vertex<languages::general_policies::ConditionSet>;
 using PolicyEdge = Edge<languages::general_policies::EffectSet>;
 using PolicyGraph = DynamicGraph<PolicyVertex, PolicyEdge>;
 
-inline const auto& get_conditions(const PolicyVertex& vertex) { return vertex.get_property<0>(); }
+inline const auto& get_conditions(const PolicyVertex& vertex) { return vertex.get_properties(); }
 
-inline const auto& get_effects(const PolicyEdge& edge) { return edge.get_property<0>(); }
+inline const auto& get_effects(const PolicyEdge& edge) { return edge.get_properties(); }
 
 extern std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex);
 

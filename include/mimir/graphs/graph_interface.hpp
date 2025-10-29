@@ -21,6 +21,7 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
+#include "mimir/graphs/property.hpp"
 
 #include <concepts>
 #include <cstdint>
@@ -84,6 +85,18 @@ concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
     { a.template get_adjacent_edge_indices<BackwardTag>(vertex) } -> IsRangeOver<EdgeIndex>;
     { a.template get_degree<ForwardTag>(vertex) } -> std::same_as<Degree>;
     { a.template get_degree<BackwardTag>(vertex) } -> std::same_as<Degree>;
+};
+
+template<typename T>
+concept IsVertexColoredGraph = requires {
+    typename T::VertexType;
+    requires std::is_same_v<typename T::VertexType::PropertyType, mimir::graphs::PropertyValue>;
+};
+
+template<typename T>
+concept IsEdgeColoredGraph = requires {
+    typename T::EdgeType;
+    requires std::is_same_v<typename T::EdgeType::PropertyType, mimir::graphs::PropertyValue>;
 };
 
 }

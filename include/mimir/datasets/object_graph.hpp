@@ -20,6 +20,8 @@
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/graphs/property.hpp"
+#include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <ostream>
@@ -30,7 +32,8 @@ namespace mimir::datasets
 /// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl`.
 /// @param state is the state.
 /// @param problem is the Problem.
-extern graphs::StaticVertexColoredGraph create_object_graph(const search::State& state, const formalism::ProblemImpl& problem);
+extern graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_object_graph(const search::State& state,
+                                                                                                      const formalism::ProblemImpl& problem);
 
 }
 

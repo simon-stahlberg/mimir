@@ -19,7 +19,7 @@
 
 namespace mimir::graphs
 {
-template class Vertex<search::iw::AtomIndexList, IndexList>;
+template class Vertex<std::tuple<search::iw::AtomIndexList, IndexList>>;
 
 template class StaticGraph<TupleGraphVertex, EmptyEdge>;
 template class StaticBidirectionalGraph<StaticTupleGraph>;

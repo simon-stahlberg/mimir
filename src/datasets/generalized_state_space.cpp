@@ -151,7 +151,7 @@ compute_generalized_state_space_with_symmetry_reduction(const std::vector<std::p
                     unsolvable_vertices.insert(class_v_idx);
                 }
 
-                class_graph.add_vertex(v_idx, state_space_idx);
+                class_graph.add_vertex(std::make_tuple(v_idx, state_space_idx));
 
                 certificate_to_class_v_idx.emplace(certificate, v_idx);
 
@@ -183,7 +183,7 @@ compute_generalized_state_space_with_symmetry_reduction(const std::vector<std::p
 
             if (it == class_e_idxs.end())
             {
-                const auto class_e_idx = class_graph.add_directed_edge(class_src_v_idx, class_dst_v_idx, e_idx, state_space_idx);
+                const auto class_e_idx = class_graph.add_directed_edge(class_src_v_idx, class_dst_v_idx, std::make_tuple(e_idx, state_space_idx));
 
                 edge_mapping.push_back(class_e_idx);
 
@@ -257,14 +257,14 @@ compute_generalized_state_space_without_symmetry_reduction(const std::vector<std
         {
             const auto v_idx = v.get_index();
 
-            class_graph.add_vertex(v_idx, state_space_idx);
+            class_graph.add_vertex(std::make_tuple(v_idx, state_space_idx));
             vertex_mapping.push_back(v_offset + v_idx);
         }
         for (const auto& e : graph.get_edges())
         {
             const auto e_idx = e.get_index();
 
-            class_graph.add_directed_edge(v_offset + e.get_source(), v_offset + e.get_target(), e_idx, state_space_idx);
+            class_graph.add_directed_edge(v_offset + e.get_source(), v_offset + e.get_target(), std::make_tuple(e_idx, state_space_idx));
             edge_mapping.push_back(e_offset + e_idx);
         }
 

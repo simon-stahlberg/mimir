@@ -23,6 +23,7 @@
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/property.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -37,11 +38,10 @@ namespace mimir::graphs::color_refinement
 {
 
 /// @brief `CertificateImpl` encapsulates the canonical coloring and the canonical compression function (decoding table).
-template<typename... Ts>
 class CertificateImpl
 {
 public:
-    using CanonicalColorCompressionFunction = std::map<Properties<Ts...>, ColorIndex>;
+    using CanonicalColorCompressionFunction = std::map<PropertyValue, ColorIndex>;
 
     using ConfigurationCompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
@@ -71,23 +71,21 @@ private:
 /// @param lhs is the first certificate.
 /// @param rhs is the second certificate.
 /// @return Return true iff both certificates are equal.
-template<typename... Ts>
-extern bool operator==(const CertificateImpl<Ts...>& lhs, const CertificateImpl<Ts...>& rhs);
+extern bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs);
 
 /// @brief Print a certificate to the ostream.
 /// @param out is the ostream.
 /// @param element is the certificate.
 /// @return a reference to the ostream.
-template<typename... Ts>
-extern std::ostream& operator<<(std::ostream& out, const CertificateImpl<Ts...>& element);
+extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& element);
 
 /// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
 /// @return the `Certicate`
-template<typename... Ts, typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-std::shared_ptr<CertificateImpl<Ts...>> compute_certificate(const G& graph);
+template<typename G>
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+std::shared_ptr<CertificateImpl> compute_certificate(const G& graph);
 
 /**
  * Implementations
@@ -206,8 +204,8 @@ void split_color_classes(const std::vector<std::tuple<ColorIndex, std::vector<Co
 }
 
 template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G>  //
-auto compute_certificate(const G& graph)
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
 {
     if (!is_undirected(graph))
     {
@@ -223,10 +221,10 @@ auto compute_certificate(const G& graph)
 
     /* Canonize and compress the IColors to a list of integers. */
     auto c = CertificateImpl::CanonicalColorCompressionFunction {};
-    auto canonical_coloring = PropertiesList {};
+    auto canonical_coloring = PropertyValueList {};
     for (const auto& vertex : graph.get_vertices())
     {
-        canonical_coloring.push_back(vertex.get_properties());
+        canonical_coloring.push_back(get_color(vertex));
     }
     std::sort(canonical_coloring.begin(), canonical_coloring.end());
     for (const auto& color : canonical_coloring)
@@ -248,7 +246,7 @@ auto compute_certificate(const G& graph)
         vertex_to_hash.emplace(vertex.get_index(), hash);
         hash_to_vertex.emplace(hash, vertex.get_index());
 
-        const auto color = c.at(vertex.get_properties());
+        const auto color = c.at(get_color(vertex));
         max_color = std::max(max_color, color);
         hash_to_color[hash] = color;
         color_to_hashes[color].push_back(hash);

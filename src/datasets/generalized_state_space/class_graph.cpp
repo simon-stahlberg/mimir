@@ -20,9 +20,9 @@
 namespace mimir::graphs
 {
 
-template class Vertex<Index, Index>;
+template class Vertex<std::tuple<Index, Index>>;
 
-template class Edge<Index, Index>;
+template class Edge<std::tuple<Index, Index>>;
 
 template class StaticGraph<ClassVertex, ClassEdge>;
 

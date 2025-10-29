@@ -46,7 +46,7 @@ public:
 
     // Convenience: construct with only index if P is default-constructible
     template<class Q = P>
-        requires std::is_default_constructible_v<Q>
+        requires std::is_same_v<Q, std::tuple<>>
     Edge(EdgeIndex index, VertexIndex source, VertexIndex target) : m_index(index), m_source(source), m_target(target), m_properties()
     {
     }

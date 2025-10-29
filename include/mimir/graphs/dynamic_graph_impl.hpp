@@ -493,6 +493,14 @@ VertexIndex DynamicGraph<V, E>::add_vertex(P&& properties)
 
 template<IsVertex V, IsEdge E>
 template<Property P>
+    requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+VertexIndex DynamicGraph<V, E>::add_vertex()
+{
+    return add_vertex(P());
+}
+
+template<IsVertex V, IsEdge E>
+template<Property P>
     requires HasVertexProperty<V, P>
 VertexIndex DynamicGraph<V, E>::add_vertex(const Vertex<P>& vertex)
 {
@@ -530,6 +538,14 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
 
 template<IsVertex V, IsEdge E>
 template<Property P>
+    requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target)
+{
+    return add_directed_edge(source, target, P());
+}
+
+template<IsVertex V, IsEdge E>
+template<Property P>
     requires HasEdgeProperty<E, P>
 EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<P>& edge)
 {
@@ -547,6 +563,14 @@ std::pair<EdgeIndex, EdgeIndex> DynamicGraph<V, E>::add_undirected_edge(VertexIn
     const auto backward_edge_index = this->add_directed_edge(target, source, std::move(properties_copy));
 
     return std::make_pair(forward_edge_index, backward_edge_index);
+}
+
+template<IsVertex V, IsEdge E>
+template<Property P>
+    requires std::is_same_v<P, std::tuple<>> && HasEdgeProperty<E, P>
+std::pair<EdgeIndex, EdgeIndex> DynamicGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target)
+{
+    return add_undirected_edge(source, target, P());
 }
 
 template<IsVertex V, IsEdge E>

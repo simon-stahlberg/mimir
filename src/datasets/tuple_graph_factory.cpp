@@ -49,7 +49,7 @@ private:
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
 
-        m_root_v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { m_problem_vertex.get_index() });
+        m_root_v_idx = m_internal_tuple_graph.add_vertex(std::make_tuple(search::iw::AtomIndexList {}, IndexList { m_problem_vertex.get_index() }));
 
         m_v_idxs_grouped_by_distance.add_group_element(m_root_v_idx);
     }
@@ -66,7 +66,8 @@ private:
                 continue;  ///< self-looping edge
             }
 
-            const auto adj_v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { adj_problem_vertex.get_index() });
+            const auto adj_v_idx =
+                m_internal_tuple_graph.add_vertex(std::make_tuple(search::iw::AtomIndexList {}, IndexList { adj_problem_vertex.get_index() }));
             m_internal_tuple_graph.add_directed_edge(m_root_v_idx, adj_v_idx);
 
             m_v_idxs_grouped_by_distance.add_group_element(adj_v_idx);
@@ -104,7 +105,7 @@ private:
             {
                 novel_problem_v_idxs.insert(problem_v_idx);
 
-                const auto v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { problem_v_idx });
+                const auto v_idx = m_internal_tuple_graph.add_vertex(std::make_tuple(search::iw::AtomIndexList {}, IndexList { problem_v_idx }));
                 m_internal_tuple_graph.add_directed_edge(m_root_v_idx, v_idx);
 
                 m_v_idxs_grouped_by_distance.add_group_element(v_idx);
@@ -207,7 +208,7 @@ private:
                 m_index_to_tuple.emplace(tuple_index, novel_tuple);
             }
 
-            const auto v_idx = m_internal_tuple_graph.add_vertex(novel_tuple, IndexList { root_problem_v_idx });
+            const auto v_idx = m_internal_tuple_graph.add_vertex(std::make_tuple(novel_tuple, IndexList { root_problem_v_idx }));
 
             m_curr_v_idxs.push_back(v_idx);
             m_v_idxs_grouped_by_distance.add_group_element(v_idx);
@@ -521,7 +522,7 @@ private:
             const auto& cur_problem_v_idxs = m_novel_t_idx_to_problem_v_idxs.at(t_idx);
 
             const auto cur_v_idx =
-                m_internal_tuple_graph.add_vertex(m_index_to_tuple.at(t_idx), IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
+                m_internal_tuple_graph.add_vertex(std::make_tuple(m_index_to_tuple.at(t_idx), IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end())));
 
             m_curr_v_idxs.push_back(cur_v_idx);
 
