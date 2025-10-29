@@ -130,45 +130,39 @@ size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition
 template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::formatter::operator<<(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<AuxiliaryTag>& element);
 
-std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element)
+std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element) { return mimir::formatter::operator<<(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element) { return mimir::formatter::operator<<(out, element); }
+
+}
+
+namespace mimir::formatter
 {
-    write(element, StringFormatter(), out);
+template<mimir::formalism::IsFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element)
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::AuxiliaryTag>& element);
+
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element)
 {
-    write(element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
-template std::ostream& operator<<(std::ostream& out, NumericEffect<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, NumericEffect<AuxiliaryTag> element);
-
-std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
-{
-    write(*element, StringFormatter(), out);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, ConditionalEffect element)
-{
-    write(*element, StringFormatter(), out);
-    return out;
-}
-
 }

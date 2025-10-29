@@ -48,16 +48,15 @@ ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_con
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 
-std::ostream& operator<<(std::ostream& out, const AxiomImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const AxiomImpl& element) { return mimir::formatter::operator<<(out, element); }
+
 }
 
-std::ostream& operator<<(std::ostream& out, Axiom element)
+namespace mimir::formatter
 {
-    write(*element, StringFormatter(), out);
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::AxiomImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

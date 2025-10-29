@@ -121,93 +121,67 @@ Index FunctionExpressionImpl::get_index() const { return m_index; }
 const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { return m_function_expression; }
 
 /**
- * Utils
- */
-
-/**
  * Printing
  */
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element) { return mimir::formatter::operator<<(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element) { return mimir::formatter::operator<<(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element) { return mimir::formatter::operator<<(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element) { return mimir::formatter::operator<<(out, element); }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::formatter::operator<<(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element) { return mimir::formatter::operator<<(out, element); }
+
+}
+
+namespace mimir::formatter
 {
-    write(element, StringFormatter(), out);
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionBinaryOperatorImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMultiOperatorImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMinusImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<F>& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<AuxiliaryTag> element);
-
-std::ostream& operator<<(std::ostream& out, FunctionExpression element)
-{
-    std::visit([&](const auto& arg) { out << *arg; }, element->get_variant());
-    return out;
-}
-
 }

@@ -170,11 +170,14 @@ extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& e
 extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
 
-template<IsFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, NumericEffect<F> element);
-extern std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element);
-extern std::ostream& operator<<(std::ostream& out, ConditionalEffect element);
+}
 
+namespace mimir::formatter
+{
+template<mimir::formalism::IsFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element);
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element);
 }
 
 #endif

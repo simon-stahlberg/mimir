@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_ACTION_HPP_
 #define MIMIR_FORMALISM_GROUND_ACTION_HPP_
 
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -95,17 +96,17 @@ inline bool operator==(const std::span<const GroundAction>& lhs, const std::span
 }
 }
 
-namespace mimir
+namespace mimir::formatter
 {
+template<>
+std::ostream&
+operator<<(std::ostream& os,
+           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os,
-                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::FullFormatterTag>& data);
-
-template<>
-std::ostream& operator<<(std::ostream& os,
-                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::PlanFormatterTag>& data);
-
+std::ostream&
+operator<<(std::ostream& os,
+           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data);
 }
 
 #endif

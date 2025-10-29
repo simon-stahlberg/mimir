@@ -67,9 +67,12 @@ public:
 template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element);
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element);
+}
 
+namespace mimir::formatter
+{
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<F>& element);
 }
 
 #endif

@@ -67,9 +67,12 @@ static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);
 template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, Function<F> element);
+}
 
+namespace mimir::formatter
+{
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionImpl<F>& element);
 }
 
 #endif

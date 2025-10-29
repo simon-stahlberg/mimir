@@ -76,23 +76,25 @@ template class AtomImpl<DerivedTag>;
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::formatter::operator<<(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<DerivedTag>& element);
 
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, Atom<P> element)
+}
+
+namespace mimir::formatter
 {
-    write(*element, StringFormatter(), out);
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::AtomImpl<P>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Atom<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, Atom<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, Atom<DerivedTag> element);
-
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::DerivedTag>& element);
 }

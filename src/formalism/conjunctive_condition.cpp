@@ -114,15 +114,15 @@ const GroundNumericConstraintList& ConjunctiveConditionImpl::get_nullary_ground_
 
 size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
 
-std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element) { return mimir::formatter::operator<<(out, element); }
+
 }
 
-std::ostream& operator<<(std::ostream& out, ConjunctiveCondition element)
+namespace mimir::formatter
 {
-    write(*element, StringFormatter(), out);
+extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }

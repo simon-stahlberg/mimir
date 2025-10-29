@@ -199,15 +199,15 @@ domain::Details::Details(const DomainImpl& domain) : parent(&domain), constant(d
  * Printing
  */
 
-std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const DomainImpl& element) { return mimir::formatter::operator<<(out, element); }
+
 }
 
-std::ostream& operator<<(std::ostream& out, Domain element)
+namespace mimir::formatter
 {
-    write(*element, StringFormatter(), out);
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::DomainImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }
