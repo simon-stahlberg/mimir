@@ -163,47 +163,16 @@ namespace mimir
 {
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
 {
-    const auto& [conjunctive_effect, problem] = data;
-
-    const auto positive_literal_indices = conjunctive_effect->get_propositional_effects<formalism::PositiveTag>();
-    const auto negative_literal_indices = conjunctive_effect->get_propositional_effects<formalism::NegativeTag>();
-
-    auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
-    const auto& fluent_numeric_effects = conjunctive_effect->get_fluent_numeric_effects();
-    const auto& auxiliary_numeric_effect = conjunctive_effect->get_auxiliary_numeric_effect();
-
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices, positive_literals);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices, negative_literals);
-
-    os << "delete effects=";
-    mimir::operator<<(os, negative_literals);
-    os << ", " << "add effects=";
-    mimir::operator<<(os, positive_literals);
-    os << ", fluent numeric effects=";
-    mimir::operator<<(os, fluent_numeric_effects);
-    if (auxiliary_numeric_effect)
-    {
-        os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
-    }
-    else
-    {
-        os << ", no auxiliary numeric effects";
-    }
-
-    return os;
+    formalism::write(data, formalism::StringFormatter(), out);
+    return out;
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
 {
-    const auto& [cond_effect_proxy, problem] = data;
-
-    os << std::make_tuple(cond_effect_proxy->get_conjunctive_condition(), std::cref(problem)) << ", "
-       << std::make_tuple(cond_effect_proxy->get_conjunctive_effect(), std::cref(problem));
-
-    return os;
+    formalism::write(data, formalism::StringFormatter(), out);
+    return out;
 }
 }

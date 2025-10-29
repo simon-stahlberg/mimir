@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
@@ -90,45 +91,7 @@ namespace mimir
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data)
 {
-    const auto& [conjunctive_condition, problem] = data;
-
-    const auto positive_static_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::StaticTag>();
-    const auto negative_static_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::StaticTag>();
-    const auto positive_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::FluentTag>();
-    const auto negative_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::FluentTag>();
-    const auto positive_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::DerivedTag>();
-    const auto negative_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::DerivedTag>();
-
-    auto positive_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
-    auto negative_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
-    auto positive_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto negative_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto positive_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
-    auto negative_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
-    const auto& ground_numeric_constraints = conjunctive_condition->get_numeric_constraints();
-
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices, positive_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices, negative_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_fluent_precondition_indices, positive_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_fluent_precondition_indices, negative_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(positive_derived_precondition_indices, positive_derived_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(negative_derived_precondition_indices, negative_derived_precondition);
-
-    os << "positive static precondition=";
-    mimir::operator<<(os, positive_static_precondition);
-    os << ", " << "negative static precondition=";
-    mimir::operator<<(os, negative_static_precondition);
-    os << ", " << "positive fluent precondition=";
-    mimir::operator<<(os, positive_fluent_precondition);
-    os << ", " << "negative fluent precondition=";
-    mimir::operator<<(os, negative_fluent_precondition);
-    os << ", " << "positive derived precondition=";
-    mimir::operator<<(os, positive_derived_precondition);
-    os << ", " << "negative derived precondition=";
-    mimir::operator<<(os, negative_derived_precondition);
-    os << ", " << "numeric constraints=";
-    mimir::operator<<(os, ground_numeric_constraints);
-
+    formalism::write(data, formalism::StringFormatter(), os);
     return os;
 }
 }

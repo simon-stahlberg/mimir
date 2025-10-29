@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_action.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -67,23 +68,7 @@ template<>
 std::ostream& operator<<(std::ostream& os,
                          const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::FullFormatterTag>& data)
 {
-    const auto& [action, problem, tag] = data;
-
-    const auto& conjunctive_condition = action->get_conjunctive_condition();
-    const auto& conditional_effects = action->get_conditional_effects();
-
-    os << "Action("                                                           //
-       << "index=" << action->get_index() << ", "                             //
-       << "name=" << action->get_action()->get_name() << ", "                 //
-       << "binding=" << action->get_objects() << ", "                         //
-       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "  //
-       << ", " << "conditional_effects=[";
-    for (const auto& cond_effect : conditional_effects)
-    {
-        os << "[" << std::make_tuple(cond_effect, std::cref(problem)) << "], ";
-    }
-    os << "])";
-
+    formalism::write(data, formalism::StringFormatter(), os);
     return os;
 }
 
@@ -91,15 +76,7 @@ template<>
 std::ostream& operator<<(std::ostream& os,
                          const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::PlanFormatterTag>& data)
 {
-    const auto& [action, problem, tag] = data;
-    ;
-    os << "(" << action->get_action()->get_name();
-    // Only take objects w.r.t. to the original action parameters
-    for (auto it = action->get_objects().begin(); it != action->get_objects().begin() + action->get_action()->get_original_arity(); ++it)
-    {
-        os << " " << (*it)->get_name();
-    }
-    os << ")";
+    formalism::write(data, formalism::StringFormatter(), os);
     return os;
 }
 }

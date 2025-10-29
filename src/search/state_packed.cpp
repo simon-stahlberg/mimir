@@ -17,6 +17,10 @@
 
 #include "mimir/search/state_packed.hpp"
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
 using namespace mimir::formalism;
 
 namespace mimir::search
@@ -53,11 +57,12 @@ valla::Slot<Index> PackedStateImpl::get_numeric_variables() const { return m_num
 
 std::ostream& operator<<(std::ostream& os, const PackedStateImpl& state)
 {
-    os << "PackedState(";
-    os << "fluent atoms=" << state.get_atoms<FluentTag>();
-    os << ", derived atoms=" << state.get_atoms<DerivedTag>();
-    os << ", numeric variables=" << state.get_numeric_variables();
-    os << ")";
+    fmt::print(os,
+               "PackedState(fluent_atoms={}, derived_atoms={}, numeric_variables={})",
+               mimir::to_string(state.get_atoms<FluentTag>()),
+               mimir::to_string(state.get_atoms<DerivedTag>()),
+               mimir::to_string(state.get_numeric_variables()));
+
     return os;
 }
 

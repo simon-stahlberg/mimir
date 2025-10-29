@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_axiom.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/formalism/problem.hpp"
 
@@ -60,15 +61,7 @@ namespace mimir
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data)
 {
-    const auto [axiom, problem] = data;
-
-    os << "Axiom("                                                                          //
-       << "index=" << axiom->get_index() << ", "                                            //
-       << "name=" << axiom->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << axiom->get_objects() << ", "                                        //
-       << std::make_tuple(axiom->get_conjunctive_condition(), std::cref(problem)) << ", "   //
-       << "effect=" << axiom->get_literal() << ")";
-
+    formalism::write(data, formalism::StringFormatter(), os);
     return os;
 }
 }

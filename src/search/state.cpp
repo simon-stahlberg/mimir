@@ -22,6 +22,9 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <ostream>
 #include <tuple>
 
@@ -117,16 +120,13 @@ std::ostream& operator<<(std::ostream& os, const search::State& state)
     std::sort(static_ground_atoms.begin(), static_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
     std::sort(derived_ground_atoms.begin(), derived_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state.get_index();
-    os << ", " << "fluent atoms=";
-    mimir::operator<<(os, fluent_ground_atoms);
-    os << ", " << "static atoms=";
-    mimir::operator<<(os, static_ground_atoms);
-    os << ", " << "derived atoms=";
-    mimir::operator<<(os, derived_ground_atoms);
-    os << ", " << "fluent numerics=";
-    mimir::operator<<(os, fluent_function_values);
-    os << ")";
+    fmt::print(os,
+               "State(index={}, fluent_atoms={}, static_atoms={}, derived_atoms={}, fluent_numerics={})",
+               state.get_index(),
+               mimir::to_string(fluent_ground_atoms),
+               mimir::to_string(static_ground_atoms),
+               mimir::to_string(derived_ground_atoms),
+               mimir::to_string(fluent_function_values));
 
     return os;
 }

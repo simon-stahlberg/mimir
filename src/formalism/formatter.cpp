@@ -853,4 +853,158 @@ void write(const TermImpl& element, T formatter, std::ostream& out)
 template void write<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);
 template void write<AddressFormatter>(const TermImpl& element, AddressFormatter formatter, std::ostream& out);
 
+template<Formatter T>
+void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data, T formatter, std::ostream& out)
+{
+    const auto& [action, problem, tag] = data;
+
+    const auto& conjunctive_condition = action->get_conjunctive_condition();
+    const auto& conditional_effects = action->get_conditional_effects();
+
+    fmt::print(
+        out,
+        "GroundAction(index={}, name={}, binding=[{}], condition={}, conditional effects=[{}])",
+        action->get_index(),
+        action->get_action()->get_name(),
+        fmt::join(to_strings(action->get_objects(), formatter), " "),
+        to_string(std::make_tuple(conjunctive_condition, std::cref(problem)), formatter),
+        fmt::join(conditional_effects | std::views::transform([&](auto&& arg) { return to_string(std::make_tuple(arg, std::cref(problem)), formatter); }),
+                  ", "));
+}
+
+template void write<StringFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data,
+                                     StringFormatter formatter,
+                                     std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data,
+                                      AddressFormatter formatter,
+                                      std::ostream& out);
+
+template<Formatter T>
+void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data, T formatter, std::ostream& out)
+{
+    const auto& [action, problem, tag] = data;
+
+    fmt::print(
+        out,
+        "({} {})",
+        action->get_action()->get_name(),
+        fmt::join(to_strings(std::ranges::subrange(action->get_objects().begin(), action->get_objects().begin() + action->get_action()->get_original_arity()),
+                             formatter),
+                  " "));
+}
+
+template void write<StringFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data,
+                                     StringFormatter formatter,
+                                     std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data,
+                                      AddressFormatter formatter,
+                                      std::ostream& out);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+{
+    const auto [axiom, problem] = data;
+
+    fmt::print(out,
+               "Axiom(index={}, name={}, binding=[{}], condition={}, effect={})",
+               axiom->get_index(),
+               axiom->get_literal()->get_atom()->get_predicate()->get_name(),
+               fmt::join(to_strings(axiom->get_objects(), formatter), ", "),
+               to_string(std::make_tuple(axiom->get_conjunctive_condition(), std::cref(problem)), formatter),
+               to_string(axiom->get_literal(), formatter));
+}
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+{
+    const auto& [conjunctive_condition, problem] = data;
+
+    const auto positive_static_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::StaticTag>();
+    const auto negative_static_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::StaticTag>();
+    const auto positive_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::FluentTag>();
+    const auto negative_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::FluentTag>();
+    const auto positive_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::DerivedTag>();
+    const auto negative_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::DerivedTag>();
+
+    auto positive_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
+    auto negative_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
+    auto positive_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
+    auto negative_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
+    auto positive_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
+    auto negative_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
+    const auto& ground_numeric_constraints = conjunctive_condition->get_numeric_constraints();
+
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices, positive_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices, negative_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_fluent_precondition_indices, positive_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_fluent_precondition_indices, negative_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(positive_derived_precondition_indices, positive_derived_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(negative_derived_precondition_indices, negative_derived_precondition);
+
+    fmt::print(out,
+               "GroundConjunctiveCondition(positive static preconditions=[{}], negative static preconditions=[{}], negative fluent preconditions=[{}], "
+               "positive derived "
+               "preconditions=[{}], negative derived preconditions=[{}], numeric constraints=[{}])",
+               fmt::join(to_strings(positive_static_precondition, formatter), ", "),
+               fmt::join(to_strings(negative_static_precondition, formatter), ", "),
+               fmt::join(to_strings(positive_fluent_precondition, formatter), ", "),
+               fmt::join(to_strings(negative_fluent_precondition, formatter), ", "),
+               fmt::join(to_strings(positive_derived_precondition, formatter), ", "),
+               fmt::join(to_strings(negative_derived_precondition, formatter), ", "),
+               fmt::join(to_strings(ground_numeric_constraints, formatter), ", "));
+}
+
+template void write<StringFormatter>(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data,
+                                     StringFormatter formatter,
+                                     std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data,
+                                      AddressFormatter formatter,
+                                      std::ostream& out);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+{
+    const auto& [conjunctive_effect, problem] = data;
+
+    const auto positive_literal_indices = conjunctive_effect->get_propositional_effects<formalism::PositiveTag>();
+    const auto negative_literal_indices = conjunctive_effect->get_propositional_effects<formalism::NegativeTag>();
+
+    auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
+    auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
+    const auto& fluent_numeric_effects = conjunctive_effect->get_fluent_numeric_effects();
+    const auto& auxiliary_numeric_effect = conjunctive_effect->get_auxiliary_numeric_effect();
+
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices, positive_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices, negative_literals);
+
+    fmt::print(out,
+               "GroundConjunctiveEffect(delete effects=[{}], add effects=[{}], fluent numeric effects=[{}]{})",
+               fmt::join(to_strings(negative_literals, formatter), ", "),
+               fmt::join(to_strings(positive_literals, formatter), ", "),
+               fmt::join(to_strings(fluent_numeric_effects, formatter), ", "),
+               auxiliary_numeric_effect.has_value() ? ", auxiliary numeric effect=" + to_string(auxiliary_numeric_effect.value(), formatter) : "");
+}
+
+template void
+write<StringFormatter>(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, StringFormatter formatter, std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data,
+                                      AddressFormatter formatter,
+                                      std::ostream& out);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+{
+    const auto& [cond_effect_proxy, problem] = data;
+
+    fmt::print(out,
+               "ConditionalEffect({}, {})",
+               to_string(std::make_tuple(cond_effect_proxy->get_conjunctive_condition(), std::cref(problem)), formatter),
+               to_string(std::make_tuple(cond_effect_proxy->get_conjunctive_effect(), std::cref(problem)), formatter));
+}
+
+template void
+write<StringFormatter>(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, StringFormatter formatter, std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data,
+                                      AddressFormatter formatter,
+                                      std::ostream& out);
 }

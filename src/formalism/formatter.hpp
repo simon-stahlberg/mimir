@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_FORMATTER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_action.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -160,6 +161,23 @@ void write(const VariableImpl& element, T formatter, std::ostream& out);
 template<Formatter T>
 void write(const TermImpl& element, T formatter, std::ostream& out);
 
+template<Formatter T>
+void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data, T formatter, std::ostream& os);
+
+template<Formatter T>
+void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data, T formatter, std::ostream& os);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+
+template<Formatter T>
+void write(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
 }
 
 #endif

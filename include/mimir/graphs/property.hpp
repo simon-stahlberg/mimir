@@ -36,9 +36,7 @@ template<class T>
 concept Property = requires(const T& a, const T& b, std::ostream& os) {
     { loki::Hash<T> {}(a) } -> std::convertible_to<std::size_t>;
     { loki::EqualTo<T> {}(a, b) } -> std::same_as<bool>;
-    // { a < b } -> std::same_as<bool>;  // TODO: only necessary in wl, fwl currently
     { os << a } -> std::same_as<std::ostream&>;
-    // { mimir::operator<<(os, a) } -> std::same_as<std::ostream&>;
 };
 
 /**

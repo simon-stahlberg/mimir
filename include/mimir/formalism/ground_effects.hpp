@@ -183,10 +183,10 @@ std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
 }
 
 #endif

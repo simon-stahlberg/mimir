@@ -152,7 +152,7 @@ namespace mimir
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data);
 }
 
 #endif
