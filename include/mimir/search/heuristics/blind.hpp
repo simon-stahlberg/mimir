@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 

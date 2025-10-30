@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATORS_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/statistics.hpp"
 

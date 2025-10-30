@@ -27,7 +27,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/tags.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/assignment_set_utils.hpp"

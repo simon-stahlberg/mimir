@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_LIFTED_KPKC_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search::axiom_evaluator::lifted::kpkc

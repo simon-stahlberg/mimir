@@ -910,6 +910,9 @@ void write(const std::tuple<const GroundAxiomImpl&, const ProblemImpl&>& data, T
                to_string(axiom.get_literal(), formatter));
 }
 
+template void write<StringFormatter>(const std::tuple<const GroundAxiomImpl&, const ProblemImpl&>& data, StringFormatter formatter, std::ostream& out);
+template void write<AddressFormatter>(const std::tuple<const GroundAxiomImpl&, const ProblemImpl&>& data, AddressFormatter formatter, std::ostream& out);
+
 template<Formatter T>
 void write(const std::tuple<const GroundConjunctiveConditionImpl&, const ProblemImpl&>& data, T formatter, std::ostream& out)
 {

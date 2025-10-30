@@ -23,7 +23,6 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state_unpacked.hpp"
 

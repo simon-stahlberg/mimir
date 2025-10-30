@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_NUMERIC_CONSTRAINT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 
 namespace mimir::search::match_tree

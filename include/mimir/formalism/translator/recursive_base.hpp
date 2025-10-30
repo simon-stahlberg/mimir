@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATOR_RECURSIVE_BASE_HPP_
 #define MIMIR_FORMALISM_TRANSLATOR_RECURSIVE_BASE_HPP_
 
-#include "mimir/formalism/concepts.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem.hpp"

@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {

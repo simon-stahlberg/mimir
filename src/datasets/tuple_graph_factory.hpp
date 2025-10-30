@@ -22,7 +22,6 @@
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::datasets
 {

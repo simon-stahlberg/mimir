@@ -20,7 +20,6 @@
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/declarations.hpp"

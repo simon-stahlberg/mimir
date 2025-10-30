@@ -21,7 +21,6 @@
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search

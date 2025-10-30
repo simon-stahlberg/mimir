@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EXHAUSTIVE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/exhaustive/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"

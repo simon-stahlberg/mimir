@@ -21,7 +21,6 @@
 #include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_unpacked.hpp"

@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_BASE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_splitters/interface.hpp"

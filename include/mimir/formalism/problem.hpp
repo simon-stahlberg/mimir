@@ -24,7 +24,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <valla/indexed_hash_set.hpp>
 

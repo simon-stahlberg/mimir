@@ -24,7 +24,6 @@
 #include "mimir/datasets/tuple_graph/options.hpp"
 #include "mimir/datasets/types.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"

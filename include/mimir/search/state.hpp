@@ -18,11 +18,11 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
+#include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state_packed.hpp"
 #include "mimir/search/state_unpacked.hpp"
@@ -39,10 +39,10 @@ class State
 private:
     StateRepository m_parent;
     PackedState m_packed;
-    UnpackedState m_unpacked;  ///< we could remove it fall back to it returning iterators
+    SharedObjectPoolPtr<UnpackedStateImpl> m_unpacked;  ///< we could remove it fall back to it returning iterators
     Index m_index;
 
-    State(Index index, PackedState packed, UnpackedState unpacked, StateRepository parent);
+    State(Index index, PackedState packed, SharedObjectPoolPtr<UnpackedStateImpl> unpacked, StateRepository parent);
 
     friend class StateRepositoryImpl;  ///< Delegates construction from PackedState.
 

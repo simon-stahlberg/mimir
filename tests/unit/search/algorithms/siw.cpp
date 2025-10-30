@@ -19,7 +19,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"

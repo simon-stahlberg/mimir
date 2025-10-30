@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"

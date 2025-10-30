@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTOR_REPOSITORIES_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 
 #include <boost/hana.hpp>

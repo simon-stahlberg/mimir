@@ -22,7 +22,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics/interface.hpp"

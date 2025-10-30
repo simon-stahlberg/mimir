@@ -296,6 +296,14 @@ struct PlanFormatterTag
 {
 };
 
+template<typename T>
+concept IsFormalismEntity = requires { typename std::decay_t<std::remove_pointer_t<T>>::FormalismEntity; };
+
+template<typename T>
+concept HasConjunctiveCondition = requires(const T a) {
+    { a.get_conjunctive_condition() } -> std::same_as<GroundConjunctiveCondition>;
+};
+
 }
 
 #endif

@@ -527,11 +527,7 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GroundConjunctiveConditionImpl>(m, "GroundConjunctiveCondition")
         .def("to_string",
              [](const GroundConjunctiveConditionImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundConjunctiveCondition(&self), std::cref(problem)));
-                 return ss.str();
-             })
+             { return to_string(std::make_tuple(std::cref(self), std::cref(problem))); })
         .def("__eq__", [](const GroundConjunctiveConditionImpl& lhs, const GroundConjunctiveConditionImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundConjunctiveConditionImpl& lhs, const GroundConjunctiveConditionImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const GroundConjunctiveConditionImpl& self) { return std::hash<GroundConjunctiveCondition> {}(&self); })
@@ -601,11 +597,7 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GroundConjunctiveEffectImpl>(m, "GroundConjunctiveEffect")
         .def("to_string",
              [](const GroundConjunctiveEffectImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundConjunctiveEffect(&self), std::cref(problem)));
-                 return ss.str();
-             })
+             { return to_string(std::make_tuple(std::cref(self), std::cref(problem))); })
         .def("__eq__", [](const GroundConjunctiveEffectImpl& lhs, const GroundConjunctiveEffectImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundConjunctiveEffectImpl& lhs, const GroundConjunctiveEffectImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const GroundConjunctiveEffectImpl& self) { return std::hash<GroundConjunctiveEffect> {}(&self); })
@@ -637,11 +629,7 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GroundConditionalEffectImpl>(m, "GroundConditionalEffect")
         .def("to_string",
              [](const GroundConditionalEffectImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundConditionalEffect(&self), std::cref(problem)));
-                 return ss.str();
-             })
+             { return to_string(std::make_tuple(std::cref(self), std::cref(problem))); })
         .def("__eq__", [](const GroundConditionalEffectImpl& lhs, const GroundConditionalEffectImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundConditionalEffectImpl& lhs, const GroundConditionalEffectImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const GroundConditionalEffectImpl& self) { return std::hash<GroundConditionalEffect> {}(&self); })
@@ -654,21 +642,13 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<GroundActionImpl>(m, "GroundAction")  //
         .def("to_string",
              [](const GroundActionImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {}));
-                 return ss.str();
-             })
+             { return to_string(std::make_tuple(std::cref(self), std::cref(problem), formalism::FullFormatterTag {})); })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const GroundActionImpl& self) { return reinterpret_cast<std::uintptr_t>(&self); })
         .def("to_string_for_plan",
              [](const GroundActionImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
-                 return ss.str();
-             })
+             { return to_string(std::make_tuple(std::cref(self), std::cref(problem), formalism::PlanFormatterTag {})); })
         .def("get_index", &GroundActionImpl::get_index, nb::rv_policy::copy)
         .def("get_action", &GroundActionImpl::get_action, nb::rv_policy::reference_internal)
         .def("get_objects", &GroundActionImpl::get_objects, nb::rv_policy::copy)
@@ -679,12 +659,7 @@ void bind_module_definitions(nb::module_& m)
     /* GroundAxiom */
     nb::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
         .def("to_string",
-             [](const GroundAxiomImpl& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::print(ss, std::make_tuple(GroundAxiom(&self), std::cref(problem)));
-                 return ss.str();
-             })
+             [](const GroundAxiomImpl& self, const ProblemImpl& problem) { return to_string(std::make_tuple(std::cref(self), std::cref(problem))); })
         .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const GroundAxiomImpl& self) { return std::hash<GroundAxiom> {}(&self); })

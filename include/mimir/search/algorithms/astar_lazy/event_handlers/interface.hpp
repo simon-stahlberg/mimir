@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/algorithms/astar_lazy/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 

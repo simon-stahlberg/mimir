@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <concepts>
 #include <cstddef>

@@ -21,7 +21,6 @@
 #include "mimir/common/declarations.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"

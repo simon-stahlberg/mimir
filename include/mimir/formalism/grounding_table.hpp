@@ -2,7 +2,6 @@
 #define MIMIR_FORMALISM_GROUNDERS_GROUNDING_TABLE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <absl/container/flat_hash_map.h>
 #include <loki/details/utils/hash.hpp>

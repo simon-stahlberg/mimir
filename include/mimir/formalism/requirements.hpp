@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_REQUIREMENTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {

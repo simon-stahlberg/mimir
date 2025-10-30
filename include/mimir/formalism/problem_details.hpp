@@ -25,7 +25,6 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/grounding_table.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism::problem
 {

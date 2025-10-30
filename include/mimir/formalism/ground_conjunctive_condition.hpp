@@ -21,7 +21,6 @@
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>

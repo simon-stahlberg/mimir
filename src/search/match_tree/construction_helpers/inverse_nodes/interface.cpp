@@ -236,52 +236,52 @@ template void InitializeInverseNodesVisitor<GroundAxiomImpl>::accept(const Inver
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_true_child().get()).first)] = "T";
     atom.get_true_child()->visit(visitor);
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_false_child().get()).first)] = "F";
     atom.get_false_child()->visit(visitor);
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_dontcare_child().get()).first)] = "X";
     atom.get_dontcare_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_true_child().get()).first)] = "T";
     atom.get_true_child()->visit(visitor);
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_false_child().get()).first)] = "F";
     atom.get_false_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_true_child().get()).first)] = "T";
     atom.get_true_child()->visit(visitor);
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_dontcare_child().get()).first)] = "X";
     atom.get_dontcare_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_false_child().get()).first)] = "F";
     atom.get_false_child()->visit(visitor);
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_dontcare_child().get()).first)] = "X";
     atom.get_dontcare_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_true_child().get()).first)] = "T";
     atom.get_true_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
-    visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
+    visitor.m_edges[std::make_pair(visitor.m_nodes.at(&atom).first, visitor.m_nodes.at(atom.get_false_child().get()).first)] = "F";
     atom.get_false_child()->visit(visitor);
 }
 
@@ -396,9 +396,9 @@ template void InitializeInverseEdgesVisitor<GroundAxiomImpl>::accept(const Inver
 template<HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint)
 {
-    m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+    m_edges[std::make_pair(m_nodes.at(&constraint).first, m_nodes.at(constraint.get_true_child().get()).first)] = "T";
     constraint.get_true_child()->visit(*this);
-    m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
+    m_edges[std::make_pair(m_nodes.at(&constraint).first, m_nodes.at(constraint.get_dontcare_child().get()).first)] = "X";
     constraint.get_dontcare_child()->visit(*this);
 }
 
@@ -408,7 +408,7 @@ template void InitializeInverseEdgesVisitor<GroundAxiomImpl>::accept(const Inver
 template<HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_T<E>& constraint)
 {
-    m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+    m_edges[std::make_pair(m_nodes.at(&constraint).first, m_nodes.at(constraint.get_true_child().get()).first)] = "T";
     constraint.get_true_child()->visit(*this);
 }
 

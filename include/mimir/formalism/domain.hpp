@@ -21,7 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/domain_details.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {

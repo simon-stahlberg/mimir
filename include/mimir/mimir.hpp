@@ -124,6 +124,7 @@
 #include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/concrete/digraph.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
+#include "mimir/graphs/formatter.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"

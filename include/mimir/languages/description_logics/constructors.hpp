@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/languages/description_logics/constructor_base.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 

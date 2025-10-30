@@ -49,7 +49,7 @@ public:
     virtual void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) = 0;
 };
 
-/// @brief `Node` implements the interface of nodes.
+/// @brief `IInverseNode` implements the interface of nodes.
 template<formalism::HasConjunctiveCondition E>
 class IInverseNode
 {
@@ -69,9 +69,9 @@ public:
 };
 
 template<formalism::HasConjunctiveCondition E>
-using InverseNodes = std::unordered_map<const IInverseNode<E>*, std::pair<size_t, std::string>>;
+using InverseNodes = UnorderedMap<const IInverseNode<E>*, std::pair<size_t, std::string>>;
 
-using InverseEdges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
+using InverseEdges = UnorderedMap<std::pair<size_t, size_t>, std::string>;
 
 template<formalism::HasConjunctiveCondition E>
 struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<E>

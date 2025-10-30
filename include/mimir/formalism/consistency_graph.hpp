@@ -27,7 +27,6 @@
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>

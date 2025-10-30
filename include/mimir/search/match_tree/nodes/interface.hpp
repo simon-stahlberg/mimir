@@ -61,9 +61,9 @@ public:
 };
 
 template<formalism::HasConjunctiveCondition E>
-using Nodes = std::unordered_map<const INode<E>*, std::pair<size_t, std::string>>;
+using Nodes = UnorderedMap<const INode<E>*, std::pair<size_t, std::string>>;
 
-using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
+using Edges = UnorderedMap<std::pair<size_t, size_t>, std::string>;
 
 template<formalism::HasConjunctiveCondition E>
 struct InitializeNodesVisitor : public INodeVisitor<E>

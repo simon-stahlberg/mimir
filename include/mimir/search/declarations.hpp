@@ -19,9 +19,8 @@
 #define MIMIR_SEARCH_DECLARATIONS_HPP_
 
 // Do not include headers with transitive dependencies.
-#include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/declarations.hpp"
-#include "mimir/formalism/concepts.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <memory>
 #include <unordered_set>
@@ -49,7 +48,6 @@ using PackedStateMap = UnorderedMap<PackedState, T>;
 
 // UnpackedStateImpl
 class UnpackedStateImpl;
-using UnpackedState = SharedObjectPoolPtr<UnpackedStateImpl>;
 
 // State
 class State;

@@ -33,7 +33,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-State::State(Index index, PackedState packed, UnpackedState unpacked, StateRepository parent) :
+State::State(Index index, PackedState packed, SharedObjectPoolPtr<UnpackedStateImpl> unpacked, StateRepository parent) :
     m_parent(std::move(parent)),
     m_packed(packed),
     m_unpacked(std::move(unpacked)),

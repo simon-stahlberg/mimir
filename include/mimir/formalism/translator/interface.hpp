@@ -20,7 +20,6 @@
 
 #include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <algorithm>
 #include <boost/container/small_vector.hpp>

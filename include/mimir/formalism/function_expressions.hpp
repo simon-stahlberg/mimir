@@ -21,7 +21,6 @@
 #include "mimir/common/closed_interval.hpp"
 #include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 #include <algorithm>
 

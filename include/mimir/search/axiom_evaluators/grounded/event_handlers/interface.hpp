@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 

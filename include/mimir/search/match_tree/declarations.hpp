@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_DECLARATIONS_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_DECLARATIONS_HPP_
 
-#include "mimir/formalism/concepts.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/tags.hpp"
 
 #include <variant>

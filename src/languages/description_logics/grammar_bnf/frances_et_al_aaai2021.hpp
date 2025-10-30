@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_BNF_FRANCES_ET_AL_AAAI2021_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 
 namespace mimir::languages::dl::cnf_grammar
 {

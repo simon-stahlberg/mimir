@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_GENERALIZED_SEARCH_CONTEXT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/search_context.hpp"
 
