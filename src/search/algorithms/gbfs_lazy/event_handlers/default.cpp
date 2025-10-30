@@ -19,6 +19,7 @@
 
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/formatter.hpp"
+#include "mimir/search/formatter.hpp"
 #include "mimir/search/plan.hpp"  // remove this eventually
 
 #include <chrono>

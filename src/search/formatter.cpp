@@ -19,6 +19,13 @@
 
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/formatter.hpp"
+#include "mimir/search/algorithms/astar_eager/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/astar_lazy/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/gbfs_eager/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/gbfs_lazy/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/siw/event_handlers/statistics.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
@@ -64,7 +71,170 @@ std::ostream& operator<<(std::ostream& out, const INode<E>& element)
 template std::ostream& operator<<(std::ostream& out, const INode<formalism::GroundActionImpl>& element);
 template std::ostream& operator<<(std::ostream& out, const INode<formalism::GroundAxiomImpl>& element);
 }  // end match_tree
+
+namespace astar_eager
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end astar_eager
+
+namespace astar_lazy
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end astar_lazy
+
+namespace brfs
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end brfs
+
+namespace gbfs_eager
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end gbfs_eager
+
+namespace gbfs_lazy
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end gbfs_lazy
+
+namespace iw
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end iw
+
+namespace siw
+{
+std::ostream& operator<<(std::ostream& out, const Statistics& element) { return mimir::print(out, element); }
+}  // end siw
+
 }  // end search
+
+std::ostream& print(std::ostream& out, const mimir::search::astar_eager::Statistics& element)
+{
+    out << "[AStar] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[AStar] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[AStar] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[AStar] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[AStar] Number of generated states until last f-layer: "
+        << (element.get_num_generated_until_f_value().empty() ? 0 : element.get_num_generated_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of expanded states until last f-layer: "
+        << (element.get_num_expanded_until_f_value().empty() ? 0 : element.get_num_expanded_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of pruned states until last f-layer: "
+        << (element.get_num_pruned_until_f_value().empty() ? 0 : element.get_num_pruned_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of reached fluent atoms: " << element.get_num_reached_fluent_atoms() << "\n"
+        << "[AStar] Number of reached derived atoms: " << element.get_num_reached_derived_atoms() << "\n"
+        << "[AStar] Number of states: " << element.get_num_states() << "\n"
+        << "[AStar] Number of nodes: " << element.get_num_nodes();
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::astar_lazy::Statistics& element)
+{
+    out << "[AStar] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[AStar] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[AStar] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[AStar] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[AStar] Number of generated states until last f-layer: "
+        << (element.get_num_generated_until_f_value().empty() ? 0 : element.get_num_generated_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of expanded states until last f-layer: "
+        << (element.get_num_expanded_until_f_value().empty() ? 0 : element.get_num_expanded_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of pruned states until last f-layer: "
+        << (element.get_num_pruned_until_f_value().empty() ? 0 : element.get_num_pruned_until_f_value().rbegin()->second) << "\n"
+        << "[AStar] Number of reached fluent atoms: " << element.get_num_reached_fluent_atoms() << "\n"
+        << "[AStar] Number of reached derived atoms: " << element.get_num_reached_derived_atoms() << "\n"
+        << "[AStar] Number of states: " << element.get_num_states() << "\n"
+        << "[AStar] Number of nodes: " << element.get_num_nodes();
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::brfs::Statistics& element)
+{
+    out << "[BrFS] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[BrFS] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[BrFS] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[BrFS] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[BrFS] Number of generated states until last g-layer: "
+        << (element.get_num_generated_until_g_value().empty() ? 0 : element.get_num_generated_until_g_value().back()) << "\n"
+        << "[BrFS] Number of expanded states until last g-layer: "
+        << (element.get_num_expanded_until_g_value().empty() ? 0 : element.get_num_expanded_until_g_value().back()) << "\n"
+        << "[BrFS] Number of pruned states until last g-layer: "
+        << (element.get_num_pruned_until_g_value().empty() ? 0 : element.get_num_pruned_until_g_value().back()) << "\n"
+        << "[BrFS] Number of reached fluent atoms: " << element.get_num_reached_fluent_atoms() << "\n"
+        << "[BrFS] Number of reached derived atoms: " << element.get_num_reached_derived_atoms() << "\n"
+        << "[BrFS] Number of nodes: " << element.get_num_nodes();
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::gbfs_eager::Statistics& element)
+{
+    out << "[GBFS] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[GBFS] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[GBFS] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[GBFS] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[GBFS] Number of reached fluent atoms: " << element.get_num_reached_fluent_atoms() << "\n"
+        << "[GBFS] Number of reached derived atoms: " << element.get_num_reached_derived_atoms() << "\n"
+        << "[GBFS] Number of states: " << element.get_num_states() << "\n"
+        << "[GBFS] Number of nodes: " << element.get_num_nodes();
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::gbfs_lazy::Statistics& element)
+{
+    out << "[GBFS] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[GBFS] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[GBFS] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[GBFS] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[GBFS] Number of reached fluent atoms: " << element.get_num_reached_fluent_atoms() << "\n"
+        << "[GBFS] Number of reached derived atoms: " << element.get_num_reached_derived_atoms() << "\n"
+        << "[GBFS] Number of states: " << element.get_num_states() << "\n"
+        << "[GBFS] Number of nodes: " << element.get_num_nodes();
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::iw::Statistics& element)
+{
+    out << "[IW] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[IW] Effective width: " << element.get_effective_width() << "\n"
+        << "[IW] Number of generated states: " << element.get_brfs_statistics_by_arity().back().get_num_generated() << "\n"
+        << "[IW] Number of expanded states: " << element.get_brfs_statistics_by_arity().back().get_num_expanded() << "\n"
+        << "[IW] Number of pruned states: " << element.get_brfs_statistics_by_arity().back().get_num_pruned() << "\n"
+        << "[IW] Number of generated states until last g-layer: "
+        << (element.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().empty() ?
+                0 :
+                element.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back())
+        << "\n"
+        << "[IW] Number of expanded states until last g-layer: "
+        << (element.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().empty() ?
+                0 :
+                element.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back())
+        << "\n"
+        << "[IW] Number of pruned states until last g-layer: "
+        << (element.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().empty() ?
+                0 :
+                element.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().back());
+
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::siw::Statistics& element)
+{
+    out << "[SIW] Search time: " << element.get_search_time_ms().count() << "ms" << "\n"
+        << "[SIW] Maximum effective width: " << element.get_maximum_effective_width() << "\n"
+        << "[SIW] Average effective width: " << element.get_average_effective_width() << "\n"
+        << "[SIW] Number of generated states: " << element.get_num_generated() << "\n"
+        << "[SIW] Number of expanded states: " << element.get_num_expanded() << "\n"
+        << "[SIW] Number of pruned states: " << element.get_num_pruned() << "\n"
+        << "[SIW] Number of generated states until last f-layer: " << element.get_num_generated_until_last_g_layer() << "\n"
+        << "[SIW] Number of expanded states until last f-layer: " << element.get_num_expanded_until_last_g_layer() << "\n"
+        << "[SIW] Number of pruned states until last f-layer: " << element.get_num_pruned_until_last_g_layer();
+
+    return out;
+}
 
 std::ostream& print(std::ostream& out, const mimir::search::State& element)
 {

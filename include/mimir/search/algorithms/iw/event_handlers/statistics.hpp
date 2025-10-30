@@ -60,35 +60,6 @@ public:
 
 using StatisticsList = std::vector<Statistics>;
 
-/**
- * Pretty printing
- */
-
-inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
-{
-    os << "[IW] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
-       << "[IW] Effective width: " << statistics.get_effective_width() << "\n"
-       << "[IW] Number of generated states: " << statistics.get_brfs_statistics_by_arity().back().get_num_generated() << "\n"
-       << "[IW] Number of expanded states: " << statistics.get_brfs_statistics_by_arity().back().get_num_expanded() << "\n"
-       << "[IW] Number of pruned states: " << statistics.get_brfs_statistics_by_arity().back().get_num_pruned() << "\n"
-       << "[IW] Number of generated states until last g-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().empty() ?
-               0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back())
-       << "\n"
-       << "[IW] Number of expanded states until last g-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().empty() ?
-               0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back())
-       << "\n"
-       << "[IW] Number of pruned states until last g-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().empty() ?
-               0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().back());
-
-    return os;
-}
-
 }
 
 #endif

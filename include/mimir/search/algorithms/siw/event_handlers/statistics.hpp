@@ -148,25 +148,6 @@ public:
     const iw::StatisticsList& get_iw_statistics_by_subproblem() const { return m_iw_algorithm_statistics_by_subproblem; }
 };
 
-/**
- * Pretty printing
- */
-
-inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
-{
-    os << "[SIW] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
-       << "[SIW] Maximum effective width: " << statistics.get_maximum_effective_width() << "\n"
-       << "[SIW] Average effective width: " << statistics.get_average_effective_width() << "\n"
-       << "[SIW] Number of generated states: " << statistics.get_num_generated() << "\n"
-       << "[SIW] Number of expanded states: " << statistics.get_num_expanded() << "\n"
-       << "[SIW] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[SIW] Number of generated states until last f-layer: " << statistics.get_num_generated_until_last_g_layer() << "\n"
-       << "[SIW] Number of expanded states until last f-layer: " << statistics.get_num_expanded_until_last_g_layer() << "\n"
-       << "[SIW] Number of pruned states until last f-layer: " << statistics.get_num_pruned_until_last_g_layer();
-
-    return os;
-}
-
 }
 
 #endif

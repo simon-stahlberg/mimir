@@ -18,8 +18,6 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EAGER_EVENT_HANDLERS_STATISTICS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_GBFS_EAGER_EVENT_HANDLERS_STATISTICS_HPP_
 
-#include "mimir/common/arithmetics.hpp"
-
 #include <chrono>
 #include <cstdint>
 #include <map>
@@ -112,24 +110,6 @@ public:
  */
 
 using StatisticsList = std::vector<Statistics>;
-
-/**
- * Pretty printing
- */
-
-inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
-{
-    os << "[GBFS] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
-       << "[GBFS] Number of generated states: " << statistics.get_num_generated() << "\n"
-       << "[GBFS] Number of expanded states: " << statistics.get_num_expanded() << "\n"
-       << "[GBFS] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[GBFS] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
-       << "[GBFS] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
-       << "[GBFS] Number of states: " << statistics.get_num_states() << "\n"
-       << "[GBFS] Number of nodes: " << statistics.get_num_nodes();
-
-    return os;
-}
 
 }
 

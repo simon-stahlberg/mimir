@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EAGER_EVENT_HANDLERS_STATISTICS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_EAGER_EVENT_HANDLERS_STATISTICS_HPP_
 
-#include "mimir/common/arithmetics.hpp"
 #include "mimir/common/declarations.hpp"
 
 #include <chrono>
@@ -136,30 +135,6 @@ public:
  */
 
 using StatisticsList = std::vector<Statistics>;
-
-/**
- * Pretty printing
- */
-
-inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
-{
-    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
-       << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
-       << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
-       << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[AStar] Number of generated states until last f-layer: "
-       << (statistics.get_num_generated_until_f_value().empty() ? 0 : statistics.get_num_generated_until_f_value().rbegin()->second) << "\n"
-       << "[AStar] Number of expanded states until last f-layer: "
-       << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().rbegin()->second) << "\n"
-       << "[AStar] Number of pruned states until last f-layer: "
-       << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().rbegin()->second) << "\n"
-       << "[AStar] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
-       << "[AStar] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
-       << "[AStar] Number of states: " << statistics.get_num_states() << "\n"
-       << "[AStar] Number of nodes: " << statistics.get_num_nodes();
-
-    return os;
-}
 
 }
 

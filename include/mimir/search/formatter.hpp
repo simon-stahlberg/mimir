@@ -41,7 +41,57 @@ std::ostream& operator<<(std::ostream& out, const IInverseNode<E>& element);
 template<formalism::HasConjunctiveCondition E>
 std::ostream& operator<<(std::ostream& out, const INode<E>& element);
 }  // end match_tree
+
+namespace astar_eager
+{
+extern std::ostream& operator<<(std::ostream& os, const Statistics& statistics);
+}  // end astar_eager
+
+namespace astar_lazy
+{
+extern std::ostream& operator<<(std::ostream& os, const Statistics& statistics);
+}  // end astar_lazy
+
+namespace brfs
+{
+extern std::ostream& operator<<(std::ostream& out, const Statistics& element);
+}  // end brfs
+
+namespace gbfs_eager
+{
+extern std::ostream& operator<<(std::ostream& out, const Statistics& element);
+}  // end gbfs_eager
+
+namespace gbfs_lazy
+{
+extern std::ostream& operator<<(std::ostream& out, const Statistics& element);
+}  // end gbfs_lazy
+
+namespace iw
+{
+extern std::ostream& operator<<(std::ostream& out, const Statistics& element);
+}  // end iw
+
+namespace siw
+{
+extern std::ostream& operator<<(std::ostream& out, const Statistics& element);
+}  // end siw
+
 }  // end search
+
+extern std::ostream& print(std::ostream& os, const mimir::search::astar_eager::Statistics& statistics);
+
+extern std::ostream& print(std::ostream& os, const mimir::search::astar_lazy::Statistics& statistics);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::brfs::Statistics& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::gbfs_eager::Statistics& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::gbfs_lazy::Statistics& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::iw::Statistics& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::siw::Statistics& element);
 
 extern std::ostream& print(std::ostream& os, const mimir::search::State& state);
 

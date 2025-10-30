@@ -177,7 +177,7 @@ inline ClosedInterval<A> evaluate(loki::MultiOperatorEnum op, const ClosedInterv
     }
 }
 
-template<IsArithmetic A>
+template<IsFloatingPoint A>
 inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval<A>& lhs, const ClosedInterval<A>& rhs)
 {
     if (empty(lhs) || empty(rhs))

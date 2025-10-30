@@ -207,6 +207,7 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // AStar_LAZY
@@ -218,6 +219,7 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // Breadth-first search
@@ -229,6 +231,7 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // GBFS_EAGER
@@ -240,6 +243,7 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // GBFS_LAZY
@@ -251,6 +255,7 @@ class DebugEventHandlerImpl;
 using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // Iterative width search
@@ -260,6 +265,7 @@ class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 
 /**
  * Large k for IW(k) is generally infeasible.
@@ -294,6 +300,7 @@ class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+class Statistics;
 }
 
 // Plan
