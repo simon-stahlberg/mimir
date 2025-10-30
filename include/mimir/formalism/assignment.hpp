@@ -18,8 +18,9 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <limits>
 

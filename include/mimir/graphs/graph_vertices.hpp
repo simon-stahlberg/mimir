@@ -19,8 +19,7 @@
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
 #include "mimir/common/formatter.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
-#include "mimir/graphs/property.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <loki/loki.hpp>
 #include <ostream>
@@ -33,7 +32,7 @@ namespace mimir::graphs
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
 /// @tparam P are additional vertex properties.
-template<Property P = std::tuple<>>
+template<Property P>
 class Vertex
 {
 public:
@@ -61,27 +60,6 @@ private:
     VertexIndex m_index;
     [[no_unique_address]] P m_properties;
 };
-
-/**
- * Printing
- */
-
-template<Property P>
-std::ostream& operator<<(std::ostream& os, const Vertex<P>& vertex)
-{
-    return mimir::print(os, vertex);
-}
-}
-
-namespace mimir
-{
-template<mimir::graphs::Property P>
-std::ostream& print(std::ostream& os, const mimir::graphs::Vertex<P>& vertex)
-{
-    os << "index=" << vertex.get_index() << ", properties=";
-    os << vertex.get_properties();
-    return os;
-}
 }
 
 #endif

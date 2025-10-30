@@ -18,9 +18,8 @@
 #ifndef MIMIR_GRAPHS_BGL_GRAPH_ADAPTERS_HPP_
 #define MIMIR_GRAPHS_BGL_GRAPH_ADAPTERS_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>

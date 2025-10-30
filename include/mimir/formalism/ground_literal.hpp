@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -64,15 +65,6 @@ public:
 
 template<IsStaticOrFluentOrDerivedTag P>
 extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, Repositories& pddl_repositories);
-
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<P>& element);
 }
 
 #endif

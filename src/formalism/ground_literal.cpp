@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_literal.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/repositories.hpp"
 
@@ -109,28 +108,4 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
 template std::pair<VariableList, LiteralList<StaticTag>> lift(const GroundLiteralList<StaticTag>&, Repositories&);
 template std::pair<VariableList, LiteralList<FluentTag>> lift(const GroundLiteralList<FluentTag>&, Repositories&);
 template std::pair<VariableList, LiteralList<DerivedTag>> lift(const GroundLiteralList<DerivedTag>&, Repositories&);
-
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<DerivedTag>& element);
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<P>& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::StaticTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::DerivedTag>& element);
 }

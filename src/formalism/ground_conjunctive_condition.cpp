@@ -17,8 +17,7 @@
 
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 
-#include "formatter.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -79,19 +78,4 @@ template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_pre
 
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
-}
-
-namespace mimir
-{
-
-/**
- * Pretty printing
- */
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data)
-{
-    formalism::write(data, formalism::StringFormatter(), os);
-    return os;
-}
 }

@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PARSER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <loki/loki.hpp>
 #include <memory>

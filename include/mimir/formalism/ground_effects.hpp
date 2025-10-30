@@ -22,6 +22,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -168,25 +169,6 @@ evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_var
 
 extern bool is_compatible_numeric_effect(loki::AssignOperatorEnum lhs, loki::AssignOperatorEnum rhs);
 
-/**
- * Pretty printing
- */
-
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element);
-
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
-
-}
-
-namespace mimir
-{
-template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
-
-template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
 }
 
 #endif

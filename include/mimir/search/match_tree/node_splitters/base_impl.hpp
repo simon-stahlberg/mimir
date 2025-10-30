@@ -21,6 +21,7 @@
 #include "mimir/common/filesystem.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/formatter.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"

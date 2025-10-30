@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -63,15 +64,6 @@ public:
     auto identifying_members() const noexcept { return std::tuple(get_predicate(), std::cref(get_terms())); }
 };
 
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<P>& element);
 }
 
 #endif

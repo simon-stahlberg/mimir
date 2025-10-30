@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_ALGORITHMS_SIW_HPP_
 
 #include "mimir/search/algorithms/iw.hpp"
-#include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir::search::siw

@@ -18,8 +18,8 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/segmented_vector.hpp"
-#include "mimir/common/types.hpp"
 
 #include <tuple>
 

@@ -16,8 +16,6 @@
  */
 #include "mimir/formalism/type.hpp"
 
-#include "formatter.hpp"
-
 namespace mimir::formalism
 {
 TypeImpl::TypeImpl(Index index, std::string name, TypeList bases) : m_index(index), m_name(std::move(name)), m_bases(std::move(bases)) {}
@@ -57,16 +55,5 @@ bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs)
         }
     }
     return false;
-}
-
-std::ostream& operator<<(std::ostream& out, const TypeImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::TypeImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
 }
 }

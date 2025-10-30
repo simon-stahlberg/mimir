@@ -18,8 +18,8 @@
 #ifndef MIMIR_COMMON_INDEXED_HASH_SET_HPP_
 #define MIMIR_COMMON_INDEXED_HASH_SET_HPP_
 
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/segmented_vector.hpp"
-#include "mimir/common/types.hpp"
 
 #include <absl/container/flat_hash_map.h>
 #include <loki/details/utils/equal_to.hpp>

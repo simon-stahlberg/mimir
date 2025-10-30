@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_GROUND_FUNCTION_VALUE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -59,15 +60,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(get_function(), get_number()); }
 };
-
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<F>& element);
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionValueImpl<F>& element);
 }
 
 #endif

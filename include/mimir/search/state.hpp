@@ -22,6 +22,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state_packed.hpp"
 #include "mimir/search/state_unpacked.hpp"
@@ -107,13 +108,6 @@ bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_a
     auto atoms = get_atoms<P>();
     return is_supseteq(atoms, positive_atoms) && are_disjoint(atoms, negative_atoms);
 }
-
-/**
- * Pretty printing
- */
-
-std::ostream& operator<<(std::ostream& os, const State& state);
-
 }
 
 namespace loki

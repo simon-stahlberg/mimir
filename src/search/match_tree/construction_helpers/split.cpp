@@ -18,6 +18,7 @@
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 
 #include "mimir/common/formatter.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 

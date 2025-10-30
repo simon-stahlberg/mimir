@@ -18,24 +18,19 @@
 #ifndef MIMIR_DATASETS_TUPLE_GRAPH_INTERNAL_TUPLE_GRAPH_HPP_
 #define MIMIR_DATASETS_TUPLE_GRAPH_INTERNAL_TUPLE_GRAPH_HPP_
 
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/search/algorithms/iw/types.hpp"
 
 #include <ostream>
 #include <vector>
 
 namespace mimir::graphs
 {
-/// @brief `TupleGraphVertex` encapsulates information about a vertex in a tuple graph.
-using TupleGraphVertex = Vertex<std::tuple<search::iw::AtomIndexList, IndexList>>;
-using TupleGraphVertexList = std::vector<TupleGraphVertex>;
 
 inline const search::iw::AtomIndexList& get_atom_tuple(const TupleGraphVertex& vertex) { return std::get<0>(vertex.get_properties()); }
 
 inline const IndexList& get_problem_vertices(const TupleGraphVertex& vertex) { return std::get<1>(vertex.get_properties()); }
 
-using StaticTupleGraph = StaticGraph<TupleGraphVertex, Edge<>>;
-using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
 }
 
 #endif

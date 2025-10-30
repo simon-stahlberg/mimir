@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_EFFECTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -164,20 +165,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
 };
-
-template<IsFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element);
 }
 
 #endif

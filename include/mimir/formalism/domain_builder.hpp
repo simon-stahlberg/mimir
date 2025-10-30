@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <optional>
 #include <string>

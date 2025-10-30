@@ -18,9 +18,9 @@
 #include "mimir/search/algorithms/gbfs_eager/event_handlers/debug.hpp"
 
 #include "mimir/common/formatter.hpp"
-#include "mimir/formalism/ground_action.hpp"
-#include "mimir/search/plan.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/formalism/formatter.hpp"
+#include "mimir/search/formatter.hpp"
+#include "mimir/search/plan.hpp"  // remove this eventually
 
 using namespace mimir::formalism;
 
@@ -38,7 +38,7 @@ void DebugEventHandlerImpl::on_expand_goal_state_impl(const State& state) const 
 void DebugEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const
 {
     std::cout << "[GBFS] Action: ";
-    mimir::print(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
+    mimir::print(std::cout, std::make_tuple(std::cref(*action), std::cref(*m_problem), FullFormatterTag {}));
     std::cout << "\n"
               << "[GBFS] Successor: " << successor_state << "\n"
               << std::endl;
@@ -78,7 +78,7 @@ void DebugEventHandlerImpl::on_solved_impl(const Plan& plan) const
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[GBFS] " << i << ". ";
-        mimir::print(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
+        mimir::print(std::cout, std::make_tuple(std::cref(*plan.get_actions()[i]), std::cref(*m_problem), PlanFormatterTag {}));
         std::cout << std::endl;
     }
 }

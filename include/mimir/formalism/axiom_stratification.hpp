@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/axiom_partitioning.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {

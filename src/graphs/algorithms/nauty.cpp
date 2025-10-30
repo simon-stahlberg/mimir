@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/nauty.hpp"
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "nauty_sparse_impl.hpp"
 
 #include <cassert>

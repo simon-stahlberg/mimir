@@ -18,13 +18,10 @@
 #ifndef MIMIR_GRAPHS_STATIC_GRAPH_DECL_HPP_
 #define MIMIR_GRAPHS_STATIC_GRAPH_DECL_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/hana.hpp>
 #include <ranges>
@@ -468,27 +465,6 @@ private:
 
     TraversalDirectionToEdgesGroupedByVertex m_edge_indices_grouped_by_vertex;
 };
-
-template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph);
-
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph);
-
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph);
-}
-
-namespace mimir
-{
-template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph);
-
-template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph);
-
-template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph);
 }
 
 #endif

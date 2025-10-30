@@ -15,29 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
-#define MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_FORMATTER_HPP_
+#define MIMIR_GRAPHS_FORMATTER_HPP_
 
-#include "mimir/graphs/types.hpp"
-
-#include <concepts>
-
-namespace mimir::graphs
-{
-
-template<typename T>
-concept IsEdge = requires(T a) {
-    typename T::PropertyType;
-
-    { a.get_index() } -> std::convertible_to<EdgeIndex>;
-    { a.get_source() } -> std::convertible_to<VertexIndex>;
-    { a.get_target() } -> std::convertible_to<VertexIndex>;
-};
-
-/// Check whether `T` is an Edge with the given properties `P`.
-template<typename T, typename P>
-concept HasEdgeProperty = IsEdge<T> && std::is_same_v<typename T::PropertyType, std::decay_t<P>>;
-
-}
+#include "mimir/graphs/formatter_decl.hpp"
+#include "mimir/graphs/formatter_impl.hpp"
 
 #endif

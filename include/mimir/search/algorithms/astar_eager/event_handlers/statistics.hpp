@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_EAGER_EVENT_HANDLERS_STATISTICS_HPP_
 
 #include "mimir/common/arithmetics.hpp"
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 
 #include <chrono>
 #include <cstdint>

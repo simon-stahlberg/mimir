@@ -20,6 +20,7 @@
 
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/concrete/digraph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/plan.hpp"
@@ -49,14 +50,6 @@ public:
     const Plan& get_t_o_plan() const;
     const graphs::DynamicDigraph& get_graph() const;
 };
-
-extern std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::search::PartiallyOrderedPlan& element);
 }
 
 #endif

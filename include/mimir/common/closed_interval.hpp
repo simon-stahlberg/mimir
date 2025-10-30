@@ -18,7 +18,7 @@
 #ifndef MIMIR_COMMON_CLOSED_INTERVAL_HPP_
 #define MIMIR_COMMON_CLOSED_INTERVAL_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 
 #include <boost/numeric/interval.hpp>
 #include <cmath>

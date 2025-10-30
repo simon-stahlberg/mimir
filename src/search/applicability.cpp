@@ -30,6 +30,7 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_unpacked.hpp"

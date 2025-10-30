@@ -20,7 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/algorithms/shared_object_pool.hpp"
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/concepts.hpp"
 
 #include <memory>
@@ -260,6 +260,31 @@ class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+
+/**
+ * Large k for IW(k) is generally infeasible.
+ * Hence, we use a small constant value within feasible range
+ * allowing us to use stack allocated arrays.
+ */
+
+const size_t MAX_ARITY = 6;
+
+/**
+ * Number of initial atoms in the DynamicNoveltyTable
+ */
+
+const size_t INITIAL_TABLE_ATOMS = 64;
+
+/**
+ * Type aliases for readability
+ */
+
+using AtomIndex = Index;
+using AtomIndexList = std::vector<AtomIndex>;
+
+using TupleIndex = Index;
+using TupleIndexList = std::vector<TupleIndex>;
+using TupleIndexSet = std::unordered_set<TupleIndex>;
 }
 
 // Serialized iterative width search
@@ -273,6 +298,18 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 
 // Plan
 class Plan;
+
+// PartiallyOrderedPlan
+class PartiallyOrderedPlan;
+
+namespace match_tree
+{
+template<mimir::formalism::HasConjunctiveCondition E>
+class IInverseNode;
+
+template<mimir::formalism::HasConjunctiveCondition E>
+class INode;
+}
 
 }
 

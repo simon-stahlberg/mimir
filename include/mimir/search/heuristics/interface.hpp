@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search

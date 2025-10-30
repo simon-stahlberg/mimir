@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TYPE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -67,13 +68,6 @@ public:
 extern bool is_subtypeeq(Type lhs, Type rhs);
 
 extern bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs);
-
-extern std::ostream& operator<<(std::ostream& out, const TypeImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::TypeImpl& element);
 }
 
 #endif

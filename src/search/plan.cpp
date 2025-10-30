@@ -20,10 +20,6 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/search_context.hpp"
 
-#include <fmt/core.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
-
 using namespace mimir::formalism;
 
 namespace mimir::search
@@ -49,22 +45,4 @@ ContinuousCost Plan::get_cost() const { return m_cost; }
 
 size_t Plan::get_length() const { return m_actions.size(); }
 
-std::ostream& operator<<(std::ostream& out, const search::Plan& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::search::Plan& element)
-{
-    const auto& problem = *element.get_search_context()->get_problem();
-    const auto formatter = GroundActionImpl::PlanFormatterTag {};
-
-    fmt::print(out,
-               "{}\n; cost = {}\n",
-               fmt::join(element.get_actions()
-                             | std::views::transform([&](auto&& action) { return to_string(std::make_tuple(action, std::cref(problem), formatter)); }),
-                         "\n"),
-               element.get_cost());
-    return out;
-}
 }

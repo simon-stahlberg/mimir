@@ -16,7 +16,6 @@
  */
 #include "mimir/formalism/literal.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -49,29 +48,4 @@ Atom<P> LiteralImpl<P>::get_atom() const
 template class LiteralImpl<StaticTag>;
 template class LiteralImpl<FluentTag>;
 template class LiteralImpl<DerivedTag>;
-
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTag>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<P>& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::StaticTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::DerivedTag>& element);
 }

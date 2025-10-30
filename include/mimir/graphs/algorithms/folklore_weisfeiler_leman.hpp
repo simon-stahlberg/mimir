@@ -18,13 +18,12 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"

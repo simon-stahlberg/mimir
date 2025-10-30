@@ -18,9 +18,7 @@
 #ifndef MIMIR_GRAPHS_BGL_PROPERTY_MAPS_HPP_
 #define MIMIR_GRAPHS_BGL_PROPERTY_MAPS_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/graphs/dynamic_graph_interface.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
+#include "mimir/common/declarations.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/property_map/property_map.hpp>

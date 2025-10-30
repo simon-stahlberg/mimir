@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_AXIOM_PARTITIONING_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {

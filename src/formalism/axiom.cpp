@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/axiom.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -47,16 +46,4 @@ Literal<DerivedTag> AxiomImpl::get_literal() const { return m_literal; }
 ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
-
-std::ostream& operator<<(std::ostream& out, const AxiomImpl& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::AxiomImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

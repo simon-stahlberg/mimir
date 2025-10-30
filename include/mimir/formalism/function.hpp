@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -63,16 +64,6 @@ public:
 };
 
 static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);
-
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<F>& element);
 }
 
 #endif

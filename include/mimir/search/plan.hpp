@@ -20,6 +20,7 @@
 
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 
@@ -43,17 +44,6 @@ public:
     ContinuousCost get_cost() const;
     size_t get_length() const;
 };
-
-/**
- * Printing
- */
-
-extern std::ostream& operator<<(std::ostream& out, const Plan& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::search::Plan& element);
 }
 
 #endif

@@ -17,8 +17,7 @@
 
 #include "mimir/formalism/ground_action.hpp"
 
-#include "formatter.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
@@ -55,25 +54,4 @@ GroundConjunctiveCondition GroundActionImpl::get_conjunctive_condition() const {
 
 const GroundConditionalEffectList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
-}
-
-namespace mimir
-{
-template<>
-std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data)
-{
-    write(data, mimir::formalism::StringFormatter(), os);
-    return os;
-}
-
-template<>
-std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data)
-{
-    write(data, mimir::formalism::StringFormatter(), os);
-    return os;
-}
 }

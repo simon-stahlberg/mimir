@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/axiom.hpp"

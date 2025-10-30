@@ -24,6 +24,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <valla/indexed_hash_set.hpp>
 
@@ -298,13 +299,6 @@ public:
                           std::cref(get_axioms()));
     }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ProblemImpl& element);
 }
 
 #endif

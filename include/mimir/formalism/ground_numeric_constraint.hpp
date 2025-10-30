@@ -20,6 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -75,17 +76,6 @@ public:
 
 extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
-/**
- * Printing
- */
-
-extern std::ostream& operator<<(std::ostream& os, const GroundNumericConstraintImpl& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundNumericConstraintImpl& element);
 }
 
 #endif

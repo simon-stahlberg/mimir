@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_FUNCTION_SKELETON_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -63,16 +64,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(std::cref(get_name()), std::cref(get_parameters())); }
 };
-
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<F>& element);
 }
 
 #endif

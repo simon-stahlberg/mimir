@@ -18,11 +18,9 @@
 #ifndef MIMIR_GRAPHS_DYNAMIC_GRAPH_DECL_HPP_
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_DECL_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/graphs/dynamic_graph_interface.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <boost/hana.hpp>
@@ -370,16 +368,6 @@ private:
     void vertex_index_check(VertexIndex vertex, const std::string& error_message) const;
     void edge_index_check(EdgeIndex edge, const std::string& error_message) const;
 };
-
-template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph);
-
-}
-
-namespace mimir
-{
-template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph);
 }
 
 #endif

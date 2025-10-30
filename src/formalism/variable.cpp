@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/variable.hpp"
 
-#include "formatter.hpp"
-
 namespace mimir::formalism
 {
 VariableImpl::VariableImpl(Index index, std::string name, Index parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
@@ -30,15 +28,4 @@ Index VariableImpl::get_index() const { return m_index; }
 const std::string& VariableImpl::get_name() const { return m_name; }
 
 Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
-
-std::ostream& operator<<(std::ostream& out, const VariableImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::VariableImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

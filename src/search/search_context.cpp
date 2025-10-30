@@ -17,7 +17,7 @@
 
 #include "mimir/search/search_context.hpp"
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"

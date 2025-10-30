@@ -18,8 +18,9 @@
 #ifndef MIMIR_FORMALISM_TRANSLATOR_INTERFACE_HPP_
 #define MIMIR_FORMALISM_TRANSLATOR_INTERFACE_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <algorithm>
 #include <boost/container/small_vector.hpp>

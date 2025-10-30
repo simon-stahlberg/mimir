@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/ground_function.hpp"
@@ -86,18 +85,4 @@ bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_n
     }
 }
 
-/**
- * Printing
- */
-
-std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::GroundNumericConstraintImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

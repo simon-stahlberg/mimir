@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/requirements.hpp"
 
-#include "formatter.hpp"
-
 #include <cassert>
 
 namespace mimir::formalism
@@ -30,15 +28,4 @@ bool RequirementsImpl::test(loki::RequirementEnum requirement) const { return m_
 Index RequirementsImpl::get_index() const { return m_index; }
 
 const loki::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
-
-std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::RequirementsImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

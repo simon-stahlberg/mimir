@@ -18,13 +18,13 @@
 #ifndef MIMIR_DATASETS_STATE_SPACE_SAMPLER_HPP_
 #define MIMIR_DATASETS_STATE_SPACE_SAMPLER_HPP_
 
+#include "mimir/common/declarations.hpp"
+#include "mimir/datasets/state_space.hpp"
+#include "mimir/graphs/types.hpp"
+
 #include <cstddef>
 #include <random>
 #include <unordered_map>
-
-#include "mimir/common/types.hpp"
-#include "mimir/datasets/state_space.hpp"
-#include "mimir/graphs/types.hpp"
 
 namespace mimir::datasets
 {

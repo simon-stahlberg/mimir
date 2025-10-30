@@ -17,7 +17,7 @@
 
 #include "mimir/datasets/state_space_sampler.hpp"
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/datasets/state_space/problem_graph.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/search/state.hpp"

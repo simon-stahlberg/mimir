@@ -18,11 +18,10 @@
 #ifndef MIMIR_GRAPHS_BGL_GRAPH_ALGORITHMS_HPP_
 #define MIMIR_GRAPHS_BGL_GRAPH_ALGORITHMS_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/depth_first_search.hpp>

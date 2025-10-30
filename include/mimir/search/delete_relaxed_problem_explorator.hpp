@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/options.hpp"

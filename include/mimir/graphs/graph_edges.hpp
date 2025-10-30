@@ -19,8 +19,7 @@
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
 #include "mimir/common/formatter.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
-#include "mimir/graphs/property.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <loki/loki.hpp>
 #include <tuple>
@@ -30,7 +29,7 @@ namespace mimir::graphs
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
 /// @tparam ...EdgeProperties are additional edge properties.
-template<Property P = std::tuple<>>
+template<Property P>
 class Edge
 {
 public:
@@ -68,27 +67,6 @@ private:
     VertexIndex m_target;
     [[no_unique_address]] P m_properties;
 };
-
-/**
- * Printing
- */
-
-template<Property P>
-std::ostream& operator<<(std::ostream& os, const Edge<P>& edge)
-{
-    return mimir::print(os, edge);
-}
-}
-
-namespace mimir
-{
-template<mimir::graphs::Property P>
-std::ostream& print(std::ostream& os, const mimir::graphs::Edge<P>& edge)
-{
-    os << "index=" << edge.get_index() << ", properties=";
-    os << edge.get_properties();
-    return os;
-}
 }
 
 #endif

@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_KPKC_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search::applicable_action_generator::lifted::kpkc

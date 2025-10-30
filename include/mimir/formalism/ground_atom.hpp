@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -65,13 +66,6 @@ public:
 
 template<IsStaticOrFluentOrDerivedTag P>
 extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories);
-
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
-
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
-
 }
 
 #endif

@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/action.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
@@ -66,16 +65,4 @@ ConjunctiveCondition ActionImpl::get_conjunctive_condition() const { return m_co
 const ConditionalEffectList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
 size_t ActionImpl::get_arity() const { return get_parameters().size(); }
-
-std::ostream& operator<<(std::ostream& out, const ActionImpl& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::ActionImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

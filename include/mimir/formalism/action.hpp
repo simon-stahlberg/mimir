@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_ACTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -74,17 +75,6 @@ public:
     }
 };
 
-/**
- * Pretty printing
- */
-
-extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ActionImpl& element);
 }
 
 #endif

@@ -17,6 +17,7 @@
 
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
@@ -26,62 +27,6 @@ using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
-
-template<formalism::HasConjunctiveCondition E>
-using Nodes = std::unordered_map<const INode<E>*, std::pair<size_t, std::string>>;
-
-using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
-
-template<formalism::HasConjunctiveCondition E>
-struct InitializeNodesVisitor : public INodeVisitor<E>
-{
-    Nodes<E>& m_nodes;
-
-    InitializeNodesVisitor(Nodes<E>& nodes) : m_nodes(nodes) {}
-
-    void accept(const AtomSelectorNode_TFX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_T<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_F<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_T<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_F<E, DerivedTag>& atom) override;
-    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
-    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
-    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
-    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
-};
-
-template<formalism::HasConjunctiveCondition E>
-struct InitializeEdgesVisitor : public INodeVisitor<E>
-{
-    Nodes<E>& m_nodes;
-    Edges& m_edges;
-
-    InitializeEdgesVisitor(Nodes<E>& nodes, Edges& edges) : m_nodes(nodes), m_edges(edges) {}
-
-    void accept(const AtomSelectorNode_TFX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_T<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_F<E, FluentTag>& atom) override;
-    void accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_T<E, DerivedTag>& atom) override;
-    void accept(const AtomSelectorNode_F<E, DerivedTag>& atom) override;
-    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
-    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
-    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
-    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
-};
 
 /**
  * InitializeNodes
@@ -140,11 +85,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TFX<E, FluentTag>&
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TFX<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TFX<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TF<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TF<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& atom)
@@ -152,11 +103,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& 
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TX<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TX<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_FX<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_FX<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& atom)
@@ -164,11 +121,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& a
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_T<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_T<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_F<GroundActionImpl, FluentTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_F<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom)
@@ -176,11 +139,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TFX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TFX<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TF<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TF<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>& atom)
@@ -188,11 +157,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>&
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TX<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_FX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_FX<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& atom)
@@ -200,11 +175,17 @@ void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& 
     accept_impl(*this, atom);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_T<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_T<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_F<GroundActionImpl, DerivedTag>& atom);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_F<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>& constraint)
@@ -214,6 +195,9 @@ void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>
     constraint.get_dontcare_child()->visit(*this);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const NumericConstraintSelectorNode_TX<GroundActionImpl>& constraint);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const NumericConstraintSelectorNode_TX<GroundAxiomImpl>& constraint);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>& constraint)
 {
@@ -221,17 +205,26 @@ void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>&
     constraint.get_true_child()->visit(*this);
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const NumericConstraintSelectorNode_T<GroundActionImpl>& constraint);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const NumericConstraintSelectorNode_T<GroundAxiomImpl>& constraint);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const ElementGeneratorNode_Perfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
 
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const ElementGeneratorNode_Perfect<GroundActionImpl>& generator);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const ElementGeneratorNode_Perfect<GroundAxiomImpl>& generator);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeNodesVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
+
+template void InitializeNodesVisitor<GroundActionImpl>::accept(const ElementGeneratorNode_Imperfect<GroundActionImpl>& generator);
+template void InitializeNodesVisitor<GroundAxiomImpl>::accept(const ElementGeneratorNode_Imperfect<GroundAxiomImpl>& generator);
 
 /**
  * InitializeEdges
@@ -295,11 +288,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TFX<E, FluentTag>&
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TFX<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TFX<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TF<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TF<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& atom)
@@ -307,11 +306,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& 
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TX<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TX<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_FX<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_FX<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& atom)
@@ -319,11 +324,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& a
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_T<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_T<GroundAxiomImpl, FluentTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_F<GroundActionImpl, FluentTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_F<GroundAxiomImpl, FluentTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom)
@@ -331,11 +342,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TFX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TFX<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TF<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TF<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>& atom)
@@ -343,11 +360,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>&
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_TX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_TX<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_FX<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_FX<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& atom)
@@ -355,11 +378,17 @@ void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& 
     accept_impl(*this, atom);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_T<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_T<GroundAxiomImpl, DerivedTag>& atom);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const AtomSelectorNode_F<GroundActionImpl, DerivedTag>& atom);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const AtomSelectorNode_F<GroundAxiomImpl, DerivedTag>& atom);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>& constraint)
@@ -370,6 +399,9 @@ void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>
     constraint.get_dontcare_child()->visit(*this);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const NumericConstraintSelectorNode_TX<GroundActionImpl>& constraint);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const NumericConstraintSelectorNode_TX<GroundAxiomImpl>& constraint);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>& constraint)
 {
@@ -377,11 +409,17 @@ void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>&
     constraint.get_true_child()->visit(*this);
 }
 
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const NumericConstraintSelectorNode_T<GroundActionImpl>& constraint);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const NumericConstraintSelectorNode_T<GroundAxiomImpl>& constraint);
+
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const ElementGeneratorNode_Perfect<E>& generator)
 {
     // Nothing to be done.
 }
+
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const ElementGeneratorNode_Perfect<GroundActionImpl>& generator);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const ElementGeneratorNode_Perfect<GroundAxiomImpl>& generator);
 
 template<formalism::HasConjunctiveCondition E>
 void InitializeEdgesVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& generator)
@@ -389,61 +427,6 @@ void InitializeEdgesVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& 
     // Nothing to be done.
 }
 
-/**
- * Printer
- */
-
-template<formalism::HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const INode<E>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const INode<formalism::GroundActionImpl>& element);
-template std::ostream& operator<<(std::ostream& out, const INode<formalism::GroundAxiomImpl>& element);
-}
-
-namespace mimir
-{
-template<mimir::formalism::HasConjunctiveCondition E>
-std::ostream& print(std::ostream& out, const mimir::search::match_tree::INode<E>& element)
-{
-    auto nodes = mimir::search::match_tree::Nodes<E> {};
-    auto edges = mimir::search::match_tree::Edges {};
-
-    auto visitor1 = mimir::search::match_tree::InitializeNodesVisitor(nodes);
-    element.visit(visitor1);
-
-    auto visitor2 = mimir::search::match_tree::InitializeEdgesVisitor(nodes, edges);
-    element.visit(visitor2);
-
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
-
-    /* Node definitions */
-    for (const auto& [node_ptr, node_data] : nodes)
-    {
-        auto& [index, label] = node_data;
-
-        out << "n" << index << " [label=\"" << label << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& [src, edges] : edges)
-    {
-        for (const auto& [dst, label] : edges)
-        {
-            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
-        }
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
-
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::search::match_tree::INode<mimir::formalism::GroundActionImpl>& element);
-template std::ostream& print(std::ostream& out, const mimir::search::match_tree::INode<mimir::formalism::GroundAxiomImpl>& element);
+template void InitializeEdgesVisitor<GroundActionImpl>::accept(const ElementGeneratorNode_Imperfect<GroundActionImpl>& generator);
+template void InitializeEdgesVisitor<GroundAxiomImpl>::accept(const ElementGeneratorNode_Imperfect<GroundAxiomImpl>& generator);
 }

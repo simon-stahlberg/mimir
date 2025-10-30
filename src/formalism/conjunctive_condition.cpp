@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/conjunctive_condition.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -113,16 +112,4 @@ const NumericConstraintList& ConjunctiveConditionImpl::get_numeric_constraints()
 const GroundNumericConstraintList& ConjunctiveConditionImpl::get_nullary_ground_numeric_constraints() const { return m_nullary_ground_numeric_constraints; }
 
 size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
-
-std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

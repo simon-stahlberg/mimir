@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/parameter.hpp"
 
-#include "formatter.hpp"
-
 #include <cassert>
 
 namespace mimir::formalism
@@ -30,15 +28,4 @@ Index ParameterImpl::get_index() const { return m_index; }
 Variable ParameterImpl::get_variable() const { return m_variable; }
 
 const TypeList& ParameterImpl::get_bases() const { return m_types; }
-
-std::ostream& operator<<(std::ostream& out, const ParameterImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::ParameterImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

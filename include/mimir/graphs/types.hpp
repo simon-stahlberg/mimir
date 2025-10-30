@@ -19,7 +19,7 @@
 #define MIMIR_GRAPHS_TYPES_HPP_
 
 // Do not include headers with transitive dependencies.
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 
 #include <array>
 #include <cstddef>
@@ -31,32 +31,6 @@
 
 namespace mimir::graphs
 {
-
-/**
- * Types
- */
-
-using VertexIndex = Index;
-using VertexIndexList = std::vector<VertexIndex>;
-using VertexIndexSet = std::unordered_set<VertexIndex>;
-
-using EdgeIndex = Index;
-using EdgeIndexList = std::vector<EdgeIndex>;
-using EdgeIndexSet = std::unordered_set<EdgeIndex>;
-
-using Degree = uint32_t;
-using DegreeList = std::vector<Degree>;
-using DegreeMap = std::unordered_map<VertexIndex, Degree>;
-
-using ColorIndex = uint32_t;
-using ColorIndexList = std::vector<ColorIndex>;
-template<size_t K>
-using ColorIndexArray = std::array<ColorIndex, K>;
-template<size_t K>
-using ColorIndexArrayList = std::vector<ColorIndexArray<K>>;
-using ColorIndexSet = std::unordered_set<ColorIndex>;
-template<typename T>
-using ColorIndexMap = std::unordered_map<ColorIndex, T>;
 
 }
 

@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DECLARATIONS_HPP_
-#define MIMIR_FORMALISM_DECLARATIONS_HPP_
+#ifndef MIMIR_FORMALISM_TYPES_HPP_
+#define MIMIR_FORMALISM_TYPES_HPP_
 
 // Do not include headers with transitive dependencies.
-#include "mimir/common/types.hpp"
-#include "mimir/common/types_cista.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/tags.hpp"
 
 #include <cassert>
@@ -40,13 +40,6 @@ namespace mimir::formalism
 /**
  * Forward declarations
  */
-
-template<typename... Ts>
-using FlatBitsets = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatBitset>...>;
-template<typename... Ts>
-using FlatIndexLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatIndexList>...>;
-template<typename... Ts>
-using FlatDoubleLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatDoubleList>...>;
 
 template<IsStaticOrFluentOrDerivedTag P>
 class PredicateAssignmentSets;
@@ -296,7 +289,12 @@ using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 using TermSet = std::unordered_set<Term>;
 
-static_assert(IsHanaMap<PredicateLists<StaticTag>>);
+struct FullFormatterTag
+{
+};
+struct PlanFormatterTag
+{
+};
 
 }
 

@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/domain_details.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -112,14 +113,6 @@ public:
                           std::cref(get_axioms()));
     }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::DomainImpl& element);
 }
 
 #endif

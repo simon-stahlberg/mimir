@@ -15,26 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
-#define MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
+#ifndef MIMIR_DATASETS_TYPES_HPP_
+#define MIMIR_DATASETS_TYPES_HPP_
 
-#include "mimir/graphs/types.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/datasets/declarations.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/graphs/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 
-#include <concepts>
+#include <cstdint>
+#include <vector>
 
-namespace mimir::graphs
+namespace mimir::datasets
 {
+template<typename Value>
+using CertificateMap = UnorderedMap<graphs::nauty::SparseGraph, Value>;
 
-template<typename T>
-concept IsVertex = requires(T a) {
-    typename T::PropertyType;
+template<typename Key>
+using ToCertificateMap = UnorderedMap<Key, graphs::nauty::SparseGraph>;
 
-    { a.get_index() } -> std::convertible_to<VertexIndex>;
+struct CertificateMaps
+{
+    ToCertificateMap<search::State> state_to_cert;
+    CertificateMap<graphs::VertexIndex> cert_to_v_idx;
 };
 
-/// Check whether `T` is a vertex with the given properties `P`.
-template<typename T, typename P>
-concept HasVertexProperty = IsVertex<T> && std::is_same_v<typename T::PropertyType, std::decay_t<P>>;
+using CertificateMapsList = std::vector<CertificateMaps>;
 
 }
 

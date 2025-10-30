@@ -39,6 +39,7 @@
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -80,6 +81,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/formatter.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
@@ -94,6 +96,7 @@
  * DataSet
  */
 
+#include "mimir/datasets/formatter.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/generalized_state_space/class_graph.hpp"
 #include "mimir/datasets/generalized_state_space/options.hpp"
@@ -121,17 +124,12 @@
 #include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/concrete/digraph.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
-#include "mimir/graphs/dynamic_graph_interface.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
 #include "mimir/graphs/types.hpp"
 
 /**

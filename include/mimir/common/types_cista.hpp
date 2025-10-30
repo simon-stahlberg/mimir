@@ -25,9 +25,8 @@
 #include "cista/containers/vector.h"
 #include "mimir/buffering/cista_unordered_map.hpp"
 #include "mimir/buffering/cista_unordered_set.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/types.hpp"
 
 #include <algorithm>
 #include <ostream>
@@ -35,15 +34,23 @@
 namespace mimir
 {
 
-/* Bitset */
+/**
+ * Cista
+ */
 
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
-/* IndexList */
 using FlatIndexList = cista::offset::flexible_index_vector<Index>;
-using FlatIndexListMap = mimir::buffering::CistaUnorderedMap<FlatIndexList, Index>;
-/* DoubleList */
 using FlatDoubleList = cista::offset::vector<double>;
+
+using FlatIndexListMap = mimir::buffering::CistaUnorderedMap<FlatIndexList, Index>;
 using FlatDoubleListMap = mimir::buffering::CistaUnorderedMap<FlatDoubleList, Index>;
+
+template<typename... Ts>
+using FlatBitsets = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatBitset>...>;
+template<typename... Ts>
+using FlatIndexLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatIndexList>...>;
+template<typename... Ts>
+using FlatDoubleLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatDoubleList>...>;
 
 /**
  * Forward Declarations

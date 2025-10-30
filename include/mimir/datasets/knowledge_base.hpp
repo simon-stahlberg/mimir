@@ -21,6 +21,7 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/knowledge_base/options.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::datasets

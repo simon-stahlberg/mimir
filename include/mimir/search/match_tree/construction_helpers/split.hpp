@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_SPLIT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 

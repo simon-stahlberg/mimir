@@ -18,8 +18,7 @@
 #ifndef MIMIR_GRAPHS_BGL_GRAPH_TRAITS_HPP_
 #define MIMIR_GRAPHS_BGL_GRAPH_TRAITS_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/graphs/graph_interface.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 
 #include <boost/graph/breadth_first_search.hpp>

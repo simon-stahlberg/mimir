@@ -17,7 +17,7 @@
 
 #include "mimir/search/state.hpp"
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -99,37 +99,6 @@ template const FlatBitset& State::get_atoms<DerivedTag>() const;
 
 const FlatDoubleList& State::get_numeric_variables() const { return m_unpacked->get_numeric_variables(); }
 
-/**
- * Pretty printing
- */
-
-std::ostream& operator<<(std::ostream& os, const search::State& state)
-{
-    auto fluent_ground_atoms = GroundAtomList<FluentTag> {};
-    auto static_ground_atoms = GroundAtomList<StaticTag> {};
-    auto derived_ground_atoms = GroundAtomList<DerivedTag> {};
-    auto fluent_function_values = std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>> {};
-
-    state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_atoms<FluentTag>(), fluent_ground_atoms);
-    state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_problem().get_positive_static_initial_atoms_bitset(), static_ground_atoms);
-    state.get_problem().get_repositories().get_ground_atoms_from_indices(state.get_atoms<DerivedTag>(), derived_ground_atoms);
-    state.get_problem().get_repositories().get_ground_function_values(state.get_numeric_variables(), fluent_function_values);
-
-    // Sort by name for easier comparison
-    std::sort(fluent_ground_atoms.begin(), fluent_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
-    std::sort(static_ground_atoms.begin(), static_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
-    std::sort(derived_ground_atoms.begin(), derived_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
-
-    fmt::print(os,
-               "State(index={}, fluent_atoms={}, static_atoms={}, derived_atoms={}, fluent_numerics={})",
-               state.get_index(),
-               mimir::to_string(fluent_ground_atoms),
-               mimir::to_string(static_ground_atoms),
-               mimir::to_string(derived_ground_atoms),
-               mimir::to_string(fluent_function_values));
-
-    return os;
-}
 }
 
 namespace loki

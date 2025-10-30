@@ -17,7 +17,7 @@
 
 #include "mimir/search/match_tree/nodes/generator.hpp"
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/applicability.hpp"

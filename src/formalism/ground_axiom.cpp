@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_axiom.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/formalism/problem.hpp"
 
@@ -49,19 +48,4 @@ GroundConjunctiveCondition GroundAxiomImpl::get_conjunctive_condition() const { 
 
 GroundLiteral<DerivedTag> GroundAxiomImpl::get_literal() const { return m_literal; }
 
-}
-
-namespace mimir
-{
-
-/**
- * Pretty printing
- */
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data)
-{
-    formalism::write(data, formalism::StringFormatter(), os);
-    return os;
-}
 }

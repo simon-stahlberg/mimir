@@ -190,36 +190,4 @@ std::pair<Plan, IndexList> PartiallyOrderedPlan::compute_t_o_plan_with_maximal_m
 const Plan& PartiallyOrderedPlan::get_t_o_plan() const { return m_t_o_plan; }
 
 const graphs::DynamicDigraph& PartiallyOrderedPlan::get_graph() const { return m_graph; }
-
-std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::search::PartiallyOrderedPlan& element)
-{
-    const auto& problem = *element.get_t_o_plan().get_search_context()->get_problem();
-    const auto formatter = GroundActionImpl::PlanFormatterTag {};
-
-    fmt::print(out,
-               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
-               fmt::join(element.get_graph().get_vertices()
-                             | std::views::transform(
-                                 [&](auto&& vertex)
-                                 {
-                                     return fmt::format(
-                                         "n{} [label=\"index={}, action={}\"];",
-                                         vertex.first,
-                                         vertex.first,
-                                         to_string(std::make_tuple(element.get_t_o_plan().get_actions().at(vertex.first), std::cref(problem), formatter)));
-                                 }),
-                         "\n"),
-               fmt::join(element.get_graph().get_edges()
-                             | std::views::transform(
-                                 [&](auto&& edge)
-                                 { return fmt::format("n{} -> n{} [label=\"index={}\"];", edge.second.get_source(), edge.second.get_target(), edge.first); }),
-                         "\n"));
-    return out;
-}
 }

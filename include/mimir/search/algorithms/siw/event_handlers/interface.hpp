@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_SIW_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/siw/event_handlers/statistics.hpp"

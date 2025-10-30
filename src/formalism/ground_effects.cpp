@@ -17,8 +17,7 @@
 
 #include "mimir/formalism/ground_effects.hpp"
 
-#include "formatter.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -132,47 +131,4 @@ template std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<FluentTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 template std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<AuxiliaryTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
-
-/**
- * Pretty printing
- */
-
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<AuxiliaryTag>& element);
-
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
-{
-    write(*element, StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<AuxiliaryTag> element);
-
-}
-
-namespace mimir
-{
-
-template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
-{
-    formalism::write(data, formalism::StringFormatter(), out);
-    return out;
-}
-
-template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
-{
-    formalism::write(data, formalism::StringFormatter(), out);
-    return out;
-}
 }

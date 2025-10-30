@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/problem.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/axiom.hpp"
@@ -1132,17 +1131,5 @@ problem::Details::Details(const ProblemImpl& problem) :
     axiom(problem),
     grounding(problem)
 {
-}
-
-/* Printing */
-std::ostream& operator<<(std::ostream& out, const ProblemImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::ProblemImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
 }
 }

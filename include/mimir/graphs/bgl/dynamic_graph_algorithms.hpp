@@ -18,11 +18,10 @@
 #ifndef MIMIR_GRAPHS_BGL_DYNAMIC_GRAPH_ALGORITHMS_HPP_
 #define MIMIR_GRAPHS_BGL_DYNAMIC_GRAPH_ALGORITHMS_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
-#include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>

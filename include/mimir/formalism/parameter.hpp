@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PARAMETER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -53,13 +54,6 @@ public:
 
     auto identifying_members() const noexcept { return std::tuple(get_variable(), std::cref(get_bases())); }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const ParameterImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ParameterImpl& element);
 }
 
 #endif

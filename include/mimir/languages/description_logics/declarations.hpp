@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/tags.hpp"
 #include "mimir/languages/description_logics/tags.hpp"
 

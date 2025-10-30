@@ -20,6 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -262,27 +263,6 @@ public:
 
 extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
-/* Printing */
-
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element);
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionNumberImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionBinaryOperatorImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMultiOperatorImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMinusImpl& element);
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<F>& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionImpl& element);
 }
 
 #endif

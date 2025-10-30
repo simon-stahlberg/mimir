@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -99,26 +98,4 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
 template std::pair<VariableList, AtomList<StaticTag>> lift(const GroundAtomList<StaticTag>&, Repositories&);
 template std::pair<VariableList, AtomList<FluentTag>> lift(const GroundAtomList<FluentTag>&, Repositories&);
 template std::pair<VariableList, AtomList<DerivedTag>> lift(const GroundAtomList<DerivedTag>&, Repositories&);
-
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<DerivedTag>& element);
-
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& print(std::ostream& out, GroundAtom<P> element)
-{
-    write(*element, StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, GroundAtom<StaticTag> element);
-template std::ostream& print(std::ostream& out, GroundAtom<FluentTag> element);
-template std::ostream& print(std::ostream& out, GroundAtom<DerivedTag> element);
 }

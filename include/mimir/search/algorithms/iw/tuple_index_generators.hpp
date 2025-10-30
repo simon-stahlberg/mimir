@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_ALGORITHMS_IW_TUPLE_INDEX_GENERATORS_HPP_
 
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
-#include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <array>

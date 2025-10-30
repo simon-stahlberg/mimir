@@ -54,18 +54,6 @@ template valla::Slot<Index> PackedStateImpl::get_atoms<FluentTag>() const;
 template valla::Slot<Index> PackedStateImpl::get_atoms<DerivedTag>() const;
 
 valla::Slot<Index> PackedStateImpl::get_numeric_variables() const { return m_numeric_variables; }
-
-std::ostream& operator<<(std::ostream& os, const PackedStateImpl& state)
-{
-    fmt::print(os,
-               "PackedState(fluent_atoms={}, derived_atoms={}, numeric_variables={})",
-               mimir::to_string(state.get_atoms<FluentTag>()),
-               mimir::to_string(state.get_atoms<DerivedTag>()),
-               mimir::to_string(state.get_numeric_variables()));
-
-    return os;
-}
-
 }
 
 namespace loki

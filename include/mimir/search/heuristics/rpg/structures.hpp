@@ -18,9 +18,10 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_RPG_STRUCTURES_HPP_
 #define MIMIR_SEARCH_HEURISTICS_RPG_STRUCTURES_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/heuristics/rpg/annotations.hpp"
 
 namespace mimir::search::rpg

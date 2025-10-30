@@ -18,9 +18,8 @@
 #include "mimir/search/algorithms/astar_eager/event_handlers/default.hpp"
 
 #include "mimir/common/formatter.hpp"
-#include "mimir/formalism/ground_action.hpp"
-#include "mimir/search/plan.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/formalism/formatter.hpp"
+#include "mimir/search/plan.hpp"  // remove this eventually
 
 #include <chrono>
 
@@ -83,7 +82,7 @@ void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[AStar] " << i << ". ";
-        mimir::print(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
+        mimir::print(std::cout, std::make_tuple(std::cref(*plan.get_actions()[i]), std::cref(*m_problem), PlanFormatterTag {}));
         std::cout << std::endl;
     }
 }

@@ -15,996 +15,516 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "formatter.hpp"
+#include "mimir/formalism/formatter.hpp"
 
-#include "mimir/common/formatter.hpp"
-#include "mimir/formalism/action.hpp"
-#include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/conjunctive_condition.hpp"
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/function.hpp"
-#include "mimir/formalism/function_expressions.hpp"
-#include "mimir/formalism/function_skeleton.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_effects.hpp"
-#include "mimir/formalism/ground_function.hpp"
-#include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
-#include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/ground_numeric_constraint.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_constraint.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/parameter.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/requirements.hpp"
-#include "mimir/formalism/term.hpp"
-#include "mimir/formalism/type.hpp"
-#include "mimir/formalism/variable.hpp"
+#include "formatter_impl.hpp"
 
-#include <cassert>
-#include <fmt/core.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
-#include <sstream>
-
-namespace mimir::formalism
+namespace mimir
 {
-
-/**
- * Helpers to materialize strings
- */
-
-template<Formatter F, typename T>
-std::string to_string(const T& element, F formatter)
+namespace formalism
 {
-    std::stringstream ss;
-    if constexpr (std::is_pointer_v<std::decay_t<decltype(element)>>)
-        write(*element, formatter, ss);
-    else
-        write(element, formatter, ss);
-    return ss.str();
+std::ostream& operator<<(std::ostream& out, const ActionImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element)
+{
+    return mimir::print(out, element);
 }
 
-template<Formatter F, std::ranges::input_range Range>
-std::vector<std::string> to_strings(const Range& range, F formatter)
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<DerivedTag>& element);
+
+std::ostream& operator<<(std::ostream& out, const AxiomImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const DomainImpl& element) { return mimir::print(out, element); }
+
+template<IsFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
-    auto result = std::vector<std::string> {};
-    if constexpr (std::ranges::sized_range<Range>)
-        result.reserve(std::ranges::size(range));
-    for (const auto& element : range)
-        result.push_back(to_string(element, formatter));
-    return result;
+    return mimir::print(out, element);
 }
 
-template<Formatter T>
-void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& out)
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<AuxiliaryTag>& element);
+
+std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
-    fmt::print(out,
-               "(and{}{}{}{})",
-               element.get_literals<StaticTag>().empty() ? "" : fmt::format(" {}", fmt::join(to_strings(element.get_literals<StaticTag>(), formatter), " ")),
-               element.get_literals<FluentTag>().empty() ? "" : fmt::format(" {}", fmt::join(to_strings(element.get_literals<FluentTag>(), formatter), " ")),
-               element.get_literals<DerivedTag>().empty() ? "" : fmt::format(" {}", fmt::join(to_strings(element.get_literals<DerivedTag>(), formatter), " ")),
-               element.get_numeric_constraints().empty() ? "" : fmt::format(" {}", fmt::join(to_strings(element.get_numeric_constraints(), formatter), " ")));
+    return mimir::print(out, element);
 }
 
-template void write(const ConjunctiveConditionImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ConjunctiveConditionImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const ActionImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
 {
-    // Header
-    fmt::print(out, "(:action {}\n", element.get_name());
-
-    formatter.indent += formatter.add_indent;
-    auto indent = std::string(formatter.indent, ' ');
-
-    // Parameters
-    if (element.get_parameters().empty())
-        fmt::print(out, "{}:parameters ()\n", indent);
-    else
-        fmt::print(out, "{}:parameters ({})\n", indent, fmt::join(to_strings(element.get_parameters(), formatter), " "));
-
-    // Conditions
-    fmt::print(out, "{}:precondition {}\n", indent, to_string(element.get_conjunctive_condition(), formatter));
-
-    // Effects
-    fmt::print(out, "{}:effect {}\n", indent, fmt::join(to_strings(element.get_conditional_effects(), formatter), " "));
-
-    formatter.indent -= formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // End action
-    fmt::print(out, "{})", indent);
+    return mimir::print(out, element);
 }
 
-template void write(const ActionImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ActionImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<AuxiliaryTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrDerivedTag P>
-void write(const AtomImpl<P>& element, T formatter, std::ostream& out)
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element)
 {
-    if (element.get_terms().empty())
-        fmt::print(out, "({})", element.get_predicate()->get_name());
-    else
-        fmt::print(out, "({} {})", element.get_predicate()->get_name(), fmt::join(to_strings(element.get_terms(), formatter), " "));
+    return mimir::print(out, element);
 }
 
-template void write(const AtomImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const AxiomImpl& element, T formatter, std::ostream& out)
+template<IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 {
-    // Header line: "(:derived <pred> <params...\n"
-    const auto& predicate_name = element.get_literal()->get_atom()->get_predicate()->get_name();
-    if (element.get_parameters().empty())
-        fmt::print(out, "(:derived ({})\n", predicate_name);
-    else
-        fmt::print(out, "(:derived ({} {})\n", predicate_name, fmt::join(to_strings(element.get_parameters(), formatter), " "));
-
-    formatter.indent += formatter.add_indent;
-    auto indent = std::string(formatter.indent, ' ');
-
-    // Conditions
-    fmt::print(out, "{}{}\n", indent, to_string(element.get_conjunctive_condition(), formatter));
-
-    formatter.indent -= formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // End axiom
-    fmt::print(out, "{})", indent);
+    return print(out, element);
 }
 
-template void write(const AxiomImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const AxiomImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<DerivedTag>& element);
 
-template<Formatter T>
-void write(const DomainImpl& element, T formatter, std::ostream& out)
+template<IsFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element)
 {
-    auto indent = std::string(formatter.indent, ' ');
-
-    // Header
-    fmt::print(out, "{}(define (domain {})\n", indent, element.get_name());
-
-    formatter.indent += formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // Requirements
-    if (!element.get_requirements()->get_requirements().empty())
-        fmt::print(out, "{}{}\n", indent, to_string(element.get_requirements(), formatter));
-
-    // Constants
-    if (!element.get_constants().empty())
-    {
-        std::unordered_map<TypeList, ObjectList, loki::Hash<TypeList>> constants_by_types;
-        for (const auto& constant : element.get_constants())
-            constants_by_types[constant->get_bases()].push_back(constant);
-
-        fmt::print(out, "{}(:constants\n", indent);
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        for (const auto& [types, constants] : constants_by_types)
-        {
-            if (!element.get_requirements()->test(loki::RequirementEnum::TYPING))
-                fmt::print(out, "{}{}\n", indent, fmt::join(to_strings(constants, formatter), " "));
-            else if (types.size() > 1)
-                fmt::print(out, "{}{} - (either {})\n", indent, fmt::join(to_strings(constants, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-            else
-                fmt::print(out, "{}{} - {}\n", indent, fmt::join(to_strings(constants, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-        }
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    // Types
-    if (!element.get_types().empty())
-    {
-        std::unordered_map<TypeList, TypeList, loki::Hash<TypeList>> subtypes_by_parent_types;
-        for (const auto& type : element.get_types())
-            if (!type->get_bases().empty())
-                subtypes_by_parent_types[type->get_bases()].push_back(type);
-
-        fmt::print(out, "{}(:types\n", indent);
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        for (const auto& [types, sub_types] : subtypes_by_parent_types)
-            if (types.size() > 1)
-                fmt::print(out, "{}{} - (either {})\n", indent, fmt::join(to_strings(sub_types, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-            else
-                fmt::print(out, "{}{} - {}\n", indent, fmt::join(to_strings(sub_types, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    // Predicates
-    if (!(element.get_predicates<StaticTag>().empty() && element.get_predicates<FluentTag>().empty() && element.get_predicates<DerivedTag>().empty()))
-    {
-        fmt::print(out, "{}(:predicates\n", std::string(formatter.indent, ' '));
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{}; static predicates:\n", indent);
-        for (const auto& predicate : element.get_predicates<StaticTag>())
-            if (predicate->get_name() != "=")
-                fmt::print(out, "{}{}\n", indent, to_string(predicate, formatter));
-
-        fmt::print(out, "{}; fluent predicates:\n", indent);
-        for (const auto& predicate : element.get_predicates<FluentTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(predicate, formatter));
-
-        fmt::print(out, "{}; derived predicates:\n", indent);
-        for (const auto& predicate : element.get_predicates<DerivedTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(predicate, formatter));
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    // FunctionSkeletons
-    if (!(element.get_function_skeletons<StaticTag>().empty() && element.get_function_skeletons<FluentTag>().empty()
-          && !element.get_auxiliary_function_skeleton().has_value()))
-    {
-        fmt::print(out, "{}(:functions\n", std::string(formatter.indent, ' '));
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{}; static functions:\n", indent);
-        for (const auto& function_skeleton : element.get_function_skeletons<StaticTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(function_skeleton, formatter));
-
-        fmt::print(out, "{}; fluent functions:\n", indent);
-        for (const auto& function_skeleton : element.get_function_skeletons<FluentTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(function_skeleton, formatter));
-
-        if (element.get_auxiliary_function_skeleton().has_value())
-        {
-            fmt::print(out, "{}; auxiliary function:\n", indent);
-            fmt::print(out, "{}{}\n", indent, to_string(element.get_auxiliary_function_skeleton().value(), formatter));
-        }
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    for (const auto& action : element.get_actions())
-        fmt::print(out, "{}{}\n", indent, to_string(action, formatter));
-
-    for (const auto& axiom : element.get_axioms())
-        fmt::print(out, "{}{}\n", indent, to_string(axiom, formatter));
-
-    formatter.indent -= formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // End domain
-    fmt::print(out, "{})", indent);
+    write(element, StringFormatter(), out);
+    return out;
 }
 
-template void write(const DomainImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const DomainImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<AuxiliaryTag>& element);
 
-template<Formatter T, IsFluentOrAuxiliaryTag F>
-void write(const NumericEffectImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_assign_operator()),
-               to_string(element.get_function(), formatter),
-               to_string(element.get_function_expression(), formatter));
+    return mimir::print(out, element);
 }
 
-template void write(const NumericEffectImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
-template<Formatter T, IsFluentOrAuxiliaryTag F>
-void write(const GroundNumericEffectImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<F>& element)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_assign_operator()),
-               to_string(element.get_function(), formatter),
-               to_string(element.get_function_expression(), formatter));
+    return mimir::print(out, element);
 }
 
-template void write(const GroundNumericEffectImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const ConjunctiveEffectImpl& element, T formatter, std::ostream& out)
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
-    fmt::print(out,
-               "{} {}{}",
-               fmt::join(to_strings(element.get_literals(), formatter), " "),
-               fmt::join(to_strings(element.get_fluent_numeric_effects(), formatter), " "),
-               element.get_auxiliary_numeric_effect() ? " " + to_string(element.get_auxiliary_numeric_effect().value(), formatter) : "");
+    return mimir::print(out, element);
 }
 
-template void write(const ConjunctiveEffectImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ConjunctiveEffectImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const ConditionalEffectImpl& element, T formatter, std::ostream& out)
+template<IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
 {
-    fmt::print(out,
-               "(forall ({}) (when {} {}))",
-               fmt::join(to_strings(element.get_conjunctive_condition()->get_parameters(), formatter), " "),
-               to_string(element.get_conjunctive_condition(), formatter),
-               to_string(element.get_conjunctive_effect(), formatter));
+    return mimir::print(out, element);
 }
 
-template void write(const ConditionalEffectImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ConditionalEffectImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<DerivedTag>& element);
 
-template<Formatter T>
-void write(const FunctionExpressionNumberImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
-    fmt::print(out, "{}", element.get_number());
+    return mimir::print(out, element);
 }
 
-template void write(const FunctionExpressionNumberImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionNumberImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTag>& element);
 
-template<Formatter T>
-void write(const FunctionExpressionBinaryOperatorImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const ObjectImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const ParameterImpl& element) { return mimir::print(out, element); }
+
+template<IsStaticOrFluentOrDerivedTag P>
+std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_binary_operator()),
-               to_string(element.get_left_function_expression(), formatter),
-               to_string(element.get_right_function_expression(), formatter));
+    return mimir::print(out, element);
 }
 
-template void write(const FunctionExpressionBinaryOperatorImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionBinaryOperatorImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<DerivedTag>& element);
 
-template<Formatter T>
-void write(const FunctionExpressionMultiOperatorImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const ProblemImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const TermImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const TypeImpl& element) { return mimir::print(out, element); }
+
+std::ostream& operator<<(std::ostream& out, const VariableImpl& element) { return mimir::print(out, element); }
+
+}  // end formalism
+
+std::ostream& print(std::ostream& out, const mimir::formalism::ActionImpl& element)
 {
-    fmt::print(out, "({} {})", mimir::to_string(element.get_multi_operator()), fmt::join(to_strings(element.get_function_expressions(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionExpressionMultiOperatorImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionMultiOperatorImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const FunctionExpressionMinusImpl& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<P>& element)
 {
-    fmt::print(out, "(- {})", to_string(element.get_function_expression(), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionExpressionMinusImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionMinusImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<mimir::formalism::DerivedTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const FunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::AxiomImpl& element)
 {
-    write(*element.get_function(), formatter, out);
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionExpressionFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const FunctionExpressionImpl& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element)
 {
-    std::visit([&](const auto& arg) { write(*arg, formatter, out); }, element.get_variant());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionExpressionImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const FunctionSkeletonImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::DomainImpl& element)
 {
-    if (element.get_parameters().empty())
-        fmt::print(out, "({})", element.get_name());
-    else
-        fmt::print(out, "({} {})", element.get_name(), fmt::join(to_strings(element.get_parameters(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionSkeletonImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const FunctionImpl<F>& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element)
 {
-    if (element.get_terms().empty())
-        fmt::print(out, "({})", element.get_function_skeleton()->get_name());
-    else
-        fmt::print(out, "({} {})", element.get_function_skeleton()->get_name(), fmt::join(to_strings(element.get_terms(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const FunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrDerivedTag P>
-void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element)
 {
-    if (element.get_objects().empty())
-        fmt::print(out, "({})", element.get_predicate()->get_name());
-    else
-        fmt::print(out, "({} {})", element.get_predicate()->get_name(), fmt::join(to_strings(element.get_objects(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundAtomImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundFunctionExpressionNumberImpl& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element)
 {
-    fmt::print(out, "{}", element.get_number());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionNumberImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionNumberImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundFunctionExpressionBinaryOperatorImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_binary_operator()),
-               to_string(element.get_left_function_expression(), formatter),
-               to_string(element.get_right_function_expression(), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionBinaryOperatorImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionBinaryOperatorImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundFunctionExpressionMultiOperatorImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionBinaryOperatorImpl& element)
 {
-    fmt::print(out, "({} {})", mimir::to_string(element.get_multi_operator()), fmt::join(to_strings(element.get_function_expressions(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionMultiOperatorImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionMultiOperatorImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundFunctionExpressionMinusImpl& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMultiOperatorImpl& element)
 {
-    fmt::print(out, "(- {})", to_string(element.get_function_expression(), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionMinusImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionMinusImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const GroundFunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMinusImpl& element)
 {
-    write(*element.get_function(), formatter, out);
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundFunctionExpressionImpl& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<F>& element)
 {
-    std::visit([&](auto&& arg) { write(*arg, formatter, out); }, element.get_variant());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionExpressionImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out)
+std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionImpl& element)
 {
-    if (element.get_objects().empty())
-        fmt::print(out, "({})", element.get_function_skeleton()->get_name());
-    else
-        fmt::print(out, "({} {})", element.get_function_skeleton()->get_name(), fmt::join(to_strings(element.get_objects(), formatter), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T, IsStaticOrFluentOrDerivedTag P>
-void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<F>& element)
 {
-    if (!element.get_polarity())
-        fmt::print(out, "(not {})", to_string(element.get_atom(), formatter));
-    else
-        write<T>(*element.get_atom(), formatter, out);
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundLiteralImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrDerivedTag P>
-void write(const LiteralImpl<P>& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<F>& element)
 {
-    if (!element.get_polarity())
-        fmt::print(out, "(not {})", to_string(element.get_atom(), formatter));
-    else
-        write<T>(*element.get_atom(), formatter, out);
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const LiteralImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const OptimizationMetricImpl& element, T formatter, std::ostream& out)
+template<>
+std::ostream&
+operator<<(std::ostream& os,
+           const std::tuple<const mimir::formalism::GroundActionImpl&, const mimir::formalism::ProblemImpl&, mimir::formalism::FullFormatterTag>& data)
 {
-    fmt::print(out, "{} {}", mimir::to_string(element.get_optimization_metric()), to_string(element.get_function_expression(), formatter));
+    write(data, mimir::formalism::StringFormatter(), os);
+    return os;
 }
 
-template void write(const OptimizationMetricImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const OptimizationMetricImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const NumericConstraintImpl& element, T formatter, std::ostream& out)
+template<>
+std::ostream&
+operator<<(std::ostream& os,
+           const std::tuple<const mimir::formalism::GroundActionImpl&, const mimir::formalism::ProblemImpl&, mimir::formalism::PlanFormatterTag>& data)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_binary_comparator()),
-               to_string(element.get_left_function_expression(), formatter),
-               to_string(element.get_right_function_expression(), formatter));
+    write(data, mimir::formalism::StringFormatter(), os);
+    return os;
 }
 
-template void write(const NumericConstraintImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const NumericConstraintImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const GroundNumericConstraintImpl& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundAtomImpl<P>& element)
 {
-    fmt::print(out,
-               "({} {} {})",
-               mimir::to_string(element.get_binary_comparator()),
-               to_string(element.get_left_function_expression(), formatter),
-               to_string(element.get_right_function_expression(), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const GroundNumericConstraintImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundNumericConstraintImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundAtomImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundAtomImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundAtomImpl<mimir::formalism::DerivedTag>& element);
 
-template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
-void write(const GroundFunctionValueImpl<F>& element, T formatter, std::ostream& out)
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<const formalism::GroundAxiomImpl&, const formalism::ProblemImpl&>& data)
 {
-    fmt::print(out, "(= {} {})", to_string(element.get_function(), formatter), element.get_number());
+    formalism::write(data, formalism::StringFormatter(), os);
+    return os;
 }
 
-template void write(const GroundFunctionValueImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const ParameterImpl& element, T formatter, std::ostream& out)
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<const formalism::GroundConjunctiveConditionImpl&, const formalism::ProblemImpl&>& data)
 {
-    write(*element.get_variable(), formatter, out);
-
-    if (!element.get_bases().empty())
-    {
-        fmt::print(out, "{}", " - ");
-
-        if (element.get_bases().size() > 1)
-            fmt::print(out, "(either {})", fmt::join(to_strings(element.get_bases(), formatter), " "));
-        else if (element.get_bases().size() == 1)
-            fmt::print(out, "{}", to_string(element.get_bases().front(), formatter));
-    }
+    formalism::write(data, formalism::StringFormatter(), os);
+    return os;
 }
 
-template void write<StringFormatter>(const ParameterImpl& element, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const ParameterImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T, IsStaticOrFluentOrDerivedTag P>
-void write(const PredicateImpl<P>& element, T formatter, std::ostream& out)
+template<>
+std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::GroundConjunctiveEffectImpl&, const formalism::ProblemImpl&>& data)
 {
-    if (element.get_parameters().empty())
-        fmt::print(out, "({})", element.get_name());
-    else
-        fmt::print(out, "({} {})", element.get_name(), fmt::join(to_strings(element.get_parameters(), formatter), " "));
+    formalism::write(data, formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const PredicateImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const ProblemImpl& element, T formatter, std::ostream& out)
+template<>
+std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::GroundConditionalEffectImpl&, const formalism::ProblemImpl&>& data)
 {
-    auto indent = std::string(formatter.indent, ' ');
-
-    // Header
-    fmt::print(out, "{}(define (problem {})\n", indent, element.get_name());
-
-    formatter.indent += formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // Domain
-    fmt::print(out, "{}(:domain {})\n", indent, element.get_domain()->get_name());
-
-    // Requirements
-    if (!element.get_requirements()->get_requirements().empty())
-        fmt::print(out, "{}{}\n", indent, to_string(element.get_requirements(), formatter));
-
-    // Constants
-    if (!element.get_objects().empty())
-    {
-        std::unordered_map<TypeList, ObjectList, loki::Hash<TypeList>> objects_by_types;
-        for (const auto& constant : element.get_objects())
-            objects_by_types[constant->get_bases()].push_back(constant);
-
-        fmt::print(out, "{}(:objects\n", indent);
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        for (const auto& [types, objects] : objects_by_types)
-        {
-            if (!element.get_requirements()->test(loki::RequirementEnum::TYPING))
-                fmt::print(out, "{}{}\n", indent, fmt::join(to_strings(objects, formatter), " "));
-            else if (types.size() > 1)
-                fmt::print(out, "{}{} - (either {})\n", indent, fmt::join(to_strings(objects, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-            else
-                fmt::print(out, "{}{} - {}\n", indent, fmt::join(to_strings(objects, formatter), " "), fmt::join(to_strings(types, formatter), " "));
-        }
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    // Predicates
-    if (!element.get_derived_predicates().empty())
-    {
-        fmt::print(out, "{}(:predicates\n", std::string(formatter.indent, ' '));
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        for (const auto& predicate : element.get_derived_predicates())
-            fmt::print(out, "{}{}\n", indent, to_string(predicate, formatter));
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    if (!(element.get_initial_literals<StaticTag>().empty() && element.get_initial_literals<FluentTag>().empty()
-          && element.get_initial_function_values<StaticTag>().empty() && element.get_initial_function_values<FluentTag>().empty()
-          && !element.get_auxiliary_function_value().has_value()))
-    {
-        fmt::print(out, "{}(:init\n", indent);
-
-        formatter.indent += formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{}; static literals:\n", indent);
-        for (const auto& literal : element.get_initial_literals<StaticTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(literal, formatter));
-
-        fmt::print(out, "{}; fluent literals:\n", indent);
-        for (const auto& literal : element.get_initial_literals<FluentTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(literal, formatter));
-
-        fmt::print(out, "{}; static function values:\n", indent);
-        for (const auto& function_values : element.get_initial_function_values<StaticTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(function_values, formatter));
-
-        fmt::print(out, "{}; fluent function values:\n", indent);
-        for (const auto& function_values : element.get_initial_function_values<FluentTag>())
-            fmt::print(out, "{}{}\n", indent, to_string(function_values, formatter));
-
-        if (element.get_auxiliary_function_value().has_value())
-        {
-            fmt::print(out, "{}; auxiliary function values:\n", indent);
-            fmt::print(out, "{}{}\n", indent, to_string(element.get_auxiliary_function_value().value(), formatter));
-        }
-
-        formatter.indent -= formatter.add_indent;
-        indent = std::string(formatter.indent, ' ');
-
-        fmt::print(out, "{})\n", indent);
-    }
-
-    // Goal
-    if (!(element.get_goal_condition<StaticTag>().empty() && element.get_goal_condition<FluentTag>().empty() && element.get_goal_condition<DerivedTag>().empty()
-          && element.get_numeric_goal_condition().empty()))
-    {
-        fmt::print(out,
-                   "{}(:goal (and{}{}{}{}))\n",
-                   indent,
-                   element.get_goal_condition<StaticTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<StaticTag>(), formatter), " ")),
-                   element.get_goal_condition<FluentTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<FluentTag>(), formatter), " ")),
-                   element.get_goal_condition<DerivedTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<DerivedTag>(), formatter), " ")),
-                   element.get_numeric_goal_condition().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_numeric_goal_condition(), formatter), " ")));
-    }
-
-    // Metric
-    if (element.get_optimization_metric().has_value())
-        fmt::print(out, "{}(:metric {})\n", indent, to_string(element.get_optimization_metric().value(), formatter));
-
-    // Axioms
-    for (const auto& axiom : element.get_axioms())
-        fmt::print(out, "{}{}\n", indent, to_string(axiom, formatter));
-
-    formatter.indent -= formatter.add_indent;
-    indent = std::string(formatter.indent, ' ');
-
-    // End problem
-    fmt::print(out, "{})", indent);
+    formalism::write(data, formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const ProblemImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const ProblemImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const RequirementsImpl& element, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionNumberImpl& element)
 {
-    fmt::print(out,
-               "(:requirements {})",
-               fmt::join(element.get_requirements() | std::views::transform([](loki::RequirementEnum r) { return mimir::to_string(r); }), " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write(const RequirementsImpl& element, StringFormatter formatter, std::ostream& out);
-template void write(const RequirementsImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const TypeImpl& element, T, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionBinaryOperatorImpl& element)
 {
-    fmt::print(out, "{}", element.get_name());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const TypeImpl& element, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const TypeImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const ObjectImpl& element, T, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMultiOperatorImpl& element)
 {
-    fmt::print(out, "{}", element.get_name());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const ObjectImpl& element, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const ObjectImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const VariableImpl& element, T, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMinusImpl& element)
 {
-    fmt::print(out, "{}", element.get_name());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const VariableImpl& element, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const VariableImpl& element, AddressFormatter formatter, std::ostream& out);
-
-template<Formatter T>
-void write(const TermImpl& element, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    std::visit([&](const auto& arg) { write<T>(*arg, formatter, out); }, element.get_variant());
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const TermImpl& element, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const TermImpl& element, AddressFormatter formatter, std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionImpl& element)
 {
-    const auto& [action, problem, tag] = data;
-
-    const auto& conjunctive_condition = action->get_conjunctive_condition();
-    const auto& conditional_effects = action->get_conditional_effects();
-
-    fmt::print(
-        out,
-        "GroundAction(index={}, name={}, binding=[{}], condition={}, conditional effects=[{}])",
-        action->get_index(),
-        action->get_action()->get_name(),
-        fmt::join(to_strings(action->get_objects(), formatter), " "),
-        to_string(std::make_tuple(conjunctive_condition, std::cref(problem)), formatter),
-        fmt::join(conditional_effects | std::views::transform([&](auto&& arg) { return to_string(std::make_tuple(arg, std::cref(problem)), formatter); }),
-                  ", "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data,
-                                     StringFormatter formatter,
-                                     std::ostream& out);
-template void write<AddressFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data,
-                                      AddressFormatter formatter,
-                                      std::ostream& out);
-
-template<Formatter T>
-void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<F>& element)
 {
-    const auto& [action, problem, tag] = data;
-
-    fmt::print(
-        out,
-        "({} {})",
-        action->get_action()->get_name(),
-        fmt::join(to_strings(std::ranges::subrange(action->get_objects().begin(), action->get_objects().begin() + action->get_action()->get_original_arity()),
-                             formatter),
-                  " "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data,
-                                     StringFormatter formatter,
-                                     std::ostream& out);
-template void write<AddressFormatter>(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data,
-                                      AddressFormatter formatter,
-                                      std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 
-template<Formatter T>
-void write(const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<P>& element)
 {
-    const auto [axiom, problem] = data;
-
-    fmt::print(out,
-               "Axiom(index={}, name={}, binding=[{}], condition={}, effect={})",
-               axiom->get_index(),
-               axiom->get_literal()->get_atom()->get_predicate()->get_name(),
-               fmt::join(to_strings(axiom->get_objects(), formatter), ", "),
-               to_string(std::make_tuple(axiom->get_conjunctive_condition(), std::cref(problem)), formatter),
-               to_string(axiom->get_literal(), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template<Formatter T>
-void write(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundLiteralImpl<mimir::formalism::DerivedTag>& element);
+
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundNumericConstraintImpl& element)
 {
-    const auto& [conjunctive_condition, problem] = data;
-
-    const auto positive_static_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::StaticTag>();
-    const auto negative_static_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::StaticTag>();
-    const auto positive_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::FluentTag>();
-    const auto negative_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::FluentTag>();
-    const auto positive_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::DerivedTag>();
-    const auto negative_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::DerivedTag>();
-
-    auto positive_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
-    auto negative_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
-    auto positive_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto negative_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto positive_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
-    auto negative_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
-    const auto& ground_numeric_constraints = conjunctive_condition->get_numeric_constraints();
-
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices, positive_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices, negative_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_fluent_precondition_indices, positive_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_fluent_precondition_indices, negative_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(positive_derived_precondition_indices, positive_derived_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(negative_derived_precondition_indices, negative_derived_precondition);
-
-    fmt::print(out,
-               "GroundConjunctiveCondition(positive static preconditions=[{}], negative static preconditions=[{}], negative fluent preconditions=[{}], "
-               "positive derived "
-               "preconditions=[{}], negative derived preconditions=[{}], numeric constraints=[{}])",
-               fmt::join(to_strings(positive_static_precondition, formatter), ", "),
-               fmt::join(to_strings(negative_static_precondition, formatter), ", "),
-               fmt::join(to_strings(positive_fluent_precondition, formatter), ", "),
-               fmt::join(to_strings(negative_fluent_precondition, formatter), ", "),
-               fmt::join(to_strings(positive_derived_precondition, formatter), ", "),
-               fmt::join(to_strings(negative_derived_precondition, formatter), ", "),
-               fmt::join(to_strings(ground_numeric_constraints, formatter), ", "));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void write<StringFormatter>(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data,
-                                     StringFormatter formatter,
-                                     std::ostream& out);
-template void write<AddressFormatter>(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data,
-                                      AddressFormatter formatter,
-                                      std::ostream& out);
-
-template<Formatter T>
-void write(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<P>& element)
 {
-    const auto& [conjunctive_effect, problem] = data;
-
-    const auto positive_literal_indices = conjunctive_effect->get_propositional_effects<formalism::PositiveTag>();
-    const auto negative_literal_indices = conjunctive_effect->get_propositional_effects<formalism::NegativeTag>();
-
-    auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
-    auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
-    const auto& fluent_numeric_effects = conjunctive_effect->get_fluent_numeric_effects();
-    const auto& auxiliary_numeric_effect = conjunctive_effect->get_auxiliary_numeric_effect();
-
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices, positive_literals);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices, negative_literals);
-
-    fmt::print(out,
-               "GroundConjunctiveEffect(delete effects=[{}], add effects=[{}], fluent numeric effects=[{}]{})",
-               fmt::join(to_strings(negative_literals, formatter), ", "),
-               fmt::join(to_strings(positive_literals, formatter), ", "),
-               fmt::join(to_strings(fluent_numeric_effects, formatter), ", "),
-               auxiliary_numeric_effect.has_value() ? ", auxiliary numeric effect=" + to_string(auxiliary_numeric_effect.value(), formatter) : "");
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void
-write<StringFormatter>(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data,
-                                      AddressFormatter formatter,
-                                      std::ostream& out);
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::DerivedTag>& element);
 
-template<Formatter T>
-void write(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& out)
+std::ostream& print(std::ostream& out, const mimir::formalism::OptimizationMetricImpl& element)
 {
-    const auto& [cond_effect_proxy, problem] = data;
-
-    fmt::print(out,
-               "ConditionalEffect({}, {})",
-               to_string(std::make_tuple(cond_effect_proxy->get_conjunctive_condition(), std::cref(problem)), formatter),
-               to_string(std::make_tuple(cond_effect_proxy->get_conjunctive_effect(), std::cref(problem)), formatter));
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
 }
 
-template void
-write<StringFormatter>(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, StringFormatter formatter, std::ostream& out);
-template void write<AddressFormatter>(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data,
-                                      AddressFormatter formatter,
-                                      std::ostream& out);
+std::ostream& print(std::ostream& out, const mimir::formalism::NumericConstraintImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::ObjectImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::ParameterImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<P>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::DerivedTag>& element);
+
+std::ostream& print(std::ostream& out, const mimir::formalism::ProblemImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::RequirementsImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::TermImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::TypeImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::formalism::VariableImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
+    return out;
+}
 }

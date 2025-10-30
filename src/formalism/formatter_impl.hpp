@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_FORMATTER_HPP_
-#define MIMIR_FORMALISM_FORMATTER_HPP_
+#ifndef MIMIR_SRC_FORMALISM_FORMATTER_IMPL_HPP_
+#define MIMIR_SRC_FORMALISM_FORMATTER_IMPL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -162,22 +163,22 @@ template<Formatter T>
 void write(const TermImpl& element, T formatter, std::ostream& out);
 
 template<Formatter T>
-void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::FullFormatterTag>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundActionImpl&, const ProblemImpl&, FullFormatterTag>& data, T formatter, std::ostream& os);
 
 template<Formatter T>
-void write(const std::tuple<GroundAction, const ProblemImpl&, GroundActionImpl::PlanFormatterTag>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundActionImpl&, const ProblemImpl&, PlanFormatterTag>& data, T formatter, std::ostream& os);
 
 template<Formatter T>
-void write(const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundAxiomImpl&, const ProblemImpl&>& data, T formatter, std::ostream& os);
 
 template<Formatter T>
-void write(const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundConjunctiveConditionImpl&, const ProblemImpl&>& data, T formatter, std::ostream& os);
 
 template<Formatter T>
-void write(const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundConjunctiveEffectImpl&, const ProblemImpl&>& data, T formatter, std::ostream& os);
 
 template<Formatter T>
-void write(const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data, T formatter, std::ostream& os);
+void write(const std::tuple<const GroundConditionalEffectImpl&, const ProblemImpl&>& data, T formatter, std::ostream& os);
 }
 
 #endif

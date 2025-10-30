@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/predicate.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -60,29 +59,4 @@ size_t PredicateImpl<P>::get_arity() const
 template class PredicateImpl<StaticTag>;
 template class PredicateImpl<FluentTag>;
 template class PredicateImpl<DerivedTag>;
-
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<DerivedTag>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<P>& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::StaticTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::DerivedTag>& element);
 }

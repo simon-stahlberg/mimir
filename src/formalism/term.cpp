@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/term.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -30,15 +29,4 @@ TermImpl::TermImpl(size_t index, std::variant<Object, Variable> object_or_variab
 size_t TermImpl::get_index() const { return m_index; }
 
 const std::variant<Object, Variable>& TermImpl::get_variant() const { return m_object_or_variable; }
-
-std::ostream& operator<<(std::ostream& out, const TermImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::TermImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

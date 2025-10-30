@@ -18,13 +18,14 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_DETAILS_HPP_
 #define MIMIR_FORMALISM_PROBLEM_DETAILS_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/axiom_partitioning.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/grounding_table.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism::problem
 {

@@ -18,8 +18,10 @@
 #ifndef MIMIR_DATASETS_GENERALIZED_STATE_SPACE_CLASS_GRAPH_HPP_
 #define MIMIR_DATASETS_GENERALIZED_STATE_SPACE_CLASS_GRAPH_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
@@ -34,11 +36,6 @@ namespace mimir::graphs
  * ClassGraph
  */
 
-/// @typedef ClassVertex
-/// @brief `ClassVertex` encapsulates information about a vertex in a `ClassGraph`.
-using ClassVertex = Vertex<std::tuple<Index, Index>>;
-using ClassVertexList = std::vector<ClassVertex>;
-
 /// @brief Get the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 /// @param vertex is a `ClassVertex`.
 /// @return the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
@@ -49,11 +46,6 @@ inline Index get_problem_vertex_index(const ClassVertex& vertex) { return std::g
 /// @return the index of the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 inline Index get_problem_index(const ClassVertex& vertex) { return std::get<1>(vertex.get_properties()); }
 
-/// @typedef ClassEdge
-/// @brief `ClassEdge` encapsulates information about an edge in a `ClassGraph`.
-using ClassEdge = Edge<std::tuple<Index, Index>>;
-using ClassEdgeList = std::vector<ClassEdge>;
-
 /// @brief Get the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 /// @param edge is a `ClassEdge`.
 /// @return the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
@@ -63,38 +55,6 @@ inline Index get_problem_edge_index(const ClassEdge& edge) { return std::get<0>(
 /// @param edge is a `ClassEdge`.
 /// @return the index of the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 inline Index get_problem_index(const ClassEdge& edge) { return std::get<1>(edge.get_properties()); }
-
-using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
-/// @typedef ClassGraph
-/// @brief `ClassGraph` implements a directed graph representing the state space of a class of problems.
-using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
-
-/// @brief Write a string representation of the given `ClassVertex` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ClassVertex`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
-
-/// @brief Write a string representation of the given `ClassEdge` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ClassEdge`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
-}
-
-namespace mimir
-{
-/// @brief Write a string representation of the given `ClassVertex` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ClassVertex`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& print(std::ostream& out, const mimir::graphs::ClassVertex& vertex);
-
-/// @brief Write a string representation of the given `ClassEdge` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ClassEdge`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& print(std::ostream& out, const mimir::graphs::ClassEdge& edge);
 }
 
 #endif

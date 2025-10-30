@@ -20,13 +20,14 @@
 
 #include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/closed_interval.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
-#include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <optional>

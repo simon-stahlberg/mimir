@@ -18,28 +18,12 @@
 #ifndef MIMIR_GRAPHS_GRAPH_TRAVERSAL_INTERFACE_HPP_
 #define MIMIR_GRAPHS_GRAPH_TRAVERSAL_INTERFACE_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <concepts>
 
 namespace mimir::graphs
 {
-
-struct BackwardTag;
-
-/// @brief `ForwardTag` represents traversal of edges in forward direction.
-struct ForwardTag
-{
-    using Inverse = BackwardTag;
-};
-/// @brief `BackwardTag` represents traversal of edges in backward direction.
-struct BackwardTag
-{
-    using Inverse = ForwardTag;
-};
-
-template<typename T>
-concept IsDirection = std::same_as<T, ForwardTag> || std::same_as<T, BackwardTag>;
 
 /// @brief `DirectionTaggedType` associates a type `T` with a `IsDirection`.
 /// @tparam T is the type.

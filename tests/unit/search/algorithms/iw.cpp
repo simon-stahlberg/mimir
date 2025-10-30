@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"

@@ -18,12 +18,13 @@
 #ifndef MIMIR_FORMALISM_GROUND_AXIOM_HPP_
 #define MIMIR_FORMALISM_GROUND_AXIOM_HPP_
 
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -73,16 +74,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(get_axiom(), std::cref(get_objects())); }
 };
-}
-
-namespace mimir
-{
-/**
- * Pretty printing
- */
-
-template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data);
 }
 
 #endif

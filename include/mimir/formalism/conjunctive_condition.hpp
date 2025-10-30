@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_CONJUNCTIVE_CONDITION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -92,14 +93,6 @@ public:
                           std::cref(get_numeric_constraints()));
     }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element);
-
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element);
 }
 
 #endif

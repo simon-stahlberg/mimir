@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_PROPERTY_HPP_
 
 #include "mimir/common/formatter.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -34,17 +35,6 @@
 
 namespace mimir::graphs
 {
-/**
- * Template properties (for C++)
- */
-
-template<class T>
-concept Property = requires(const T& a, const T& b, std::ostream& os) {
-    { loki::Hash<T> {}(a) } -> std::convertible_to<std::size_t>;
-    { loki::EqualTo<T> {}(a, b) } -> std::same_as<bool>;
-    // { os << a } -> std::same_as<std::ostream&>;
-};
-
 /**
  * Polymorphic properties (for Python)
  */
@@ -162,11 +152,6 @@ namespace mimir
 extern std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element);
 
 extern std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element);
-}
-
-namespace mimir::graphs
-{
-static_assert(Property<PropertyValue>);
 }
 
 #endif

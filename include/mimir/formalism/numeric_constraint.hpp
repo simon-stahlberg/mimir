@@ -20,6 +20,7 @@
 
 #include "mimir/common/closed_interval.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <absl/container/flat_hash_map.h>
 
@@ -79,17 +80,6 @@ public:
         return std::tuple(get_binary_comparator(), get_left_function_expression(), get_right_function_expression(), std::cref(get_terms()));
     }
 };
-
-/**
- * Printing
- */
-
-extern std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::NumericConstraintImpl& element);
 }
 
 #endif

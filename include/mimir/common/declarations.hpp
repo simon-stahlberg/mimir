@@ -15,21 +15,85 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_CONCEPTS_HPP_
-#define MIMIR_COMMON_CONCEPTS_HPP_
+#ifndef MIMIR_COMMON_DECLARATIONS_HPP_
+#define MIMIR_COMMON_DECLARATIONS_HPP_
 
+#include <array>
 #include <boost/hana.hpp>
 #include <cassert>
 #include <concepts>
 #include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <loki/loki.hpp>
 #include <memory>
 #include <ranges>
 #include <string>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include <variant>
+#include <vector>
 
 namespace mimir
 {
+
+/**
+ * Index
+ */
+
+using Index = uint32_t;
+using IndexPair = std::pair<Index, Index>;
+using IndexPairList = std::vector<IndexPair>;
+using IndexList = std::vector<Index>;
+using IndexSet = std::unordered_set<Index>;
+template<size_t K>
+using IndexArray = std::array<Index, K>;
+template<typename T>
+using IndexMap = std::unordered_map<Index, T>;
+template<typename Key>
+using ToIndexMap = std::unordered_map<Key, Index, loki::Hash<Key>, loki::EqualTo<Key>>;
+
+static const Index MAX_INDEX = std::numeric_limits<Index>::max();
+
+/**
+ * ContinuousCost
+ */
+
+using ContinuousCost = double;
+using ContinuousCostList = std::vector<ContinuousCost>;
+using ContinuousCostMatrix = std::vector<ContinuousCostList>;
+using ContinuousCostMap = std::unordered_map<Index, ContinuousCost>;
+
+static constexpr const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::quiet_NaN();
+static constexpr const ContinuousCost INFINITY_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::infinity();
+
+/**
+ * DiscreteCost
+ */
+
+using DiscreteCost = int32_t;
+using DiscreteCostList = std::vector<DiscreteCost>;
+using DiscreteCostMatrix = std::vector<ContinuousCostList>;
+using DiscreteCostMap = std::unordered_map<Index, DiscreteCost>;
+
+static constexpr const DiscreteCost UNDEFINED_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
+static constexpr const DiscreteCost MAX_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
+
+/**
+ * Containers
+ */
+
+template<typename Key, typename Value>
+using UnorderedMap = std::unordered_map<Key, Value, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Value>
+using UnorderedSet = std::unordered_set<Value, loki::Hash<Value>, loki::EqualTo<Value>>;
+
+template<typename T, typename... Ds>
+using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
+
+template<template<typename> typename T, typename... Ds>
+using HanaMappedContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T<Ds>>...>;
 
 template<typename T>
 struct dependent_false : std::false_type
@@ -69,11 +133,6 @@ concept IsVariant = requires { typename std::variant_size<T>::type; };
 
 template<typename T>
 concept IsString = std::is_same_v<std::remove_cvref_t<T>, std::string>;
-
-template<typename T>
-concept IsDereferencable = requires(T t) {
-    { *t } -> std::convertible_to<const typename std::remove_reference_t<decltype(*t)>>;
-};
 
 }
 

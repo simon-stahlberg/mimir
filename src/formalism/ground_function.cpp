@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_function.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/object.hpp"
 
@@ -58,29 +57,4 @@ size_t GroundFunctionImpl<F>::get_arity() const
 template class GroundFunctionImpl<StaticTag>;
 template class GroundFunctionImpl<FluentTag>;
 template class GroundFunctionImpl<AuxiliaryTag>;
-
-template<IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<AuxiliaryTag>& element);
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<F>& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::StaticTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 }

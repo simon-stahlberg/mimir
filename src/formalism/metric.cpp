@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/metric.hpp"
 
-#include "formatter.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <cassert>
@@ -38,15 +37,4 @@ Index OptimizationMetricImpl::get_index() const { return m_index; }
 loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 GroundFunctionExpression OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
-
-std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::OptimizationMetricImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TERM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -54,13 +55,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(get_variant()); }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const TermImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::TermImpl& element);
 }
 
 #endif

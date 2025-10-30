@@ -18,7 +18,7 @@
 #ifndef MIMIR_COMMON_EQUAL_TO_HPP_
 #define MIMIR_COMMON_EQUAL_TO_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <memory>

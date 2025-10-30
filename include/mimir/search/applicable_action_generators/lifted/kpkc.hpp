@@ -21,6 +21,7 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem_details.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"

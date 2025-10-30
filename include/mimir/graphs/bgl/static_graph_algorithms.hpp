@@ -18,12 +18,11 @@
 #ifndef MIMIR_GRAPHS_BGL_STATIC_GRAPH_ALGORITHMS_HPP_
 #define MIMIR_GRAPHS_BGL_STATIC_GRAPH_ALGORITHMS_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
 #include "mimir/graphs/graph_properties.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>

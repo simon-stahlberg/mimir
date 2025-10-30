@@ -18,16 +18,13 @@
 #ifndef MIMIR_GRAPHS_STATIC_GRAPH_IMPL_HPP_
 #define MIMIR_GRAPHS_STATIC_GRAPH_IMPL_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph_decl.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/hana.hpp>
 #include <cassert>
@@ -1373,67 +1370,6 @@ template<IsDirection Direction>
 Degree StaticBidirectionalGraph<G>::get_degree(VertexIndex vertex) const
 {
     return m_graph.template get_degree<Direction>(vertex);
-}
-
-template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph)
-{
-    return mimir::print(out, graph);
-}
-
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph)
-{
-    return mimir::print(out, graph);
-}
-
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph)
-{
-    return mimir::print(out, graph);
-}
-
-}
-
-namespace mimir
-{
-template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph)
-{
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
-
-    /* Node definitions */
-    for (const auto& vertex : graph.get_vertices())
-    {
-        out << "n" << vertex.get_index() << " [label=\"" << vertex << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& edge : graph.get_edges())
-    {
-        out << "n" << edge.get_source() << " -> " << "n" << edge.get_target() << " [label=\"" << edge << "\"];\n";
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
-
-    return out;
-}
-
-template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph)
-{
-    out << graph.get_graph();
-    return out;
-}
-
-template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph)
-{
-    out << graph.get_graph();
-    return out;
 }
 }
 

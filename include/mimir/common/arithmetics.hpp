@@ -19,7 +19,7 @@
 #ifndef MIMIR_COMMON_ARITHMETICS_HPP_
 #define MIMIR_COMMON_ARITHMETICS_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 
 namespace mimir
 {

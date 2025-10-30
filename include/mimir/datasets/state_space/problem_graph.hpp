@@ -18,8 +18,10 @@
 #ifndef MIMIR_DATASETS_STATE_SPACE_PROBLEM_GRAPH_HPP_
 #define MIMIR_DATASETS_STATE_SPACE_PROBLEM_GRAPH_HPP_
 
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
@@ -35,11 +37,6 @@ namespace mimir::graphs
 /**
  * ProblemGraph
  */
-
-/// @typedef ProblemVertex
-/// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<std::tuple<search::PackedState, search::StateRepository, DiscreteCost, ContinuousCost, bool, bool, bool, bool>>;
-using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the `PackedState` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
@@ -91,11 +88,6 @@ inline bool is_unsolvable(const ProblemVertex& vertex) { return std::get<6>(vert
 /// @return true if the representative associated with the given `ProblemVertex` is an alive vertex, and false otherwise.
 inline bool is_alive(const ProblemVertex& vertex) { return std::get<7>(vertex.get_properties()); }
 
-/// @typedef ProblemEdge
-/// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
-using ProblemEdge = Edge<std::tuple<formalism::GroundAction, formalism::Problem, ContinuousCost>>;
-using ProblemEdgeList = std::vector<ProblemEdge>;
-
 /// @brief Get the `GroundAction` of the given `ProblemEdge`.
 /// @param edge is a `ProblemEdge`.
 /// @return the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
@@ -110,40 +102,6 @@ inline const formalism::Problem& get_problem(const ProblemEdge& edge) { return s
 /// @param edge is a `ProblemEdge`.
 /// @return the action cost of associated with the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
 inline ContinuousCost get_action_cost(const ProblemEdge& edge) { return std::get<2>(edge.get_properties()); }
-
-using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
-using StaticProblemGraphList = std::vector<StaticProblemGraph>;
-/// @typedef ProblemGraph
-/// @brief `ProblemGraph` implements a directed graph representing the state space of a single problem.
-using ProblemGraph = StaticBidirectionalGraph<StaticProblemGraph>;
-using ProblemGraphList = std::vector<ProblemGraph>;
-
-/// @brief Write a string representation of the given `ProblemVertex` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param element is the given `ProblemVertex`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& element);
-
-/// @brief Write a string representation of the given `ProblemEdge` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param element is the given `ProblemEdge`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& element);
-}
-
-namespace mimir
-{
-/// @brief Write a string representation of the given `ProblemVertex` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param element is the given `ProblemVertex`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& print(std::ostream& out, const mimir::graphs::ProblemVertex& element);
-
-/// @brief Write a string representation of the given `ProblemEdge` to the `std::ostream` buffer.
-/// @param out is a reference to the given `std::ostream` buffer.
-/// @param element is the given `ProblemEdge`.
-/// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& print(std::ostream& out, const mimir::graphs::ProblemEdge& element);
 }
 
 #endif

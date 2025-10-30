@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/object.hpp"
 
-#include "formatter.hpp"
-
 namespace mimir::formalism
 {
 ObjectImpl::ObjectImpl(Index index, std::string name, TypeList types) : m_index(index), m_name(std::move(name)), m_types(std::move(types)) {}
@@ -28,15 +26,4 @@ Index ObjectImpl::get_index() const { return m_index; }
 const std::string& ObjectImpl::get_name() const { return m_name; }
 
 const TypeList& ObjectImpl::get_bases() const { return m_types; }
-
-std::ostream& operator<<(std::ostream& out, const ObjectImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::ObjectImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

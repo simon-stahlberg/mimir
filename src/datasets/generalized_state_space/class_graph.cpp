@@ -24,28 +24,4 @@ template class Edge<std::tuple<Index, Index>>;
 template class StaticGraph<ClassVertex, ClassEdge>;
 template class StaticBidirectionalGraph<StaticClassGraph>;
 
-std::ostream& operator<<(std::ostream& out, const ClassVertex& element) { return mimir::print(out, element); }
-
-std::ostream& operator<<(std::ostream& out, const ClassEdge& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::graphs::ClassVertex& element)
-{
-    out << "class_v_idx=" << element.get_index() << "\n"                         //
-        << " problem_idx=" << mimir::graphs::get_problem_index(element) << "\n"  //
-        << " problem_v_idx=" << mimir::graphs::get_problem_vertex_index(element);
-    return out;
-}
-
-std::ostream& print(std::ostream& out, const mimir::graphs::ClassEdge& element)
-{
-    out << "class_e_idx=" << element.get_index() << "\n"                         //
-        << " class_src_idx=" << element.get_source() << "\n"                     //
-        << " class_dst_idx=" << element.get_target() << "\n"                     //
-        << " problem_idx=" << mimir::graphs::get_problem_index(element) << "\n"  //
-        << " problem_e_idx=" << mimir::graphs::get_problem_edge_index(element);
-    return out;
-}
 }

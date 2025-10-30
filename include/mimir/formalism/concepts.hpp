@@ -21,6 +21,7 @@
 // Do not include headers with transitive dependencies.
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <concepts>
 

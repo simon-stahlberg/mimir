@@ -18,7 +18,7 @@
 #ifndef MIMIR_COMMON_TUPLE_HPP_
 #define MIMIR_COMMON_TUPLE_HPP_
 
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 
 namespace mimir
 {

@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/numeric_constraint.hpp"
 
-#include "formatter.hpp"
-
 namespace mimir::formalism
 {
 
@@ -46,15 +44,4 @@ FunctionExpression NumericConstraintImpl::get_right_function_expression() const 
 const TermList& NumericConstraintImpl::get_terms() const { return m_terms; }
 
 size_t NumericConstraintImpl::get_arity() const { return m_terms.size(); }
-
-std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::NumericConstraintImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

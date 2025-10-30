@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -64,15 +65,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(std::cref(get_name()), std::cref(get_parameters())); }
 };
-
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element);
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<P>& element);
 }
 
 #endif

@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/domain.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"
@@ -194,20 +193,4 @@ domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&d
 domain::Details::Details() : parent(nullptr), constant(), predicate() {}
 
 domain::Details::Details(const DomainImpl& domain) : parent(&domain), constant(domain), predicate(domain) {}
-
-/**
- * Printing
- */
-
-std::ostream& operator<<(std::ostream& out, const DomainImpl& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::formalism::DomainImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

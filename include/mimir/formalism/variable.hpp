@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_VARIABLE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 namespace mimir::formalism
 {
@@ -58,13 +59,6 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const noexcept { return std::tuple(std::cref(get_name()), get_parameter_index()); }
 };
-
-extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::VariableImpl& element);
 }
 
 #endif

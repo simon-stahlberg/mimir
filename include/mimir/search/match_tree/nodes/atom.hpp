@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_NODES_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
 namespace mimir::search::match_tree

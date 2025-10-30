@@ -69,13 +69,61 @@ public:
 };
 
 template<formalism::HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const IInverseNode<E>& element);
-}
+using InverseNodes = std::unordered_map<const IInverseNode<E>*, std::pair<size_t, std::string>>;
 
-namespace mimir
+using InverseEdges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
+
+template<formalism::HasConjunctiveCondition E>
+struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<E>
 {
-template<mimir::formalism::HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const mimir::search::match_tree::IInverseNode<E>& element);
+    InverseNodes<E>& m_nodes;
+
+    InitializeInverseNodesVisitor(InverseNodes<E>& nodes) : m_nodes(nodes) {}
+
+    void accept(const InverseAtomSelectorNode_TFX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
+};
+
+template<formalism::HasConjunctiveCondition E>
+struct InitializeInverseEdgesVisitor : public IInverseNodeVisitor<E>
+{
+    InverseNodes<E>& m_nodes;
+    InverseEdges& m_edges;
+
+    InitializeInverseEdgesVisitor(InverseNodes<E>& nodes, InverseEdges& edges) : m_nodes(nodes), m_edges(edges) {}
+
+    void accept(const InverseAtomSelectorNode_TFX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, formalism::FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, formalism::DerivedTag>& atom) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
+};
+
 }
 
 #endif

@@ -23,6 +23,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/formalism/ground_effects.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -65,15 +66,6 @@ public:
     GroundActionImpl(GroundActionImpl&& other) = default;
     GroundActionImpl& operator=(GroundActionImpl&& other) = default;
 
-    /// @brief `FullFormatterTag` is used to dispatch the operator<< overload that prints the entire action.
-    struct FullFormatterTag
-    {
-    };
-    /// @brief `PlanFormatterTag` is used to dispatch the operator<< overload that prints the action as it appears in a plan.
-    struct PlanFormatterTag
-    {
-    };
-
     Index get_index() const;
     Action get_action() const;
     const ObjectList& get_objects() const;
@@ -93,19 +85,6 @@ inline bool operator==(const std::span<const GroundAction>& lhs, const std::span
 {
     return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
 }
-}
-
-namespace mimir
-{
-template<>
-std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data);
-
-template<>
-std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data);
 }
 
 #endif

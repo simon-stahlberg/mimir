@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_GENERAL_POLICY_FACTORY_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 
 namespace mimir::languages::general_policies

@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <loki/loki.hpp>
 #include <tuple>

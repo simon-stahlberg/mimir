@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/effects.hpp"
 
-#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/concepts.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
@@ -126,43 +125,4 @@ ConjunctiveCondition ConditionalEffectImpl::get_conjunctive_condition() const { 
 ConjunctiveEffect ConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
-
-template<IsFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<AuxiliaryTag>& element);
-
-std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element) { return mimir::print(out, element); }
-
-std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element) { return mimir::print(out, element); }
-
-}
-
-namespace mimir
-{
-template<mimir::formalism::IsFluentOrAuxiliaryTag F>
-std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-template std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<mimir::formalism::AuxiliaryTag>& element);
-
-std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
-
-std::ostream& print(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element)
-{
-    write(element, mimir::formalism::StringFormatter(), out);
-    return out;
-}
 }

@@ -21,7 +21,6 @@
 #include "mimir/graphs/bgl/dynamic_graph_algorithms.hpp"
 #include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/graph_edges.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 
 #include <loki/details/utils/hash.hpp>
 #include <unordered_set>

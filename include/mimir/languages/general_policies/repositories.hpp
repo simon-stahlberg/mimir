@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_REPOSITORIES_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 #include "mimir/languages/general_policies/conditions.hpp"
 #include "mimir/languages/general_policies/effects.hpp"
 #include "mimir/languages/general_policies/general_policy.hpp"

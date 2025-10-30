@@ -18,13 +18,10 @@
 #ifndef MIMIR_GRAPHS_DYNAMIC_GRAPH_IMPL_HPP_
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_IMPL_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/graphs/dynamic_graph_interface.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/common/declarations.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/property.hpp"
-#include "mimir/graphs/types.hpp"
 
 #include <boost/hana.hpp>
 #include <cassert>
@@ -879,40 +876,6 @@ void DynamicGraph<V, E>::edge_index_check(EdgeIndex edge, const std::string& err
     {
         throw std::out_of_range(error_message);
     }
-}
-
-template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph)
-{
-    return mimir::print(out, graph);
-}
-}
-
-namespace mimir
-{
-template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph)
-{
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
-
-    /* Node definitions */
-    for (const auto& [v_idx, v] : graph.get_vertices())
-    {
-        out << "n" << v.get_index() << " [label=\"" << v << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& [e_idx, e] : graph.get_edges())
-    {
-        out << "n" << e.get_source() << " -> " << "n" << e.get_target() << " [label=\"" << e << "\"];\n";
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
-
-    return out;
 }
 }
 

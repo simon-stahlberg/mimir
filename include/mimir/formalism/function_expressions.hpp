@@ -19,8 +19,9 @@
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
 #include "mimir/common/closed_interval.hpp"
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <algorithm>
 
@@ -317,25 +318,6 @@ inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost 
         }
     }
 }
-
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionBinaryOperatorImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionMultiOperatorImpl& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionMinusImpl& element);
-template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<F>& element);
-extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionImpl& element);
 }
 
 #endif

@@ -20,8 +20,6 @@
 
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 
-#include <iostream>
-
 namespace mimir::search::brfs
 {
 

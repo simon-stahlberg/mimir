@@ -61,13 +61,61 @@ public:
 };
 
 template<formalism::HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const INode<E>& element);
-}
+using Nodes = std::unordered_map<const INode<E>*, std::pair<size_t, std::string>>;
 
-namespace mimir
+using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
+
+template<formalism::HasConjunctiveCondition E>
+struct InitializeNodesVisitor : public INodeVisitor<E>
 {
-template<mimir::formalism::HasConjunctiveCondition E>
-std::ostream& print(std::ostream& out, const mimir::search::match_tree::INode<E>& element);
+    Nodes<E>& m_nodes;
+
+    InitializeNodesVisitor(Nodes<E>& nodes) : m_nodes(nodes) {}
+
+    void accept(const AtomSelectorNode_TFX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, formalism::DerivedTag>& atom) override;
+    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
+};
+
+template<formalism::HasConjunctiveCondition E>
+struct InitializeEdgesVisitor : public INodeVisitor<E>
+{
+    Nodes<E>& m_nodes;
+    Edges& m_edges;
+
+    InitializeEdgesVisitor(Nodes<E>& nodes, Edges& edges) : m_nodes(nodes), m_edges(edges) {}
+
+    void accept(const AtomSelectorNode_TFX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, formalism::FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, formalism::DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, formalism::DerivedTag>& atom) override;
+    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
+};
+
 }
 
 #endif

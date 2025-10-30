@@ -19,10 +19,11 @@
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
 #include "mimir/common/closed_interval.hpp"
-#include "mimir/common/types.hpp"
+#include "mimir/common/declarations.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/types.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <cassert>
