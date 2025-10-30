@@ -138,7 +138,7 @@ PartiallyOrderedPlan::PartiallyOrderedPlan(Plan t_o_plan) : m_t_o_plan(std::move
         R[v].insert(v);
 
         auto edges =
-            std::vector<graphs::EmptyEdge>(m_graph.get_adjacent_edges<graphs::ForwardTag>(v).begin(), m_graph.get_adjacent_edges<graphs::ForwardTag>(v).end());
+            std::vector<graphs::Edge<>>(m_graph.get_adjacent_edges<graphs::ForwardTag>(v).begin(), m_graph.get_adjacent_edges<graphs::ForwardTag>(v).end());
 
         std::sort(edges.begin(),
                   edges.end(),
@@ -191,33 +191,35 @@ const Plan& PartiallyOrderedPlan::get_t_o_plan() const { return m_t_o_plan; }
 
 const graphs::DynamicDigraph& PartiallyOrderedPlan::get_graph() const { return m_graph; }
 
-std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& p_o_plan)
-{
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
+std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& element) { return mimir::print(out, element); }
 
-    /* Node definitions */
-    for (const auto& [v_idx, v] : p_o_plan.get_graph().get_vertices())
-    {
-        out << "n" << v.get_index() << " [label=\"index=" << v_idx << ", action=";
-        mimir::operator<<(out,
-                          std::make_tuple(p_o_plan.get_t_o_plan().get_actions().at(v_idx),
-                                          std::cref(*p_o_plan.get_t_o_plan().get_search_context()->get_problem()),
-                                          GroundActionImpl::PlanFormatterTag {}));
-        out << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& [e_idx, e] : p_o_plan.get_graph().get_edges())
-    {
-        out << "n" << e.get_source() << " -> " << "n" << e.get_target() << " [label=\"index=" << e_idx << "\"];\n";
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
-
-    return out;
 }
 
+namespace mimir
+{
+std::ostream& print(std::ostream& out, const mimir::search::PartiallyOrderedPlan& element)
+{
+    const auto& problem = *element.get_t_o_plan().get_search_context()->get_problem();
+    const auto formatter = GroundActionImpl::PlanFormatterTag {};
+
+    fmt::print(out,
+               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
+               fmt::join(element.get_graph().get_vertices()
+                             | std::views::transform(
+                                 [&](auto&& vertex)
+                                 {
+                                     return fmt::format(
+                                         "n{} [label=\"index={}, action={}\"];",
+                                         vertex.first,
+                                         vertex.first,
+                                         to_string(std::make_tuple(element.get_t_o_plan().get_actions().at(vertex.first), std::cref(problem), formatter)));
+                                 }),
+                         "\n"),
+               fmt::join(element.get_graph().get_edges()
+                             | std::views::transform(
+                                 [&](auto&& edge)
+                                 { return fmt::format("n{} -> n{} [label=\"index={}\"];", edge.second.get_source(), edge.second.get_target(), edge.first); }),
+                         "\n"));
+    return out;
+}
 }

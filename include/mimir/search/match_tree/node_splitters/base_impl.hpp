@@ -185,7 +185,7 @@ std::pair<Node<E>, Statistics> NodeSplitterBase<Derived_, E>::fit(std::span<cons
     if (m_options.enable_dump_dot_file)
     {
         auto ss = std::stringstream {};
-        ss << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
+        ss << *inverse_root << std::endl;
         write_to_file(m_options.output_dot_file, ss.str());
     }
 

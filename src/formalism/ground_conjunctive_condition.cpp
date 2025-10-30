@@ -89,7 +89,7 @@ namespace mimir
  */
 
 template<>
-std::ostream& print(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data)
 {
     formalism::write(data, formalism::StringFormatter(), os);
     return os;

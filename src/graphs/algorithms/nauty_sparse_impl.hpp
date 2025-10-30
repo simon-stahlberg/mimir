@@ -98,4 +98,9 @@ extern std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph)
 
 }
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::graphs::nauty::details::SparseGraphImpl& graph);
+}
+
 #endif

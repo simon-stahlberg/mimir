@@ -884,6 +884,15 @@ void DynamicGraph<V, E>::edge_index_check(EdgeIndex edge, const std::string& err
 template<IsVertex V, IsEdge E>
 std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph)
 {
+    return mimir::print(out, graph);
+}
+}
+
+namespace mimir
+{
+template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
+std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph)
+{
     out << "digraph Tree {\n"
            "rankdir=TB;\n\n";
 

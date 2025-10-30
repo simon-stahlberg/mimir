@@ -62,23 +62,26 @@ private:
     [[no_unique_address]] P m_properties;
 };
 
+/**
+ * Printing
+ */
+
 template<Property P>
 std::ostream& operator<<(std::ostream& os, const Vertex<P>& vertex)
 {
-    using ::mimir::operator<<;
+    return mimir::print(os, vertex);
+}
+}
 
+namespace mimir
+{
+template<mimir::graphs::Property P>
+std::ostream& print(std::ostream& os, const mimir::graphs::Vertex<P>& vertex)
+{
     os << "index=" << vertex.get_index() << ", properties=";
     os << vertex.get_properties();
     return os;
 }
-
-/**
- * EmptyVertex
- */
-
-/// @brief `EmptyVertex` is a vertex without `VertexProperties`.
-using EmptyVertex = Vertex<>;
-
 }
 
 #endif

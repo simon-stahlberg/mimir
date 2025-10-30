@@ -69,23 +69,26 @@ private:
     [[no_unique_address]] P m_properties;
 };
 
+/**
+ * Printing
+ */
+
 template<Property P>
 std::ostream& operator<<(std::ostream& os, const Edge<P>& edge)
 {
-    using ::mimir::operator<<;
+    return mimir::print(os, edge);
+}
+}
 
+namespace mimir
+{
+template<mimir::graphs::Property P>
+std::ostream& print(std::ostream& os, const mimir::graphs::Edge<P>& edge)
+{
     os << "index=" << edge.get_index() << ", properties=";
     os << edge.get_properties();
     return os;
 }
-
-/**
- * EmptyEdge
- */
-
-/// @brief `EmptyEdge` is an edge without `EdgeProperties`.
-using EmptyEdge = Edge<>;
-
 }
 
 #endif

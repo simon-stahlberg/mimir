@@ -376,4 +376,10 @@ std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph);
 
 }
 
+namespace mimir
+{
+template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
+std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph);
+}
+
 #endif

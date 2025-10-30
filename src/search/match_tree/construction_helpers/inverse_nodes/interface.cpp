@@ -399,18 +399,28 @@ void InitializeInverseEdgesVisitor<E>::accept(const InverseElementGeneratorNode_
  */
 
 template<formalism::HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E>&, DotPrinterTag>& tree)
+std::ostream& operator<<(std::ostream& out, const IInverseNode<E>& element)
 {
-    auto nodes = Nodes<E> {};
-    auto edges = Edges {};
+    return mimir::print(out, element);
+}
 
-    auto& [root, tag] = tree;
+template std::ostream& operator<<(std::ostream& out, const IInverseNode<GroundActionImpl>& element);
+template std::ostream& operator<<(std::ostream& out, const IInverseNode<GroundAxiomImpl>& element);
+}
 
-    auto visitor1 = InitializeInverseNodesVisitor(nodes);
-    root->visit(visitor1);
+namespace mimir
+{
+template<mimir::formalism::HasConjunctiveCondition E>
+std::ostream& operator<<(std::ostream& out, const mimir::search::match_tree::IInverseNode<E>& element)
+{
+    auto nodes = mimir::search::match_tree::Nodes<E> {};
+    auto edges = mimir::search::match_tree::Edges {};
 
-    auto visitor2 = InitializeInverseEdgesVisitor(nodes, edges);
-    root->visit(visitor2);
+    auto visitor1 = mimir::search::match_tree::InitializeInverseNodesVisitor(nodes);
+    element.visit(visitor1);
+
+    auto visitor2 = mimir::search::match_tree::InitializeInverseEdgesVisitor(nodes, edges);
+    element.visit(visitor2);
 
     out << "digraph Tree {\n"
            "rankdir=TB;\n\n";
@@ -439,6 +449,6 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<GroundActionImpl>&, DotPrinterTag>& tree);
-template std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<GroundAxiomImpl>&, DotPrinterTag>& tree);
+template std::ostream& operator<<(std::ostream& out, const mimir::search::match_tree::IInverseNode<mimir::formalism::GroundActionImpl>& element);
+template std::ostream& operator<<(std::ostream& out, const mimir::search::match_tree::IInverseNode<mimir::formalism::GroundAxiomImpl>& element);
 }

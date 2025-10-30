@@ -52,36 +52,6 @@ using namespace mimir::formalism;
 using namespace mimir::search;
 using namespace mimir::graphs;
 
-namespace mimir::graphs
-{
-
-std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
-{
-    out << "problem_v_idx=" << vertex.get_index() << "\n"  //
-        << " state=" << get_state(vertex) << "\n"
-        << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
-        << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
-        << " is_initial=" << is_initial(vertex) << "\n"                      //
-        << " is_goal=" << is_goal(vertex) << "\n"                            //
-        << " is_unsolvable=" << is_unsolvable(vertex) << "\n"                //
-        << " is_alive=" << is_alive(vertex);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
-{
-    out << "problem_e_idx=" << edge.get_index() << "\n"       //
-        << " problem_src_idx=" << edge.get_source() << "\n"   //
-        << " problem_dst_idx=" << edge.get_target() << "\n";  //
-    out << " action=";
-    mimir::operator<<(out, std::make_tuple(get_action(edge), std::cref(*get_problem(edge)), GroundActionImpl::PlanFormatterTag {}));
-    out << "\n"
-        << " action_cost=" << get_action_cost(edge);
-    return out;
-}
-
-}
-
 namespace mimir::datasets
 {
 /**

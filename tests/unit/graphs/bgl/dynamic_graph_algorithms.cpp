@@ -27,7 +27,7 @@ namespace mimir::tests
 {
 TEST(MimirTests, GraphsDynamicGraphStrongComponentsTest)
 {
-    auto graph = graphs::DynamicGraph<graphs::EmptyVertex, graphs::EmptyEdge> {};
+    auto graph = graphs::DynamicGraph<graphs::Vertex<>, graphs::Edge<>> {};
     const auto vx = graph.add_vertex();
     const auto v1 = graph.add_vertex();
     const auto v2 = graph.add_vertex();

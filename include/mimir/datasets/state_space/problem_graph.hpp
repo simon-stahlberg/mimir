@@ -120,16 +120,30 @@ using ProblemGraphList = std::vector<ProblemGraph>;
 
 /// @brief Write a string representation of the given `ProblemVertex` to the `std::ostream` buffer.
 /// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ProblemVertex`.
+/// @param element is the given `ProblemVertex`.
 /// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex);
+extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& element);
 
 /// @brief Write a string representation of the given `ProblemEdge` to the `std::ostream` buffer.
 /// @param out is a reference to the given `std::ostream` buffer.
-/// @param vertex is the given `ProblemEdge`.
+/// @param element is the given `ProblemEdge`.
 /// @return is a reference to the given `std::ostream` buffer.
-extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge);
+extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& element);
+}
 
+namespace mimir
+{
+/// @brief Write a string representation of the given `ProblemVertex` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param element is the given `ProblemVertex`.
+/// @return is a reference to the given `std::ostream` buffer.
+extern std::ostream& print(std::ostream& out, const mimir::graphs::ProblemVertex& element);
+
+/// @brief Write a string representation of the given `ProblemEdge` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param element is the given `ProblemEdge`.
+/// @return is a reference to the given `std::ostream` buffer.
+extern std::ostream& print(std::ostream& out, const mimir::graphs::ProblemEdge& element);
 }
 
 #endif

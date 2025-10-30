@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex)
 {
     out << "v_idx: " << vertex.get_index() << "\n"
         << "conditions: ";
-    mimir::operator<<(out, get_conditions(vertex));
+    mimir::print(out, get_conditions(vertex));
 
     return out;
 }
@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge)
 {
     out << "e_idx: " << edge.get_index() << "\n"
         << "effects: ";
-    mimir::operator<<(out, get_effects(edge));
+    mimir::print(out, get_effects(edge));
 
     return out;
 }

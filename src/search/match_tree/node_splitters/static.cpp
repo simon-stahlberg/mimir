@@ -56,7 +56,7 @@ StaticNodeSplitter<E>::StaticNodeSplitter(const Repositories& pddl_repositories,
     {
         const auto& split_and_score = split_and_score_list[i];
         std::cout << "    " << i << ". ";
-        mimir::operator<<(std::cout, split_and_score.split);
+        mimir::print(std::cout, split_and_score.split);
         std::cout << " with score " << split_and_score.score << std::endl;
     }
 

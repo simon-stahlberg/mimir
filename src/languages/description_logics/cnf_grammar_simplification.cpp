@@ -268,7 +268,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                               }
 
                               using Vertex = mimir::graphs::Vertex<NonTerminal<D>>;
-                              auto graph = graphs::StaticGraph<Vertex, graphs::EmptyEdge>();
+                              auto graph = graphs::StaticGraph<Vertex, graphs::Edge<>>();
 
                               auto non_terminal_to_vertex = std::unordered_map<NonTerminal<D>, size_t> {};
                               for (const auto& non_terminal : non_terminals)

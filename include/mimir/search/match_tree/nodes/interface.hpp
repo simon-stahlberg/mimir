@@ -61,7 +61,13 @@ public:
 };
 
 template<formalism::HasConjunctiveCondition E>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<E>&, DotPrinterTag>& tree);
+std::ostream& operator<<(std::ostream& out, const INode<E>& element);
+}
+
+namespace mimir
+{
+template<mimir::formalism::HasConjunctiveCondition E>
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::INode<E>& element);
 }
 
 #endif

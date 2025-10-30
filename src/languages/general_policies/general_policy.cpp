@@ -44,8 +44,6 @@ using namespace mimir::search;
 namespace mimir::languages::general_policies
 {
 
-using mimir::operator<<;
-
 GeneralPolicyImpl::GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules) :
     m_index(index),
     m_features(features),

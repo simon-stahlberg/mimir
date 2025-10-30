@@ -44,8 +44,16 @@ public:
     size_t get_length() const;
 };
 
-extern std::ostream& operator<<(std::ostream& os, const search::Plan& plan);
+/**
+ * Printing
+ */
 
+extern std::ostream& operator<<(std::ostream& out, const Plan& element);
+}
+
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::search::Plan& element);
 }
 
 #endif

@@ -35,7 +35,16 @@ namespace details
 {
 class SparseGraphImpl;
 }
+class SparseGraph;
+}
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& graph);
+}
+
+namespace mimir::graphs::nauty
+{
 /// @brief `SparseGraph` encapsulates a sparse graph representation compatible with Nauty.
 class SparseGraph
 {
@@ -163,6 +172,7 @@ public:
     SparseGraph& canonize();
 
     friend std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
+    friend std::ostream& ::mimir::print(std::ostream& out, const SparseGraph& graph);
 
     size_t get_nde() const;
     const std::vector<size_t>& get_v() const;

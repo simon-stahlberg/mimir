@@ -529,7 +529,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundConjunctiveConditionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundConjunctiveCondition(&self), std::cref(problem)));
+                 mimir::print(ss, std::make_tuple(GroundConjunctiveCondition(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("__eq__", [](const GroundConjunctiveConditionImpl& lhs, const GroundConjunctiveConditionImpl& rhs) { return &lhs == &rhs; })
@@ -603,7 +603,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundConjunctiveEffectImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundConjunctiveEffect(&self), std::cref(problem)));
+                 mimir::print(ss, std::make_tuple(GroundConjunctiveEffect(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("__eq__", [](const GroundConjunctiveEffectImpl& lhs, const GroundConjunctiveEffectImpl& rhs) { return &lhs == &rhs; })
@@ -639,7 +639,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundConditionalEffectImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundConditionalEffect(&self), std::cref(problem)));
+                 mimir::print(ss, std::make_tuple(GroundConditionalEffect(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("__eq__", [](const GroundConditionalEffectImpl& lhs, const GroundConditionalEffectImpl& rhs) { return &lhs == &rhs; })
@@ -656,7 +656,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {}));
+                 mimir::print(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {}));
                  return ss.str();
              })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return &lhs == &rhs; })
@@ -666,7 +666,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
+                 mimir::print(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
                  return ss.str();
              })
         .def("get_index", &GroundActionImpl::get_index, nb::rv_policy::copy)
@@ -682,7 +682,7 @@ void bind_module_definitions(nb::module_& m)
              [](const GroundAxiomImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(GroundAxiom(&self), std::cref(problem)));
+                 mimir::print(ss, std::make_tuple(GroundAxiom(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return &lhs == &rhs; })

@@ -77,7 +77,7 @@ void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[BrFS] " << i << ". ";
-        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
+        mimir::print(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
         std::cout << std::endl;
     }
 }

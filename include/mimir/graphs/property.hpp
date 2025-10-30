@@ -90,8 +90,6 @@ public:
     }
     std::string str() const override
     {
-        using mimir::operator<<;
-
         auto ss = std::stringstream {};
         ss << m_properties;
         return ss.str();
@@ -123,9 +121,9 @@ private:
 
 using PropertyValueList = std::vector<PropertyValue>;
 
-std::ostream& operator<<(std::ostream& out, const IProperty& property);
+extern std::ostream& operator<<(std::ostream& out, const IProperty& element);
 
-std::ostream& operator<<(std::ostream& out, const PropertyValue& property);
+extern std::ostream& operator<<(std::ostream& out, const PropertyValue& element);
 
 }
 
@@ -157,6 +155,13 @@ struct EqualTo<mimir::graphs::PropertyValue>
 {
     bool operator()(const mimir::graphs::PropertyValue& lhs, const mimir::graphs::PropertyValue& rhs) const;
 };
+}
+
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element);
 }
 
 namespace mimir::graphs

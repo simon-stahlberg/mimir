@@ -48,29 +48,6 @@
 using namespace mimir::formalism;
 using namespace mimir::search;
 
-namespace mimir::graphs
-{
-
-std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex)
-{
-    out << "class_v_idx=" << vertex.get_index() << "\n"          //
-        << " problem_idx=" << get_problem_index(vertex) << "\n"  //
-        << " problem_v_idx=" << get_problem_vertex_index(vertex);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
-{
-    out << "class_e_idx=" << edge.get_index() << "\n"          //
-        << " class_src_idx=" << edge.get_source() << "\n"      //
-        << " class_dst_idx=" << edge.get_target() << "\n"      //
-        << " problem_idx=" << get_problem_index(edge) << "\n"  //
-        << " problem_e_idx=" << get_problem_edge_index(edge);
-    return out;
-}
-
-}
-
 namespace mimir::datasets
 {
 

@@ -263,7 +263,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
         if (debug)
         {
             std::cout << "L: ";
-            mimir::operator<<(std::cout, L);
+            mimir::print(std::cout, L);
             std::cout << std::endl;
         }
 
@@ -291,7 +291,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
         if (debug)
         {
             std::cout << "M: ";
-            mimir::operator<<(std::cout, M);
+            mimir::print(std::cout, M);
             std::cout << std::endl;
         }
 
@@ -304,7 +304,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
         if (debug)
         {
             std::cout << "M_replaced: ";
-            mimir::operator<<(std::cout, M_replaced);
+            mimir::print(std::cout, M_replaced);
             std::cout << std::endl;
         }
 
@@ -321,6 +321,11 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     /* Return the certificate */
     return std::make_shared<CertificateImpl>(std::move(c), std::move(f), std::move(hash_to_color));
 }
+}
+
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::CertificateImpl& element);
 }
 
 #endif

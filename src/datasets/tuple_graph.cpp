@@ -86,7 +86,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
             out << "index=" << v_idx << "<BR/>";
             const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<FluentTag>(get_atom_tuple(vertex));
             out << "fluent_atoms=";
-            mimir::operator<<(out, fluent_atoms);
+            mimir::print(out, fluent_atoms);
             out << "<BR/>";
             out << "states=[";
             for (size_t i = 0; i < get_problem_vertices(vertex).size(); ++i)
@@ -96,7 +96,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
                 {
                     out << "<BR/>";
                 }
-                mimir::operator<<(out, std::make_tuple(state, std::cref(problem)));
+                mimir::print(out, std::make_tuple(state, std::cref(problem)));
             }
             out << "]>]\n";
         }

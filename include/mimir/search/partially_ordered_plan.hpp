@@ -50,8 +50,13 @@ public:
     const graphs::DynamicDigraph& get_graph() const;
 };
 
-extern std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& p_o_plan);
+extern std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& element);
 
+}
+
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::search::PartiallyOrderedPlan& element);
 }
 
 #endif

@@ -118,15 +118,26 @@ inline bool is_useless_split(const Split& split)
  * Printing
  */
 
-extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution);
+extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& element);
 
-extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution);
+extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& element);
 
 template<formalism::IsFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split);
+std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& element);
 
-extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split);
+extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& element);
+}
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::search::match_tree::AtomSplitDistribution& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::match_tree::NumericConstraintSplitDistribution& element);
+
+template<mimir::formalism::IsFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::AtomSplit<P>& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::search::match_tree::NumericConstraintSplit& element);
 }
 
 #endif

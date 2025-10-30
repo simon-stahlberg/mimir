@@ -477,7 +477,18 @@ std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph);
 
 template<IsStaticGraph G>
 std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph);
+}
 
+namespace mimir
+{
+template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph);
+
+template<mimir::graphs::IsStaticGraph G>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph);
+
+template<mimir::graphs::IsStaticGraph G>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph);
 }
 
 #endif

@@ -1378,6 +1378,28 @@ Degree StaticBidirectionalGraph<G>::get_degree(VertexIndex vertex) const
 template<IsVertex V, IsEdge E>
 std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph)
 {
+    return mimir::print(out, graph);
+}
+
+template<IsStaticGraph G>
+std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph)
+{
+    return mimir::print(out, graph);
+}
+
+template<IsStaticGraph G>
+std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph)
+{
+    return mimir::print(out, graph);
+}
+
+}
+
+namespace mimir
+{
+template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph)
+{
     out << "digraph Tree {\n"
            "rankdir=TB;\n\n";
 
@@ -1400,20 +1422,19 @@ std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph)
     return out;
 }
 
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph)
+template<mimir::graphs::IsStaticGraph G>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph)
 {
     out << graph.get_graph();
     return out;
 }
 
-template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph)
+template<mimir::graphs::IsStaticGraph G>
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph)
 {
     out << graph.get_graph();
     return out;
 }
-
 }
 
 #endif

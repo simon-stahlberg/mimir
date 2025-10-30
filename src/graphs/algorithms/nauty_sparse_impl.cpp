@@ -190,39 +190,44 @@ void SparseGraphImpl::canonize()
     }
 
     // std::cout << "pi: ";
-    // mimir::operator<<(std::cout, canon_graph.m_pi);
+    // mimir::print(std::cout, canon_graph.m_pi);
     // std::cout << std::endl;
     // std::cout << "pi_inverse: ";
-    // mimir::operator<<(std::cout, canon_graph.m_pi_inverse);
+    // mimir::print(std::cout, canon_graph.m_pi_inverse);
     // std::cout << std::endl;
 
     std::swap(*this, canon_graph);
 }
 
-std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph)
+std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph) { return mimir::print(out, graph); }
+}
+
+namespace mimir
+{
+std::ostream& print(std::ostream& out, const mimir::graphs::nauty::details::SparseGraphImpl& graph)
 {
     out << "nde:" << graph.get_nde() << "\n"
         << "v: ";
-    mimir::operator<<(out, graph.get_v());
+    out << graph.get_v();
     out << "\n"
         << "nv:" << graph.get_nv() << "\n"
         << "d: ";
-    mimir::operator<<(out, graph.get_d());
+    out << graph.get_d();
     out << "\n"
         << "e: ";
-    mimir::operator<<(out, graph.get_e());
+    out << graph.get_e();
     out << "\n"
         << "vlen: " << graph.get_vlen() << "\n"
         << "dlen: " << graph.get_dlen() << "\n"
         << "elen: " << graph.get_elen() << "\n"
         << "lab: ";
-    mimir::operator<<(out, graph.get_lab());
+    out << graph.get_lab();
     out << "\n"
         << "ptn: ";
-    mimir::operator<<(out, graph.get_ptn());
+    out << graph.get_ptn();
     out << "\n"
         << "coloring: ";
-    mimir::operator<<(out, graph.get_coloring());
+    out << graph.get_coloring();
 
     return out;
 }

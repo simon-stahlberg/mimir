@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     if (verbosity > 0)
     {
         std::cout << "Domain:" << std::endl;
-        std::cout << problem->get_domain() << std::endl;
+        std::cout << *problem->get_domain() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Problem:" << std::endl;

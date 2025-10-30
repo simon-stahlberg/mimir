@@ -438,7 +438,7 @@ Node<E> parse_inverse_tree_iteratively(const InverseNode<E>& root)
     // Only the root node should be in the result stack.
     assert(result_stack.size() == 1);
 
-    // std::cout << std::make_tuple(std::cref(result_stack.back()), DotPrinterTag {}) << std::endl;
+    // std::cout << *result_stack.back() << std::endl;
 
     return std::move(result_stack.back());
 }

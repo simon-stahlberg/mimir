@@ -53,7 +53,7 @@ void bind_module_definitions(nb::module_& m)
         [](const graphs::TupleGraphVertex& self) -> IndexList { return graphs::get_problem_vertices(self); },
         "vertex"_a,
         nb::rv_policy::copy);
-    bind_static_graph<graphs::TupleGraphVertex, graphs::EmptyEdge>(m, "StaticTupleGraph");
+    bind_static_graph<graphs::TupleGraphVertex, graphs::Edge<>>(m, "StaticTupleGraph");
 
     nb::class_<StateSpaceImpl::Options>(m, "StateSpaceOptions")
         .def(nb::init<>())

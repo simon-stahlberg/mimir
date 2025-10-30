@@ -163,14 +163,14 @@ namespace mimir
 {
 
 template<>
-std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
 {
     formalism::write(data, formalism::StringFormatter(), out);
     return out;
 }
 
 template<>
-std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
 {
     formalism::write(data, formalism::StringFormatter(), out);
     return out;

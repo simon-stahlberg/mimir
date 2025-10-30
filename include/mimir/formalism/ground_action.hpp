@@ -99,13 +99,13 @@ namespace mimir
 {
 template<>
 std::ostream&
-print(std::ostream& os,
-      const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data);
+operator<<(std::ostream& os,
+           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data);
 
 template<>
 std::ostream&
-print(std::ostream& os,
-      const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data);
+operator<<(std::ostream& os,
+           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data);
 }
 
 #endif

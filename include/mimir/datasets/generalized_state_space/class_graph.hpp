@@ -82,4 +82,19 @@ extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
 extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
 }
 
+namespace mimir
+{
+/// @brief Write a string representation of the given `ClassVertex` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ClassVertex`.
+/// @return is a reference to the given `std::ostream` buffer.
+extern std::ostream& print(std::ostream& out, const mimir::graphs::ClassVertex& vertex);
+
+/// @brief Write a string representation of the given `ClassEdge` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ClassEdge`.
+/// @return is a reference to the given `std::ostream` buffer.
+extern std::ostream& print(std::ostream& out, const mimir::graphs::ClassEdge& edge);
+}
+
 #endif

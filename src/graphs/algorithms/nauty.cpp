@@ -159,3 +159,8 @@ std::vector<int> compute_permutation(const SparseGraph& source, const SparseGrap
 }
 
 }
+
+namespace mimir
+{
+std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& graph) { return mimir::print(out, *graph.m_impl); }
+}

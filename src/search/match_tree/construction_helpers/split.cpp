@@ -21,40 +21,56 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
 using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
 
-extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution)
-{
-    out << "{ #true = " << distribution.num_true_elements    //
-        << ", #false = " << distribution.num_false_elements  //
-        << ", #dontcare = " << distribution.num_dont_care_elements << " }";
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& element) { return mimir::print(out, element); }
 
-extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution)
-{
-    out << "{ #true = " << distribution.num_true_elements  //
-        << ", #dontcare = " << distribution.num_dont_care_elements << " }";
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& element) { return mimir::print(out, element); }
 
 template<IsFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split)
+std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& element)
 {
-    out << "[" << split.feature << " -> " << split.distribution << "]";
-    return out;
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const AtomSplit<FluentTag>& split);
 template std::ostream& operator<<(std::ostream& out, const AtomSplit<DerivedTag>& split);
 
-extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split)
+std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& element) { return mimir::print(out, element); }
+
+}
+
+namespace mimir
 {
-    out << "[" << split.feature << " -> " << split.distribution << "]";
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::AtomSplitDistribution& element)
+{
+    fmt::print(out, "< #true =  {}, #false = {}, #dontcare = {} >", element.num_true_elements, element.num_false_elements, element.num_dont_care_elements);
     return out;
 }
 
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::NumericConstraintSplitDistribution& element)
+{
+    fmt::print(out, "< #true =  {}, #dontcare = {} >", element.num_true_elements, element.num_dont_care_elements);
+    return out;
+}
+
+template<mimir::formalism::IsFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::AtomSplit<P>& element)
+{
+    fmt::print(out, "[{} -> {}]", to_string(element.feature), to_string(element.distribution));
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::search::match_tree::NumericConstraintSplit& element)
+{
+    fmt::print(out, "[{} -> {}]", to_string(element.feature), to_string(element.distribution));
+    return out;
+}
 }
