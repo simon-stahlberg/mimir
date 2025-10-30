@@ -117,9 +117,9 @@ extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::DomainImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::DomainImpl& element);
 }
 
 #endif

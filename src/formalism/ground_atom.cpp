@@ -112,13 +112,13 @@ template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<DerivedTag>& element);
 
 template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
+std::ostream& print(std::ostream& out, GroundAtom<P> element)
 {
     write(*element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundAtom<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundAtom<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundAtom<DerivedTag> element);
+template std::ostream& print(std::ostream& out, GroundAtom<StaticTag> element);
+template std::ostream& print(std::ostream& out, GroundAtom<FluentTag> element);
+template std::ostream& print(std::ostream& out, GroundAtom<DerivedTag> element);
 }

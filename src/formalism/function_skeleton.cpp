@@ -61,7 +61,7 @@ template class FunctionSkeletonImpl<AuxiliaryTag>;
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
 {
-    return mimir::formatter::operator<<(out, element);
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<StaticTag>& element);
@@ -70,16 +70,16 @@ template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<F>& element)
+std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<F>& element)
 {
     write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::StaticTag>& element);
-template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::FluentTag>& element);
-template std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::AuxiliaryTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::FunctionSkeletonImpl<mimir::formalism::AuxiliaryTag>& element);
 }

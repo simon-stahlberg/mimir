@@ -47,15 +47,14 @@ const TermList& NumericConstraintImpl::get_terms() const { return m_terms; }
 
 size_t NumericConstraintImpl::get_arity() const { return m_terms.size(); }
 
-std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, NumericConstraint element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::NumericConstraintImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }

@@ -18,7 +18,7 @@
 #include "mimir/search/state.hpp"
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 

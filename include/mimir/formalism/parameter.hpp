@@ -55,8 +55,11 @@ public:
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ParameterImpl& element);
+}
 
-extern std::ostream& operator<<(std::ostream& out, Parameter element);
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ParameterImpl& element);
 }
 
 #endif

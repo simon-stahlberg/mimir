@@ -31,16 +31,14 @@ size_t TermImpl::get_index() const { return m_index; }
 
 const std::variant<Object, Variable>& TermImpl::get_variant() const { return m_object_or_variable; }
 
-std::ostream& operator<<(std::ostream& out, const TermImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const TermImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Term element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::TermImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

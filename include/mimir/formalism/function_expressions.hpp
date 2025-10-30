@@ -327,15 +327,15 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunct
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionBinaryOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMultiOperatorImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionMinusImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionBinaryOperatorImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionMultiOperatorImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionMinusImpl& element);
 template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionFunctionImpl<F>& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionExpressionImpl& element);
 }
 
 #endif

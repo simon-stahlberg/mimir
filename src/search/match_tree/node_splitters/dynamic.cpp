@@ -17,7 +17,7 @@
 
 #include "mimir/search/match_tree/node_splitters/dynamic.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"

@@ -17,7 +17,7 @@
 
 #include "grammar_cnf_translator.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"

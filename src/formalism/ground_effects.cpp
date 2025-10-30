@@ -19,8 +19,8 @@
 
 #include "formatter.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -163,14 +163,14 @@ namespace mimir
 {
 
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
+std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
 {
     formalism::write(data, formalism::StringFormatter(), out);
     return out;
 }
 
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
+std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
 {
     formalism::write(data, formalism::StringFormatter(), out);
     return out;

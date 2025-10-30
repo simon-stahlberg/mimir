@@ -64,9 +64,12 @@ public:
 template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element);
 
-template<IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, Literal<P> element);
+}
 
+namespace mimir
+{
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+extern std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<P>& element);
 }
 
 #endif

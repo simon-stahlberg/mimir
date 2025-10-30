@@ -56,9 +56,11 @@ public:
 };
 
 extern std::ostream& operator<<(std::ostream& out, const TermImpl& element);
+}
 
-extern std::ostream& operator<<(std::ostream& out, Term element);
-
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::TermImpl& element);
 }
 
 #endif

@@ -172,12 +172,12 @@ extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& 
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 template<mimir::formalism::IsFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::NumericEffectImpl<F>& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveEffectImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ConditionalEffectImpl& element);
 }
 
 #endif

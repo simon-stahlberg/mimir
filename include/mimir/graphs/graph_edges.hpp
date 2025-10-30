@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/property.hpp"
 

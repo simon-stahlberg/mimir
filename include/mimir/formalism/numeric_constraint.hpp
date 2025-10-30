@@ -85,8 +85,11 @@ public:
  */
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element);
+}
 
-extern std::ostream& operator<<(std::ostream& out, NumericConstraint element);
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::NumericConstraintImpl& element);
 }
 
 #endif

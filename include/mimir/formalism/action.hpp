@@ -82,9 +82,9 @@ extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ActionImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ActionImpl& element);
 }
 
 #endif

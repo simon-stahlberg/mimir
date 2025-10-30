@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_PLAN_HPP_
 #define MIMIR_SEARCH_PLAN_HPP_
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"

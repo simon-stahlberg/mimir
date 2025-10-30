@@ -31,15 +31,14 @@ const std::string& VariableImpl::get_name() const { return m_name; }
 
 Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
 
-std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const VariableImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Variable element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::VariableImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }

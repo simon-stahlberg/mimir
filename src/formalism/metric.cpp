@@ -39,16 +39,14 @@ loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() c
 
 GroundFunctionExpression OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
 
-std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, OptimizationMetric element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::OptimizationMetricImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

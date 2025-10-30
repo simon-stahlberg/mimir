@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_PROPERTY_HPP_
 #define MIMIR_GRAPHS_PROPERTY_HPP_
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 
 #include <concepts>
 #include <cstddef>

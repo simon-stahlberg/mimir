@@ -16,7 +16,7 @@
  */
 
 #include "mimir/common/debug.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"

@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"

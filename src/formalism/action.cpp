@@ -21,7 +21,6 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/formatter.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -68,13 +67,13 @@ const ConditionalEffectList& ActionImpl::get_conditional_effects() const { retur
 
 size_t ActionImpl::get_arity() const { return get_parameters().size(); }
 
-std::ostream& operator<<(std::ostream& out, const ActionImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const ActionImpl& element) { return mimir::print(out, element); }
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-std::ostream& operator<<(std::ostream& out, const mimir::formalism::ActionImpl& element)
+std::ostream& print(std::ostream& out, const mimir::formalism::ActionImpl& element)
 {
     write(element, mimir::formalism::StringFormatter(), out);
     return out;

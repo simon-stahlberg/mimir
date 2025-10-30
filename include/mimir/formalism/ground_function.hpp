@@ -64,10 +64,12 @@ public:
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element);
+}
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, GroundFunction<F> element);
-
+namespace mimir
+{
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<F>& element);
 }
 
 #endif

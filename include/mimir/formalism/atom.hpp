@@ -68,10 +68,10 @@ extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::AtomImpl<P>& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::AtomImpl<P>& element);
 }
 
 #endif

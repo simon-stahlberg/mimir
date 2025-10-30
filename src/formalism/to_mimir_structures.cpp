@@ -18,7 +18,7 @@
 #include "to_mimir_structures.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem_builder.hpp"
 #include "mimir/formalism/repositories.hpp"

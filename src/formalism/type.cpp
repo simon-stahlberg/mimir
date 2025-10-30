@@ -59,16 +59,14 @@ bool is_subtypeeq(const TypeList& lhs, const TypeList& rhs)
     return false;
 }
 
-std::ostream& operator<<(std::ostream& out, const TypeImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const TypeImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Type element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::TypeImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

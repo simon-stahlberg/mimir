@@ -20,7 +20,7 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/variable.hpp"
@@ -48,13 +48,13 @@ ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_con
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 
-std::ostream& operator<<(std::ostream& out, const AxiomImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const AxiomImpl& element) { return mimir::print(out, element); }
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-std::ostream& operator<<(std::ostream& out, const mimir::formalism::AxiomImpl& element)
+std::ostream& print(std::ostream& out, const mimir::formalism::AxiomImpl& element)
 {
     write(element, mimir::formalism::StringFormatter(), out);
     return out;

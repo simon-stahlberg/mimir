@@ -69,10 +69,10 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& elemen
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionImpl<F>& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::FunctionImpl<F>& element);
 }
 
 #endif

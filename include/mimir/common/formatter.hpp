@@ -35,7 +35,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::formatter
+namespace mimir
 {
 
 struct DotPrinterTag
@@ -47,7 +47,7 @@ struct ConsolePrinterTag
 
 // ADL-enabled stream helper: finds operator<< in the type's namespace
 template<class T>
-std::ostream& stream(std::ostream& os, const T& t)
+std::ostream& print(std::ostream& os, const T& t)
 {
     return os << t;
 }
@@ -57,40 +57,40 @@ std::ostream& stream(std::ostream& os, const T& t)
  */
 
 template<typename T, size_t N>
-std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr);
+std::ostream& print(std::ostream& os, const std::array<T, N>& arr);
 
 template<typename Key, typename T, typename Compare, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map);
+std::ostream& print(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map);
 
 template<typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair);
+std::ostream& print(std::ostream& os, const std::pair<T1, T2>& pair);
 
 template<typename Key, typename Compare, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::set<Key, Compare, Allocator>& set);
+std::ostream& print(std::ostream& os, const std::set<Key, Compare, Allocator>& set);
 
 template<typename... Ts>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple);
+std::ostream& print(std::ostream& os, const std::tuple<Ts...>& tuple);
 
 template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map);
+std::ostream& print(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map);
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set);
+std::ostream& print(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set);
 
 template<typename T, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec);
+std::ostream& print(std::ostream& os, const std::vector<T, Allocator>& vec);
 
 template<typename T1>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1>& variant);
+std::ostream& print(std::ostream& os, const std::variant<T1>& variant);
 
 template<typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2>& variant);
+std::ostream& print(std::ostream& os, const std::variant<T1, T2>& variant);
 
 template<typename T1, typename T2, typename T3>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant);
+std::ostream& print(std::ostream& os, const std::variant<T1, T2, T3>& variant);
 
 template<IsHanaMap Map>
-std::ostream& operator<<(std::ostream& os, const Map& map);
+std::ostream& print(std::ostream& os, const Map& map);
 
 /**
  * Helpers to materialize strings
@@ -123,90 +123,90 @@ std::vector<std::string> to_strings(const Range& range)
  */
 
 template<typename T, size_t N>
-std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr)
+std::ostream& print(std::ostream& os, const std::array<T, N>& arr)
 {
     fmt::print(os, "<{}>", fmt::join(to_strings(arr), ", "));
     return os;
 }
 
 template<typename Key, typename T, typename Compare, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map)
+std::ostream& print(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map)
 {
     fmt::print(os, "{{{}}}", fmt::join(to_strings(map), ", "));
     return os;
 }
 
 template<typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair)
+std::ostream& print(std::ostream& os, const std::pair<T1, T2>& pair)
 {
     fmt::print(os, "<{},{}>", to_string(pair.first), to_string(pair.second));
     return os;
 }
 
 template<typename Key, typename Compare, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::set<Key, Compare, Allocator>& set)
+std::ostream& print(std::ostream& os, const std::set<Key, Compare, Allocator>& set)
 {
     fmt::print(os, "{{{}}}", fmt::join(to_strings(set), ", "));
     return os;
 }
 
 template<typename... Ts>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
+std::ostream& print(std::ostream& os, const std::tuple<Ts...>& tuple)
 {
     os << "<";
     if constexpr (sizeof...(Ts) > 0)
     {
         std::size_t n = 0;
-        std::apply([&os, &n](const Ts&... args) { ((stream(stream(os, (n++ == 0 ? "" : ", ")), args)), ...); }, tuple);
+        std::apply([&os, &n](const Ts&... args) { ((print(print(os, (n++ == 0 ? "" : ", ")), args)), ...); }, tuple);
     }
     os << ">";
     return os;
 }
 
 template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map)
+std::ostream& print(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map)
 {
     fmt::print(os, "{{{}}}", fmt::join(to_strings(map), ", "));
     return os;
 }
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set)
+std::ostream& print(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set)
 {
     fmt::print(os, "{{{}}}", fmt::join(to_strings(set), ", "));
     return os;
 }
 
 template<typename T, typename Allocator>
-std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec)
+std::ostream& print(std::ostream& os, const std::vector<T, Allocator>& vec)
 {
     fmt::print(os, "[{}]", fmt::join(to_strings(vec), ", "));
     return os;
 }
 
 template<typename T1>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1>& variant)
+std::ostream& print(std::ostream& os, const std::variant<T1>& variant)
 {
-    std::visit([&](auto&& arg) { stream(os, arg); }, variant);
+    std::visit([&](auto&& arg) { print(os, arg); }, variant);
     return os;
 }
 
 template<typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2>& variant)
+std::ostream& print(std::ostream& os, const std::variant<T1, T2>& variant)
 {
-    std::visit([&](auto&& arg) { stream(os, arg); }, variant);
+    std::visit([&](auto&& arg) { print(os, arg); }, variant);
     return os;
 }
 
 template<typename T1, typename T2, typename T3>
-std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant)
+std::ostream& print(std::ostream& os, const std::variant<T1, T2, T3>& variant)
 {
-    std::visit([&](auto&& arg) { stream(os, arg); }, variant);
+    std::visit([&](auto&& arg) { print(os, arg); }, variant);
     return os;
 }
 
 template<IsHanaMap Map>
-std::ostream& operator<<(std::ostream& os, const Map& map)
+std::ostream& print(std::ostream& os, const Map& map)
 {
     os << "{ ";
     boost::hana::for_each(map,

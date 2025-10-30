@@ -97,9 +97,9 @@ extern std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImp
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ConjunctiveConditionImpl& element);
 }
 
 #endif

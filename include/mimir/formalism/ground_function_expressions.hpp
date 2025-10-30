@@ -272,14 +272,17 @@ template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element);
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element);
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element);
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element);
-template<IsStaticOrFluentOrAuxiliaryTag F>
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element);
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
+}
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionNumberImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionBinaryOperatorImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMultiOperatorImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMinusImpl& element);
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<F>& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionImpl& element);
 }
 
 #endif

@@ -31,15 +31,14 @@ Index RequirementsImpl::get_index() const { return m_index; }
 
 const loki::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
 
-std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Requirements element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::RequirementsImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }

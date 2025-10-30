@@ -20,7 +20,7 @@
 
 #include "mimir/algorithms/shared_object_pool.hpp"
 #include "mimir/common/closed_interval.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
@@ -252,7 +252,7 @@ namespace mimir
  * Print the graph nicely as dot format
  */
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data);
+std::ostream& print(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data);
 }
 
 #endif

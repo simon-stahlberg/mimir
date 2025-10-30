@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/parameter.hpp"

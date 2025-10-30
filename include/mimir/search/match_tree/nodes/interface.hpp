@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 

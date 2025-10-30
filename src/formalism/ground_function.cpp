@@ -62,23 +62,25 @@ template class GroundFunctionImpl<AuxiliaryTag>;
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<AuxiliaryTag>& element);
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
+}
+
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<F>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundFunction<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunction<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunction<AuxiliaryTag> element);
-
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 }

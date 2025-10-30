@@ -61,8 +61,11 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);
 
-extern std::ostream& operator<<(std::ostream& out, Object element);
+}
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::ObjectImpl& element);
 }
 
 #endif

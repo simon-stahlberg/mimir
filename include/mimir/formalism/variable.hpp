@@ -60,9 +60,11 @@ public:
 };
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
+}
 
-extern std::ostream& operator<<(std::ostream& out, Variable element);
-
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::VariableImpl& element);
 }
 
 #endif

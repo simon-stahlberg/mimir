@@ -17,7 +17,7 @@
 
 #include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/object.hpp"

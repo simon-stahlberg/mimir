@@ -57,12 +57,12 @@ const GroundConditionalEffectList& GroundActionImpl::get_conditional_effects() c
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 template<>
 std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data)
+print(std::ostream& os,
+      const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::FullFormatterTag>& data)
 {
     write(data, mimir::formalism::StringFormatter(), os);
     return os;
@@ -70,8 +70,8 @@ operator<<(std::ostream& os,
 
 template<>
 std::ostream&
-operator<<(std::ostream& os,
-           const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data)
+print(std::ostream& os,
+      const std::tuple<mimir::formalism::GroundAction, const mimir::formalism::ProblemImpl&, mimir::formalism::GroundActionImpl::PlanFormatterTag>& data)
 {
     write(data, mimir::formalism::StringFormatter(), os);
     return os;

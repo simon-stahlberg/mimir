@@ -31,16 +31,14 @@ Variable ParameterImpl::get_variable() const { return m_variable; }
 
 const TypeList& ParameterImpl::get_bases() const { return m_types; }
 
-std::ostream& operator<<(std::ostream& out, const ParameterImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const ParameterImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Parameter element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::ParameterImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

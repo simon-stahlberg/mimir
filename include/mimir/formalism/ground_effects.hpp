@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 #define MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
@@ -183,10 +183,10 @@ std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
+std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
+std::ostream& print(std::ostream& out, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
 }
 
 #endif

@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_STATE_UNPACKED_HPP_
 
 #include "cista/serialization.h"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"

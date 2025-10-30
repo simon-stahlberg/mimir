@@ -124,29 +124,29 @@ const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { r
  * Printing
  */
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element) { return mimir::print(out, element); }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
-    return mimir::formatter::operator<<(out, element);
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element) { return mimir::formatter::operator<<(out, element); }
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element) { return mimir::print(out, element); }
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
 std::ostream& operator<<(std::ostream& out, const mimir::formalism::FunctionExpressionNumberImpl& element)
 {

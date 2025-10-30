@@ -17,7 +17,7 @@
 
 #include "mimir/search/algorithms/astar_eager/event_handlers/default.hpp"
 
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"

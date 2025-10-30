@@ -17,8 +17,8 @@
 
 #include "mimir/search/applicable_action_generators/lifted/exhaustive.hpp"
 
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/itertools.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_action.hpp"

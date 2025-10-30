@@ -20,8 +20,8 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/itertools.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
@@ -1135,16 +1135,14 @@ problem::Details::Details(const ProblemImpl& problem) :
 }
 
 /* Printing */
-std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const ProblemImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, Problem element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::ProblemImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
-
 }

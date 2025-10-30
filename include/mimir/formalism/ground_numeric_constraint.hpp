@@ -79,10 +79,13 @@ extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& stati
  * Printing
  */
 
-std::ostream& operator<<(std::ostream& os, const GroundNumericConstraintImpl& element);
+extern std::ostream& operator<<(std::ostream& os, const GroundNumericConstraintImpl& element);
 
-std::ostream& operator<<(std::ostream& os, GroundNumericConstraint element);
+}
 
+namespace mimir
+{
+extern std::ostream& print(std::ostream& out, const mimir::formalism::GroundNumericConstraintImpl& element);
 }
 
 #endif

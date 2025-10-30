@@ -64,23 +64,25 @@ template class PredicateImpl<DerivedTag>;
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<DerivedTag>& element);
 
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, Predicate<P> element)
+}
+
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<P>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Predicate<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, Predicate<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, Predicate<DerivedTag> element);
-
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::PredicateImpl<mimir::formalism::DerivedTag>& element);
 }

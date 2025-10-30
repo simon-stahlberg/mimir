@@ -19,8 +19,8 @@
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
 #include "mimir/common/equal_to.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"

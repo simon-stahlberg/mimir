@@ -68,9 +68,9 @@ extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);
 
 }
 
-namespace mimir::formatter
+namespace mimir
 {
-extern std::ostream& operator<<(std::ostream& out, const mimir::formalism::AxiomImpl& element);
+extern std::ostream& print(std::ostream& out, const mimir::formalism::AxiomImpl& element);
 }
 
 #endif

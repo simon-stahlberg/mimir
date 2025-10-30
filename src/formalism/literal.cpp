@@ -53,23 +53,25 @@ template class LiteralImpl<DerivedTag>;
 template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTag>& element);
 
-template<IsStaticOrFluentOrDerivedTag P>
-std::ostream& operator<<(std::ostream& out, Literal<P> element)
+}
+
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+template<mimir::formalism::IsStaticOrFluentOrDerivedTag P>
+std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<P>& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Literal<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, Literal<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, Literal<DerivedTag> element);
-
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::LiteralImpl<mimir::formalism::DerivedTag>& element);
 }

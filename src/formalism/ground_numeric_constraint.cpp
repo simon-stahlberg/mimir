@@ -90,15 +90,14 @@ bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_n
  * Printing
  */
 
-std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
+std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element) { return mimir::print(out, element); }
 }
 
-std::ostream& operator<<(std::ostream& out, GroundNumericConstraint element)
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundNumericConstraintImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }

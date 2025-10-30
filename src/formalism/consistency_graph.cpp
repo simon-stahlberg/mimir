@@ -748,7 +748,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data)
+std::ostream& print(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data)
 {
     const auto& [graph, problem] = data;
 

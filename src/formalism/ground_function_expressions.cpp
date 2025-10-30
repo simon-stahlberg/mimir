@@ -19,7 +19,7 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/common/printers.hpp"
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
@@ -194,85 +194,68 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
 }
 
 /* Printing */
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element) { return mimir::print(out, element); }
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element)
-{
-    write(element, StringFormatter(), out);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element) { return mimir::print(out, element); }
 
 template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
+    return mimir::print(out, element);
 }
 
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<StaticTag>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<FluentTag>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
+std::ostream& print(std::ostream& out, const GroundFunctionExpressionImpl& element) { return mimir::print(out, element); }
+
+}
+
+namespace mimir
 {
-    write(*element, StringFormatter(), out);
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionNumberImpl& element)
+{
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionBinaryOperatorImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMultiOperatorImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionMinusImpl& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template<IsStaticOrFluentOrAuxiliaryTag F>
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
+template<mimir::formalism::IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    write(*element, StringFormatter(), out);
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<StaticTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<FluentTag> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<AuxiliaryTag> element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::StaticTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::FluentTag>& element);
+template std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionFunctionImpl<mimir::formalism::AuxiliaryTag>& element);
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
+std::ostream& print(std::ostream& out, const mimir::formalism::GroundFunctionExpressionImpl& element)
 {
-    write(element, StringFormatter(), out);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element)
-{
-    std::visit([&](const auto& arg) { out << arg; }, element->get_variant());
+    write(element, mimir::formalism::StringFormatter(), out);
     return out;
 }
 }
