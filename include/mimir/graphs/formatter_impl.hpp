@@ -20,6 +20,10 @@
 
 #include "mimir/graphs/formatter_decl.hpp"
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
 namespace mimir
 {
 namespace graphs
@@ -68,24 +72,15 @@ std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph)
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
 std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph)
 {
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
-
-    /* Node definitions */
-    for (const auto& vertex : graph.get_vertices())
-    {
-        out << "n" << vertex.get_index() << " [label=\"" << vertex << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& edge : graph.get_edges())
-    {
-        out << "n" << edge.get_source() << " -> " << "n" << edge.get_target() << " [label=\"" << edge << "\"];\n";
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
+    fmt::print(out,
+               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
+               fmt::join(graph.get_vertices()
+                             | std::views::transform([&](auto&& vertex) { return fmt::format("n{} [label=\"{}\"];", vertex.get_index(), to_string(vertex)); }),
+                         "\n"),
+               fmt::join(graph.get_edges()
+                             | std::views::transform(
+                                 [&](auto&& edge) { return fmt::format("n{} -> n{} [label=\"{}\"];", edge.get_source(), edge.get_target(), to_string(edge)); }),
+                         "\n"));
 
     return out;
 }
@@ -93,38 +88,27 @@ std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& g
 template<mimir::graphs::IsStaticGraph G>
 std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph)
 {
-    out << graph.get_graph();
-    return out;
+    return out << graph.get_graph();
 }
 
 template<mimir::graphs::IsStaticGraph G>
 std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph)
 {
-    out << graph.get_graph();
-    return out;
+    return out << graph.get_graph();
 }
 
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
 std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph)
 {
-    out << "digraph Tree {\n"
-           "rankdir=TB;\n\n";
-
-    /* Node definitions */
-    for (const auto& [v_idx, v] : graph.get_vertices())
-    {
-        out << "n" << v.get_index() << " [label=\"" << v << "\"];\n";
-    }
-    out << "\n";
-
-    /* Edge definitions */
-    for (const auto& [e_idx, e] : graph.get_edges())
-    {
-        out << "n" << e.get_source() << " -> " << "n" << e.get_target() << " [label=\"" << e << "\"];\n";
-    }
-    out << "\n";
-
-    out << "}\n";  // end graph
+    fmt::print(out,
+               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
+               fmt::join(graph.get_vertices()
+                             | std::views::transform([&](auto&& vertex) { return fmt::format("n{} [label=\"{}\"];", vertex.get_index(), to_string(vertex)); }),
+                         "\n"),
+               fmt::join(graph.get_edges()
+                             | std::views::transform(
+                                 [&](auto&& edge) { return fmt::format("n{} -> n{} [label=\"{}\"];", edge.get_source(), edge.get_target(), to_string(edge)); }),
+                         "\n"));
 
     return out;
 }
@@ -132,8 +116,7 @@ std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& 
 template<mimir::graphs::Property P>
 std::ostream& print(std::ostream& os, const mimir::graphs::Vertex<P>& vertex)
 {
-    os << "index=" << vertex.get_index() << ", properties=";
-    os << vertex.get_properties();
+    fmt::print(os, "index={}, properties={}", vertex.get_index(), to_string(vertex.get_properties()));
     return os;
 }
 
