@@ -104,16 +104,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad82f2af6dd7f249953bd5fa963f0d881"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#ad82f2af6dd7f249953bd5fa963f0d881">on_expand_goal_state</a> (const State &amp;state) override</td></tr>
 <tr class="memdesc:ad82f2af6dd7f249953bd5fa963f0d881"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on expanding a goal <code>state</code>. This may be called after on_expand_state.  <br /></td></tr>
 <tr class="separator:ad82f2af6dd7f249953bd5fa963f0d881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68e2ea17e6a18ae5e15426ccae752d88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#a68e2ea17e6a18ae5e15426ccae752d88">on_generate_state</a> (const State &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> action_cost, const State &amp;successor_state) override</td></tr>
+<tr class="memitem:a68e2ea17e6a18ae5e15426ccae752d88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#a68e2ea17e6a18ae5e15426ccae752d88">on_generate_state</a> (const State &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, ContinuousCost action_cost, const State &amp;successor_state) override</td></tr>
 <tr class="memdesc:a68e2ea17e6a18ae5e15426ccae752d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a successor <code>state</code> by applying an action.  <br /></td></tr>
 <tr class="separator:a68e2ea17e6a18ae5e15426ccae752d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c1d811f04d56f2bf2576fad370ced95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#a2c1d811f04d56f2bf2576fad370ced95">on_prune_state</a> (const State &amp;state) override</td></tr>
 <tr class="memdesc:a2c1d811f04d56f2bf2576fad370ced95"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on pruning a state.  <br /></td></tr>
 <tr class="separator:a2c1d811f04d56f2bf2576fad370ced95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc0e7198b9f1df59a35783ef148a5f82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#afc0e7198b9f1df59a35783ef148a5f82">on_start_search</a> (const State &amp;start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> g_value, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> h_value) override</td></tr>
+<tr class="memitem:afc0e7198b9f1df59a35783ef148a5f82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#afc0e7198b9f1df59a35783ef148a5f82">on_start_search</a> (const State &amp;start_state, ContinuousCost g_value, ContinuousCost h_value) override</td></tr>
 <tr class="memdesc:afc0e7198b9f1df59a35783ef148a5f82"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
 <tr class="separator:afc0e7198b9f1df59a35783ef148a5f82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8aa58381f659e984dbc55d025514d82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#af8aa58381f659e984dbc55d025514d82">on_new_best_h_value</a> (<a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> h_value) override</td></tr>
+<tr class="memitem:af8aa58381f659e984dbc55d025514d82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#af8aa58381f659e984dbc55d025514d82">on_new_best_h_value</a> (ContinuousCost h_value) override</td></tr>
 <tr class="memdesc:af8aa58381f659e984dbc55d025514d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on new best h_value.  <br /></td></tr>
 <tr class="separator:af8aa58381f659e984dbc55d025514d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40eec644cfbb592082d2897942deb2d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html#a40eec644cfbb592082d2897942deb2d5">on_end_search</a> (uint64_t num_reached_fluent_atoms, uint64_t num_reached_derived_atoms, uint64_t num_states, uint64_t num_nodes, uint64_t num_actions, uint64_t num_axioms) override</td></tr>
@@ -141,16 +141,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a767eb8d742a20e0e0a698bd039140f88 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a767eb8d742a20e0e0a698bd039140f88">on_expand_goal_state</a> (const State &amp;state)=0</td></tr>
 <tr class="memdesc:a767eb8d742a20e0e0a698bd039140f88 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on expanding a goal <code>state</code>. This may be called after on_expand_state.  <br /></td></tr>
 <tr class="separator:a767eb8d742a20e0e0a698bd039140f88 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae26495e84fc2724e8a20ef43a6cc15d9 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#ae26495e84fc2724e8a20ef43a6cc15d9">on_generate_state</a> (const State &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> action_cost, const State &amp;successor_state)=0</td></tr>
+<tr class="memitem:ae26495e84fc2724e8a20ef43a6cc15d9 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#ae26495e84fc2724e8a20ef43a6cc15d9">on_generate_state</a> (const State &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, ContinuousCost action_cost, const State &amp;successor_state)=0</td></tr>
 <tr class="memdesc:ae26495e84fc2724e8a20ef43a6cc15d9 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a successor <code>state</code> by applying an action.  <br /></td></tr>
 <tr class="separator:ae26495e84fc2724e8a20ef43a6cc15d9 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72941ed475fc77590e1c557a921ae992 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a72941ed475fc77590e1c557a921ae992">on_prune_state</a> (const State &amp;state)=0</td></tr>
 <tr class="memdesc:a72941ed475fc77590e1c557a921ae992 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on pruning a state.  <br /></td></tr>
 <tr class="separator:a72941ed475fc77590e1c557a921ae992 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42ec1c7da1825bcae11dc7de96cf1fa6 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a42ec1c7da1825bcae11dc7de96cf1fa6">on_start_search</a> (const State &amp;start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> g_value, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> h_value)=0</td></tr>
+<tr class="memitem:a42ec1c7da1825bcae11dc7de96cf1fa6 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a42ec1c7da1825bcae11dc7de96cf1fa6">on_start_search</a> (const State &amp;start_state, ContinuousCost g_value, ContinuousCost h_value)=0</td></tr>
 <tr class="memdesc:a42ec1c7da1825bcae11dc7de96cf1fa6 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
 <tr class="separator:a42ec1c7da1825bcae11dc7de96cf1fa6 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49a12f6efe1a6cdd84058c9fea8a2185 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a49a12f6efe1a6cdd84058c9fea8a2185">on_new_best_h_value</a> (<a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> h_value)=0</td></tr>
+<tr class="memitem:a49a12f6efe1a6cdd84058c9fea8a2185 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a49a12f6efe1a6cdd84058c9fea8a2185">on_new_best_h_value</a> (ContinuousCost h_value)=0</td></tr>
 <tr class="memdesc:a49a12f6efe1a6cdd84058c9fea8a2185 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on new best h_value.  <br /></td></tr>
 <tr class="separator:a49a12f6efe1a6cdd84058c9fea8a2185 inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42b9ab82ad6d1e6e96fd8bc4d495483e inherit pub_methods_classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1IEventHandler.html#a42b9ab82ad6d1e6e96fd8bc4d495483e">on_end_search</a> (uint64_t num_reached_fluent_atoms, uint64_t num_reached_derived_atoms, uint64_t num_states, uint64_t num_nodes, uint64_t num_actions, uint64_t num_axioms)=0</td></tr>
@@ -465,7 +465,7 @@ template&lt;typename Derived_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
+          <td class="paramtype">ContinuousCost&#160;</td>
           <td class="paramname"><em>action_cost</em>, </td>
         </tr>
         <tr>
@@ -507,7 +507,7 @@ template&lt;typename Derived_ &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classmimir_1_1search_1_1gbfs__lazy_1_1EventHandlerBase.html">mimir::search::gbfs_lazy::EventHandlerBase</a>&lt; Derived_ &gt;::on_new_best_h_value </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
+          <td class="paramtype">ContinuousCost&#160;</td>
           <td class="paramname"><em>h_value</em></td><td>)</td>
           <td></td>
         </tr>
@@ -609,13 +609,13 @@ template&lt;typename Derived_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
+          <td class="paramtype">ContinuousCost&#160;</td>
           <td class="paramname"><em>g_value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
+          <td class="paramtype">ContinuousCost&#160;</td>
           <td class="paramname"><em>h_value</em>&#160;</td>
         </tr>
         <tr>

@@ -75,12 +75,12 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">problem_graph.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
@@ -99,28 +99,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; search::PackedState, search::StateRepository, DiscreteCost, ContinuousCost, bool, bool, bool, bool &gt;</td></tr>
-<tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
-<tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">mimir::graphs::ProblemVertexList</a> = std::vector&lt; ProblemVertex &gt;</td></tr>
-<tr class="separator:a6849af3a319ee009030dc943e8f30f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">mimir::graphs::ProblemEdge</a> = Edge&lt; formalism::GroundAction, formalism::Problem, ContinuousCost &gt;</td></tr>
-<tr class="memdesc:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemEdge</code> encapsulates information about an edge in a <code>ProblemGraph</code>.  <br /></td></tr>
-<tr class="separator:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0eca8513881fbe716ea6fa3186b18041"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0eca8513881fbe716ea6fa3186b18041">mimir::graphs::ProblemEdgeList</a> = std::vector&lt; ProblemEdge &gt;</td></tr>
-<tr class="separator:a0eca8513881fbe716ea6fa3186b18041"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3db9abada0afd5e64ce07e086c4ddb8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad3db9abada0afd5e64ce07e086c4ddb8">mimir::graphs::StaticProblemGraph</a> = StaticGraph&lt; ProblemVertex, ProblemEdge &gt;</td></tr>
-<tr class="separator:ad3db9abada0afd5e64ce07e086c4ddb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbec461401afc102f0fefd0fc40f41e8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#afbec461401afc102f0fefd0fc40f41e8">mimir::graphs::StaticProblemGraphList</a> = std::vector&lt; StaticProblemGraph &gt;</td></tr>
-<tr class="separator:afbec461401afc102f0fefd0fc40f41e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae90d83d97c61e149eec8e753a8f19589"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589">mimir::graphs::ProblemGraph</a> = StaticBidirectionalGraph&lt; StaticProblemGraph &gt;</td></tr>
-<tr class="memdesc:ae90d83d97c61e149eec8e753a8f19589"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemGraph</code> implements a directed graph representing the state space of a single problem.  <br /></td></tr>
-<tr class="separator:ae90d83d97c61e149eec8e753a8f19589"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a14f777b696bfc1d97cbff3d1a30732f8">mimir::graphs::ProblemGraphList</a> = std::vector&lt; ProblemGraph &gt;</td></tr>
-<tr class="separator:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -163,12 +141,6 @@ Functions</h2></td></tr>
 <tr class="memitem:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abdc9761dce5abf6f85bcaf6964a3efac">mimir::graphs::get_action_cost</a> (const ProblemEdge &amp;edge)</td></tr>
 <tr class="memdesc:abdc9761dce5abf6f85bcaf6964a3efac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the given <code>ProblemEdge</code>  <br /></td></tr>
 <tr class="separator:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b24ba02d47da876e9a813489ef20051"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2b24ba02d47da876e9a813489ef20051">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a2b24ba02d47da876e9a813489ef20051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemVertex</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a2b24ba02d47da876e9a813489ef20051"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4083bcd8fa366ec54a82480ff2c56868"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4083bcd8fa366ec54a82480ff2c56868">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ProblemEdge &amp;edge)</td></tr>
-<tr class="memdesc:a4083bcd8fa366ec54a82480ff2c56868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a4083bcd8fa366ec54a82480ff2c56868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

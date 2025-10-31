@@ -5,7 +5,7 @@ var searchData=
   ['partiallyorderedplan_2',['PartiallyOrderedPlan',['../classmimir_1_1search_1_1PartiallyOrderedPlan.html',1,'mimir::search']]],
   ['perfectassignmenthash_3',['PerfectAssignmentHash',['../structmimir_1_1formalism_1_1PerfectAssignmentHash.html',1,'mimir::formalism']]],
   ['plan_4',['Plan',['../classmimir_1_1search_1_1Plan.html',1,'mimir::search']]],
-  ['planformattertag_5',['PlanFormatterTag',['../structmimir_1_1formalism_1_1GroundActionImpl_1_1PlanFormatterTag.html',1,'mimir::formalism::GroundActionImpl']]],
+  ['planformattertag_5',['PlanFormatterTag',['../structmimir_1_1formalism_1_1PlanFormatterTag.html',1,'mimir::formalism']]],
   ['policysketch_6',['PolicySketch',['../classmimir_1_1languages_1_1policy__sketches_1_1PolicySketch.html',1,'mimir::languages::policy_sketches']]],
   ['positivebooleanconditionimpl_7',['PositiveBooleanConditionImpl',['../classmimir_1_1languages_1_1general__policies_1_1PositiveBooleanConditionImpl.html',1,'mimir::languages::general_policies']]],
   ['positivebooleaneffectimpl_8',['PositiveBooleanEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1PositiveBooleanEffectImpl.html',1,'mimir::languages::general_policies']]],

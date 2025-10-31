@@ -75,13 +75,12 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">internal_tuple_graph.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="search_2algorithms_2iw_2types_8hpp_source.html">mimir/search/algorithms/iw/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
 <code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
@@ -93,18 +92,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a40ad24baa6642beb75cd2d720a07f2f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a40ad24baa6642beb75cd2d720a07f2f5">mimir::graphs::TupleGraphVertex</a> = Vertex&lt; search::iw::AtomIndexList, IndexList &gt;</td></tr>
-<tr class="memdesc:a40ad24baa6642beb75cd2d720a07f2f5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>TupleGraphVertex</code> encapsulates information about a vertex in a tuple graph.  <br /></td></tr>
-<tr class="separator:a40ad24baa6642beb75cd2d720a07f2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78aaf762d44ebe5f609efd50b800dd95"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95">mimir::graphs::TupleGraphVertexList</a> = std::vector&lt; TupleGraphVertex &gt;</td></tr>
-<tr class="separator:a78aaf762d44ebe5f609efd50b800dd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa77b03b4bf43d0a671912a77a874182a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa77b03b4bf43d0a671912a77a874182a">mimir::graphs::StaticTupleGraph</a> = StaticGraph&lt; TupleGraphVertex, EmptyEdge &gt;</td></tr>
-<tr class="separator:aa77b03b4bf43d0a671912a77a874182a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59f908cee5f00c5e604ef2442951bd9b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a59f908cee5f00c5e604ef2442951bd9b">mimir::graphs::InternalTupleGraph</a> = StaticBidirectionalGraph&lt; StaticTupleGraph &gt;</td></tr>
-<tr class="separator:a59f908cee5f00c5e604ef2442951bd9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>

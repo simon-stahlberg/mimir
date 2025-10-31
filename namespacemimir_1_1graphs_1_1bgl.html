@@ -125,11 +125,11 @@ requires IsDynamicGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsVertexList
 <tr class="separator:a0d12c2fce2f6fca4832ba47409d92633"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2592eb1d178d5b84c51e6ff34b9d3212"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
 requires IsDynamicGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsVertexListGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsIncidenceGraph&lt;std::decay_t&lt;Graph&gt;&gt;</td></tr>
-<tr class="memitem:a2592eb1d178d5b84c51e6ff34b9d3212"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a2592eb1d178d5b84c51e6ff34b9d3212">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">ContinuousCostMap</a> &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="memitem:a2592eb1d178d5b84c51e6ff34b9d3212"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a2592eb1d178d5b84c51e6ff34b9d3212">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostMap &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:a2592eb1d178d5b84c51e6ff34b9d3212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9334d218278d3d784ec04d26948f6d0d"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
 requires IsDynamicGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsVertexListGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsEdgeListGraph&lt;std::decay_t&lt;Graph&gt;&gt;</td></tr>
-<tr class="memitem:a9334d218278d3d784ec04d26948f6d0d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9334d218278d3d784ec04d26948f6d0d">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">ContinuousCostMap</a> &amp;w)</td></tr>
+<tr class="memitem:a9334d218278d3d784ec04d26948f6d0d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9334d218278d3d784ec04d26948f6d0d">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostMap &amp;w)</td></tr>
 <tr class="separator:a9334d218278d3d784ec04d26948f6d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe7d1e5577d706115174dcb25c3a36bc"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
 <tr class="memitem:afe7d1e5577d706115174dcb25c3a36bc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#afe7d1e5577d706115174dcb25c3a36bc">get</a> (const <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html">TrivialReadPropertyMap</a>&lt; Key, Value &gt; &amp;, Key key)</td></tr>
@@ -172,11 +172,11 @@ requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &a
 <tr class="separator:a54aa69a559e861f25477349ba909898a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9494dd2f571b2252b0ac0a1517982c22"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
 requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a9494dd2f571b2252b0ac0a1517982c22"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9494dd2f571b2252b0ac0a1517982c22">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="memitem:a9494dd2f571b2252b0ac0a1517982c22"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9494dd2f571b2252b0ac0a1517982c22">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:a9494dd2f571b2252b0ac0a1517982c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c5ff40722db1509f8301b514248c8e8"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
 requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a6c5ff40722db1509f8301b514248c8e8"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a6c5ff40722db1509f8301b514248c8e8">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w)</td></tr>
+<tr class="memitem:a6c5ff40722db1509f8301b514248c8e8"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a6c5ff40722db1509f8301b514248c8e8">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w)</td></tr>
 <tr class="separator:a6c5ff40722db1509f8301b514248c8e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -346,7 +346,7 @@ requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;&#160;</td>
+          <td class="paramtype">const ContinuousCostList &amp;&#160;</td>
           <td class="paramname"><em>w</em>, </td>
         </tr>
         <tr>
@@ -389,7 +389,7 @@ requires IsDynamicGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsVertexList
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">ContinuousCostMap</a> &amp;&#160;</td>
+          <td class="paramtype">const ContinuousCostMap &amp;&#160;</td>
           <td class="paramname"><em>w</em>, </td>
         </tr>
         <tr>
@@ -432,7 +432,7 @@ requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;&#160;</td>
+          <td class="paramtype">const ContinuousCostList &amp;&#160;</td>
           <td class="paramname"><em>w</em>&#160;</td>
         </tr>
         <tr>
@@ -463,7 +463,7 @@ requires IsDynamicGraph&lt;std::decay_t&lt;Graph&gt;&gt; &amp;&amp; IsVertexList
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">ContinuousCostMap</a> &amp;&#160;</td>
+          <td class="paramtype">const ContinuousCostMap &amp;&#160;</td>
           <td class="paramname"><em>w</em>&#160;</td>
         </tr>
         <tr>

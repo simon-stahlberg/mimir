@@ -75,15 +75,12 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">digraph.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;mimir/graphs/dynamic_graph.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__edge__interface_8hpp_source.html">mimir/graphs/graph_edge_interface.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__interface_8hpp_source.html">mimir/graphs/graph_interface.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
 <code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
 </div>
@@ -98,19 +95,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a09c04470c52cfa6c879fc371bf3f7e29"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a09c04470c52cfa6c879fc371bf3f7e29">mimir::graphs::StaticDigraph</a> = StaticGraph&lt; EmptyVertex, EmptyEdge &gt;</td></tr>
-<tr class="separator:a09c04470c52cfa6c879fc371bf3f7e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03f11ce41bd7d1e4723c401665ce4d22"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a03f11ce41bd7d1e4723c401665ce4d22">mimir::graphs::StaticForwardDigraph</a> = StaticForwardGraph&lt; StaticGraph&lt; EmptyVertex, EmptyEdge &gt; &gt;</td></tr>
-<tr class="separator:a03f11ce41bd7d1e4723c401665ce4d22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac941ae6bede55e37d268a05ac80c8570"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac941ae6bede55e37d268a05ac80c8570">mimir::graphs::StaticBidirectionalDigraph</a> = StaticBidirectionalGraph&lt; StaticGraph&lt; EmptyVertex, EmptyEdge &gt; &gt;</td></tr>
-<tr class="separator:ac941ae6bede55e37d268a05ac80c8570"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9f1a2449686d29b0f079ce118ed78b3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad9f1a2449686d29b0f079ce118ed78b3">mimir::graphs::DynamicDigraph</a> = DynamicGraph&lt; EmptyVertex, EmptyEdge &gt;</td></tr>
-<tr class="separator:ad9f1a2449686d29b0f079ce118ed78b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a0646cfd184323ed0920247ec640072aa"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0646cfd184323ed0920247ec640072aa">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const StaticDigraph &amp;digraph)</td></tr>
-<tr class="separator:a0646cfd184323ed0920247ec640072aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac28d346b47823a6353bdedb48a7ffe40"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac28d346b47823a6353bdedb48a7ffe40">mimir::graphs::StaticDigraph</a> = StaticGraph&lt; Vertex&lt;&gt;, Edge&lt;&gt; &gt;</td></tr>
+<tr class="separator:ac28d346b47823a6353bdedb48a7ffe40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9019f91ecae8f5d096adce5e01f5138e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9019f91ecae8f5d096adce5e01f5138e">mimir::graphs::StaticForwardDigraph</a> = StaticForwardGraph&lt; StaticGraph&lt; Vertex&lt;&gt;, Edge&lt;&gt; &gt; &gt;</td></tr>
+<tr class="separator:a9019f91ecae8f5d096adce5e01f5138e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a634265aa2e10aeddc96f107dfaa3435e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a634265aa2e10aeddc96f107dfaa3435e">mimir::graphs::StaticBidirectionalDigraph</a> = StaticBidirectionalGraph&lt; StaticGraph&lt; Vertex&lt;&gt;, Edge&lt;&gt; &gt; &gt;</td></tr>
+<tr class="separator:a634265aa2e10aeddc96f107dfaa3435e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34be84375e094843247dec8554094b92"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a34be84375e094843247dec8554094b92">mimir::graphs::DynamicDigraph</a> = DynamicGraph&lt; Vertex&lt;&gt;, Edge&lt;&gt; &gt;</td></tr>
+<tr class="separator:a34be84375e094843247dec8554094b92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

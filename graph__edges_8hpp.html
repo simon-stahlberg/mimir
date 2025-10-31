@@ -75,23 +75,20 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">graph_edges.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="color_8hpp_source.html">mimir/graphs/color.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/formatter.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__edge__interface_8hpp_source.html">mimir/graphs/graph_edge_interface.hpp</a>&quot;</code><br />
-<code>#include &lt;loki/details/utils/equal_to.hpp&gt;</code><br />
-<code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
+<code>#include &lt;loki/loki.hpp&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
 </div>
 <p><a href="graph__edges_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Edge.html">mimir::graphs::Edge&lt; EdgeProperties &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Edge.html">mimir::graphs::Edge&lt; P &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1Edge.html" title="Edge implements a directed edge with additional EdgeProperties.">Edge</a></code> implements a directed edge with additional <code>EdgeProperties</code>.  <a href="classmimir_1_1graphs_1_1Edge.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -101,22 +98,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a9f1a6ea5cc813f955882325765a23481"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9f1a6ea5cc813f955882325765a23481">mimir::graphs::EmptyEdge</a> = Edge&lt;&gt;</td></tr>
-<tr class="memdesc:a9f1a6ea5cc813f955882325765a23481"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>EmptyEdge</code> is an edge without <code>EdgeProperties</code>.  <br /></td></tr>
-<tr class="separator:a9f1a6ea5cc813f955882325765a23481"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3448a32cbbc684ee132505b97d44ccff"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a3448a32cbbc684ee132505b97d44ccff">mimir::graphs::ColoredEdge</a> = Edge&lt; Color &gt;</td></tr>
-<tr class="separator:a3448a32cbbc684ee132505b97d44ccff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a142697e9033c1217a4f0706fee903135"><td class="memTemplParams" colspan="2">template&lt;typename... EdgeProperties&gt; </td></tr>
-<tr class="memitem:a142697e9033c1217a4f0706fee903135"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a142697e9033c1217a4f0706fee903135">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;os, const Edge&lt; EdgeProperties... &gt; &amp;edge)</td></tr>
-<tr class="separator:a142697e9033c1217a4f0706fee903135"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af123c6b596929d538677b94d43c7597e"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#af123c6b596929d538677b94d43c7597e">mimir::graphs::get_color</a> (const Edge&lt; Color &gt; &amp;edge)</td></tr>
-<tr class="separator:af123c6b596929d538677b94d43c7597e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

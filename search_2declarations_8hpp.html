@@ -75,13 +75,13 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/algorithms/shared_object_pool.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
-<code>#include &quot;mimir/formalism/concepts.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
@@ -130,6 +130,8 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1search_1_1siw"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html">mimir::search::siw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1search_1_1match__tree"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1match__tree.html">mimir::search::match_tree</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -146,8 +148,6 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aa7dfcb51b501f879359c93f74c12e0d1">mimir::search::PackedStateMap</a> = UnorderedMap&lt; PackedState, T &gt;</td></tr>
 <tr class="separator:aa7dfcb51b501f879359c93f74c12e0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9c8c2782a43712c38169b3152ee5c6e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ae9c8c2782a43712c38169b3152ee5c6e">mimir::search::UnpackedState</a> = SharedObjectPoolPtr&lt; UnpackedStateImpl &gt;</td></tr>
-<tr class="separator:ae9c8c2782a43712c38169b3152ee5c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a892930994d768a169a4bb644a8b7b697"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1satisficing__binding__generator.html#a892930994d768a169a4bb644a8b7b697">mimir::search::satisficing_binding_generator::EventHandler</a> = std::shared_ptr&lt; IEventHandler &gt;</td></tr>
 <tr class="separator:a892930994d768a169a4bb644a8b7b697"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdcbabb0c3308e29372d17b8263bb592"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1satisficing__binding__generator.html#abdcbabb0c3308e29372d17b8263bb592">mimir::search::satisficing_binding_generator::DefaultEventHandler</a> = std::shared_ptr&lt; DefaultEventHandlerImpl &gt;</td></tr>
@@ -268,10 +268,27 @@ Typedefs</h2></td></tr>
 <tr class="separator:a0cfc7c8bc925d39521afb70a6f286e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accd8722bbdd07c723c7637c61b46faff"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#accd8722bbdd07c723c7637c61b46faff">mimir::search::iw::DefaultEventHandler</a> = std::shared_ptr&lt; DefaultEventHandlerImpl &gt;</td></tr>
 <tr class="separator:accd8722bbdd07c723c7637c61b46faff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15ed633a10d649b3dc95f29191a95daa"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a15ed633a10d649b3dc95f29191a95daa">mimir::search::iw::AtomIndex</a> = Index</td></tr>
+<tr class="separator:a15ed633a10d649b3dc95f29191a95daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fcc54c6fd413c59b11d99105279654e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a9fcc54c6fd413c59b11d99105279654e">mimir::search::iw::AtomIndexList</a> = std::vector&lt; AtomIndex &gt;</td></tr>
+<tr class="separator:a9fcc54c6fd413c59b11d99105279654e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172ed9e552b26251f2bfadea54f8fc8c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a172ed9e552b26251f2bfadea54f8fc8c">mimir::search::iw::TupleIndex</a> = Index</td></tr>
+<tr class="separator:a172ed9e552b26251f2bfadea54f8fc8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bd60ed942274143509cad0cefc1eb1f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a8bd60ed942274143509cad0cefc1eb1f">mimir::search::iw::TupleIndexList</a> = std::vector&lt; TupleIndex &gt;</td></tr>
+<tr class="separator:a8bd60ed942274143509cad0cefc1eb1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a111578df00f00f630c5c7f7e4301d374"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a111578df00f00f630c5c7f7e4301d374">mimir::search::iw::TupleIndexSet</a> = std::unordered_set&lt; TupleIndex &gt;</td></tr>
+<tr class="separator:a111578df00f00f630c5c7f7e4301d374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a594a770fc60227fc964870c63c52ef34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a594a770fc60227fc964870c63c52ef34">mimir::search::siw::EventHandler</a> = std::shared_ptr&lt; IEventHandler &gt;</td></tr>
 <tr class="separator:a594a770fc60227fc964870c63c52ef34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fa8fa22587a8654c466932aba177afc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a3fa8fa22587a8654c466932aba177afc">mimir::search::siw::DefaultEventHandler</a> = std::shared_ptr&lt; DefaultEventHandlerImpl &gt;</td></tr>
 <tr class="separator:a3fa8fa22587a8654c466932aba177afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2993fe0a3cf9225e388f3bb8a0a998d5"><td class="memItemLeft" align="right" valign="top">const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a2993fe0a3cf9225e388f3bb8a0a998d5">mimir::search::iw::MAX_ARITY</a> = 6</td></tr>
+<tr class="separator:a2993fe0a3cf9225e388f3bb8a0a998d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69bcf737af67e2786bc4dc46a5edb2d0"><td class="memItemLeft" align="right" valign="top">const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a69bcf737af67e2786bc4dc46a5edb2d0">mimir::search::iw::INITIAL_TABLE_ATOMS</a> = 64</td></tr>
+<tr class="separator:a69bcf737af67e2786bc4dc46a5edb2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

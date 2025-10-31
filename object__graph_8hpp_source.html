@@ -98,27 +98,29 @@ $(function() {
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="datasets_2declarations_8hpp.html">mimir/datasets/declarations.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="formalism_2declarations_8hpp.html">mimir/formalism/declarations.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="vertex__colored__graph_8hpp.html">mimir/graphs/concrete/vertex_colored_graph.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="search_2declarations_8hpp.html">mimir/search/declarations.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir_1_1datasets.html">mimir::datasets</a></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespacemimir_1_1datasets.html#ad9e56ec2bb841791937593cb46cd0dba">   34</a></span><span class="keyword">extern</span> <a class="code hl_class" href="classmimir_1_1graphs_1_1StaticGraph.html">graphs::StaticVertexColoredGraph</a> <a class="code hl_function" href="namespacemimir_1_1datasets.html#ad9e56ec2bb841791937593cb46cd0dba">create_object_graph</a>(<span class="keyword">const</span> search::State&amp; state, <span class="keyword">const</span> <a class="code hl_class" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a>&amp; problem);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;mimir/graphs/property.hpp&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;mimir/graphs/static_graph.hpp&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="search_2declarations_8hpp.html">mimir/search/declarations.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir_1_1datasets.html">mimir::datasets</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespacemimir_1_1datasets.html#ae1d703f7edfd6edb8e3d87d98a23c04d">   35</a></span><span class="keyword">extern</span> <a class="code hl_class" href="classmimir_1_1graphs_1_1StaticGraph.html">graphs::StaticGraph&lt;graphs::Vertex&lt;graphs::PropertyValue&gt;</a>, <a class="code hl_class" href="classmimir_1_1graphs_1_1Edge.html">graphs::Edge&lt;&gt;</a>&gt; <a class="code hl_function" href="namespacemimir_1_1datasets.html#ae1d703f7edfd6edb8e3d87d98a23c04d">create_object_graph</a>(<span class="keyword">const</span> search::State&amp; state,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                                                                                      <span class="keyword">const</span> <a class="code hl_class" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a>&amp; problem);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmimir_1_1formalism_1_1ProblemImpl_html"><div class="ttname"><a href="classmimir_1_1formalism_1_1ProblemImpl.html">mimir::formalism::ProblemImpl</a></div><div class="ttdef"><b>Definition:</b> problem.hpp:33</div></div>
-<div class="ttc" id="aclassmimir_1_1graphs_1_1StaticGraph_html"><div class="ttname"><a href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a></div><div class="ttdoc">StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...</div><div class="ttdef"><b>Definition:</b> static_graph_decl.hpp:53</div></div>
+<div class="ttc" id="aclassmimir_1_1graphs_1_1Edge_html"><div class="ttname"><a href="classmimir_1_1graphs_1_1Edge.html">mimir::graphs::Edge</a></div><div class="ttdoc">Edge implements a directed edge with additional EdgeProperties.</div><div class="ttdef"><b>Definition:</b> graph_edges.hpp:34</div></div>
+<div class="ttc" id="aclassmimir_1_1graphs_1_1StaticGraph_html"><div class="ttname"><a href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a></div><div class="ttdoc">StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...</div><div class="ttdef"><b>Definition:</b> static_graph_decl.hpp:50</div></div>
 <div class="ttc" id="adatasets_2declarations_8hpp_html"><div class="ttname"><a href="datasets_2declarations_8hpp.html">declarations.hpp</a></div></div>
 <div class="ttc" id="aformalism_2declarations_8hpp_html"><div class="ttname"><a href="formalism_2declarations_8hpp.html">declarations.hpp</a></div></div>
 <div class="ttc" id="anamespacemimir_1_1datasets_html"><div class="ttname"><a href="namespacemimir_1_1datasets.html">mimir::datasets</a></div><div class="ttdef"><b>Definition:</b> options.hpp:22</div></div>
-<div class="ttc" id="anamespacemimir_1_1datasets_html_ad9e56ec2bb841791937593cb46cd0dba"><div class="ttname"><a href="namespacemimir_1_1datasets.html#ad9e56ec2bb841791937593cb46cd0dba">mimir::datasets::create_object_graph</a></div><div class="ttdeci">graphs::StaticVertexColoredGraph create_object_graph(const search::State &amp;state, const formalism::ProblemImpl &amp;problem)</div><div class="ttdoc">Create an ObjectGraph for a given search::State from a given formalism::ProblemImpl.</div></div>
+<div class="ttc" id="anamespacemimir_1_1datasets_html_ae1d703f7edfd6edb8e3d87d98a23c04d"><div class="ttname"><a href="namespacemimir_1_1datasets.html#ae1d703f7edfd6edb8e3d87d98a23c04d">mimir::datasets::create_object_graph</a></div><div class="ttdeci">graphs::StaticGraph&lt; graphs::Vertex&lt; graphs::PropertyValue &gt;, graphs::Edge&lt;&gt; &gt; create_object_graph(const search::State &amp;state, const formalism::ProblemImpl &amp;problem)</div><div class="ttdoc">Create an ObjectGraph for a given search::State from a given formalism::ProblemImpl.</div></div>
 <div class="ttc" id="asearch_2declarations_8hpp_html"><div class="ttname"><a href="search_2declarations_8hpp.html">declarations.hpp</a></div></div>
-<div class="ttc" id="avertex__colored__graph_8hpp_html"><div class="ttname"><a href="vertex__colored__graph_8hpp.html">vertex_colored_graph.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

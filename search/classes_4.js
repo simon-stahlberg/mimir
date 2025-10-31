@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['edge_0',['Edge',['../classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html',1,'mimir::formalism::StaticConsistencyGraph::Edge'],['../classmimir_1_1graphs_1_1Edge.html',1,'mimir::graphs::Edge&lt; EdgeProperties &gt;']]],
+  ['edge_0',['Edge',['../classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Edge.html',1,'mimir::formalism::StaticConsistencyGraph::Edge'],['../classmimir_1_1graphs_1_1Edge.html',1,'mimir::graphs::Edge&lt; P &gt;']]],
   ['edgeassignment_1',['EdgeAssignment',['../structmimir_1_1formalism_1_1EdgeAssignment.html',1,'mimir::formalism']]],
   ['edgeindexconstiterator_2',['EdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicGraph_1_1EdgeIndexConstIterator.html',1,'mimir::graphs::DynamicGraph']]],
   ['effectbase_3',['EffectBase',['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html',1,'mimir::languages::general_policies']]],

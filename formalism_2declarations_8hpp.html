@@ -74,13 +74,15 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
-<code>#include &quot;mimir/common/types_cista.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2tags_8hpp_source.html">mimir/formalism/tags.hpp</a>&quot;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
@@ -96,6 +98,13 @@ $(function() {
 </div>
 <p><a href="formalism_2declarations_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1formalism_1_1FullFormatterTag.html">mimir::formalism::FullFormatterTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1formalism_1_1PlanFormatterTag.html">mimir::formalism::PlanFormatterTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
@@ -103,17 +112,15 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1formalism"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html">mimir::formalism</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1formalism_1_1IsFormalismEntity.html">mimir::formalism::IsFormalismEntity</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1formalism_1_1HasConjunctiveCondition.html">mimir::formalism::HasConjunctiveCondition</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a16ba33fd0aa156fcdee20109759ef107"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:a16ba33fd0aa156fcdee20109759ef107"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a16ba33fd0aa156fcdee20109759ef107">mimir::formalism::FlatBitsets</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ts &gt;, FlatBitset &gt;... &gt;</td></tr>
-<tr class="separator:a16ba33fd0aa156fcdee20109759ef107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81dd3e274c08f5fe2fd63c5e785940bb"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:a81dd3e274c08f5fe2fd63c5e785940bb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a81dd3e274c08f5fe2fd63c5e785940bb">mimir::formalism::FlatIndexLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ts &gt;, FlatIndexList &gt;... &gt;</td></tr>
-<tr class="separator:a81dd3e274c08f5fe2fd63c5e785940bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f7994fa158eacb27696e935e55c6a23"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:a5f7994fa158eacb27696e935e55c6a23"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a5f7994fa158eacb27696e935e55c6a23">mimir::formalism::FlatDoubleLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ts &gt;, FlatDoubleList &gt;... &gt;</td></tr>
-<tr class="separator:a5f7994fa158eacb27696e935e55c6a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab18fc18ecb8e6e594a5c655c9821b2c7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ab18fc18ecb8e6e594a5c655c9821b2c7">mimir::formalism::Action</a> = const ActionImpl *</td></tr>
 <tr class="separator:ab18fc18ecb8e6e594a5c655c9821b2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c936e32a9828a2d2ac37dcccdcea3b7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a3c936e32a9828a2d2ac37dcccdcea3b7">mimir::formalism::ActionList</a> = std::vector&lt; Action &gt;</td></tr>

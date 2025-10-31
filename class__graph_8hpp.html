@@ -75,12 +75,12 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">class_graph.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
@@ -98,24 +98,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:addbc8279833faca8528c5c48225e197e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">mimir::graphs::ClassVertex</a> = Vertex&lt; Index, Index &gt;</td></tr>
-<tr class="memdesc:addbc8279833faca8528c5c48225e197e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassVertex</code> encapsulates information about a vertex in a <code>ClassGraph</code>.  <br /></td></tr>
-<tr class="separator:addbc8279833faca8528c5c48225e197e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbbad8d6ed3a52c90ffc58f8132c7297"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#adbbad8d6ed3a52c90ffc58f8132c7297">mimir::graphs::ClassVertexList</a> = std::vector&lt; ClassVertex &gt;</td></tr>
-<tr class="separator:adbbad8d6ed3a52c90ffc58f8132c7297"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9861298646e808707570b3e2528af931"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">mimir::graphs::ClassEdge</a> = Edge&lt; Index, Index &gt;</td></tr>
-<tr class="memdesc:a9861298646e808707570b3e2528af931"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassEdge</code> encapsulates information about an edge in a <code>ClassGraph</code>.  <br /></td></tr>
-<tr class="separator:a9861298646e808707570b3e2528af931"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf125ea511e0e7dcb08e8798f8ba278c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abf125ea511e0e7dcb08e8798f8ba278c">mimir::graphs::ClassEdgeList</a> = std::vector&lt; ClassEdge &gt;</td></tr>
-<tr class="separator:abf125ea511e0e7dcb08e8798f8ba278c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3142bbab4fd2cd2d164fe5301c5db9b0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a3142bbab4fd2cd2d164fe5301c5db9b0">mimir::graphs::StaticClassGraph</a> = StaticGraph&lt; ClassVertex, ClassEdge &gt;</td></tr>
-<tr class="separator:a3142bbab4fd2cd2d164fe5301c5db9b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">mimir::graphs::ClassGraph</a> = StaticBidirectionalGraph&lt; StaticClassGraph &gt;</td></tr>
-<tr class="memdesc:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassGraph</code> implements a directed graph representing the state space of a class of problems.  <br /></td></tr>
-<tr class="separator:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aeb3ba492c827c91c33273ba967ed2562"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aeb3ba492c827c91c33273ba967ed2562">mimir::graphs::get_problem_vertex_index</a> (const ClassVertex &amp;vertex)</td></tr>
@@ -130,12 +112,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a76abaf05d3540fae169e237958b7d0f3"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a76abaf05d3540fae169e237958b7d0f3">mimir::graphs::get_problem_index</a> (const ClassEdge &amp;edge)</td></tr>
 <tr class="memdesc:a76abaf05d3540fae169e237958b7d0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the <code>ProblemGraph</code> associated with the given <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a76abaf05d3540fae169e237958b7d0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a255cd184a5ab89a95a1cf3348f88778f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a255cd184a5ab89a95a1cf3348f88778f">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ClassVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a255cd184a5ab89a95a1cf3348f88778f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ClassVertex</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a255cd184a5ab89a95a1cf3348f88778f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a54f7dd0bb476adb636fc0a2384a6b399">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ClassEdge &amp;edge)</td></tr>
-<tr class="memdesc:a54f7dd0bb476adb636fc0a2384a6b399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ClassEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

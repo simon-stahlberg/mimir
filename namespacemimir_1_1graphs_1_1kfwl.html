@@ -100,33 +100,33 @@ Functions</h2></td></tr>
 <tr class="memdesc:ab822108a2d63d68b8af543c5484d3e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
 <tr class="separator:ab822108a2d63d68b8af543c5484d3e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad05841aaed12ad4b37e8446c92597773"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
-<tr class="memitem:ad05841aaed12ad4b37e8446c92597773"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ad05841aaed12ad4b37e8446c92597773">tuple_to_hash</a> (const <a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">IndexArray</a>&lt; K &gt; &amp;tuple, size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
+<tr class="memitem:ad05841aaed12ad4b37e8446c92597773"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ad05841aaed12ad4b37e8446c92597773">tuple_to_hash</a> (const IndexArray&lt; K &gt; &amp;tuple, size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
 <tr class="memdesc:ad05841aaed12ad4b37e8446c92597773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the perfect hash of the given k-tuple.  <br /></td></tr>
 <tr class="separator:ad05841aaed12ad4b37e8446c92597773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
-<tr class="memitem:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">IndexArray</a>&lt; K &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a6374e2bcf2319cea5ec9cee898b5039b">hash_to_tuple</a> (size_t hash, size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
+<tr class="memitem:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memTemplItemLeft" align="right" valign="top">IndexArray&lt; K &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a6374e2bcf2319cea5ec9cee898b5039b">hash_to_tuple</a> (size_t hash, size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
 <tr class="memdesc:a6374e2bcf2319cea5ec9cee898b5039b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the k-tuple of the perfect hash. This operation takes O(k) time.  <br /></td></tr>
 <tr class="separator:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplParams" colspan="2">template&lt;std::size_t K, typename G &gt; <br />
-requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a>&lt; K &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a71674ee2c5de24bc317d74d2fb7f69ba">compute_certificate</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
-<tr class="memdesc:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the k-dimensional Folklore Weisfeiler-Leman algorithm. Source: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
-<tr class="separator:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplParams" colspan="2">template&lt;size_t K, typename G &gt; <br />
-requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ab14d520df1b888ed206041d35aabcc52">compute_ordered_isomorphism_types</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
-<tr class="memdesc:ab14d520df1b888ed206041d35aabcc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the ordered isomorphism types of all k-tuples in the graph.  <br /></td></tr>
-<tr class="separator:ab14d520df1b888ed206041d35aabcc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf0cf443a56bb7c12eebe61cab9d829"><td class="memTemplParams" colspan="2">template&lt;std::size_t K, typename G &gt; <br />
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></tr>
+<tr class="memitem:adcf0cf443a56bb7c12eebe61cab9d829"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a>&lt; K &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#adcf0cf443a56bb7c12eebe61cab9d829">compute_certificate</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
+<tr class="memdesc:adcf0cf443a56bb7c12eebe61cab9d829"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the k-dimensional Folklore Weisfeiler-Leman algorithm. Source: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
+<tr class="separator:adcf0cf443a56bb7c12eebe61cab9d829"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03ad0363a45f59b1e2eabba45a9eea00"><td class="memTemplParams" colspan="2">template&lt;size_t K, typename G &gt; <br />
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></tr>
+<tr class="memitem:a03ad0363a45f59b1e2eabba45a9eea00"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a03ad0363a45f59b1e2eabba45a9eea00">compute_ordered_isomorphism_types</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
+<tr class="memdesc:a03ad0363a45f59b1e2eabba45a9eea00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the ordered isomorphism types of all k-tuples in the graph.  <br /></td></tr>
+<tr class="separator:a03ad0363a45f59b1e2eabba45a9eea00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a71674ee2c5de24bc317d74d2fb7f69ba" name="a71674ee2c5de24bc317d74d2fb7f69ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71674ee2c5de24bc317d74d2fb7f69ba">&#9670;&#160;</a></span>compute_certificate()</h2>
+<a id="adcf0cf443a56bb7c12eebe61cab9d829" name="adcf0cf443a56bb7c12eebe61cab9d829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcf0cf443a56bb7c12eebe61cab9d829">&#9670;&#160;</a></span>compute_certificate()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;std::size_t K, typename G &gt; <br />
-requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</div>
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a>&lt; K &gt; &gt; mimir::graphs::kfwl::compute_certificate </td>
@@ -160,14 +160,14 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
 
 </div>
 </div>
-<a id="ab14d520df1b888ed206041d35aabcc52" name="ab14d520df1b888ed206041d35aabcc52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab14d520df1b888ed206041d35aabcc52">&#9670;&#160;</a></span>compute_ordered_isomorphism_types()</h2>
+<a id="a03ad0363a45f59b1e2eabba45a9eea00" name="a03ad0363a45f59b1e2eabba45a9eea00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03ad0363a45f59b1e2eabba45a9eea00">&#9670;&#160;</a></span>compute_ordered_isomorphism_types()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;size_t K, typename G &gt; <br />
-requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</div>
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">auto mimir::graphs::kfwl::compute_ordered_isomorphism_types </td>
@@ -217,7 +217,7 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
 template&lt;size_t K&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">IndexArray</a>&lt; K &gt; mimir::graphs::kfwl::hash_to_tuple </td>
+          <td class="memname">IndexArray&lt; K &gt; mimir::graphs::kfwl::hash_to_tuple </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>hash</em>, </td>
@@ -345,7 +345,7 @@ template&lt;size_t K&gt; </div>
         <tr>
           <td class="memname">size_t mimir::graphs::kfwl::tuple_to_hash </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">IndexArray</a>&lt; K &gt; &amp;&#160;</td>
+          <td class="paramtype">const IndexArray&lt; K &gt; &amp;&#160;</td>
           <td class="paramname"><em>tuple</em>, </td>
         </tr>
         <tr>

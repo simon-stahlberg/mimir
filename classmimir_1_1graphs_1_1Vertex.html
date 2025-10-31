@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::graphs::Vertex&lt; VertexProperties &gt; Class Template Reference</title>
+<title>Mimir: mimir::graphs::Vertex&lt; P &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,7 +77,7 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classmimir_1_1graphs_1_1Vertex-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::graphs::Vertex&lt; VertexProperties &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">mimir::graphs::Vertex&lt; P &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -88,44 +88,45 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a29a8546b257b14a1784341a8d6a17c4f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a29a8546b257b14a1784341a8d6a17c4f">VertexPropertiesTypes</a> = std::tuple&lt; VertexProperties... &gt;</td></tr>
-<tr class="separator:a29a8546b257b14a1784341a8d6a17c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555efc9ff72127f1a0ecd05acf451f98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a555efc9ff72127f1a0ecd05acf451f98">PropertyType</a> = P</td></tr>
+<tr class="separator:a555efc9ff72127f1a0ecd05acf451f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae073dbab7987d0794be8f3fe59a12212"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#ae073dbab7987d0794be8f3fe59a12212">Vertex</a> (VertexIndex index, VertexProperties... properties)</td></tr>
-<tr class="separator:ae073dbab7987d0794be8f3fe59a12212"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad404797c5a9eedef13ac35cd6c648e2d"><td class="memItemLeft" align="right" valign="top">VertexIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#ad404797c5a9eedef13ac35cd6c648e2d">get_index</a> () const</td></tr>
-<tr class="separator:ad404797c5a9eedef13ac35cd6c648e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b86bc8fb991fa0492db66c0765c7edb"><td class="memTemplParams" colspan="2">template&lt;size_t I&gt; </td></tr>
-<tr class="memitem:a5b86bc8fb991fa0492db66c0765c7edb"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a5b86bc8fb991fa0492db66c0765c7edb">get_property</a> () const</td></tr>
-<tr class="separator:a5b86bc8fb991fa0492db66c0765c7edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a064a5f49b8925a1af5b5e70a9cea3a92"><td class="memItemLeft" align="right" valign="top">const std::tuple&lt; VertexProperties... &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a064a5f49b8925a1af5b5e70a9cea3a92">get_properties</a> () const</td></tr>
-<tr class="separator:a064a5f49b8925a1af5b5e70a9cea3a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac2430eeed8b58b63ccc5acd682d91b5"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#aac2430eeed8b58b63ccc5acd682d91b5">identifying_members</a> () const noexcept</td></tr>
-<tr class="memdesc:aac2430eeed8b58b63ccc5acd682d91b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
-<tr class="separator:aac2430eeed8b58b63ccc5acd682d91b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10eca10d65ed58debe6aa1722c86bf2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#ad10eca10d65ed58debe6aa1722c86bf2">Vertex</a> (<a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a> index, P properties)</td></tr>
+<tr class="separator:ad10eca10d65ed58debe6aa1722c86bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef213ad5b6d4edcedaf5f235923c94d8"><td class="memTemplParams" colspan="2">template&lt;class Q  = P&gt; <br />
+requires std::is_same_v&lt;Q, std::tuple&lt;&gt;&gt;</td></tr>
+<tr class="memitem:aef213ad5b6d4edcedaf5f235923c94d8"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#aef213ad5b6d4edcedaf5f235923c94d8">Vertex</a> (<a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a> index)</td></tr>
+<tr class="separator:aef213ad5b6d4edcedaf5f235923c94d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1adc0e7e4d6cb3d401757a802bfe3edf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a1adc0e7e4d6cb3d401757a802bfe3edf">get_index</a> () const</td></tr>
+<tr class="separator:a1adc0e7e4d6cb3d401757a802bfe3edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a608c9e9313a8a05cbcf3e0fd435e9ac6"><td class="memItemLeft" align="right" valign="top">const P &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a608c9e9313a8a05cbcf3e0fd435e9ac6">get_properties</a> () const</td></tr>
+<tr class="separator:a608c9e9313a8a05cbcf3e0fd435e9ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b753cedcfeea6e984bd9062e24aa06e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html#a7b753cedcfeea6e984bd9062e24aa06e">identifying_members</a> () const noexcept</td></tr>
+<tr class="memdesc:a7b753cedcfeea6e984bd9062e24aa06e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
+<tr class="separator:a7b753cedcfeea6e984bd9062e24aa06e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename... VertexProperties&gt;<br />
-class mimir::graphs::Vertex&lt; VertexProperties &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1Vertex.html" title="Vertex implements a vertex with additional VertexProperties.">Vertex</a></code> implements a vertex with additional <code>VertexProperties</code>. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;Property P&gt;<br />
+class mimir::graphs::Vertex&lt; P &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1Vertex.html" title="Vertex implements a vertex with additional VertexProperties.">Vertex</a></code> implements a vertex with additional <code>VertexProperties</code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">...VertexProperties</td><td>are additional vertex properties. </td></tr>
+    <tr><td class="paramname">P</td><td>are additional vertex properties. </td></tr>
   </table>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a29a8546b257b14a1784341a8d6a17c4f" name="a29a8546b257b14a1784341a8d6a17c4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29a8546b257b14a1784341a8d6a17c4f">&#9670;&#160;</a></span>VertexPropertiesTypes</h2>
+<a id="a555efc9ff72127f1a0ecd05acf451f98" name="a555efc9ff72127f1a0ecd05acf451f98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555efc9ff72127f1a0ecd05acf451f98">&#9670;&#160;</a></span>PropertyType</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
+template&lt;Property P&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::VertexPropertiesTypes =  std::tuple&lt;VertexProperties...&gt;</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::PropertyType =  P</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -133,27 +134,27 @@ template&lt;typename... VertexProperties&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae073dbab7987d0794be8f3fe59a12212" name="ae073dbab7987d0794be8f3fe59a12212"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae073dbab7987d0794be8f3fe59a12212">&#9670;&#160;</a></span>Vertex()</h2>
+<a id="ad10eca10d65ed58debe6aa1722c86bf2" name="ad10eca10d65ed58debe6aa1722c86bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10eca10d65ed58debe6aa1722c86bf2">&#9670;&#160;</a></span>Vertex() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
+template&lt;Property P&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::Vertex </td>
+          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::Vertex </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">VertexProperties...&#160;</td>
+          <td class="paramtype">P&#160;</td>
           <td class="paramname"><em>properties</em>&#160;</td>
         </tr>
         <tr>
@@ -171,20 +172,51 @@ template&lt;typename... VertexProperties&gt; </div>
 
 </div>
 </div>
+<a id="aef213ad5b6d4edcedaf5f235923c94d8" name="aef213ad5b6d4edcedaf5f235923c94d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef213ad5b6d4edcedaf5f235923c94d8">&#9670;&#160;</a></span>Vertex() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;Property P&gt; </div>
+<div class="memtemplate">
+template&lt;class Q  = P&gt; <br />
+requires std::is_same_v&lt;Q, std::tuple&lt;&gt;&gt;</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::Vertex </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a>&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad404797c5a9eedef13ac35cd6c648e2d" name="ad404797c5a9eedef13ac35cd6c648e2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad404797c5a9eedef13ac35cd6c648e2d">&#9670;&#160;</a></span>get_index()</h2>
+<a id="a1adc0e7e4d6cb3d401757a802bfe3edf" name="a1adc0e7e4d6cb3d401757a802bfe3edf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1adc0e7e4d6cb3d401757a802bfe3edf">&#9670;&#160;</a></span>get_index()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
+template&lt;Property P&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">VertexIndex <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::get_index </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a> <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::get_index </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -199,19 +231,19 @@ template&lt;typename... VertexProperties&gt; </div>
 
 </div>
 </div>
-<a id="a064a5f49b8925a1af5b5e70a9cea3a92" name="a064a5f49b8925a1af5b5e70a9cea3a92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a064a5f49b8925a1af5b5e70a9cea3a92">&#9670;&#160;</a></span>get_properties()</h2>
+<a id="a608c9e9313a8a05cbcf3e0fd435e9ac6" name="a608c9e9313a8a05cbcf3e0fd435e9ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a608c9e9313a8a05cbcf3e0fd435e9ac6">&#9670;&#160;</a></span>get_properties()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
+template&lt;Property P&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::tuple&lt; VertexProperties... &gt; &amp; <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::get_properties </td>
+          <td class="memname">const P &amp; <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::get_properties </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -226,48 +258,19 @@ template&lt;typename... VertexProperties&gt; </div>
 
 </div>
 </div>
-<a id="a5b86bc8fb991fa0492db66c0765c7edb" name="a5b86bc8fb991fa0492db66c0765c7edb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b86bc8fb991fa0492db66c0765c7edb">&#9670;&#160;</a></span>get_property()</h2>
+<a id="a7b753cedcfeea6e984bd9062e24aa06e" name="a7b753cedcfeea6e984bd9062e24aa06e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b753cedcfeea6e984bd9062e24aa06e">&#9670;&#160;</a></span>identifying_members()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
-<div class="memtemplate">
-template&lt;size_t I&gt; </div>
+template&lt;Property P&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const auto &amp; <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::get_property </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aac2430eeed8b58b63ccc5acd682d91b5" name="aac2430eeed8b58b63ccc5acd682d91b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac2430eeed8b58b63ccc5acd682d91b5">&#9670;&#160;</a></span>identifying_members()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... VertexProperties&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; VertexProperties &gt;::identifying_members </td>
+          <td class="memname">auto <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex</a>&lt; P &gt;::identifying_members </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -285,7 +288,8 @@ template&lt;typename... VertexProperties&gt; </div>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>include/mimir/graphs/<a class="el" href="graphs_2declarations_8hpp_source.html">declarations.hpp</a></li>
 <li>include/mimir/graphs/<a class="el" href="graph__vertices_8hpp_source.html">graph_vertices.hpp</a></li>
 </ul>
 </div><!-- contents -->

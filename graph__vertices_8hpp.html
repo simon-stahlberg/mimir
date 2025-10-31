@@ -75,25 +75,23 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">graph_vertices.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="color_8hpp_source.html">mimir/graphs/color.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/formatter.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__vertex__interface_8hpp_source.html">mimir/graphs/graph_vertex_interface.hpp</a>&quot;</code><br />
-<code>#include &lt;loki/details/utils/equal_to.hpp&gt;</code><br />
-<code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
+<code>#include &lt;loki/loki.hpp&gt;</code><br />
+<code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="graph__vertices_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex&lt; VertexProperties &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">mimir::graphs::Vertex&lt; P &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1Vertex.html" title="Vertex implements a vertex with additional VertexProperties.">Vertex</a></code> implements a vertex with additional <code>VertexProperties</code>.  <a href="classmimir_1_1graphs_1_1Vertex.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -103,22 +101,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a67adc7ccb0d5c052d08f962f0878bda9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a67adc7ccb0d5c052d08f962f0878bda9">mimir::graphs::EmptyVertex</a> = Vertex&lt;&gt;</td></tr>
-<tr class="memdesc:a67adc7ccb0d5c052d08f962f0878bda9"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>EmptyVertex</code> is a vertex without <code>VertexProperties</code>.  <br /></td></tr>
-<tr class="separator:a67adc7ccb0d5c052d08f962f0878bda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b0e55e585b59f1d27173bc17e2b51fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9b0e55e585b59f1d27173bc17e2b51fe">mimir::graphs::ColoredVertex</a> = Vertex&lt; Color &gt;</td></tr>
-<tr class="separator:a9b0e55e585b59f1d27173bc17e2b51fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a2dde5f009b7b1ff3dad656d41ed57896"><td class="memTemplParams" colspan="2">template&lt;typename... VertexProperties&gt; </td></tr>
-<tr class="memitem:a2dde5f009b7b1ff3dad656d41ed57896"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2dde5f009b7b1ff3dad656d41ed57896">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;os, const Vertex&lt; VertexProperties... &gt; &amp;vertex)</td></tr>
-<tr class="separator:a2dde5f009b7b1ff3dad656d41ed57896"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05347adddc4c03be8991055304055c17"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a05347adddc4c03be8991055304055c17">mimir::graphs::get_color</a> (const Vertex&lt; Color &gt; &amp;vertex)</td></tr>
-<tr class="separator:a05347adddc4c03be8991055304055c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -77,17 +77,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="graph__interface_8hpp_source.html">graph_interface.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="graphs_2declarations_8hpp_source.html">declarations.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a> =  <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIterator&lt;ForwardTag&gt;;</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIterator&lt;BackwardTag&gt;;</div>
-<div class="line"> </div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a> =  <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">VertexIndex</a> vertex) {</div>
 <div class="line">    { a.template get_adjacent_vertex_indices&lt;ForwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
 <div class="line">    { a.template get_adjacent_vertex_indices&lt;BackwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
 <div class="line">}</div>
-<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:66</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> declarations.hpp:130</div></div>
+<div class="ttc" id="anamespacemimir_1_1graphs_html_a084d652e1622104b2ae0c2b21dba85ba"><div class="ttname"><a href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">mimir::graphs::VertexIndex</a></div><div class="ttdeci">uint32_t VertexIndex</div><div class="ttdef"><b>Definition:</b> declarations.hpp:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

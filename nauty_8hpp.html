@@ -80,10 +80,9 @@ $(function() {
   <div class="headertitle"><div class="title">nauty.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="color_8hpp_source.html">mimir/graphs/color.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__interface_8hpp_source.html">mimir/graphs/graph_interface.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/formatter.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__properties_8hpp_source.html">mimir/graphs/graph_properties.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/graphs/property.hpp&quot;</code><br />
 <code>#include &quot;mimir/graphs/types.hpp&quot;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;ostream&gt;</code><br />
@@ -111,6 +110,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a074447f48a6095286cbdb35106d0da67"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a074447f48a6095286cbdb35106d0da67">mimir::print</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">mimir::graphs::nauty::SparseGraph</a> &amp;graph)</td></tr>
+<tr class="separator:a074447f48a6095286cbdb35106d0da67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6988f9968c1e495674d8041533744d7f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#a6988f9968c1e495674d8041533744d7f">mimir::graphs::nauty::apply_permutation</a> (const std::vector&lt; int &gt; &amp;pi, std::vector&lt; int &gt; &amp;ref_vec)</td></tr>
 <tr class="separator:a6988f9968c1e495674d8041533744d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9e0042eee29f6e9d974de4b3e6e998d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#ae9e0042eee29f6e9d974de4b3e6e998d">mimir::graphs::nauty::compute_lab_permutation</a> (const SparseGraph &amp;source, const SparseGraph &amp;target)</td></tr>

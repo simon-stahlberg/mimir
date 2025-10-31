@@ -74,16 +74,32 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;loki/loki.hpp&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="graphs_2declarations_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1ForwardTag.html">mimir::graphs::ForwardTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1graphs_1_1ForwardTag.html" title="ForwardTag represents traversal of edges in forward direction.">ForwardTag</a></code> represents traversal of edges in forward direction.  <a href="structmimir_1_1graphs_1_1ForwardTag.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1BackwardTag.html">mimir::graphs::BackwardTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1graphs_1_1BackwardTag.html" title="BackwardTag represents traversal of edges in backward direction.">BackwardTag</a></code> represents traversal of edges in backward direction.  <a href="structmimir_1_1graphs_1_1BackwardTag.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
@@ -91,10 +107,72 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1Property.html">mimir::graphs::Property</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsVertex.html">mimir::graphs::IsVertex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1HasVertexProperty.html">mimir::graphs::HasVertexProperty</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether <code>T</code> is a vertex with the given properties <code>P</code>. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsEdge.html">mimir::graphs::IsEdge</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1HasEdgeProperty.html">mimir::graphs::HasEdgeProperty</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether <code>T</code> is an Edge with the given properties <code>P</code>. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">mimir::graphs::IsEdgeListGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">mimir::graphs::IsBidirectionalGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsDynamicGraph.html">mimir::graphs::IsDynamicGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:aaf545c08ff61f9d6d1e2034e520253c0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">mimir::graphs::ColorList</a> = std::vector&lt; Color &gt;</td></tr>
-<tr class="separator:aaf545c08ff61f9d6d1e2034e520253c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a084d652e1622104b2ae0c2b21dba85ba"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a084d652e1622104b2ae0c2b21dba85ba">mimir::graphs::VertexIndex</a> = uint32_t</td></tr>
+<tr class="separator:a084d652e1622104b2ae0c2b21dba85ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e517d2375e68a364388ba5a1184d8bc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4e517d2375e68a364388ba5a1184d8bc">mimir::graphs::VertexIndexList</a> = std::vector&lt; VertexIndex &gt;</td></tr>
+<tr class="separator:a4e517d2375e68a364388ba5a1184d8bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a090a9c6a8376df7329ceee1a1d6b9791"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a090a9c6a8376df7329ceee1a1d6b9791">mimir::graphs::VertexIndexSet</a> = std::unordered_set&lt; VertexIndex &gt;</td></tr>
+<tr class="separator:a090a9c6a8376df7329ceee1a1d6b9791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c5f12ffa3c21a302b895440d1334c56"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0c5f12ffa3c21a302b895440d1334c56">mimir::graphs::EdgeIndex</a> = uint32_t</td></tr>
+<tr class="separator:a0c5f12ffa3c21a302b895440d1334c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd55e7a9876ba313aadf3883b3cb4a2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4fd55e7a9876ba313aadf3883b3cb4a2">mimir::graphs::EdgeIndexList</a> = std::vector&lt; EdgeIndex &gt;</td></tr>
+<tr class="separator:a4fd55e7a9876ba313aadf3883b3cb4a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af162059cad83a6b61a587775b2305861"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#af162059cad83a6b61a587775b2305861">mimir::graphs::EdgeIndexSet</a> = std::unordered_set&lt; EdgeIndex &gt;</td></tr>
+<tr class="separator:af162059cad83a6b61a587775b2305861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69229571673742bf6b94ab7d889e98f1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a69229571673742bf6b94ab7d889e98f1">mimir::graphs::Degree</a> = uint32_t</td></tr>
+<tr class="separator:a69229571673742bf6b94ab7d889e98f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55329316711343bc96edff764157ce63"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a55329316711343bc96edff764157ce63">mimir::graphs::DegreeList</a> = std::vector&lt; Degree &gt;</td></tr>
+<tr class="separator:a55329316711343bc96edff764157ce63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee7583d6d20fb1231ed8d5da1427d264"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aee7583d6d20fb1231ed8d5da1427d264">mimir::graphs::DegreeMap</a> = std::unordered_map&lt; VertexIndex, Degree &gt;</td></tr>
+<tr class="separator:aee7583d6d20fb1231ed8d5da1427d264"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac01c99ae1b656b5e22f6e36d0a9d2bc1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac01c99ae1b656b5e22f6e36d0a9d2bc1">mimir::graphs::ColorIndex</a> = uint32_t</td></tr>
+<tr class="separator:ac01c99ae1b656b5e22f6e36d0a9d2bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b4becf1310424417fb861dbb99b0e6c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0b4becf1310424417fb861dbb99b0e6c">mimir::graphs::ColorIndexList</a> = std::vector&lt; ColorIndex &gt;</td></tr>
+<tr class="separator:a0b4becf1310424417fb861dbb99b0e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2a5a2d400f4d85533e3fb9365aac95e"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
+<tr class="memitem:ab2a5a2d400f4d85533e3fb9365aac95e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ab2a5a2d400f4d85533e3fb9365aac95e">mimir::graphs::ColorIndexArray</a> = std::array&lt; ColorIndex, K &gt;</td></tr>
+<tr class="separator:ab2a5a2d400f4d85533e3fb9365aac95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8552e6535333da2c90a8c9518d1734b"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
+<tr class="memitem:ad8552e6535333da2c90a8c9518d1734b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad8552e6535333da2c90a8c9518d1734b">mimir::graphs::ColorIndexArrayList</a> = std::vector&lt; ColorIndexArray&lt; K &gt; &gt;</td></tr>
+<tr class="separator:ad8552e6535333da2c90a8c9518d1734b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78021fd5e6b61cb398a7dbf52f57f7b8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a78021fd5e6b61cb398a7dbf52f57f7b8">mimir::graphs::ColorIndexSet</a> = std::unordered_set&lt; ColorIndex &gt;</td></tr>
+<tr class="separator:a78021fd5e6b61cb398a7dbf52f57f7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9986fa7b732ea02d09e9546d44def925"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9986fa7b732ea02d09e9546d44def925"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9986fa7b732ea02d09e9546d44def925">mimir::graphs::ColorIndexMap</a> = std::unordered_map&lt; ColorIndex, T &gt;</td></tr>
+<tr class="separator:a9986fa7b732ea02d09e9546d44def925"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

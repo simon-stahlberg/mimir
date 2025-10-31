@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::graphs::IsVertexColoredGraph Concept Reference</title>
+<title>Mimir: mimir::formalism::HasConjunctiveCondition Concept Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,22 +69,21 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1graphs.html">graphs</a></li><li class="navelem"><a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">IsVertexColoredGraph</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1formalism.html">formalism</a></li><li class="navelem"><a class="el" href="conceptmimir_1_1formalism_1_1HasConjunctiveCondition.html">HasConjunctiveCondition</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">mimir::graphs::IsVertexColoredGraph Concept Reference</div></div>
+  <div class="headertitle"><div class="title">mimir::formalism::HasConjunctiveCondition Concept Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="graph__interface_8hpp_source.html">graph_interface.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="formalism_2declarations_8hpp_source.html">declarations.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a> =  <span class="keyword">requires</span>(T::VertexType vertex) {</div>
-<div class="line">    { <a class="code hl_function" href="namespacemimir_1_1graphs.html#af123c6b596929d538677b94d43c7597e">get_color</a>(vertex) };</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1formalism_1_1HasConjunctiveCondition.html">mimir::formalism::HasConjunctiveCondition</a> =  <span class="keyword">requires</span>(<span class="keyword">const</span> T a) {</div>
+<div class="line">    { a.get_conjunctive_condition() } -&gt; std::same_as&lt;GroundConjunctiveCondition&gt;;</div>
 <div class="line">}</div>
-<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsVertexColoredGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:90</div></div>
-<div class="ttc" id="anamespacemimir_1_1graphs_html_af123c6b596929d538677b94d43c7597e"><div class="ttname"><a href="namespacemimir_1_1graphs.html#af123c6b596929d538677b94d43c7597e">mimir::graphs::get_color</a></div><div class="ttdeci">const auto &amp; get_color(const Edge&lt; Color &gt; &amp;edge)</div><div class="ttdef"><b>Definition:</b> graph_edges.hpp:97</div></div>
+<div class="ttc" id="aconceptmimir_1_1formalism_1_1HasConjunctiveCondition_html"><div class="ttname"><a href="conceptmimir_1_1formalism_1_1HasConjunctiveCondition.html">mimir::formalism::HasConjunctiveCondition</a></div><div class="ttdef"><b>Definition:</b> declarations.hpp:303</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

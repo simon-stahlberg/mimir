@@ -71,7 +71,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">mimir Namespace Reference</div></div>
 </div><!--header-->
@@ -90,382 +89,22 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1search"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html">search</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ab800c69cfcabbde81050b3d05b9c2fa4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> = uint32_t</td></tr>
-<tr class="separator:ab800c69cfcabbde81050b3d05b9c2fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab45464d83d2a736a47f417b19ecbb484"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">IndexPair</a> = std::pair&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;</td></tr>
-<tr class="separator:ab45464d83d2a736a47f417b19ecbb484"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada0094defa67760c2beefd16b8fc281e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">IndexPairList</a> = std::vector&lt; <a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">IndexPair</a> &gt;</td></tr>
-<tr class="separator:ada0094defa67760c2beefd16b8fc281e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a434766af663adf7a52331374b790b6dc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> = std::vector&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;</td></tr>
-<tr class="separator:a434766af663adf7a52331374b790b6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56b4bf568fdc2fc9db3b9a0d1845a961"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;</td></tr>
-<tr class="separator:a56b4bf568fdc2fc9db3b9a0d1845a961"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b61532eae608eb4308ea5955ed3c29e"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
-<tr class="memitem:a5b61532eae608eb4308ea5955ed3c29e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">IndexArray</a> = std::array&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, K &gt;</td></tr>
-<tr class="separator:a5b61532eae608eb4308ea5955ed3c29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8930d2bf96696bee6e7daa76bbef05b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ae8930d2bf96696bee6e7daa76bbef05b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a> = std::unordered_map&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, T &gt;</td></tr>
-<tr class="separator:ae8930d2bf96696bee6e7daa76bbef05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3df802892bf968ae4746210b05b3f34"><td class="memTemplParams" colspan="2">template&lt;typename Key &gt; </td></tr>
-<tr class="memitem:ae3df802892bf968ae4746210b05b3f34"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae3df802892bf968ae4746210b05b3f34">ToIndexMap</a> = std::unordered_map&lt; Key, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt;</td></tr>
-<tr class="separator:ae3df802892bf968ae4746210b05b3f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93a14d8288fcdd5f70bbdb166dcf9359"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> = double</td></tr>
-<tr class="separator:a93a14d8288fcdd5f70bbdb166dcf9359"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a311e7c8779449c7599fd42d976c22527"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> = std::vector&lt; <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;</td></tr>
-<tr class="separator:a311e7c8779449c7599fd42d976c22527"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8ec250a52eca1addf178cc33a0952ab"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ad8ec250a52eca1addf178cc33a0952ab">ContinuousCostMatrix</a> = std::vector&lt; <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &gt;</td></tr>
-<tr class="separator:ad8ec250a52eca1addf178cc33a0952ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2509d69b60c8ec44c7619b567d17f84e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">ContinuousCostMap</a> = std::unordered_map&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;</td></tr>
-<tr class="separator:a2509d69b60c8ec44c7619b567d17f84e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a5965ca488a8a8f0d8bda41ceaf3385"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a> = int32_t</td></tr>
-<tr class="separator:a9a5965ca488a8a8f0d8bda41ceaf3385"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3085f9a656656be6ed0ac38b44d3bbb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> = std::vector&lt; <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a> &gt;</td></tr>
-<tr class="separator:aa3085f9a656656be6ed0ac38b44d3bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d3fb3cabedc59968eaaa7636d73cf90"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90">DiscreteCostMatrix</a> = std::vector&lt; <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &gt;</td></tr>
-<tr class="separator:a7d3fb3cabedc59968eaaa7636d73cf90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adefcadf9e10612717dc2be49f3daee96"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#adefcadf9e10612717dc2be49f3daee96">DiscreteCostMap</a> = std::unordered_map&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a> &gt;</td></tr>
-<tr class="separator:adefcadf9e10612717dc2be49f3daee96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee46b4137604f4323c701f026b7c4780"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
-<tr class="memitem:aee46b4137604f4323c701f026b7c4780"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a> = std::unordered_map&lt; Key, Value, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt;</td></tr>
-<tr class="separator:aee46b4137604f4323c701f026b7c4780"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
-<tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">UnorderedSet</a> = std::unordered_set&lt; Value, loki::Hash&lt; Value &gt;, loki::EqualTo&lt; Value &gt; &gt;</td></tr>
-<tr class="separator:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac3b01890e6c28bc83a26bb611b4517b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Ds&gt; </td></tr>
-<tr class="memitem:aac3b01890e6c28bc83a26bb611b4517b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">HanaContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T &gt;... &gt;</td></tr>
-<tr class="separator:aac3b01890e6c28bc83a26bb611b4517b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename T, typename... Ds&gt; </td></tr>
-<tr class="memitem:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a7ee51c0221c67e9cb3ccba90f948606e">HanaMappedContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a1f892ceae4bd20b37ce1db55023fac6c"><td class="memItemLeft" align="right" valign="top">mimir::generator&lt; const std::vector&lt; uint32_t &gt; &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a1f892ceae4bd20b37ce1db55023fac6c">create_k_clique_in_k_partite_graph_generator</a> (const std::vector&lt; boost::dynamic_bitset&lt;&gt; &gt; &amp;adjacency_matrix, const std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;partitions)</td></tr>
 <tr class="memdesc:a1f892ceae4bd20b37ce1db55023fac6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe k-clique in k-partite graph enumerator.  <br /></td></tr>
 <tr class="separator:a1f892ceae4bd20b37ce1db55023fac6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a392f286cceedfe48b988e3a2d57c2b70"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a392f286cceedfe48b988e3a2d57c2b70"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a392f286cceedfe48b988e3a2d57c2b70">operator&lt;&lt;</a> (std::ostream &amp;out, const std::tuple&lt; const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html">formalism::StaticConsistencyGraph</a> &amp;, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="separator:a392f286cceedfe48b988e3a2d57c2b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3eab015230c3a0fcdc515afeb460d22"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:aa3eab015230c3a0fcdc515afeb460d22"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aa3eab015230c3a0fcdc515afeb460d22">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;, <a class="el" href="structmimir_1_1formalism_1_1GroundActionImpl_1_1FullFormatterTag.html">formalism::GroundActionImpl::FullFormatterTag</a> &gt; &amp;data)</td></tr>
-<tr class="separator:aa3eab015230c3a0fcdc515afeb460d22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36483e0ab577e8e2d360feaab338ab37"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a36483e0ab577e8e2d360feaab338ab37"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a36483e0ab577e8e2d360feaab338ab37">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;, <a class="el" href="structmimir_1_1formalism_1_1GroundActionImpl_1_1PlanFormatterTag.html">formalism::GroundActionImpl::PlanFormatterTag</a> &gt; &amp;data)</td></tr>
-<tr class="separator:a36483e0ab577e8e2d360feaab338ab37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49b912fad937331d341b1373d139fec7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a49b912fad937331d341b1373d139fec7"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a49b912fad937331d341b1373d139fec7">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="separator:a49b912fad937331d341b1373d139fec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74885cde8502522db3ab6452ec2b3661"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a74885cde8502522db3ab6452ec2b3661"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a74885cde8502522db3ab6452ec2b3661">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="separator:a74885cde8502522db3ab6452ec2b3661"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60f212824a10a894d876b14b07fd37f0"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a60f212824a10a894d876b14b07fd37f0"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a60f212824a10a894d876b14b07fd37f0">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="separator:a60f212824a10a894d876b14b07fd37f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3d0396087c7fbdf0b7bce22f22d60d8"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:ac3d0396087c7fbdf0b7bce22f22d60d8"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ac3d0396087c7fbdf0b7bce22f22d60d8">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="separator:ac3d0396087c7fbdf0b7bce22f22d60d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae18cfc4120bb456526dea9bbc025d91"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:aae18cfc4120bb456526dea9bbc025d91"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aae18cfc4120bb456526dea9bbc025d91">print</a> (std::ostream &amp;out, const std::tuple&lt; const <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html">formalism::StaticConsistencyGraph</a> &amp;, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
+<tr class="separator:aae18cfc4120bb456526dea9bbc025d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdec6af95300ec57eb67bb158afb1d07"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#afdec6af95300ec57eb67bb158afb1d07">print</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">mimir::graphs::color_refinement::CertificateImpl</a> &amp;element)</td></tr>
+<tr class="separator:afdec6af95300ec57eb67bb158afb1d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e136c3b0953c2f60c2ac41e6435dd57"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
+<tr class="memitem:a0e136c3b0953c2f60c2ac41e6435dd57"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a0e136c3b0953c2f60c2ac41e6435dd57">print</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">mimir::graphs::kfwl::CertificateImpl</a>&lt; K &gt; &amp;element)</td></tr>
+<tr class="separator:a0e136c3b0953c2f60c2ac41e6435dd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074447f48a6095286cbdb35106d0da67"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a074447f48a6095286cbdb35106d0da67">print</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">mimir::graphs::nauty::SparseGraph</a> &amp;graph)</td></tr>
+<tr class="separator:a074447f48a6095286cbdb35106d0da67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="a93a14d8288fcdd5f70bbdb166dcf9359" name="a93a14d8288fcdd5f70bbdb166dcf9359"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93a14d8288fcdd5f70bbdb166dcf9359">&#9670;&#160;</a></span>ContinuousCost</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">mimir::ContinuousCost</a> = typedef double</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>ContinuousCost </p>
-
-</div>
-</div>
-<a id="a311e7c8779449c7599fd42d976c22527" name="a311e7c8779449c7599fd42d976c22527"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a311e7c8779449c7599fd42d976c22527">&#9670;&#160;</a></span>ContinuousCostList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">mimir::ContinuousCostList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2509d69b60c8ec44c7619b567d17f84e" name="a2509d69b60c8ec44c7619b567d17f84e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2509d69b60c8ec44c7619b567d17f84e">&#9670;&#160;</a></span>ContinuousCostMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a2509d69b60c8ec44c7619b567d17f84e">mimir::ContinuousCostMap</a> = typedef std::unordered_map&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad8ec250a52eca1addf178cc33a0952ab" name="ad8ec250a52eca1addf178cc33a0952ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8ec250a52eca1addf178cc33a0952ab">&#9670;&#160;</a></span>ContinuousCostMatrix</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ad8ec250a52eca1addf178cc33a0952ab">mimir::ContinuousCostMatrix</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9a5965ca488a8a8f0d8bda41ceaf3385" name="a9a5965ca488a8a8f0d8bda41ceaf3385"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a5965ca488a8a8f0d8bda41ceaf3385">&#9670;&#160;</a></span>DiscreteCost</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">mimir::DiscreteCost</a> = typedef int32_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DiscreteCost </p>
-
-</div>
-</div>
-<a id="aa3085f9a656656be6ed0ac38b44d3bbb" name="aa3085f9a656656be6ed0ac38b44d3bbb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3085f9a656656be6ed0ac38b44d3bbb">&#9670;&#160;</a></span>DiscreteCostList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">mimir::DiscreteCostList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="adefcadf9e10612717dc2be49f3daee96" name="adefcadf9e10612717dc2be49f3daee96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adefcadf9e10612717dc2be49f3daee96">&#9670;&#160;</a></span>DiscreteCostMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#adefcadf9e10612717dc2be49f3daee96">mimir::DiscreteCostMap</a> = typedef std::unordered_map&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7d3fb3cabedc59968eaaa7636d73cf90" name="a7d3fb3cabedc59968eaaa7636d73cf90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d3fb3cabedc59968eaaa7636d73cf90">&#9670;&#160;</a></span>DiscreteCostMatrix</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90">mimir::DiscreteCostMatrix</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aac3b01890e6c28bc83a26bb611b4517b" name="aac3b01890e6c28bc83a26bb611b4517b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac3b01890e6c28bc83a26bb611b4517b">&#9670;&#160;</a></span>HanaContainer</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename... Ds&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">mimir::HanaContainer</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, T&gt;...&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7ee51c0221c67e9cb3ccba90f948606e" name="a7ee51c0221c67e9cb3ccba90f948606e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ee51c0221c67e9cb3ccba90f948606e">&#9670;&#160;</a></span>HanaMappedContainer</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;template&lt; typename &gt; typename T, typename... Ds&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a7ee51c0221c67e9cb3ccba90f948606e">mimir::HanaMappedContainer</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, T&lt;Ds&gt; &gt;...&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab800c69cfcabbde81050b3d05b9c2fa4" name="ab800c69cfcabbde81050b3d05b9c2fa4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab800c69cfcabbde81050b3d05b9c2fa4">&#9670;&#160;</a></span>Index</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">mimir::Index</a> = typedef uint32_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Index </p>
-
-</div>
-</div>
-<a id="a5b61532eae608eb4308ea5955ed3c29e" name="a5b61532eae608eb4308ea5955ed3c29e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b61532eae608eb4308ea5955ed3c29e">&#9670;&#160;</a></span>IndexArray</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t K&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a5b61532eae608eb4308ea5955ed3c29e">mimir::IndexArray</a> = typedef std::array&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, K&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a434766af663adf7a52331374b790b6dc" name="a434766af663adf7a52331374b790b6dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a434766af663adf7a52331374b790b6dc">&#9670;&#160;</a></span>IndexList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">mimir::IndexList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae8930d2bf96696bee6e7daa76bbef05b" name="ae8930d2bf96696bee6e7daa76bbef05b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8930d2bf96696bee6e7daa76bbef05b">&#9670;&#160;</a></span>IndexMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">mimir::IndexMap</a> = typedef std::unordered_map&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, T&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab45464d83d2a736a47f417b19ecbb484" name="ab45464d83d2a736a47f417b19ecbb484"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab45464d83d2a736a47f417b19ecbb484">&#9670;&#160;</a></span>IndexPair</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">mimir::IndexPair</a> = typedef std::pair&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ada0094defa67760c2beefd16b8fc281e" name="ada0094defa67760c2beefd16b8fc281e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada0094defa67760c2beefd16b8fc281e">&#9670;&#160;</a></span>IndexPairList</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">mimir::IndexPairList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">IndexPair</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a56b4bf568fdc2fc9db3b9a0d1845a961" name="a56b4bf568fdc2fc9db3b9a0d1845a961"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56b4bf568fdc2fc9db3b9a0d1845a961">&#9670;&#160;</a></span>IndexSet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">mimir::IndexSet</a> = typedef std::unordered_set&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae3df802892bf968ae4746210b05b3f34" name="ae3df802892bf968ae4746210b05b3f34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3df802892bf968ae4746210b05b3f34">&#9670;&#160;</a></span>ToIndexMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Key &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ae3df802892bf968ae4746210b05b3f34">mimir::ToIndexMap</a> = typedef std::unordered_map&lt;Key, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, loki::Hash&lt;Key&gt;, loki::EqualTo&lt;Key&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aee46b4137604f4323c701f026b7c4780" name="aee46b4137604f4323c701f026b7c4780"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee46b4137604f4323c701f026b7c4780">&#9670;&#160;</a></span>UnorderedMap</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Key , typename Value &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">mimir::UnorderedMap</a> = typedef std::unordered_map&lt;Key, Value, loki::Hash&lt;Key&gt;, loki::EqualTo&lt;Key&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Containers </p>
-
-</div>
-</div>
-<a id="ae79add80a6dc77dfb2e6eaac1c250b97" name="ae79add80a6dc77dfb2e6eaac1c250b97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae79add80a6dc77dfb2e6eaac1c250b97">&#9670;&#160;</a></span>UnorderedSet</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Value &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">mimir::UnorderedSet</a> = typedef std::unordered_set&lt;Value, loki::Hash&lt;Value&gt;, loki::EqualTo&lt;Value&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a1f892ceae4bd20b37ce1db55023fac6c" name="a1f892ceae4bd20b37ce1db55023fac6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f892ceae4bd20b37ce1db55023fac6c">&#9670;&#160;</a></span>create_k_clique_in_k_partite_graph_generator()</h2>
@@ -505,25 +144,23 @@ template&lt;typename Value &gt; </div>
 
 </div>
 </div>
-<a id="aa3eab015230c3a0fcdc515afeb460d22" name="aa3eab015230c3a0fcdc515afeb460d22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3eab015230c3a0fcdc515afeb460d22">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/7]</span></h2>
+<a id="afdec6af95300ec57eb67bb158afb1d07" name="afdec6af95300ec57eb67bb158afb1d07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdec6af95300ec57eb67bb158afb1d07">&#9670;&#160;</a></span>print() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
+          <td class="memname">std::ostream &amp; mimir::print </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
+          <td class="paramname"><em>out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;, <a class="el" href="structmimir_1_1formalism_1_1GroundActionImpl_1_1FullFormatterTag.html">formalism::GroundActionImpl::FullFormatterTag</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">mimir::graphs::color_refinement::CertificateImpl</a> &amp;&#160;</td>
+          <td class="paramname"><em>element</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -535,25 +172,25 @@ template&lt;&gt; </div>
 
 </div>
 </div>
-<a id="a36483e0ab577e8e2d360feaab338ab37" name="a36483e0ab577e8e2d360feaab338ab37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36483e0ab577e8e2d360feaab338ab37">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/7]</span></h2>
+<a id="a0e136c3b0953c2f60c2ac41e6435dd57" name="a0e136c3b0953c2f60c2ac41e6435dd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e136c3b0953c2f60c2ac41e6435dd57">&#9670;&#160;</a></span>print() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;&gt; </div>
+template&lt;size_t K&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
+          <td class="memname">std::ostream &amp; mimir::print </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
+          <td class="paramname"><em>out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;, <a class="el" href="structmimir_1_1formalism_1_1GroundActionImpl_1_1PlanFormatterTag.html">formalism::GroundActionImpl::PlanFormatterTag</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">mimir::graphs::kfwl::CertificateImpl</a>&lt; K &gt; &amp;&#160;</td>
+          <td class="paramname"><em>element</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -565,56 +202,23 @@ template&lt;&gt; </div>
 
 </div>
 </div>
-<a id="a49b912fad937331d341b1373d139fec7" name="a49b912fad937331d341b1373d139fec7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49b912fad937331d341b1373d139fec7">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[3/7]</span></h2>
+<a id="a074447f48a6095286cbdb35106d0da67" name="a074447f48a6095286cbdb35106d0da67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074447f48a6095286cbdb35106d0da67">&#9670;&#160;</a></span>print() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
+          <td class="memname">std::ostream &amp; mimir::print </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
+          <td class="paramname"><em>out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Pretty printing </p>
-
-</div>
-</div>
-<a id="ac3d0396087c7fbdf0b7bce22f22d60d8" name="ac3d0396087c7fbdf0b7bce22f22d60d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3d0396087c7fbdf0b7bce22f22d60d8">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[4/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">formalism::GroundConditionalEffect</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">mimir::graphs::nauty::SparseGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -626,8 +230,8 @@ template&lt;&gt; </div>
 
 </div>
 </div>
-<a id="a74885cde8502522db3ab6452ec2b3661" name="a74885cde8502522db3ab6452ec2b3661"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74885cde8502522db3ab6452ec2b3661">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[5/7]</span></h2>
+<a id="aae18cfc4120bb456526dea9bbc025d91" name="aae18cfc4120bb456526dea9bbc025d91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae18cfc4120bb456526dea9bbc025d91">&#9670;&#160;</a></span>print() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -635,68 +239,7 @@ template&lt;&gt; </div>
 template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Pretty printing </p>
-
-</div>
-</div>
-<a id="a60f212824a10a894d876b14b07fd37f0" name="a60f212824a10a894d876b14b07fd37f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60f212824a10a894d876b14b07fd37f0">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[6/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::tuple&lt; <a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">formalism::GroundConjunctiveEffect</a>, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a392f286cceedfe48b988e3a2d57c2b70" name="a392f286cceedfe48b988e3a2d57c2b70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a392f286cceedfe48b988e3a2d57c2b70">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[7/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; mimir::operator&lt;&lt; </td>
+          <td class="memname">std::ostream &amp; mimir::print </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>out</em>, </td>
