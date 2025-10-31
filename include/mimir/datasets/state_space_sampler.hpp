@@ -20,7 +20,6 @@
 
 #include "mimir/common/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/graphs/types.hpp"
 
 #include <cstddef>
 #include <random>

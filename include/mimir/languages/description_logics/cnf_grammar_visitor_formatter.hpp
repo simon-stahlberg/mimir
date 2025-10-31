@@ -102,37 +102,6 @@ private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(SubstitutionRule<D> rule);
 };
-
-/**
- * Printing
- */
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, Constructor<D> element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, NonTerminal<D> element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, DerivationRule<D> element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const IConstructor<D>& element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<D>& element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<D>& element);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const SubstitutionRuleImpl<D>& element);
-
-extern std::ostream& operator<<(std::ostream& out, const Grammar& element);
-
 }
 
 #endif

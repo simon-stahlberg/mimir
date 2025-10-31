@@ -24,7 +24,6 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 

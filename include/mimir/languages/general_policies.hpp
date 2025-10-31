@@ -26,6 +26,7 @@
 #include "mimir/languages/general_policies/effect_base.hpp"
 #include "mimir/languages/general_policies/effect_interface.hpp"
 #include "mimir/languages/general_policies/effects.hpp"
+#include "mimir/languages/general_policies/formatter.hpp"
 #include "mimir/languages/general_policies/general_policy.hpp"
 #include "mimir/languages/general_policies/general_policy_factory.hpp"
 #include "mimir/languages/general_policies/keywords.hpp"

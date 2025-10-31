@@ -21,9 +21,9 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/formatter.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include <gtest/gtest.h>

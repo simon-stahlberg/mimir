@@ -19,6 +19,9 @@
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_DECLARATIONS_HPP_
 
 #include "mimir/common/declarations.hpp"
+#include "mimir/graphs/graph_edges.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/static_graph.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 namespace mimir::languages::general_policies
@@ -82,6 +85,13 @@ using GeneralPolicy = const GeneralPolicyImpl*;
 
 class IVisitor;
 
+}
+
+namespace mimir::graphs
+{
+using PolicyVertex = Vertex<languages::general_policies::ConditionSet>;
+using PolicyEdge = Edge<languages::general_policies::EffectSet>;
+using PolicyGraph = DynamicGraph<PolicyVertex, PolicyEdge>;
 }
 
 #endif

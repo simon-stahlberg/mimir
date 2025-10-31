@@ -51,20 +51,6 @@ public:
 
     void visit(GeneralPolicy policy) override;
 };
-
-extern std::ostream& operator<<(std::ostream& out, Condition condition);
-extern std::ostream& operator<<(std::ostream& out, Effect effect);
-template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, NamedFeature<D> feature);
-extern std::ostream& operator<<(std::ostream& out, Rule rule);
-extern std::ostream& operator<<(std::ostream& out, GeneralPolicy policy);
-
-extern std::ostream& operator<<(std::ostream& out, const ICondition& condition);
-extern std::ostream& operator<<(std::ostream& out, const IEffect& effect);
-template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<D>& feature);
-extern std::ostream& operator<<(std::ostream& out, const RuleImpl& rule);
-extern std::ostream& operator<<(std::ostream& out, const GeneralPolicyImpl& policy);
 }
 
 #endif

@@ -25,17 +25,9 @@
 
 namespace mimir::graphs
 {
-using PolicyVertex = Vertex<languages::general_policies::ConditionSet>;
-using PolicyEdge = Edge<languages::general_policies::EffectSet>;
-using PolicyGraph = DynamicGraph<PolicyVertex, PolicyEdge>;
-
 inline const auto& get_conditions(const PolicyVertex& vertex) { return vertex.get_properties(); }
 
 inline const auto& get_effects(const PolicyEdge& edge) { return edge.get_properties(); }
-
-extern std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex);
-
-extern std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge);
 }
 
 namespace mimir::languages::general_policies

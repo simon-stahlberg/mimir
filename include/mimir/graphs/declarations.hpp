@@ -199,6 +199,11 @@ class StaticBidirectionalGraph;
 
 template<IsVertex V, IsEdge E>
 class DynamicGraph;
+
+namespace nauty
+{
+class SparseGraph;
+}
 }
 
 #endif

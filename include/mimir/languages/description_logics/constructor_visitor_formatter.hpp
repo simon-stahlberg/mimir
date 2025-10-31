@@ -81,16 +81,6 @@ public:
     void visit(NumericalDistance constructor) override;
 };
 
-/**
- * Printing
- */
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, Constructor<D> constructor);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const IConstructor<D>& constructor);
-
 }
 
 #endif

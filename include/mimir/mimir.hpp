@@ -131,7 +131,6 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/property.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/types.hpp"
 
 /**
  * Algorithms

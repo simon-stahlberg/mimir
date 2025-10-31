@@ -21,7 +21,6 @@
 #include "mimir/common/formatter.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/property.hpp"
-#include "mimir/graphs/types.hpp"
 
 #include <memory>
 #include <ostream>

@@ -17,33 +17,12 @@
 
 #include "mimir/languages/general_policies/policy_graph.hpp"
 
+#include "mimir/languages/general_policies/formatter.hpp"
 #include "mimir/languages/general_policies/general_policy.hpp"
 #include "mimir/languages/general_policies/named_feature.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
-#include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_null.hpp"
-
-namespace mimir::graphs
-{
-std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex)
-{
-    out << "v_idx: " << vertex.get_index() << "\n"
-        << "conditions: ";
-    mimir::print(out, get_conditions(vertex));
-
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge)
-{
-    out << "e_idx: " << edge.get_index() << "\n"
-        << "effects: ";
-    mimir::print(out, get_effects(edge));
-
-    return out;
-}
-}
 
 namespace mimir::languages::general_policies
 {

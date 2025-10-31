@@ -39,6 +39,7 @@
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
+#include "mimir/languages/description_logics/formatter.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"

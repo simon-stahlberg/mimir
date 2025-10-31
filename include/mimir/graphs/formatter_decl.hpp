@@ -29,41 +29,41 @@ namespace graphs
  */
 
 template<Property P>
-std::ostream& operator<<(std::ostream& os, const Vertex<P>& vertex);
+std::ostream& operator<<(std::ostream& out, const Vertex<P>& element);
 
 template<Property P>
-std::ostream& operator<<(std::ostream& os, const Edge<P>& edge);
+std::ostream& operator<<(std::ostream& out, const Edge<P>& element);
 
 template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph);
+std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& element);
 
 template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph);
+std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& element);
 
 template<IsStaticGraph G>
-std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph);
+std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& element);
 
 template<IsVertex V, IsEdge E>
-std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph);
+std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& element);
 }  // end graphs
 
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& graph);
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& element);
 
 template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& graph);
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticForwardGraph<G>& element);
 
 template<mimir::graphs::IsStaticGraph G>
-std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& graph);
+std::ostream& print(std::ostream& out, const mimir::graphs::StaticBidirectionalGraph<G>& element);
 
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
-std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& graph);
+std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& element);
 
 template<mimir::graphs::Property P>
-std::ostream& print(std::ostream& os, const mimir::graphs::Vertex<P>& vertex);
+std::ostream& print(std::ostream& out, const mimir::graphs::Vertex<P>& element);
 
 template<mimir::graphs::Property P>
-std::ostream& print(std::ostream& os, const mimir::graphs::Edge<P>& edge);
+std::ostream& print(std::ostream& out, const mimir::graphs::Edge<P>& element);
 }
 
 #endif

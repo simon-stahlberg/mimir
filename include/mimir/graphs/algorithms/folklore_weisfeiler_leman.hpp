@@ -28,7 +28,6 @@
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/types.hpp"
 
 #include <algorithm>
 #include <cassert>
