@@ -91,9 +91,6 @@ Functions</h2></td></tr>
 <tr class="memitem:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#acfc0aa3bca4cc7bac2648741e45e10a0">operator==</a> (const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;lhs, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;rhs)</td></tr>
 <tr class="memdesc:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two certificates for equality.  <br /></td></tr>
 <tr class="separator:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4409623ea85e7fd7f055f13901d9fb91"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a4409623ea85e7fd7f055f13901d9fb91">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;element)</td></tr>
-<tr class="memdesc:a4409623ea85e7fd7f055f13901d9fb91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
-<tr class="separator:a4409623ea85e7fd7f055f13901d9fb91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60d6729cefc5553cd9a96111092660b0"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></tr>
 <tr class="memitem:a60d6729cefc5553cd9a96111092660b0"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a60d6729cefc5553cd9a96111092660b0">compute_certificate</a> (const G &amp;graph)</td></tr>
@@ -136,44 +133,6 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the <code>Certicate</code> </dd></dl>
-
-</div>
-</div>
-<a id="a4409623ea85e7fd7f055f13901d9fb91" name="a4409623ea85e7fd7f055f13901d9fb91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4409623ea85e7fd7f055f13901d9fb91">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; mimir::graphs::color_refinement::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>element</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Print a certificate to the ostream. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">out</td><td>is the ostream. </td></tr>
-    <tr><td class="paramname">element</td><td>is the certificate. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>a reference to the ostream. </dd></dl>
 
 </div>
 </div>

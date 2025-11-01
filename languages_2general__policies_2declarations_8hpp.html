@@ -80,6 +80,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;mimir/common/declarations.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="languages_2description__logics_2declarations_8hpp_source.html">mimir/languages/description_logics/declarations.hpp</a>&quot;</code><br />
 </div>
 <p><a href="languages_2general__policies_2declarations_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -91,6 +94,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1languages"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages.html">mimir::languages</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1languages_1_1general__policies"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html">mimir::languages::general_policies</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -152,6 +157,12 @@ Typedefs</h2></td></tr>
 <tr class="separator:ac68e8a34dc35306708b4070839303e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae301a3830f0398c276a2907ef3106b67"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ae301a3830f0398c276a2907ef3106b67">mimir::languages::general_policies::GeneralPolicy</a> = const GeneralPolicyImpl *</td></tr>
 <tr class="separator:ae301a3830f0398c276a2907ef3106b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a033c8d51a83679a59079fd11e3262c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">mimir::graphs::PolicyVertex</a> = Vertex&lt; languages::general_policies::ConditionSet &gt;</td></tr>
+<tr class="separator:a1a033c8d51a83679a59079fd11e3262c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f15803d1e740b98f5495aa8af9d0f94"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">mimir::graphs::PolicyEdge</a> = Edge&lt; languages::general_policies::EffectSet &gt;</td></tr>
+<tr class="separator:a6f15803d1e740b98f5495aa8af9d0f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad407b09693d0799dc9b3a4c4e00b6c42"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad407b09693d0799dc9b3a4c4e00b6c42">mimir::graphs::PolicyGraph</a> = DynamicGraph&lt; PolicyVertex, PolicyEdge &gt;</td></tr>
+<tr class="separator:ad407b09693d0799dc9b3a4c4e00b6c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
