@@ -4,8 +4,8 @@ import json
 from collections import defaultdict
 
 def main():
-    # with open("combined-astar-blind-300-propositional-eval/properties", 'r') as file:
-    with open("combined-astar-blind-300-numeric-eval/properties", 'r') as file:
+    with open("combined-astar-blind-300-propositional-eval/properties", 'r') as file:
+    # with open("combined-astar-blind-300-numeric-eval/properties", 'r') as file:
         data = json.load(file)
 
         task_to_runs = defaultdict(list)

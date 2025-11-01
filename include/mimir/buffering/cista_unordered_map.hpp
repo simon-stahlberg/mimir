@@ -124,7 +124,7 @@ public:
     auto find(const T& key) const { return m_elements.find(&key); }
     bool contains(const T& key) const { return m_elements.contains(&key); }
 
-    size_t get_estimated_memory_usage_in_bytes() const
+    size_t mem_usage() const
     {
         const auto usage1 = m_storage.capacity();
         const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);

@@ -269,6 +269,9 @@ const FlatIndexList* ProblemImpl::get_index_list(size_t pos) const
     assert(pos < m_flat_index_lists.size());
     return m_flat_index_lists[pos];
 }
+
+const FlatIndexListMap& ProblemImpl::get_index_list_map() const { return m_flat_index_list_map; }
+
 std::pair<const FlatDoubleList*, Index> ProblemImpl::get_or_create_double_list(const FlatDoubleList& list)
 {
     auto result = m_flat_double_list_map.emplace(list, m_flat_double_list_map.size());
@@ -287,6 +290,8 @@ const FlatDoubleList* ProblemImpl::get_double_list(size_t pos) const
     assert(pos < m_flat_double_lists.size());
     return m_flat_double_lists[pos];
 }
+
+const FlatDoubleListMap& ProblemImpl::get_double_list_map() const { return m_flat_double_list_map; }
 
 SharedObjectPool<FlatBitset>& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
 SharedObjectPool<FlatIndexList>& ProblemImpl::get_index_list_pool() { return m_index_list_pool; }

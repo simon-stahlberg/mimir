@@ -145,8 +145,10 @@ public:
 
     std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
     const FlatIndexList* get_index_list(size_t pos) const;
+    const FlatIndexListMap& get_index_list_map() const;
     std::pair<const FlatDoubleList*, Index> get_or_create_double_list(const FlatDoubleList& list);
     const FlatDoubleList* get_double_list(size_t pos) const;
+    const FlatDoubleListMap& get_double_list_map() const;
 
     SharedObjectPool<FlatBitset>& get_bitset_pool();
     SharedObjectPool<FlatIndexList>& get_index_list_pool();
