@@ -92,13 +92,6 @@ struct IsomorphismTypeCompressionFunction
 template<size_t K>
 bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs);
 
-/// @brief Print a certificate to the ostream.
-/// @param out is the ostream.
-/// @param element is the certificate.
-/// @return a reference to the ostream.
-template<size_t K>
-std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element);
-
 /// @brief Compute the perfect hash of the given k-tuple.
 /// @tparam K is the dimensionality.
 /// @param tuple is the k-tuple.

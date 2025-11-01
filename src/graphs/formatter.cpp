@@ -21,7 +21,7 @@
 #include "mimir/formalism/formatter.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/formatter_decl.hpp"
+#include "mimir/graphs/formatter.hpp"
 #include "mimir/search/formatter.hpp"
 
 #include <fmt/core.h>
