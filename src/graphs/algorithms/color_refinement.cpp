@@ -36,21 +36,4 @@ const ColorIndexList& CertificateImpl::get_hash_to_color() const { return m_hash
 
 bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs) { return loki::EqualTo<CertificateImpl>()(lhs, rhs); }
 
-std::ostream& operator<<(std::ostream& out, const CertificateImpl& element) { return mimir::print(out, element); }
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::CertificateImpl& element)
-{
-    out << "CertificateColorRefinement("                               //
-        << "abstract_color_compression_function="                      //
-        << element.get_canonical_color_compression_function()          //
-        << ", canonical_compression_function="                         //
-        << element.get_canonical_configuration_compression_function()  //
-        << ", hash_to_color="                                          //
-        << element.get_hash_to_color()                                 //
-        << ")";
-    return out;
-}
 }

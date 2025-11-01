@@ -35,13 +35,9 @@ namespace mimir::search
 /// @brief `BlindHeuristicImpl` returns 0 iff a state is a goal and otherwise, a non-zero value that is as large as possible.
 /// If :numeric-fluents or :action-costs is enabled we cannot return a nonzero value without closer inspection of the problem.
 /// @param problem
-BlindHeuristicImpl::BlindHeuristicImpl(Problem problem) :
-    m_min_action_cost_value((problem->get_domain()->get_requirements()->test(loki::RequirementEnum::NUMERIC_FLUENTS)
-                             || problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ?
-                                0. :
-                                1.)
-{
-}
+BlindHeuristicImpl::BlindHeuristicImpl(Problem problem) {}
 
 BlindHeuristic BlindHeuristicImpl::create(formalism::Problem problem) { return std::make_shared<BlindHeuristicImpl>(problem); }
+
+ContinuousCost BlindHeuristicImpl::compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal) { return 0.; }
 }

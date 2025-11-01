@@ -498,7 +498,7 @@ class TestSearchAlgorithms(unittest.TestCase):
                         on_finish_f_layer=lambda f_value: finished_f_layers.append(f_value))
         assert len(expanded_goal_states) == 1
         assert len(expanded_states) == 6
-        assert len(finished_f_layers) == 4
+        assert len(finished_f_layers) == 5
         assert len(generated_states) == 16
         assert len(pruned_states) == 0
 
@@ -509,8 +509,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         heuristic = SetAddHeuristic(problem)
         initial_state = problem.get_initial_state()
-        assert heuristic.compute_value(initial_state, True) == 0.0
-        assert heuristic.compute_value(initial_state, False) == 5.0
+        assert heuristic.compute_value(initial_state) == 5.0
         assert len(heuristic.get_preferred_actions()) == 0
 
     def test_max_heuristic(self):
@@ -520,8 +519,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         heuristic = MaxHeuristic(problem)
         initial_state = problem.get_initial_state()
-        assert heuristic.compute_value(initial_state, True) == 0.0
-        assert heuristic.compute_value(initial_state, False) == 2.0
+        assert heuristic.compute_value(initial_state) == 2.0
         assert len(heuristic.get_preferred_actions()) == 0
 
     def test_add_heuristic(self):
@@ -531,8 +529,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         heuristic = MaxHeuristic(problem)
         initial_state = problem.get_initial_state()
-        assert heuristic.compute_value(initial_state, True) == 0.0
-        assert heuristic.compute_value(initial_state, False) == 2.0
+        assert heuristic.compute_value(initial_state) == 2.0
         assert len(heuristic.get_preferred_actions()) == 0
 
     def test_perfect_heuristic(self):
@@ -542,8 +539,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         heuristic = PerfectHeuristic(problem)
         initial_state = problem.get_initial_state()
-        # assert heuristic.compute_value(initial_state, True) == 0.0  # TODO: PerfectHeuristic seems to ignore the goal flag.
-        assert heuristic.compute_value(initial_state, False) == 4.0
+        assert heuristic.compute_value(initial_state) == 4.0
         assert len(heuristic.get_preferred_actions()) == 0
 
     def test_ff_heuristic(self):
@@ -553,8 +549,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         heuristic = FFHeuristic(problem)
         initial_state = problem.get_initial_state()
-        assert heuristic.compute_value(initial_state, True) == 0.0
-        assert heuristic.compute_value(initial_state, False) == 4.0
+        assert heuristic.compute_value(initial_state) == 4.0
         assert len(heuristic.get_preferred_actions()) == 2
 
     def test_iw(self):

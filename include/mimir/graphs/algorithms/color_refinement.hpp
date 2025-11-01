@@ -72,12 +72,6 @@ private:
 /// @return Return true iff both certificates are equal.
 extern bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs);
 
-/// @brief Print a certificate to the ostream.
-/// @param out is the ostream.
-/// @param element is the certificate.
-/// @return a reference to the ostream.
-extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& element);
-
 /// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
@@ -320,11 +314,6 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     /* Return the certificate */
     return std::make_shared<CertificateImpl>(std::move(c), std::move(f), std::move(hash_to_color));
 }
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::CertificateImpl& element);
 }
 
 #endif

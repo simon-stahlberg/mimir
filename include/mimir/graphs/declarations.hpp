@@ -204,6 +204,17 @@ namespace nauty
 {
 class SparseGraph;
 }
+
+namespace color_refinement
+{
+class CertificateImpl;
+}
+
+namespace kfwl
+{
+template<size_t K>
+class CertificateImpl;
+}
 }
 
 #endif

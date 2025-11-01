@@ -244,31 +244,4 @@ void FormatterVisitor::visit(NumericalDistance constructor)
     m_out << " ";
     constructor->get_right_concept()->accept(*this);
 }
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-std::ostream& operator<<(std::ostream& out, Constructor<D> constructor)
-{
-    auto visitor = FormatterVisitor(out);
-    constructor->accept(visitor);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, Constructor<ConceptTag> data);
-template std::ostream& operator<<(std::ostream& out, Constructor<RoleTag> data);
-template std::ostream& operator<<(std::ostream& out, Constructor<BooleanTag> data);
-template std::ostream& operator<<(std::ostream& out, Constructor<NumericalTag> data);
-
-template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-std::ostream& operator<<(std::ostream& out, const IConstructor<D>& constructor)
-{
-    auto visitor = FormatterVisitor(out);
-    constructor.accept(visitor);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, const IConstructor<ConceptTag>& data);
-template std::ostream& operator<<(std::ostream& out, const IConstructor<RoleTag>& data);
-template std::ostream& operator<<(std::ostream& out, const IConstructor<BooleanTag>& data);
-template std::ostream& operator<<(std::ostream& out, const IConstructor<NumericalTag>& data);
-
 }

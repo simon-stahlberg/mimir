@@ -18,7 +18,9 @@
 #ifndef MIMIR_GRAPHS_FORMATTER_IMPL_HPP_
 #define MIMIR_GRAPHS_FORMATTER_IMPL_HPP_
 
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/graphs/formatter_decl.hpp"
+#include "mimir/search/formatter.hpp"
 
 #include <fmt/core.h>
 #include <fmt/ostream.h>
@@ -67,6 +69,16 @@ std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& element)
 {
     return mimir::print(out, element);
 }
+
+namespace kfwl
+{
+template<size_t K>
+std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
+{
+    return mimir::print(out, element);
+}
+}  // end kfwl
+
 }  // end graphs
 
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
@@ -126,6 +138,19 @@ template<mimir::graphs::Property P>
 std::ostream& print(std::ostream& out, const mimir::graphs::Edge<P>& element)
 {
     fmt::print(out, "index={}, properties={}", element.get_index(), to_string(element.get_properties()));
+    return out;
+}
+
+template<size_t K>
+std::ostream& print(std::ostream& out, const mimir::graphs::kfwl::CertificateImpl<K>& element)
+{
+    out << "CertificateImpl" << K << "FWL(" << "abstract_color_compression_function=";
+    mimir::print(out, element.get_canonical_color_compression_function());
+    out << ", " << "canonical_configuration_compression_function=";
+    mimir::print(out, element.get_canonical_configuration_compression_function());
+    out << ", hash_to_color=";
+    mimir::print(out, element.get_hash_to_color());
+    out << ")";
     return out;
 }
 }

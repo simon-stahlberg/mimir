@@ -43,5 +43,8 @@ PerfectHeuristicImpl::PerfectHeuristicImpl(SearchContext context) : m_context(st
 
 PerfectHeuristic PerfectHeuristicImpl::create(SearchContext context) { return std::make_shared<PerfectHeuristicImpl>(std::move(context)); }
 
-ContinuousCost PerfectHeuristicImpl::compute_heuristic(const State& state, bool is_goal_state) { return m_estimates.at(state.get_index()); }
+ContinuousCost PerfectHeuristicImpl::compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal)
+{
+    return m_estimates.at(state.get_index());
+}
 }

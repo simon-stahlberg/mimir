@@ -38,7 +38,7 @@ class IHeuristic
 public:
     virtual ~IHeuristic() = default;
 
-    virtual ContinuousCost compute_heuristic(const State& state, bool is_goal_state) = 0;
+    virtual ContinuousCost compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal = nullptr) = 0;
 
     virtual const PreferredActions& get_preferred_actions() const { return m_preferred_actions; }
 

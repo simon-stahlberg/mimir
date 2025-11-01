@@ -97,13 +97,6 @@ const std::vector<int>& SparseGraph::get_ptn() const { return m_impl->get_ptn();
 
 const PropertyValueList& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
 
-std::ostream& operator<<(std::ostream& out, const SparseGraph& graph)
-{
-    out << *graph.m_impl;
-
-    return out;
-}
-
 SparseGraph& SparseGraph::canonize()
 {
     m_impl->canonize();
@@ -158,9 +151,4 @@ std::vector<int> compute_permutation(const SparseGraph& source, const SparseGrap
     return permutation;
 }
 
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& graph) { return mimir::print(out, *graph.m_impl); }
 }

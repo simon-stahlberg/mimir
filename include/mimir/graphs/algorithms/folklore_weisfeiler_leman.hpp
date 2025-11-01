@@ -164,12 +164,6 @@ bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs)
 }
 
 template<size_t K>
-std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
-{
-    return mimir::print(out, element);
-}
-
-template<size_t K>
 size_t tuple_to_hash(const IndexArray<K>& tuple, size_t num_vertices)
 {
     size_t hash = 0;
@@ -408,23 +402,6 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     /* Return the certificate */
     return std::make_shared<CertificateImpl<K>>(std::move(c), std::move(f), std::move(hash_to_color));
 }
-}
-
-namespace mimir
-{
-template<size_t K>
-std::ostream& print(std::ostream& out, const mimir::graphs::kfwl::CertificateImpl<K>& element)
-{
-    out << "CertificateImpl" << K << "FWL(" << "abstract_color_compression_function=";
-    mimir::print(out, element.get_canonical_color_compression_function());
-    out << ", " << "canonical_configuration_compression_function=";
-    mimir::print(out, element.get_canonical_configuration_compression_function());
-    out << ", hash_to_color=";
-    mimir::print(out, element.get_hash_to_color());
-    out << ")";
-    return out;
-}
-
 }
 
 #endif

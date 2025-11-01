@@ -218,8 +218,6 @@ extern std::vector<int> compute_lab_permutation(const SparseGraph& source, const
 
 extern std::vector<int> compute_permutation(const SparseGraph& source, const SparseGraph& target);
 
-extern std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
-
 }
 
 #endif

@@ -43,9 +43,9 @@ extern std::ostream& operator<<(std::ostream& out, const RuleImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GeneralPolicyImpl& element);
 }  // end languages::general_policies
 
-extern std::ostream& operator<<(std::ostream& out, const mimir::graphs::PolicyVertex& element);
+extern std::ostream& print(std::ostream& out, const mimir::graphs::PolicyVertex& element);
 
-extern std::ostream& operator<<(std::ostream& out, const mimir::graphs::PolicyEdge& element);
+extern std::ostream& print(std::ostream& out, const mimir::graphs::PolicyEdge& element);
 
 extern std::ostream& print(std::ostream& out, const mimir::languages::general_policies::ICondition& element);
 

@@ -36,7 +36,7 @@ public:
 
     static PerfectHeuristic create(SearchContext context);
 
-    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override;
+    ContinuousCost compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal = nullptr) override;
 
 private:
     SearchContext m_context;

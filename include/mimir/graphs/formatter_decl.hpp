@@ -45,6 +45,22 @@ std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& e
 
 template<IsVertex V, IsEdge E>
 std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& element);
+
+namespace color_refinement
+{
+extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& element);
+}  // end color_refinement
+
+namespace kfwl
+{
+template<size_t K>
+std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element);
+}  // end kfwl
+
+namespace nauty
+{
+extern std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
+}  // end nauty
 }  // end graphs
 
 template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
@@ -64,6 +80,13 @@ std::ostream& print(std::ostream& out, const mimir::graphs::Vertex<P>& element);
 
 template<mimir::graphs::Property P>
 std::ostream& print(std::ostream& out, const mimir::graphs::Edge<P>& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::CertificateImpl& element);
+
+template<size_t K>
+std::ostream& print(std::ostream& out, const mimir::graphs::kfwl::CertificateImpl<K>& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& graph);
 }
 
 #endif

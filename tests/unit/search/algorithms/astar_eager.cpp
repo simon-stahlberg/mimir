@@ -223,9 +223,8 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
 
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
-    // Identical to the BrFs result because domain has unit cost 1.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 24);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 6);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 44);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 12);
 }
 
 TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
@@ -241,8 +240,8 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Identical to the BrFs result because domain has unit cost 1.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 24);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 6);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 44);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 12);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

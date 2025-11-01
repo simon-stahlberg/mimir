@@ -59,11 +59,8 @@ private:
     static constexpr Index DUMMY_PROPOSITION_INDEX = 0;
 
 public:
-    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override
+    ContinuousCost compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal = nullptr) override
     {
-        if (is_goal_state)
-            return 0.;
-
         self().initialize_and_annotations();
         self().initialize_or_annotations();
         self().initialize_or_annotations_and_queue(state);

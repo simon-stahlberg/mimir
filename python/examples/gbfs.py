@@ -13,7 +13,7 @@ class CustomBlindHeuristic(search.IHeuristic):
     def __init__(self):
         super().__init__()
 
-    def compute_heuristic(self, state : search.State, is_goal_state: bool) -> float:
+    def compute_heuristic(self, state : search.State, goal: formalism.GroundConjunctiveCondition = None) -> float:
         return 0.
     
 

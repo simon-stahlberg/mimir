@@ -58,13 +58,13 @@ std::ostream& operator<<(std::ostream& out, const GeneralPolicyImpl& element) { 
 
 }  // end languages::general_policies
 
-std::ostream& operator<<(std::ostream& out, const mimir::graphs::PolicyVertex& element)
+std::ostream& print(std::ostream& out, const mimir::graphs::PolicyVertex& element)
 {
     fmt::print(out, "v_idx={}, conditions={}", element.get_index(), to_string(mimir::graphs::get_conditions(element)));
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const mimir::graphs::PolicyEdge& element)
+std::ostream& print(std::ostream& out, const mimir::graphs::PolicyEdge& element)
 {
     fmt::print(out, "e_idx={}, effects={}", element.get_index(), to_string(mimir::graphs::get_effects(element)));
     return out;

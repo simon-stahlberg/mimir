@@ -432,17 +432,4 @@ void InitializeInverseEdgesVisitor<E>::accept(const InverseElementGeneratorNode_
 
 template void InitializeInverseEdgesVisitor<GroundActionImpl>::accept(const InverseElementGeneratorNode_Imperfect<GroundActionImpl>& generator);
 template void InitializeInverseEdgesVisitor<GroundAxiomImpl>::accept(const InverseElementGeneratorNode_Imperfect<GroundAxiomImpl>& generator);
-
-/**
- * Printer
- */
-
-template<HasConjunctiveCondition E>
-std::ostream& operator<<(std::ostream& out, const IInverseNode<E>& element)
-{
-    return mimir::print(out, element);
-}
-
-template std::ostream& operator<<(std::ostream& out, const IInverseNode<GroundActionImpl>& element);
-template std::ostream& operator<<(std::ostream& out, const IInverseNode<GroundAxiomImpl>& element);
 }

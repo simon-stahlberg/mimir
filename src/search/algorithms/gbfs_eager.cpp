@@ -156,7 +156,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     {
         throw std::runtime_error("find_solution(...): evaluating the metric on the start state yielded NaN.");
     }
-    const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
+    const auto start_h_value = heuristic->compute_heuristic(start_state);
     auto best_h_value = start_h_value;
 
     event_handler->on_start_search(start_state, start_g_value, start_h_value);
@@ -287,7 +287,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             /* Compute heuristic since state is new. */
 
-            const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
+            const auto successor_h_value = heuristic->compute_heuristic(successor_state);
             if (successor_h_value == INFINITY_CONTINUOUS_COST)
             {
                 successor_search_node.status = SearchNodeStatus::DEAD_END;
