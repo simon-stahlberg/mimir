@@ -144,13 +144,16 @@ std::ostream& print(std::ostream& out, const mimir::graphs::Edge<P>& element)
 template<size_t K>
 std::ostream& print(std::ostream& out, const mimir::graphs::kfwl::CertificateImpl<K>& element)
 {
-    out << "CertificateImpl" << K << "FWL(" << "abstract_color_compression_function=";
-    mimir::print(out, element.get_canonical_color_compression_function());
-    out << ", " << "canonical_configuration_compression_function=";
-    mimir::print(out, element.get_canonical_configuration_compression_function());
-    out << ", hash_to_color=";
-    mimir::print(out, element.get_hash_to_color());
-    out << ")";
+    fmt::print(out,
+               "Certificate{}FWL("
+               "abstract color compression function={}"
+               ", canonical configuration compression_function={}",
+               ", hash to color={})",
+               K,
+               to_string(element.get_canonical_color_compression_function()),
+               to_string(element.get_canonical_configuration_compression_function()),
+               to_string(element.get_hash_to_color()));
+
     return out;
 }
 }

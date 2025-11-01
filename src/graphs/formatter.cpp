@@ -47,9 +47,9 @@ std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::Ce
 {
     fmt::print(out,
                "CertificateColorRefinement("
-               "abstract_color_compression_function={}"
-               ", canonical_compression_function={}"
-               ", hash_to_color={})",
+               "abstract color compression function={}"
+               ", canonical compression function={}"
+               ", hash to color={})",
                to_string(element.get_canonical_color_compression_function()),
                to_string(element.get_canonical_configuration_compression_function()),
                to_string(element.get_hash_to_color()));
