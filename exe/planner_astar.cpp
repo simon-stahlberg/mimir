@@ -263,7 +263,8 @@ int main(int argc, char** argv)
 
     std::cout << "Peak memory usage in bytes for states: "
               << problem->get_index_tree_table().mem_usage() + problem->get_double_leaf_table().mem_usage()
-                     + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index))
+                     + state_repository->get_states().capacity() * (sizeof(PackedStateImpl) + sizeof(Index)) + problem->get_index_list_map().mem_usage()
+                     + problem->get_double_list_map().mem_usage()
               << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
