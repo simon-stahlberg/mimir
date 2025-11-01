@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
     const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(applicable_action_generator, state_repository).value()));
 
-    auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<FluentTag>());
+    auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_literals<FluentTag>());
 
     for (size_t arity = 0; arity < MAX_ARITY; ++arity)
     {

@@ -169,7 +169,7 @@ class TestProblem(unittest.TestCase):
         problem_path = DATA_DIR / 'refuel' / 'test_problem.pddl'
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
-        actual_numeric_goal_condition = problem.get_numeric_goal_condition()
+        actual_numeric_goal_condition = problem.get_goal_numeric_constraints()
         pass
 
     def test_str_repr_hash(self):

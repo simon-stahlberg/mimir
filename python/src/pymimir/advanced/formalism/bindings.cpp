@@ -783,10 +783,11 @@ void bind_module_definitions(nb::module_& m)
                 return element.value_or(nullptr);
             },
             nb::rv_policy::reference_internal)
-        .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<StaticTag>, nb::rv_policy::copy)
-        .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<FluentTag>, nb::rv_policy::copy)
-        .def("get_derived_goal_condition", &ProblemImpl::get_goal_condition<DerivedTag>, nb::rv_policy::copy)
-        .def("get_numeric_goal_condition", &ProblemImpl::get_numeric_goal_condition, nb::rv_policy::copy)
+        .def("get_static_goal_literals", &ProblemImpl::get_goal_literals<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_goal_literals", &ProblemImpl::get_goal_literals<FluentTag>, nb::rv_policy::copy)
+        .def("get_derived_goal_literals", &ProblemImpl::get_goal_literals<DerivedTag>, nb::rv_policy::copy)
+        .def("get_goal_numeric_constraints", &ProblemImpl::get_goal_numeric_constraints, nb::rv_policy::copy)
+        .def("get_goal_condition", &ProblemImpl::get_goal_condition, nb::rv_policy::reference_internal)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
         .def(
@@ -944,9 +945,9 @@ void bind_module_definitions(nb::module_& m)
             {
                 return self.get_or_create_conjunctive_condition(
                     std::move(parameters),
-                    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<StaticTag>, static_literals),
-                                          boost::hana::make_pair(boost::hana::type_c<FluentTag>, fluent_literals),
-                                          boost::hana::make_pair(boost::hana::type_c<DerivedTag>, derived_literals)),
+                    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<StaticTag>, std::move(static_literals)),
+                                          boost::hana::make_pair(boost::hana::type_c<FluentTag>, std::move(fluent_literals)),
+                                          boost::hana::make_pair(boost::hana::type_c<DerivedTag>, std::move(derived_literals))),
                     std::move(numeric_constraints));
             },
             "parameters"_a,
@@ -960,11 +961,19 @@ void bind_module_definitions(nb::module_& m)
             [](ProblemImpl& self,
                GroundLiteralList<StaticTag> static_literals,
                GroundLiteralList<FluentTag> fluent_literals,
-               GroundLiteralList<DerivedTag> derived_literals)
-            { return self.get_or_create_ground_conjunctive_condition(std::move(static_literals), std::move(fluent_literals), std::move(derived_literals)); },
+               GroundLiteralList<DerivedTag> derived_literals,
+               GroundNumericConstraintList numeric_constraints)
+            {
+                return self.get_or_create_ground_conjunctive_condition(
+                    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<StaticTag>, std::move(static_literals)),
+                                          boost::hana::make_pair(boost::hana::type_c<FluentTag>, std::move(fluent_literals)),
+                                          boost::hana::make_pair(boost::hana::type_c<DerivedTag>, std::move(derived_literals))),
+                    std::move(numeric_constraints));
+            },
             "static_literals"_a,
             "fluent_literals"_a,
             "derived_literals"_a,
+            "numeric_constraints"_a,
             nb::rv_policy::reference_internal);
     nb::bind_vector<ProblemList>(m, "ProblemList");
 

@@ -768,24 +768,22 @@ void write(const ProblemImpl& element, T formatter, std::ostream& out)
     }
 
     // Goal
-    if (!(element.get_goal_condition<StaticTag>().empty() && element.get_goal_condition<FluentTag>().empty() && element.get_goal_condition<DerivedTag>().empty()
-          && element.get_numeric_goal_condition().empty()))
+    if (!(element.get_goal_literals<StaticTag>().empty() && element.get_goal_literals<FluentTag>().empty() && element.get_goal_literals<DerivedTag>().empty()
+          && element.get_goal_numeric_constraints().empty()))
     {
-        fmt::print(out,
-                   "{}(:goal (and{}{}{}{}))\n",
-                   indent,
-                   element.get_goal_condition<StaticTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<StaticTag>(), formatter), " ")),
-                   element.get_goal_condition<FluentTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<FluentTag>(), formatter), " ")),
-                   element.get_goal_condition<DerivedTag>().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_goal_condition<DerivedTag>(), formatter), " ")),
-                   element.get_numeric_goal_condition().empty() ?
-                       "" :
-                       fmt::format(" {}", fmt::join(to_strings(element.get_numeric_goal_condition(), formatter), " ")));
+        fmt::print(
+            out,
+            "{}(:goal (and{}{}{}{}))\n",
+            indent,
+            element.get_goal_literals<StaticTag>().empty() ? "" :
+                                                             fmt::format(" {}", fmt::join(to_strings(element.get_goal_literals<StaticTag>(), formatter), " ")),
+            element.get_goal_literals<FluentTag>().empty() ? "" :
+                                                             fmt::format(" {}", fmt::join(to_strings(element.get_goal_literals<FluentTag>(), formatter), " ")),
+            element.get_goal_literals<DerivedTag>().empty() ?
+                "" :
+                fmt::format(" {}", fmt::join(to_strings(element.get_goal_literals<DerivedTag>(), formatter), " ")),
+            element.get_goal_numeric_constraints().empty() ? "" :
+                                                             fmt::format(" {}", fmt::join(to_strings(element.get_goal_numeric_constraints(), formatter), " ")));
     }
 
     // Metric

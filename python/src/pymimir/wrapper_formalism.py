@@ -1909,20 +1909,16 @@ class Problem:
         :return: The goal condition of the problem.
         :rtype: GroundConjunctiveCondition
         """
-        static_goal = self._advanced_problem.get_static_goal_condition()
-        fluent_goal = self._advanced_problem.get_fluent_goal_condition()
-        derived_goal = self._advanced_problem.get_derived_goal_condition()
-        advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_goal, fluent_goal, derived_goal)
-        return GroundConjunctiveCondition(advanced_condition, self)
+        return GroundConjunctiveCondition(self._advanced_problem.get_goal_condition(), self)
 
-    def get_numeric_goal_condition(self) -> 'ConjunctiveNumericCondition':
+    def get_goal_numeric_constraints(self) -> 'ConjunctiveNumericCondition':
         """
         Get the numeric goal condition of the problem.
 
         :return: The numeric goal condition of the problem.
         :rtype: ConjunctiveNumericCondition
         """
-        advanced_numeric_condition = self._advanced_problem.get_numeric_goal_condition()
+        advanced_numeric_condition = self._advanced_problem.get_goal_numeric_constraints()
         return ConjunctiveNumericCondition(advanced_numeric_condition)
 
     def new_atom(self, predicate: 'Predicate', terms: 'list[Term]') -> 'Atom':
@@ -2055,7 +2051,7 @@ class Problem:
         """
         assert isinstance(ground_literals, list), "Invalid ground literals type."
         static_literals, fluent_literals, derived_literals = _split_ground_literal_list(ground_literals)
-        advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_literals, fluent_literals, derived_literals)
+        advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_literals, fluent_literals, derived_literals, AdvancedGroundNumericConstraintList())
         return GroundConjunctiveCondition(advanced_condition, self)
 
     def new_ground_action(self, action: 'Action', objects: 'list[Object]') -> 'GroundAction':
@@ -2595,7 +2591,7 @@ class ConjunctiveCondition:
         if (blacklist is None) or (len(blacklist) == 0):
             groundings = self._satisficing_binding_generator.generate_ground_conjunctions(state._advanced_state, max_groundings)
             for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
-                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals)
+                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals, AdvancedGroundNumericConstraintList())
                 result.append(GroundConjunctiveCondition(advanced_condition, problem))
         else:
             static_blacklist = {x.get_index() for x in blacklist if x.is_static()}
@@ -2607,7 +2603,7 @@ class ConjunctiveCondition:
                 static_ground_literals = AdvancedStaticGroundLiteralList([x for x in static_ground_literals if x.get_atom().get_predicate().get_index() not in static_blacklist])
                 fluent_ground_literals = AdvancedFluentGroundLiteralList([x for x in fluent_ground_literals if x.get_atom().get_predicate().get_index() not in fluent_blacklist])
                 derived_ground_literals = AdvancedDerivedGroundLiteralList([x for x in derived_ground_literals if x.get_atom().get_predicate().get_index() not in derived_blacklist])
-                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals)
+                advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals, fluent_ground_literals, derived_ground_literals, AdvancedGroundNumericConstraintList())
                 result.append(GroundConjunctiveCondition(advanced_condition, problem))
         return result
 

@@ -88,9 +88,10 @@ struct GoalDetails
     HanaContainer<GroundAtomLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms;
     HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms_bitset;
     HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms_indices;
+    GroundConjunctiveCondition condition;
 
     GoalDetails();
-    GoalDetails(const ProblemImpl& problem, const InitialDetails& initial);
+    GoalDetails(ProblemImpl& problem, const InitialDetails& initial);
 };
 
 /**
@@ -165,7 +166,7 @@ struct Details
     GroundingDetails grounding;
 
     Details();
-    Details(const ProblemImpl& problem);
+    Details(ProblemImpl& problem);
 };
 }
 

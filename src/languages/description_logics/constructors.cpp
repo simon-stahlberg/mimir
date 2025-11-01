@@ -195,7 +195,7 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 
     // Compute result
     bitset.unset_all();
-    for (const auto& literal : context.get_problem()->get_goal_condition<P>())
+    for (const auto& literal : context.get_problem()->get_goal_literals<P>())
     {
         const auto atom = literal->get_atom();
 
@@ -688,7 +688,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         bitset.unset_all();
     }
-    for (const auto& literal : context.get_problem()->get_goal_condition<P>())
+    for (const auto& literal : context.get_problem()->get_goal_literals<P>())
     {
         const auto atom = literal->get_atom();
 

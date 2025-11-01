@@ -44,9 +44,9 @@ private:
     PredicateList<DerivedTag> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
     GroundLiteralLists<StaticTag, FluentTag> m_initial_literals;
     GroundFunctionValueLists<StaticTag, FluentTag> m_initial_function_values;
-    std::optional<GroundFunctionValue<AuxiliaryTag>> m_auxiliary_function_value;
-    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_condition;
-    GroundNumericConstraintList m_numeric_goal_condition;
+    std::optional<GroundFunctionValue<AuxiliaryTag>> m_initial_auxiliary_function_value;
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_literals;
+    GroundNumericConstraintList m_goal_numeric_constraints;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
     AxiomList m_problem_and_domain_axioms;  ///< Includes domain axioms
@@ -119,16 +119,12 @@ public:
     const GroundFunctionValueLists<StaticTag, FluentTag>& get_hana_initial_function_values() const;
     const std::optional<GroundFunctionValue<AuxiliaryTag>>& get_auxiliary_function_value() const;
     template<IsStaticOrFluentOrDerivedTag P>
-    const GroundLiteralList<P>& get_goal_condition() const;
-    const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_goal_condition() const;
-    const GroundNumericConstraintList& get_numeric_goal_condition() const;
+    const GroundLiteralList<P>& get_goal_literals() const;
+    const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_goal_literals() const;
+    const GroundNumericConstraintList& get_goal_numeric_constraints() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
-
-    /// @brief Get the total number of bytes.
-    /// @return the number of bytes.
-    size_t get_estimated_memory_usage_in_bytes() const;
 
     /**
      * Additional members
@@ -184,9 +180,7 @@ public:
     template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
     const FlatBitset& get_goal_atoms_bitset() const;
     const HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_hana_goal_atoms_bitset() const;
-    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_goal_atoms_indices() const;
-    const HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_hana_goal_atoms_indices() const;
+    GroundConjunctiveCondition get_goal_condition() const;
 
     /* Axioms */
 
@@ -272,9 +266,8 @@ public:
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 
-    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(GroundLiteralList<StaticTag> static_literals,
-                                                                          GroundLiteralList<FluentTag> fluent_literals,
-                                                                          GroundLiteralList<DerivedTag> derived_literals);
+    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(GroundLiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                                                                          GroundNumericConstraintList numeric_constraints);
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -290,10 +283,10 @@ public:
                           std::cref(get_initial_function_values<StaticTag>()),
                           std::cref(get_initial_function_values<FluentTag>()),
                           get_auxiliary_function_value(),
-                          std::cref(get_goal_condition<StaticTag>()),
-                          std::cref(get_goal_condition<FluentTag>()),
-                          std::cref(get_goal_condition<DerivedTag>()),
-                          get_numeric_goal_condition(),
+                          std::cref(get_goal_literals<StaticTag>()),
+                          std::cref(get_goal_literals<FluentTag>()),
+                          std::cref(get_goal_literals<DerivedTag>()),
+                          get_goal_numeric_constraints(),
                           get_optimization_metric(),
                           std::cref(get_axioms()));
     }

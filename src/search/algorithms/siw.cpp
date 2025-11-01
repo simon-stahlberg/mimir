@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/siw.hpp"
 
+#include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
@@ -49,14 +50,11 @@ int ProblemGoalStrategyImplCounter::count_unsatisfied_goals(const State& state) 
 {
     int num_unsatisfied_goals = 0;
 
+    num_unsatisfied_goals += count_set_difference(m_problem->get_goal_condition()->get_precondition<PositiveTag, FluentTag>(), state.get_atoms<FluentTag>());
+    num_unsatisfied_goals += count_set_difference(m_problem->get_goal_condition()->get_precondition<PositiveTag, DerivedTag>(), state.get_atoms<DerivedTag>());
+    num_unsatisfied_goals += count_set_intersection(m_problem->get_goal_condition()->get_precondition<NegativeTag, FluentTag>(), state.get_atoms<FluentTag>());
     num_unsatisfied_goals +=
-        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, FluentTag>().uncompressed_range(), state.get_atoms<FluentTag>());
-    num_unsatisfied_goals +=
-        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, DerivedTag>().uncompressed_range(), state.get_atoms<DerivedTag>());
-    num_unsatisfied_goals +=
-        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, FluentTag>().uncompressed_range(), state.get_atoms<FluentTag>());
-    num_unsatisfied_goals +=
-        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, DerivedTag>().uncompressed_range(), state.get_atoms<DerivedTag>());
+        count_set_intersection(m_problem->get_goal_condition()->get_precondition<NegativeTag, DerivedTag>(), state.get_atoms<DerivedTag>());
 
     return num_unsatisfied_goals;
 }

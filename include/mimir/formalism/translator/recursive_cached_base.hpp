@@ -311,10 +311,10 @@ protected:
         this->prepare_level_0(problem->get_initial_function_values<StaticTag>());
         this->prepare_level_0(problem->get_initial_function_values<FluentTag>());
         this->prepare_level_0(problem->get_auxiliary_function_value());
-        this->prepare_level_0(problem->get_goal_condition<StaticTag>());
-        this->prepare_level_0(problem->get_goal_condition<FluentTag>());
-        this->prepare_level_0(problem->get_goal_condition<DerivedTag>());
-        this->prepare_level_0(problem->get_numeric_goal_condition());
+        this->prepare_level_0(problem->get_goal_literals<StaticTag>());
+        this->prepare_level_0(problem->get_goal_literals<FluentTag>());
+        this->prepare_level_0(problem->get_goal_literals<DerivedTag>());
+        this->prepare_level_0(problem->get_goal_numeric_constraints());
         this->prepare_level_0(problem->get_optimization_metric());
         this->prepare_level_0(problem->get_axioms());
     }
@@ -619,10 +619,10 @@ protected:
         builder.get_initial_function_values<StaticTag>() = this->translate_level_0(problem->get_initial_function_values<StaticTag>(), repositories);
         builder.get_initial_function_values<FluentTag>() = this->translate_level_0(problem->get_initial_function_values<FluentTag>(), repositories);
         builder.get_auxiliary_function_value() = this->translate_level_0(problem->get_auxiliary_function_value(), repositories);
-        builder.get_goal_condition<StaticTag>() = this->translate_level_0(problem->get_goal_condition<StaticTag>(), repositories);
-        builder.get_goal_condition<FluentTag>() = this->translate_level_0(problem->get_goal_condition<FluentTag>(), repositories);
-        builder.get_goal_condition<DerivedTag>() = this->translate_level_0(problem->get_goal_condition<DerivedTag>(), repositories);
-        builder.get_numeric_goal_condition() = this->translate_level_0(problem->get_numeric_goal_condition(), repositories);
+        builder.get_goal_literals<StaticTag>() = this->translate_level_0(problem->get_goal_literals<StaticTag>(), repositories);
+        builder.get_goal_literals<FluentTag>() = this->translate_level_0(problem->get_goal_literals<FluentTag>(), repositories);
+        builder.get_goal_literals<DerivedTag>() = this->translate_level_0(problem->get_goal_literals<DerivedTag>(), repositories);
+        builder.get_goal_numeric_constraints() = this->translate_level_0(problem->get_goal_numeric_constraints(), repositories);
         builder.get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
         builder.get_axioms() = this->translate_level_0(problem->get_axioms(), repositories);
 

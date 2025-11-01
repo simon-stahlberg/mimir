@@ -40,9 +40,9 @@ private:
     PredicateList<DerivedTag> m_derived_predicates;
     GroundLiteralLists<StaticTag, FluentTag> m_initial_literals;
     GroundFunctionValueLists<StaticTag, FluentTag> m_initial_function_values;
-    std::optional<GroundFunctionValue<AuxiliaryTag>> m_auxiliary_function_value;
-    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_condition;
-    GroundNumericConstraintList m_numeric_goal_condition;
+    std::optional<GroundFunctionValue<AuxiliaryTag>> m_initial_auxiliary_function_value;
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_literals;
+    GroundNumericConstraintList m_goal_numeric_constraints;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -79,9 +79,9 @@ public:
     GroundFunctionValueLists<StaticTag, FluentTag>& get_hana_initial_function_values();
     std::optional<GroundFunctionValue<AuxiliaryTag>>& get_auxiliary_function_value();
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundLiteralList<P>& get_goal_condition();
-    GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_goal_condition();
-    GroundNumericConstraintList& get_numeric_goal_condition();
+    GroundLiteralList<P>& get_goal_literals();
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_goal_literals();
+    GroundNumericConstraintList& get_goal_numeric_constraints();
     std::optional<OptimizationMetric>& get_optimization_metric();
     AxiomList& get_axioms();
 };

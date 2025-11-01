@@ -61,6 +61,8 @@ private:
 public:
     ContinuousCost compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal = nullptr) override
     {
+        if (goal)
+            initialize_goal_propositions(goal, m_offsets, m_goal_propositions);
         self().initialize_and_annotations();
         self().initialize_or_annotations();
         self().initialize_or_annotations_and_queue(state);
@@ -221,6 +223,28 @@ private:
         self().initialize_or_annotations_and_queue_impl(m_propositions[0]);
     }
 
+    void on_process_effect(const Action& structure)
+    {
+        const auto effect_proposition_index = structure.get_polarity() ?
+                                                  get<formalism::PositiveTag, formalism::FluentTag>(get_offsets())[structure.get_effect()] :
+                                                  get<formalism::NegativeTag, formalism::FluentTag>(get_offsets())[structure.get_effect()];
+
+        const auto& effect_proposition = get_propositions()[effect_proposition_index];
+
+        self().update_or_annotation_impl(structure, effect_proposition);
+    }
+
+    void on_process_effect(const Axiom& structure)
+    {
+        const auto effect_proposition_index = structure.get_polarity() ?
+                                                  get<formalism::PositiveTag, formalism::DerivedTag>(get_offsets())[structure.get_effect()] :
+                                                  get<formalism::NegativeTag, formalism::DerivedTag>(get_offsets())[structure.get_effect()];
+
+        const auto& effect_proposition = get_propositions()[effect_proposition_index];
+
+        self().update_or_annotation_impl(structure, effect_proposition);
+    }
+
     template<IsStructure S>
     void on_process_structure(const Proposition& proposition, const S& structure)
     {
@@ -235,15 +259,7 @@ private:
 
         if (get_num_unsatisfied_preconditions(structure_annotation) == 0)
         {
-            // std::cout << "Process satisfied structure: " << structure.get_index() << std::endl;
-
-            const auto effect_proposition_index = structure.get_polarity() ?
-                                                      get<formalism::PositiveTag, formalism::FluentTag>(get_offsets())[structure.get_effect()] :
-                                                      get<formalism::NegativeTag, formalism::FluentTag>(get_offsets())[structure.get_effect()];
-
-            const auto& effect_proposition = get_propositions()[effect_proposition_index];
-
-            self().update_or_annotation_impl(structure, effect_proposition);
+            on_process_effect(structure);
         }
     }
 

@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_RPG_CONSTRUCTION_HELPERS_HPP_
 #define MIMIR_SEARCH_HEURISTICS_RPG_CONSTRUCTION_HELPERS_HPP_
 
+#include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics/rpg/annotations.hpp"
 #include "mimir/search/heuristics/rpg/proposition.hpp"
@@ -280,6 +281,35 @@ inline std::tuple<PropositionList, IndexList, PropositionOffsets> instantiate_pr
                                                                                    proposition_offsets);
 
     return std::make_tuple(std::move(propositions), std::move(goal_propositions), std::move(proposition_offsets));
+}
+
+inline void
+initialize_goal_propositions(formalism::GroundConjunctiveCondition condition, const PropositionOffsets& proposition_offsets, IndexList& goal_propositions)
+{
+    goal_propositions.clear();
+
+    boost::hana::for_each(proposition_offsets,
+                          [&](auto&& pair1)
+                          {
+                              const auto key1 = boost::hana::first(pair1);
+                              const auto& value1 = boost::hana::second(pair1);
+                              using R = typename decltype(+key1)::type;
+
+                              boost::hana::for_each(value1,
+                                                    [&](auto&& pair2)
+                                                    {
+                                                        const auto key2 = boost::hana::first(pair2);
+                                                        const auto& offsets = boost::hana::second(pair2);
+                                                        using P = typename decltype(+key2)::type;
+
+                                                        const auto& atom_indices = condition->get_precondition<R, P>();
+
+                                                        for (const auto& atom_index : atom_indices)
+                                                        {
+                                                            goal_propositions.push_back(offsets[atom_index]);
+                                                        }
+                                                    });
+                          });
 }
 
 }

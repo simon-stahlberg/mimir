@@ -1060,8 +1060,8 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_hana_initial_literals() = std::move(initial_literals);
     builder.get_hana_initial_function_values() = std::move(initial_function_values);
     builder.get_auxiliary_function_value() = initial_auxiliary_function_value;
-    builder.get_hana_goal_condition() = std::move(goal_literals);
-    builder.get_numeric_goal_condition() = std::move(numeric_goal_constraints);
+    builder.get_goal_literals() = std::move(goal_literals);
+    builder.get_goal_numeric_constraints() = std::move(numeric_goal_constraints);
     builder.get_optimization_metric() = metric;
     builder.get_axioms() = std::move(axioms);
 

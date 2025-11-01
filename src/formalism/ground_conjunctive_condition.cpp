@@ -76,6 +76,12 @@ template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_pre
 template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, FluentTag>() const;
 template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, DerivedTag>() const;
 
+const HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>&
+GroundConjunctiveConditionImpl::get_literals() const
+{
+    return m_preconditions;
+}
+
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 }

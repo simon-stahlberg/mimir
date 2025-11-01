@@ -55,7 +55,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
     {
         initialize_object_colors_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
-    boost::hana::for_each(problem.get_hana_goal_condition(),
+    boost::hana::for_each(problem.get_goal_literals(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -91,7 +91,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
             object_to_literal_color[literal->get_atom()->get_objects().front()].emplace_back(literal->get_atom()->get_predicate(), literal->get_polarity());
         }
     };
-    boost::hana::for_each(problem.get_hana_goal_condition(),
+    boost::hana::for_each(problem.get_goal_literals(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -250,11 +250,11 @@ static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem
                                                       const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
                                                       graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
-    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_condition<StaticTag>(), out_digraph);
+    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_literals<StaticTag>(), out_digraph);
 
-    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_condition<FluentTag>(), out_digraph);
+    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_literals<FluentTag>(), out_digraph);
 
-    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_condition<DerivedTag>(), out_digraph);
+    add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_literals<DerivedTag>(), out_digraph);
 }
 
 graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_object_graph(const State& state, const ProblemImpl& problem)

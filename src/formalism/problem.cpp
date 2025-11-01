@@ -76,9 +76,9 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_initial_literals(std::move(initial_literals)),
     m_initial_function_values(std::move(initial_function_values)),
-    m_auxiliary_function_value(auxiliary_function_value),
-    m_goal_condition(std::move(goal_condition)),
-    m_numeric_goal_condition(std::move(numeric_goal_condition)),
+    m_initial_auxiliary_function_value(auxiliary_function_value),
+    m_goal_literals(std::move(goal_condition)),
+    m_goal_numeric_constraints(std::move(numeric_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
@@ -100,10 +100,10 @@ ProblemImpl::ProblemImpl(Index index,
     assert(is_all_unique(get_initial_literals<FluentTag>()));
     assert(is_all_unique(get_initial_function_values<StaticTag>()));
     assert(is_all_unique(get_initial_function_values<FluentTag>()));
-    assert(is_all_unique(get_goal_condition<StaticTag>()));
-    assert(is_all_unique(get_goal_condition<FluentTag>()));
-    assert(is_all_unique(get_goal_condition<DerivedTag>()));
-    assert(is_all_unique(get_numeric_goal_condition()));
+    assert(is_all_unique(get_goal_literals<StaticTag>()));
+    assert(is_all_unique(get_goal_literals<FluentTag>()));
+    assert(is_all_unique(get_goal_literals<DerivedTag>()));
+    assert(is_all_unique(get_goal_numeric_constraints()));
     assert(is_all_unique(get_axioms()));
     assert(std::is_sorted(get_objects().begin(), get_objects().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_derived_predicates().begin(),
@@ -121,17 +121,17 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(get_initial_function_values<FluentTag>().begin(),
                           get_initial_function_values<FluentTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<StaticTag>().begin(),
-                          get_goal_condition<StaticTag>().end(),
+    assert(std::is_sorted(get_goal_literals<StaticTag>().begin(),
+                          get_goal_literals<StaticTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<FluentTag>().begin(),
-                          get_goal_condition<FluentTag>().end(),
+    assert(std::is_sorted(get_goal_literals<FluentTag>().begin(),
+                          get_goal_literals<FluentTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<DerivedTag>().begin(),
-                          get_goal_condition<DerivedTag>().end(),
+    assert(std::is_sorted(get_goal_literals<DerivedTag>().begin(),
+                          get_goal_literals<DerivedTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_numeric_goal_condition().begin(),
-                          get_numeric_goal_condition().end(),
+    assert(std::is_sorted(get_goal_numeric_constraints().begin(),
+                          get_goal_numeric_constraints().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_axioms().begin(), get_axioms().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
@@ -219,32 +219,27 @@ const GroundFunctionValueLists<StaticTag, FluentTag>& ProblemImpl::get_hana_init
 template const GroundFunctionValueList<StaticTag>& ProblemImpl::get_initial_function_values() const;
 template const GroundFunctionValueList<FluentTag>& ProblemImpl::get_initial_function_values() const;
 
-const std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
+const std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemImpl::get_auxiliary_function_value() const { return m_initial_auxiliary_function_value; }
 
 template<IsStaticOrFluentOrDerivedTag P>
-const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
+const GroundLiteralList<P>& ProblemImpl::get_goal_literals() const
 {
-    return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
+    return boost::hana::at_key(m_goal_literals, boost::hana::type<P> {});
 }
 
-template const GroundLiteralList<StaticTag>& ProblemImpl::get_goal_condition<StaticTag>() const;
-template const GroundLiteralList<FluentTag>& ProblemImpl::get_goal_condition<FluentTag>() const;
-template const GroundLiteralList<DerivedTag>& ProblemImpl::get_goal_condition<DerivedTag>() const;
+template const GroundLiteralList<StaticTag>& ProblemImpl::get_goal_literals<StaticTag>() const;
+template const GroundLiteralList<FluentTag>& ProblemImpl::get_goal_literals<FluentTag>() const;
+template const GroundLiteralList<DerivedTag>& ProblemImpl::get_goal_literals<DerivedTag>() const;
 
-const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_goal_condition() const { return m_goal_condition; }
+const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_goal_literals() const { return m_goal_literals; }
 
-const GroundNumericConstraintList& ProblemImpl::get_numeric_goal_condition() const { return m_numeric_goal_condition; }
+const GroundNumericConstraintList& ProblemImpl::get_goal_numeric_constraints() const { return m_goal_numeric_constraints; }
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
-
-size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
-{
-    return m_flat_index_list_map.get_estimated_memory_usage_in_bytes() + m_flat_double_list_map.get_estimated_memory_usage_in_bytes();
-}
 
 /**
  * Additional members
@@ -397,23 +392,7 @@ const HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, 
     return m_details.goal.goal_atoms_bitset;
 }
 
-template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& ProblemImpl::get_goal_atoms_indices() const
-{
-    return boost::hana::at_key(boost::hana::at_key(m_details.goal.goal_atoms_indices, boost::hana::type<R> {}), boost::hana::type<P> {});
-}
-
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, StaticTag>() const;
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, FluentTag>() const;
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, DerivedTag>() const;
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, StaticTag>() const;
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, FluentTag>() const;
-template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, DerivedTag>() const;
-
-const HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& ProblemImpl::get_hana_goal_atoms_indices() const
-{
-    return m_details.goal.goal_atoms_indices;
-}
+GroundConjunctiveCondition ProblemImpl::get_goal_condition() const { return m_details.goal.condition; }
 
 /* Axioms */
 
@@ -876,57 +855,39 @@ ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(ParameterL
     return m_repositories.get_or_create_conjunctive_condition(std::move(parameters), std::move(literals), std::move(numeric_constraints));
 }
 
-GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_condition(GroundLiteralList<StaticTag> static_literals,
-                                                                                   GroundLiteralList<FluentTag> fluent_literals,
-                                                                                   GroundLiteralList<DerivedTag> derived_literals)
+GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_condition(GroundLiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                                                                                   GroundNumericConstraintList numeric_constraints)
 {
-    auto positive_index_list = FlatIndexList {};
-    auto negative_index_list = FlatIndexList {};
+    auto atom_indices = HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> {};
 
-    auto populate_index_lists = [&positive_index_list, &negative_index_list](const auto& literals)
-    {
-        positive_index_list.clear();
-        negative_index_list.clear();
-        for (const auto& literal : literals)
-        {
-            if (literal->get_polarity())
-            {
-                positive_index_list.push_back(literal->get_atom()->get_index());
-            }
-            else
-            {
-                negative_index_list.push_back(literal->get_atom()->get_index());
-            }
-        }
-        std::sort(positive_index_list.uncompressed_begin(), positive_index_list.uncompressed_end());
-        std::sort(negative_index_list.uncompressed_begin(), negative_index_list.uncompressed_end());
-        positive_index_list.compress();
-        negative_index_list.compress();
-    };
+    boost::hana::for_each(literals,
+                          [&](auto&& pair)
+                          {
+                              auto key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
 
-    populate_index_lists(static_literals);
-    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list).first;
-    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list).first;
+                              auto positive_index_list = FlatIndexList {};
+                              auto negative_index_list = FlatIndexList {};
 
-    populate_index_lists(fluent_literals);
-    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list).first;
-    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list).first;
+                              for (const auto& literal : value)
+                              {
+                                  if (literal->get_polarity())
+                                      positive_index_list.push_back(literal->get_atom()->get_index());
+                                  else
+                                      negative_index_list.push_back(literal->get_atom()->get_index());
+                              }
+                              std::sort(positive_index_list.uncompressed_begin(), positive_index_list.uncompressed_end());
+                              std::sort(negative_index_list.uncompressed_begin(), negative_index_list.uncompressed_end());
+                              positive_index_list.compress();
+                              negative_index_list.compress();
 
-    populate_index_lists(derived_literals);
-    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list).first;
-    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list).first;
+                              boost::hana::at_key(boost::hana::at_key(atom_indices, boost::hana::type<PositiveTag> {}), key) =
+                                  this->get_or_create_index_list(positive_index_list).first;
+                              boost::hana::at_key(boost::hana::at_key(atom_indices, boost::hana::type<NegativeTag> {}), key) =
+                                  this->get_or_create_index_list(negative_index_list).first;
+                          });
 
-    return m_repositories.get_or_create_ground_conjunctive_condition(
-        boost::hana::make_map(
-            boost::hana::make_pair(boost::hana::type<PositiveTag> {},
-                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, positive_static_condition_ptr),
-                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, positive_fluent_condition_ptr),
-                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, positive_derived_condition_ptr))),
-            boost::hana::make_pair(boost::hana::type<NegativeTag> {},
-                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, negative_static_condition_ptr),
-                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, negative_fluent_condition_ptr),
-                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, negative_derived_condition_ptr)))),
-        GroundNumericConstraintList {});
+    return m_repositories.get_or_create_ground_conjunctive_condition(atom_indices, numeric_constraints);
 }
 
 const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_infos() const
@@ -1052,15 +1013,16 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
 
 problem::GoalDetails::GoalDetails() : parent(nullptr) {}
 
-problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetails& initial) :
+problem::GoalDetails::GoalDetails(ProblemImpl& problem, const InitialDetails& initial) :
     parent(&problem),
     m_static_goal_holds(false),
     goal_atoms(),
     goal_atoms_bitset(),
-    goal_atoms_indices()
+    goal_atoms_indices(),
+    condition()
 {
     m_static_goal_holds = true;
-    for (const auto& literal : problem.get_goal_condition<StaticTag>())
+    for (const auto& literal : problem.get_goal_literals<StaticTag>())
     {
         if (literal->get_polarity() != initial.positive_static_initial_atoms_bitset.get(literal->get_atom()->get_index()))
         {
@@ -1069,7 +1031,7 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
     }
 
     boost::hana::for_each(
-        problem.get_hana_goal_condition(),
+        problem.get_goal_literals(),
         [this](auto&& pair)
         {
             const auto& key = boost::hana::first(pair);
@@ -1106,6 +1068,8 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
                 positive_goal_atoms_indices.push_back(atom_index);
             }
         });
+
+    condition = problem.get_or_create_ground_conjunctive_condition(problem.get_goal_literals(), problem.get_goal_numeric_constraints());
 }
 
 problem::AxiomDetails::AxiomDetails() : parent(nullptr) {}
@@ -1120,9 +1084,9 @@ problem::GroundingDetails::GroundingDetails() : parent(nullptr) {}
 
 problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) : parent(&problem), action_infos(std::nullopt) {}
 
-problem::Details::Details() : parent(nullptr) {}
+problem::Details::Details() {}
 
-problem::Details::Details(const ProblemImpl& problem) :
+problem::Details::Details(ProblemImpl& problem) :
     parent(&problem),
     objects(problem),
     predicates(problem),

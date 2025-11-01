@@ -86,6 +86,8 @@ public:
     template<IsStaticOrFluentOrDerivedTag... Ps>
     size_t get_num_preconditions() const;
 
+    const HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_literals() const;
+
     const GroundNumericConstraintList& get_numeric_constraints() const;
 
     auto identifying_members() const noexcept

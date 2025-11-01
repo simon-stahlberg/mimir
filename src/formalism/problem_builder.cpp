@@ -45,9 +45,9 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
     m_derived_predicates(),
     m_initial_literals(),
     m_initial_function_values(),
-    m_auxiliary_function_value(std::nullopt),
-    m_goal_condition(),
-    m_numeric_goal_condition(),
+    m_initial_auxiliary_function_value(std::nullopt),
+    m_goal_literals(),
+    m_goal_numeric_constraints(),
     m_optimization_metric(nullptr),
     m_axioms()
 {
@@ -86,17 +86,17 @@ Problem ProblemBuilder::get_result(Index problem_index)
               get_initial_function_values<FluentTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(get_goal_condition<StaticTag>().begin(),
-              get_goal_condition<StaticTag>().end(),
+    std::sort(get_goal_literals<StaticTag>().begin(),
+              get_goal_literals<StaticTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_goal_condition<FluentTag>().begin(),
-              get_goal_condition<FluentTag>().end(),
+    std::sort(get_goal_literals<FluentTag>().begin(),
+              get_goal_literals<FluentTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_goal_condition<DerivedTag>().begin(),
-              get_goal_condition<DerivedTag>().end(),
+    std::sort(get_goal_literals<DerivedTag>().begin(),
+              get_goal_literals<DerivedTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_numeric_goal_condition().begin(),
-              get_numeric_goal_condition().end(),
+    std::sort(get_goal_numeric_constraints().begin(),
+              get_goal_numeric_constraints().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     auto problem_and_domain_axioms = get_axioms();
@@ -119,9 +119,9 @@ Problem ProblemBuilder::get_result(Index problem_index)
                                                         std::move(problem_and_domain_derived_predicates),
                                                         std::move(m_initial_literals),
                                                         std::move(m_initial_function_values),
-                                                        std::move(m_auxiliary_function_value),
-                                                        std::move(m_goal_condition),
-                                                        std::move(m_numeric_goal_condition),
+                                                        std::move(m_initial_auxiliary_function_value),
+                                                        std::move(m_goal_literals),
+                                                        std::move(m_goal_numeric_constraints),
                                                         std::move(m_optimization_metric),
                                                         std::move(m_axioms),
                                                         std::move(problem_and_domain_axioms)));
@@ -156,20 +156,20 @@ template GroundFunctionValueList<FluentTag>& ProblemBuilder::get_initial_functio
 
 GroundFunctionValueLists<StaticTag, FluentTag>& ProblemBuilder::get_hana_initial_function_values() { return m_initial_function_values; }
 
-std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
+std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemBuilder::get_auxiliary_function_value() { return m_initial_auxiliary_function_value; }
 template<IsStaticOrFluentOrDerivedTag P>
-GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
+GroundLiteralList<P>& ProblemBuilder::get_goal_literals()
 {
-    return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
+    return boost::hana::at_key(m_goal_literals, boost::hana::type<P> {});
 }
 
-template GroundLiteralList<StaticTag>& ProblemBuilder::get_goal_condition();
-template GroundLiteralList<FluentTag>& ProblemBuilder::get_goal_condition();
-template GroundLiteralList<DerivedTag>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<StaticTag>& ProblemBuilder::get_goal_literals();
+template GroundLiteralList<FluentTag>& ProblemBuilder::get_goal_literals();
+template GroundLiteralList<DerivedTag>& ProblemBuilder::get_goal_literals();
 
-GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemBuilder::get_hana_goal_condition() { return m_goal_condition; }
+GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemBuilder::get_goal_literals() { return m_goal_literals; }
 
-GroundNumericConstraintList& ProblemBuilder::get_numeric_goal_condition() { return m_numeric_goal_condition; }
+GroundNumericConstraintList& ProblemBuilder::get_goal_numeric_constraints() { return m_goal_numeric_constraints; }
 std::optional<OptimizationMetric>& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }
 AxiomList& ProblemBuilder::get_axioms() { return m_axioms; }
 }
