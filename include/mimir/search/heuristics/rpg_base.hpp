@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_HEURISTICS_RPG_BASE_HPP_
 
 #include "mimir/common/declarations.hpp"
-#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/declarations.hpp"
@@ -62,7 +61,7 @@ public:
     ContinuousCost compute_heuristic(const State& state, formalism::GroundConjunctiveCondition goal = nullptr) override
     {
         if (goal)
-            initialize_goal_propositions(goal, m_offsets, m_goal_propositions);
+            initialize_goal_propositions(goal, m_offsets, m_proposition_annotations, m_goal_propositions);
         self().initialize_and_annotations();
         self().initialize_or_annotations();
         self().initialize_or_annotations_and_queue(state);
@@ -126,6 +125,12 @@ private:
         get<Action>(get_structures_annotations()).resize(get<Action>(get_structures()).size());
         get<Axiom>(get_structures_annotations()).resize(get<Axiom>(get_structures()).size());
         get_proposition_annotations().resize(get_propositions().size());
+
+        /**
+         * Initialize proposition annotations with goal
+         */
+
+        initialize_goal_propositions(m_problem->get_goal_condition(), get_offsets(), get_proposition_annotations(), get_goal_propositions());
     }
 
     void initialize_and_annotations()
@@ -282,7 +287,7 @@ private:
                 continue;
             }
 
-            if (proposition.is_goal() && --m_num_unsat_goals == 0)
+            if (is_goal(annotation) && --m_num_unsat_goals == 0)
             {
                 return;
             }
@@ -322,25 +327,17 @@ private:
 
     auto& get_structures() { return m_structures; }
 
-    StructuresAnnotations m_structure_annotations;
+    StructuresAnnotationsContainer m_structure_annotations;
 
     auto& get_structures_annotations() { return m_structure_annotations; }
-
-    static DiscreteCost& get_cost(Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
-    static size_t& get_num_unsatisfied_preconditions(Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
-    static size_t get_num_unsatisfied_preconditions(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
 
     PropositionList m_propositions;
 
     auto& get_propositions() { return m_propositions; }
 
-    AnnotationsList<DiscreteCost> m_proposition_annotations;
+    PropositionAnnotationsList m_proposition_annotations;
 
     auto& get_proposition_annotations() { return m_proposition_annotations; }
-
-    static DiscreteCost& get_cost(Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
 
     IndexList m_goal_propositions;
 

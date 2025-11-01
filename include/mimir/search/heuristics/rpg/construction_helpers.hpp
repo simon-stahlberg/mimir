@@ -226,16 +226,10 @@ void instantiate_propositions_helper(const formalism::ProblemImpl& problem,
         }
         offsets[atom_index] = proposition_index;
 
-        const auto is_goal = problem.template get_goal_atoms_bitset<R, P>().get(atom_index);
-
         propositions.emplace_back(
             proposition_index,
             boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Action> {}, std::move(get<R, P>(is_precondition_of_action)[atom_index])),
-                                  boost::hana::make_pair(boost::hana::type<Axiom> {}, std::move(get<R, P>(is_precondition_of_axiom)[atom_index]))),
-            is_goal);
-
-        if (is_goal)
-            goal_propositions.push_back(proposition_index);
+                                  boost::hana::make_pair(boost::hana::type<Axiom> {}, std::move(get<R, P>(is_precondition_of_axiom)[atom_index]))));
     }
 }
 
@@ -252,8 +246,7 @@ inline std::tuple<PropositionList, IndexList, PropositionOffsets> instantiate_pr
     // Create a dummy proposition with index 0 that contains all trivial unary actions and axioms without preconditions.
     propositions.emplace_back(propositions.size(),
                               boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Action> {}, std::move(trivial_unary_actions)),
-                                                    boost::hana::make_pair(boost::hana::type<Axiom> {}, std::move(trivial_unary_axioms))),
-                              false);
+                                                    boost::hana::make_pair(boost::hana::type<Axiom> {}, std::move(trivial_unary_axioms))));
 
     instantiate_propositions_helper<formalism::PositiveTag, formalism::FluentTag>(problem,
                                                                                   is_precondition_of_action,
@@ -283,10 +276,15 @@ inline std::tuple<PropositionList, IndexList, PropositionOffsets> instantiate_pr
     return std::make_tuple(std::move(propositions), std::move(goal_propositions), std::move(proposition_offsets));
 }
 
-inline void
-initialize_goal_propositions(formalism::GroundConjunctiveCondition condition, const PropositionOffsets& proposition_offsets, IndexList& goal_propositions)
+inline void initialize_goal_propositions(formalism::GroundConjunctiveCondition condition,
+                                         const PropositionOffsets& proposition_offsets,
+                                         PropositionAnnotationsList& proposition_annotations,
+                                         IndexList& goal_propositions)
 {
     goal_propositions.clear();
+
+    for (auto& annotation : proposition_annotations)
+        is_goal(annotation) = false;
 
     boost::hana::for_each(proposition_offsets,
                           [&](auto&& pair1)
@@ -306,7 +304,9 @@ initialize_goal_propositions(formalism::GroundConjunctiveCondition condition, co
 
                                                         for (const auto& atom_index : atom_indices)
                                                         {
-                                                            goal_propositions.push_back(offsets[atom_index]);
+                                                            const auto proposition_index = offsets[atom_index];
+                                                            goal_propositions.push_back(proposition_index);
+                                                            is_goal(proposition_annotations[proposition_index]) = true;
                                                         }
                                                     });
                           });

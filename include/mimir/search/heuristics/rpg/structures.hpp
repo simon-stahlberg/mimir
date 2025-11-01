@@ -121,10 +121,18 @@ inline auto& get(StructuresContainer& container)
     return boost::hana::at_key(container, boost::hana::type<S> {});
 }
 
-using StructuresAnnotations = HanaContainer<AnnotationsList<DiscreteCost, size_t>, Action, Axiom>;
+using StructureAnnotations = Annotations<DiscreteCost, size_t>;
+using StructureAnnotationsList = AnnotationsList<DiscreteCost, size_t>;
+
+inline DiscreteCost& get_cost(StructureAnnotations& annotation) { return std::get<0>(annotation); }
+inline DiscreteCost get_cost(const StructureAnnotations& annotation) { return std::get<0>(annotation); }
+inline size_t& get_num_unsatisfied_preconditions(StructureAnnotations& annotation) { return std::get<1>(annotation); }
+inline size_t get_num_unsatisfied_preconditions(const StructureAnnotations& annotation) { return std::get<1>(annotation); }
+
+using StructuresAnnotationsContainer = HanaContainer<StructureAnnotationsList, Action, Axiom>;
 
 template<IsStructure S>
-inline auto& get(StructuresAnnotations& annotations)
+inline auto& get(StructuresAnnotationsContainer& annotations)
 {
     return boost::hana::at_key(annotations, boost::hana::type<S> {});
 }

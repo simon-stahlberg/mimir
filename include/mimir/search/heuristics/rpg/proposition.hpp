@@ -20,6 +20,7 @@
 
 #include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/heuristics/rpg/annotations.hpp"
 #include "mimir/search/heuristics/rpg/structures.hpp"
 
 namespace mimir::search::rpg
@@ -27,10 +28,7 @@ namespace mimir::search::rpg
 class Proposition
 {
 public:
-    Proposition(Index index, HanaContainer<IndexList, Action, Axiom> is_precondition_of, bool is_goal) :
-        m_index(index),
-        m_is_precondition_of(std::move(is_precondition_of)),
-        m_is_goal(is_goal)
+    Proposition(Index index, HanaContainer<IndexList, Action, Axiom> is_precondition_of) : m_index(index), m_is_precondition_of(std::move(is_precondition_of))
     {
     }
 
@@ -41,7 +39,6 @@ public:
         return boost::hana::at_key(m_is_precondition_of, boost::hana::type<S> {});
     }
     const HanaContainer<IndexList, Action, Axiom>& is_precondition_of() const { return m_is_precondition_of; }
-    bool is_goal() const { return m_is_goal; }
 
 private:
     Index m_index;
@@ -66,6 +63,16 @@ inline auto& get(AtomIndicesContainer& container)
 {
     return boost::hana::at_key(container, boost::hana::type<P> {});
 }
+
+using PropositionAnnotations = Annotations<DiscreteCost, bool>;
+using PropositionAnnotationsList = AnnotationsList<DiscreteCost, bool>;
+
+inline DiscreteCost& get_cost(PropositionAnnotations& annotation) { return std::get<0>(annotation); }
+inline DiscreteCost get_cost(const PropositionAnnotations& annotation) { return std::get<0>(annotation); }
+
+inline bool& is_goal(PropositionAnnotations& annotation) { return std::get<1>(annotation); }
+inline bool is_goal(const PropositionAnnotations& annotation) { return std::get<1>(annotation); }
+
 }
 
 #endif
