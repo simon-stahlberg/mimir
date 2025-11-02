@@ -464,9 +464,9 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path, mode='lifted')
         initial_state = problem.get_initial_state()
         class CustomHeuristic(Heuristic):
-            def compute_value(self, state: State, goal: Union[GroundConjunctiveCondition, None] = None) -> float:
+            def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> 'float':
                 return 0.0 if goal and goal.holds(state) else 1.0
-            def get_preferred_actions(self) -> set[GroundAction]:
+            def get_preferred_actions(self) -> 'set[GroundAction]':
                 return set()
         heuristic = CustomHeuristic()
         result = astar_eager(problem, initial_state, heuristic)
