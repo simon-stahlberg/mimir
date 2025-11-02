@@ -17,8 +17,16 @@ Mimir depends on the following set of libraries:
 - [Cista](https://github.com/felixguendling/cista/) for zero-copy serialization,
 - [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing,
 - [Abseil](https://github.com/abseil/abseil-cpp) for flat containers,
-- [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking, and
-- [GoogleTest](https://github.com/google/googletest) for unit testing.
+- [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking,
+- [GoogleTest](https://github.com/google/googletest) for unit testing,
+- [Souffle](https://github.com/souffle-lang/souffle) for datalog solving,
+- [valla](https://github.com/drexlerd/tree-compression) for tree compression,
+- [fmt](https://github.com/fmtlib/fmt) for formatting,
+- [gtl](https://github.com/greg7mdp/gtl) for flat hash sets,
+- [oneTBB](https://github.com/uxlfoundation/oneTBB) for multi core utilization,
+- [argparse](https://github.com/p-ranav/argparse.git) for argument parsing, and 
+- [nanobind](https://github.com/wjakob/nanobind.git) for Python bindings.
+
 
 Run the following sequence of commands to download, configure, build, and install all dependencies:
 

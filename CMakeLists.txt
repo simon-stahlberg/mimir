@@ -154,6 +154,12 @@ if(valla_FOUND)
 endif()
 
 
+find_program(SOUFFLE_BIN NAMES souffle REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if (SOUFFLE_BIN)
+  message(STATUS "Found Souffle: ${SOUFFLE_BIN}")
+endif()
+
+
 ##############################################################
 # Add library and executable targets
 ##############################################################
