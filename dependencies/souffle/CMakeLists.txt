@@ -5,14 +5,10 @@ include(ExternalProject)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-# ---------------------------------------
-# Options (tweak as you like)
-# ---------------------------------------
-
 message(STATUS "Dependency \"souffle\"...")
 
 # ---------------------------------------
-# Build Soufflé as an ExternalProject
+# Build Souffle as an ExternalProject
 # ---------------------------------------
 
 list(APPEND CMAKE_ARGS
@@ -29,43 +25,33 @@ foreach(CMAKE_ARG ${CMAKE_ARGS})
 endforeach()
 
 ExternalProject_Add(
-    souffle_ep
+    souffle
     GIT_REPOSITORY https://github.com/souffle-lang/souffle.git
     GIT_TAG 2.5
     PREFIX       ${CMAKE_BINARY_DIR}/souffle
     CMAKE_ARGS   ${CMAKE_ARGS}
+    INSTALL_COMMAND ""
 )
 
-ExternalProject_Get_Property(souffle_ep SOURCE_DIR BINARY_DIR)
+ExternalProject_Get_Property(souffle SOURCE_DIR BINARY_DIR)
 message(STATUS "SOUFFLE SOURCE_DIR: ${SOURCE_DIR}")
 message(STATUS "SOUFFLE BINARY_DIR: ${BINARY_DIR}")
 
 # Build-tree artifacts
-set(SOUFFLE_INC_PUBLIC_BUILD     "${SOURCE_DIR}/src/include")
-set(SOUFFLE_INC_INTERNAL_BUILD   "${SOURCE_DIR}/src")
-set(SOUFFLE_INC_GENERATED_BUILD  "${BINARY_DIR}/src")
+set(SOUFFLE_INC_BUILD            "${SOURCE_DIR}/src")
 set(SOUFFLE_LIB_BUILD            "${BINARY_DIR}/src/libsouffle.a")
 
 # --- Imported target for build-tree consumers --------------------------------
 add_library(Souffle::souffle STATIC IMPORTED GLOBAL)
-add_dependencies(Souffle::souffle souffle_ep)
+add_dependencies(Souffle::souffle souffle)
 set_target_properties(Souffle::souffle PROPERTIES
   IMPORTED_LOCATION "${SOUFFLE_LIB_BUILD}"
-  INTERFACE_INCLUDE_DIRECTORIES
-    "${SOUFFLE_INC_PUBLIC_BUILD};${SOUFFLE_INC_INTERNAL_BUILD};${SOUFFLE_INC_GENERATED_BUILD}"
+  INTERFACE_INCLUDE_DIRECTORIES "${SOUFFLE_INC_BUILD}"
 )
 
 # --- Install headers + static lib --------------------------------------------
-install(DIRECTORY "${SOUFFLE_INC_PUBLIC_BUILD}/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        FILES_MATCHING PATTERN "*.h")
-
-install(DIRECTORY "${SOUFFLE_INC_INTERNAL_BUILD}/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/souffle-internal/src"
-        FILES_MATCHING PATTERN "*.h")
-
-install(DIRECTORY "${SOUFFLE_INC_GENERATED_BUILD}/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/souffle-internal/src"
+install(DIRECTORY "${SOUFFLE_INC_BUILD}/"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/souffle"
         FILES_MATCHING PATTERN "*.h")
 
 install(FILES "${SOUFFLE_LIB_BUILD}"
@@ -74,8 +60,8 @@ install(FILES "${SOUFFLE_LIB_BUILD}"
 # --- Export an INTERFACE target that carries include dirs in the install tree -
 add_library(Souffle_export INTERFACE)
 target_include_directories(Souffle_export INTERFACE
-  "$<BUILD_INTERFACE:${SOUFFLE_INC_PUBLIC_BUILD};${SOUFFLE_INC_INTERNAL_BUILD};${SOUFFLE_INC_GENERATED_BUILD}>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR};${CMAKE_INSTALL_INCLUDEDIR}/souffle-internal/src>"
+  "$<BUILD_INTERFACE:${SOUFFLE_INC_BUILD};${SOUFFLE_INC_BUILD}/souffle/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/souffle;${CMAKE_INSTALL_INCLUDEDIR}/souffle/include>"
 )
 
 install(TARGETS Souffle_export
