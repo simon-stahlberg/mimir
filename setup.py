@@ -55,6 +55,10 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory / 'dependencies' / 'build')}", f"-j{multiprocessing.cpu_count()}"]
         )
 
+        subprocess.run(
+            ["cmake", "--install", f"{str(temp_directory / 'dependencies' / 'build')}"]
+        )
+
         shutil.rmtree(f"{str(temp_directory / 'dependencies' / 'build')}")
 
         #######################################################################

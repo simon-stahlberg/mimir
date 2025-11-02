@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+# Bring in the exported INTERFACE target with include dirs
+include("${CMAKE_CURRENT_LIST_DIR}/SouffleTargets.cmake")
+
+# Define the imported static lib target pointing to the installed archive
+if (NOT TARGET Souffle::souffle)
+  add_library(Souffle::souffle STATIC IMPORTED GLOBAL)
+  set(_SOUFFLE_LIB "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/libsouffle.a") # adjust on Win
+  set_target_properties(Souffle::souffle PROPERTIES
+    IMPORTED_LOCATION "${_SOUFFLE_LIB}"
+    INTERFACE_INCLUDE_DIRECTORIES
+      "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@;${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@/souffle-internal/src"
+  )
+endif()

@@ -26,6 +26,7 @@
  * Common
  */
 
+#include "mimir/common/filesystem.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/common/types_cista.hpp"
 

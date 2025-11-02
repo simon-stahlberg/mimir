@@ -17,6 +17,8 @@
 
 #include "mimir/common/filesystem.hpp"
 
+#include <dlfcn.h>
+
 namespace mimir
 {
 void write_to_file(const fs::path& filePath, const std::string& content)
@@ -48,4 +50,5 @@ void write_to_file(const fs::path& filePath, const std::string& content)
 
     // Close the file stream automatically when the function exits and fileStream goes out of scope.
 }
+
 }

@@ -22,6 +22,7 @@ jobs:
         cd tests/integration/dependencies
         cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/tests/integration/dependencies/installs"
         cmake --build build
+        cmake --install build/
 
     - name: Build and Test Project
       run: |

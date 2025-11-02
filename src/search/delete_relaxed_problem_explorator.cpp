@@ -30,6 +30,8 @@
 #include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
+#include <souffle-internal/src/MainDriver.h>
+
 using namespace mimir::formalism;
 
 namespace mimir::search

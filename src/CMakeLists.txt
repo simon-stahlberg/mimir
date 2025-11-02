@@ -40,10 +40,11 @@ target_link_libraries(core
     loki::parsers  
     absl::flat_hash_set
     absl::flat_hash_map  
-    TBB::tbb
+    TBB::tbb    
   PRIVATE
     Nauty::Nauty
     fmt::fmt
+    Souffle::souffle
 )
 
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})
