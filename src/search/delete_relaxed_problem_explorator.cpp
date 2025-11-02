@@ -17,9 +17,7 @@
 
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
@@ -37,32 +35,61 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out) {}
+template<IsStaticOrFluentOrDerivedTag P>
+static std::string to_datalog_predicate_symbol(const PredicateImpl<P>& predicate)
+{
+    // The souffle datalog solver doesn't like "=" predicate name.
+    return (predicate.get_name() == "=") ? "_equal" : predicate.get_name();
+}
 
-static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& out) {}
+static std::string to_datalog_variable(const VariableImpl& variable) { return fmt::format("x{}", variable.get_index()); }
+
+template<IsStaticOrFluentOrDerivedTag P>
+static std::string to_datalog_atom(const AtomImpl<P>& atom)
+{
+    return fmt::format("{}({})",
+                       to_datalog_predicate_symbol(*atom.get_predicate()),
+                       fmt::join(atom.get_variables() | std::views::transform([](auto&& variable) { return to_datalog_variable(*variable); }), ","));
+}
+
+static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out)
+{
+    // fmt::print(out, "{} :- {}\n", create_datalog_atom(*axiom.get_literal()->get_atom()));
+}
+
+static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& axiom : domain.get_axioms())
+        create_datalog_axiom_rule(*axiom, out);
+}
 
 static void create_datalog_action_rule(const ActionImpl& action, std::ostream& out) {}
 
-static void create_datalog_action_rules(const DomainImpl& domain, std::ostream& out) {}
+static void create_datalog_action_rules(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& action : domain.get_actions())
+        create_datalog_action_rule(*action, out);
+}
 
 static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostream& out)
 {
-    boost::hana::for_each(domain.get_hana_predicates(),
-                          [&](auto&& pair)
-                          {
-                              const auto& predicates = boost::hana::second(pair);
+    boost::hana::for_each(
+        domain.get_hana_predicates(),
+        [&](auto&& pair)
+        {
+            const auto& predicates = boost::hana::second(pair);
 
-                              for (const auto& predicate : predicates)
-                              {
-                                  fmt::print(out,
-                                             ".decl {}({})\n",
-                                             predicate->get_name(),
-                                             fmt::join(predicate->get_parameters()
-                                                           | std::views::transform([](auto&& parameter)
-                                                                                   { return fmt::format("{}:number", parameter->get_variable()->get_name()); }),
-                                                       ", "));
-                              }
-                          });
+            for (const auto& predicate : predicates)
+            {
+                fmt::print(out,
+                           ".decl {}({})\n",
+                           to_datalog_predicate_symbol(*predicate),
+                           fmt::join(predicate->get_parameters()
+                                         | std::views::transform([](auto&& parameter)
+                                                                 { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
+                                     ", "));
+            }
+        });
 }
 
 static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostream& out)
@@ -77,8 +104,9 @@ static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostrea
             {
                 if (literal->get_polarity())
                 {
-                    fmt::print("{}({}).\n",
-                               literal->get_atom()->get_predicate()->get_name(),
+                    fmt::print(out,
+                               "{}({}).\n",
+                               to_datalog_predicate_symbol(*literal->get_atom()->get_predicate()),
                                fmt::join(literal->get_atom()->get_objects() | std::views::transform([](auto&& object) { return object->get_index(); }), ","));
                 }
             }
@@ -105,6 +133,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
 {
     // std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
     // const auto start_time = std::chrono::high_resolution_clock::now();
+
+    std::cout << create_datalog_program(*problem) << std::endl;
 
     auto domain_delete_free_builder = DomainBuilder();
     auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);
