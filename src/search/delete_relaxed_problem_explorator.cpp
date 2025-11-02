@@ -50,7 +50,6 @@ static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostrea
     boost::hana::for_each(domain.get_hana_predicates(),
                           [&](auto&& pair)
                           {
-                              const auto key = boost::hana::first(pair);
                               const auto& predicates = boost::hana::second(pair);
 
                               for (const auto& predicate : predicates)
@@ -60,7 +59,7 @@ static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostrea
                                              predicate->get_name(),
                                              fmt::join(predicate->get_parameters()
                                                            | std::views::transform([](auto&& parameter)
-                                                                                   { return fmt::format("{}:number", to_string(parameter->get_variable())); }),
+                                                                                   { return fmt::format("{}:number", parameter->get_variable()->get_name()); }),
                                                        ", "));
                               }
                           });
@@ -72,7 +71,6 @@ static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostrea
         problem.get_hana_initial_literals(),
         [&](auto&& pair)
         {
-            const auto key = boost::hana::first(pair);
             const auto& literals = boost::hana::second(pair);
 
             for (const auto& literal : literals)
