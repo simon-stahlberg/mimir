@@ -154,7 +154,7 @@ if(valla_FOUND)
 endif()
 
 
-find_program(SOUFFLE_BIN NAMES souffle REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+find_program(SOUFFLE_BIN NAMES souffle REQUIRED PATHS "${CMAKE_PREFIX_PATH}/bin" NO_DEFAULT_PATH)
 if (SOUFFLE_BIN)
   message(STATUS "Found Souffle: ${SOUFFLE_BIN}")
 endif()

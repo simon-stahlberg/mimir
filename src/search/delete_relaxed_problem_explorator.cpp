@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
@@ -35,6 +36,68 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
+
+static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out) {}
+
+static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& out) {}
+
+static void create_datalog_action_rule(const ActionImpl& action, std::ostream& out) {}
+
+static void create_datalog_action_rules(const DomainImpl& domain, std::ostream& out) {}
+
+static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostream& out)
+{
+    boost::hana::for_each(domain.get_hana_predicates(),
+                          [&](auto&& pair)
+                          {
+                              const auto key = boost::hana::first(pair);
+                              const auto& predicates = boost::hana::second(pair);
+
+                              for (const auto& predicate : predicates)
+                              {
+                                  fmt::print(out,
+                                             ".decl {}({})\n",
+                                             predicate->get_name(),
+                                             fmt::join(predicate->get_parameters()
+                                                           | std::views::transform([](auto&& parameter)
+                                                                                   { return fmt::format("{}:number", to_string(parameter->get_variable())); }),
+                                                       ", "));
+                              }
+                          });
+}
+
+static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostream& out)
+{
+    boost::hana::for_each(
+        problem.get_hana_initial_literals(),
+        [&](auto&& pair)
+        {
+            const auto key = boost::hana::first(pair);
+            const auto& literals = boost::hana::second(pair);
+
+            for (const auto& literal : literals)
+            {
+                if (literal->get_polarity())
+                {
+                    fmt::print("{}({}).\n",
+                               literal->get_atom()->get_predicate()->get_name(),
+                               fmt::join(literal->get_atom()->get_objects() | std::views::transform([](auto&& object) { return object->get_index(); }), ","));
+                }
+            }
+        });
+}
+
+static std::string create_datalog_program(const ProblemImpl& problem)
+{
+    std::stringstream ss;
+
+    create_datalog_predicate_facts(*problem.get_domain(), ss);
+    create_datalog_initial_facts(problem, ss);
+    create_datalog_action_rules(*problem.get_domain(), ss);
+    create_datalog_axiom_rules(*problem.get_domain(), ss);
+
+    return ss.str();
+}
 
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
     m_problem(problem),
