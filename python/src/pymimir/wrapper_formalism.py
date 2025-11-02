@@ -1773,6 +1773,7 @@ class Problem:
         else:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
         self._domain = domain
+        self._mode = mode
         self._advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
         self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }
@@ -1799,6 +1800,15 @@ class Problem:
         :rtype: Domain
         """
         return self._domain
+
+    def get_mode(self) -> 'str':
+        """
+        Get the mode of the problem.
+
+        :return: The mode of the problem.
+        :rtype: str
+        """
+        return self._mode
 
     def get_name(self) -> 'str':
         """

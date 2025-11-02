@@ -1,8 +1,8 @@
-from typing import Union
 import unittest
 
 from pathlib import Path
 from pymimir import *
+from typing import Union
 
 
 DATA_DIR = (Path(__file__).parent.parent.parent).absolute() / 'data'
@@ -73,6 +73,15 @@ class TestProblem(unittest.TestCase):
         expected_name = 'blocksworld-300'
         assert problem.get_index() is not None
         assert actual_name == expected_name
+
+    def test_mode(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path, mode='lifted')
+        actual_mode = problem.get_mode()
+        expected_mode = 'lifted'
+        assert actual_mode == expected_mode
 
     # def test_requirements(self):
     #     domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
