@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Callable, Union
 
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
@@ -29,20 +30,26 @@ from .wrapper_formalism import GroundAction, Problem, State, GroundConjunctiveCo
 # Heuristic functions
 # -------------------
 
-class Heuristic:
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
+class Heuristic(ABC):
+    """
+    Abstract base class for heuristic functions used in search algorithms.
+    """
+
+    @abstractmethod
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
         """
         Compute the heuristic value for a given state.
 
         :param state: The state for which to compute the heuristic.
         :type state: State
-        :param goal: the optional goal condition.
-        :type is_goal_state: GroundConjunctiveCondition
+        :param goal: The goal condition to compute the heuristic against (optional).
+        :type goal: Union[GroundConjunctiveCondition, None]
         :return: The heuristic value.
         :rtype: float
         """
         raise NotImplementedError("This method should be overridden by subclasses.")
 
+    @abstractmethod
     def get_preferred_actions(self) -> 'set[GroundAction]':
         """
         Get preferred actions for the last computed state.
@@ -70,8 +77,8 @@ class AddHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -93,8 +100,8 @@ class BlindHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -117,8 +124,8 @@ class MaxHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -140,8 +147,8 @@ class PerfectHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -164,8 +171,8 @@ class SetAddHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -188,8 +195,8 @@ class FFHeuristic(Heuristic):
         """
         return self._problem
 
-    def compute_value(self, state: 'State', goal: GroundConjunctiveCondition = None) -> float:
-        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal)
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
 
     def get_preferred_actions(self) -> 'set[GroundAction]':
         return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
@@ -218,7 +225,7 @@ class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
     def get_problem(self) -> 'Problem':
         return self._problem
 
-    def compute_heuristic(self, state: 'AdvancedState', goal: GroundConjunctiveCondition = None) -> float:
+    def compute_heuristic(self, state: 'AdvancedState', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
         wrapped_state = State(state, self._problem)
         return self._heuristic.compute_value(wrapped_state, goal)
 

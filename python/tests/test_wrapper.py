@@ -1,3 +1,4 @@
+from typing import Union
 import unittest
 
 from pathlib import Path
@@ -454,8 +455,10 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path, mode='lifted')
         initial_state = problem.get_initial_state()
         class CustomHeuristic(Heuristic):
-            def compute_value(self, state: State, is_goal_state: bool) -> float:
-                return 0.0 if is_goal_state else 1.0
+            def compute_value(self, state: State, goal: Union[GroundConjunctiveCondition, None] = None) -> float:
+                return 0.0 if goal and goal.holds(state) else 1.0
+            def get_preferred_actions(self) -> set[GroundAction]:
+                return set()
         heuristic = CustomHeuristic()
         result = astar_eager(problem, initial_state, heuristic)
         assert result.status == "solved"
@@ -551,6 +554,22 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 4.0
         assert len(heuristic.get_preferred_actions()) == 2
+
+    def test_ff_heuristic_with_different_goal(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = FFHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        predicate_on = domain.get_predicate('on')
+        obj_b1 = problem.get_object('b1')
+        obj_b2 = problem.get_object('b2')
+        atom_on_b1_b2 = problem.new_ground_atom(predicate_on, [obj_b1, obj_b2])
+        literal_on_b1_b2 = problem.new_ground_literal(atom_on_b1_b2, True)
+        different_goal = GroundConjunctiveCondition.new([literal_on_b1_b2], problem)
+        assert heuristic.compute_value(initial_state, different_goal) == 2.0
+        assert len(heuristic.get_preferred_actions()) == 1
 
     def test_iw(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
