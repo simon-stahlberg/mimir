@@ -17,6 +17,7 @@
 
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
+#include "mimir/algorithms/souffle.hpp"
 #include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
@@ -29,8 +30,6 @@
 #include "mimir/search/axiom_evaluators/lifted/kpkc.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state_unpacked.hpp"
-
-#include <souffle/MainDriver.h>
 
 using namespace mimir::formalism;
 
@@ -94,6 +93,40 @@ static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostrea
         });
 }
 
+static void create_datalog_action_fact(const ActionImpl& action, std::ostream& out)
+{
+    fmt::print(
+        out,
+        ".decl {}({})\n",
+        action.get_name(),
+        fmt::join(action.get_parameters()
+                      | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
+                  ", "));
+}
+
+static void create_datalog_action_facts(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& action : domain.get_actions())
+        create_datalog_action_fact(*action, out);
+}
+
+static void create_datalog_axiom_fact(const AxiomImpl& axiom, std::ostream& out)
+{
+    fmt::print(
+        out,
+        ".decl {}({})\n",
+        axiom.get_literal()->get_atom()->get_predicate()->get_name(),
+        fmt::join(axiom.get_parameters()
+                      | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
+                  ", "));
+}
+
+static void create_datalog_axiom_facts(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& axiom : domain.get_axioms())
+        create_datalog_axiom_fact(*axiom, out);
+}
+
 static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostream& out)
 {
     boost::hana::for_each(
@@ -120,9 +153,13 @@ static std::string create_datalog_program(const ProblemImpl& problem)
     std::stringstream ss;
 
     create_datalog_predicate_facts(*problem.get_domain(), ss);
-    create_datalog_initial_facts(problem, ss);
+    create_datalog_action_facts(*problem.get_domain(), ss);
+    create_datalog_axiom_facts(*problem.get_domain(), ss);
+
     create_datalog_action_rules(*problem.get_domain(), ss);
     create_datalog_axiom_rules(*problem.get_domain(), ss);
+
+    create_datalog_initial_facts(problem, ss);
 
     return ss.str();
 }
@@ -137,6 +174,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     // const auto start_time = std::chrono::high_resolution_clock::now();
 
     std::cout << create_datalog_program(*problem) << std::endl;
+
+    mimir::datalog::solve(create_datalog_program(*problem));
 
     auto domain_delete_free_builder = DomainBuilder();
     auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);

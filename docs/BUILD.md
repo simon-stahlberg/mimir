@@ -34,9 +34,13 @@ Run the following sequence of commands to download, configure, build, and instal
 ```console
 cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs -DCMAKE_PREFIX_PATH=$PWD/dependencies/installs
 ```
-2. Download, build, and install all dependencies:
+2. Download, build dependencies:
 ```console
 cmake --build dependencies/build -j$(nproc)
+```
+3. Install dependencies
+```console
+cmake --install dependencies/build
 ```
 
 ## Building Mimir

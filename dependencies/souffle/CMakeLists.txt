@@ -16,7 +16,11 @@ list(APPEND CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    -DSOUFFLE_USE_ZLIB=OFF
     -DSOUFFLE_USE_SQLITE=OFF
+    -DSOUFFLE_USE_OPENMP=OFF
+    -DSOUFFLE_USE_CURSES=OFF
+    -DSOUFFLE_USE_LIBFFI=OFF
 )
 
 message(STATUS "Preparing external project \"souffle\" with args:")
@@ -26,8 +30,8 @@ endforeach()
 
 ExternalProject_Add(
     souffle
-    GIT_REPOSITORY https://github.com/souffle-lang/souffle.git
-    GIT_TAG 2.5
+    GIT_REPOSITORY https://github.com/drexlerd/souffle.git
+    GIT_TAG ae5e9a1a7a133ffc58c9d9606ceb34b18960ba05
     PREFIX       ${CMAKE_BINARY_DIR}/souffle
     CMAKE_ARGS   ${CMAKE_ARGS}
     INSTALL_COMMAND ""
