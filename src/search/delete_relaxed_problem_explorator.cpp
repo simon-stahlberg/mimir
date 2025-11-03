@@ -122,23 +122,16 @@ static std::string to_datalog_relation(const AxiomImpl& axiom)
 
 static void create_datalog_predicate_relations(const DomainImpl& domain, std::ostream& out)
 {
-    boost::hana::for_each(
-        domain.get_hana_predicates(),
-        [&](auto&& pair)
-        {
-            const auto& predicates = boost::hana::second(pair);
+    boost::hana::for_each(domain.get_hana_predicates(),
+                          [&](auto&& pair)
+                          {
+                              const auto& predicates = boost::hana::second(pair);
 
-            for (const auto& predicate : predicates)
-            {
-                fmt::print(out,
-                           ".decl {}({})\n",
-                           to_datalog_symbol(*predicate),
-                           fmt::join(predicate->get_parameters()
-                                         | std::views::transform([](auto&& parameter)
-                                                                 { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
-                                     ", "));
-            }
-        });
+                              for (const auto& predicate : predicates)
+                              {
+                                  fmt::print(out, ".decl {}\n", to_datalog_relation(*predicate));
+                              }
+                          });
 }
 
 static void create_datalog_action_relations(const ActionImpl& action, std::ostream& out)
