@@ -70,6 +70,13 @@ static std::string to_datalog_symbol(const AxiomImpl& axiom)
 
 static std::string to_datalog_symbol(const VariableImpl& variable) { return fmt::format("x{}", variable.get_index()); }
 
+static std::string to_datalog_symbol(const ObjectImpl& object) { return fmt::format("{}", object.get_index()); }
+
+static std::string to_datalog_symbol(const TermImpl& term)
+{
+    return std::visit([](auto&& arg) -> std::string { return to_datalog_symbol(*arg); }, term.get_variant());
+}
+
 /**
  * Relations
  */
@@ -120,9 +127,9 @@ static std::string to_datalog_relation(const AxiomImpl& axiom)
     return fmt::format("{}({})", to_datalog_symbol(axiom), fmt::join(parameters, ","));
 }
 
-static void create_datalog_predicate_relations(const DomainImpl& domain, std::ostream& out)
+static void create_datalog_predicate_relations(const ProblemImpl& problem, std::ostream& out)
 {
-    boost::hana::for_each(domain.get_hana_predicates(),
+    boost::hana::for_each(problem.get_domain()->get_hana_predicates(),
                           [&](auto&& pair)
                           {
                               const auto& predicates = boost::hana::second(pair);
@@ -132,6 +139,11 @@ static void create_datalog_predicate_relations(const DomainImpl& domain, std::os
                                   fmt::print(out, ".decl {}\n", to_datalog_relation(*predicate));
                               }
                           });
+
+    for (const auto& derived_predicate : problem.get_derived_predicates())
+    {
+        fmt::print(out, ".decl {}\n", to_datalog_relation(*derived_predicate));
+    }
 }
 
 static void create_datalog_action_relations(const ActionImpl& action, std::ostream& out)
@@ -140,8 +152,7 @@ static void create_datalog_action_relations(const ActionImpl& action, std::ostre
     {
         fmt::print(out, ".decl {}\n", to_datalog_relation(action, *cond_effect));
 
-        fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(action, *cond_effect));
-        // fmt::print(out, ".output {}\n", to_datalog_symbol(action, *cond_effect));
+        fmt::print(out, ".output {}(IO=grounder)\n", to_datalog_symbol(action, *cond_effect));
     }
 }
 
@@ -155,13 +166,12 @@ static void create_datalog_axiom_relations(const AxiomImpl& axiom, std::ostream&
 {
     fmt::print(out, ".decl {}\n", to_datalog_relation(axiom));
 
-    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(axiom));
-    // fmt::print(out, ".output {}\n", to_datalog_symbol(axiom));
+    fmt::print(out, ".output {}(IO=grounder)\n", to_datalog_symbol(axiom));
 }
 
-static void create_datalog_axiom_relations(const DomainImpl& domain, std::ostream& out)
+static void create_datalog_axiom_relations(const ProblemImpl& problem, std::ostream& out)
 {
-    for (const auto& axiom : domain.get_axioms())
+    for (const auto& axiom : problem.get_problem_and_domain_axioms())
         create_datalog_axiom_relations(*axiom, out);
 }
 
@@ -174,7 +184,7 @@ static std::string to_datalog_atom(const AtomImpl<P>& atom)
 {
     return fmt::format("{}({})",
                        to_datalog_symbol(*atom.get_predicate()),
-                       fmt::join(atom.get_variables() | std::views::transform([](auto&& variable) { return to_datalog_symbol(*variable); }), ","));
+                       fmt::join(atom.get_terms() | std::views::transform([](auto&& term) { return to_datalog_symbol(*term); }), ","));
 }
 
 static std::string to_datalog_atom(const AxiomImpl& axiom)
@@ -238,9 +248,9 @@ static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out)
     }
 }
 
-static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& out)
+static void create_datalog_axiom_rules(const ProblemImpl& problem, std::ostream& out)
 {
-    for (const auto& axiom : domain.get_axioms())
+    for (const auto& axiom : problem.get_problem_and_domain_axioms())
         create_datalog_axiom_rule(*axiom, out);
 }
 
@@ -324,12 +334,12 @@ static std::string create_datalog_program(const ProblemImpl& problem)
 {
     std::stringstream ss;
 
-    create_datalog_predicate_relations(*problem.get_domain(), ss);
+    create_datalog_predicate_relations(problem, ss);
     create_datalog_action_relations(*problem.get_domain(), ss);
-    create_datalog_axiom_relations(*problem.get_domain(), ss);
+    create_datalog_axiom_relations(problem, ss);
 
     create_datalog_action_rules(*problem.get_domain(), ss);
-    create_datalog_axiom_rules(*problem.get_domain(), ss);
+    create_datalog_axiom_rules(problem, ss);
 
     create_datalog_initial_facts(problem, ss);
 
@@ -337,246 +347,154 @@ static std::string create_datalog_program(const ProblemImpl& problem)
 }
 
 /// A custom output write stream
-struct TestWriteStream : public souffle::WriteStream
+struct ActionGrounderWriteStream : public souffle::WriteStream
 {
-    explicit TestWriteStream(const std::map<std::string, std::string>& rwOperation,
-                             const souffle::SymbolTable& symbolTable,
-                             const souffle::RecordTable& recordTable) :
-        WriteStream(rwOperation, symbolTable, recordTable)
+    ProblemImpl& m_problem;
+    Action m_action;
+
+    GroundActionSet& m_ref_ground_actions;
+
+    explicit ActionGrounderWriteStream(const std::map<std::string, std::string>& rwOperation,
+                                       const souffle::SymbolTable& symbolTable,
+                                       const souffle::RecordTable& recordTable,
+                                       ProblemImpl& problem,
+                                       Action action,
+                                       GroundActionSet& ref_ground_actions) :
+        WriteStream(rwOperation, symbolTable, recordTable),
+        m_problem(problem),
+        m_action(action),
+        m_ref_ground_actions(ref_ground_actions)
     {
+        assert(arity >= m_action->get_arity());
     }
 
-    void writeNullary() override { std::cout << "()\n"; }
+    void writeNullary() override { m_ref_ground_actions.insert(m_problem.ground(m_action, ObjectList {})); }
 
     void writeNextTuple(const souffle::RamDomain* tup) override
     {
-        for (std::size_t col = 0; col < arity; ++col)
+        auto binding = ObjectList {};
+        binding.reserve(m_action->get_arity());
+        for (size_t col = 0; col < m_action->get_arity(); ++col)
         {
-            if (col > 0)
-            {
-                std::cout << "\t";
-            }
-            writeNextTupleElement(typeAttributes.at(col), tup[col]);
+            const auto object_index = tup[col];
+            binding.push_back(m_problem.get_repositories().get_object(object_index));
         }
-        std::cout << "\n";
+        m_ref_ground_actions.insert(m_problem.ground(m_action, binding));
+    }
+};
+
+struct AxiomGrounderWriteStream : public souffle::WriteStream
+{
+    ProblemImpl& m_problem;
+    Axiom m_axiom;
+
+    GroundAxiomSet& m_ref_ground_axioms;
+
+    explicit AxiomGrounderWriteStream(const std::map<std::string, std::string>& rwOperation,
+                                      const souffle::SymbolTable& symbolTable,
+                                      const souffle::RecordTable& recordTable,
+                                      ProblemImpl& problem,
+                                      Axiom axiom,
+                                      GroundAxiomSet& ref_ground_axioms) :
+        WriteStream(rwOperation, symbolTable, recordTable),
+        m_problem(problem),
+        m_axiom(axiom),
+        m_ref_ground_axioms(ref_ground_axioms)
+    {
+        assert(arity == m_axiom->get_arity());
     }
 
-    void writeNextTupleElement(const std::string& type, souffle::RamDomain value)
+    void writeNullary() override { m_ref_ground_axioms.insert(m_problem.ground(m_axiom, ObjectList {})); }
+
+    void writeNextTuple(const souffle::RamDomain* tup) override
     {
-        switch (type[0])
+        auto binding = ObjectList {};
+        binding.reserve(m_axiom->get_arity());
+        for (size_t col = 0; col < m_axiom->get_arity(); ++col)
         {
-            case 'i':
-                std::cout << value;
-                break;
-            default: /* don't care about other types */
-                break;
+            const auto object_index = tup[col];
+            binding.push_back(m_problem.get_repositories().get_object(object_index));
         }
+        m_ref_ground_axioms.insert(m_problem.ground(m_axiom, binding));
     }
 };
 
 /// Factory of the custom output write stream
-struct TestWriteStreamFactory : public souffle::WriteStreamFactory
+struct GrounderWriteStreamFactory : public souffle::WriteStreamFactory
 {
+    std::unordered_map<std::string, Action> m_relation_to_action;
+    std::unordered_map<std::string, Axiom> m_relation_to_axiom;
+
+    ProblemImpl& m_problem;
+    GroundActionSet& m_ref_ground_actions;
+    GroundAxiomSet& m_ref_ground_axioms;
+
+    explicit GrounderWriteStreamFactory(ProblemImpl& problem, GroundActionSet& ref_ground_actions, GroundAxiomSet& ref_ground_axioms) :
+        m_problem(problem),
+        m_ref_ground_actions(ref_ground_actions),
+        m_ref_ground_axioms(ref_ground_axioms)
+    {
+        for (const auto& action : problem.get_domain()->get_actions())
+        {
+            for (const auto& cond_effect : action->get_conditional_effects())
+            {
+                m_relation_to_action.emplace(to_datalog_symbol(*action, *cond_effect), action);
+            }
+        }
+        for (const auto& axiom : problem.get_problem_and_domain_axioms())
+        {
+            m_relation_to_axiom.emplace(to_datalog_symbol(*axiom), axiom);
+        }
+    }
+
     std::unique_ptr<souffle::WriteStream>
     getWriter(const std::map<std::string, std::string>& rwOperation, const souffle::SymbolTable& symbolTable, const souffle::RecordTable& recordTable) override
     {
-        return std::make_unique<TestWriteStream>(rwOperation, symbolTable, recordTable);
+        const auto& relation = rwOperation.at("name");
+
+        if (auto it = m_relation_to_action.find(relation); it != m_relation_to_action.end())
+            return std::make_unique<ActionGrounderWriteStream>(rwOperation, symbolTable, recordTable, m_problem, it->second, m_ref_ground_actions);
+
+        if (auto it = m_relation_to_axiom.find(relation); it != m_relation_to_axiom.end())
+            return std::make_unique<AxiomGrounderWriteStream>(rwOperation, symbolTable, recordTable, m_problem, it->second, m_ref_ground_axioms);
+
+        throw std::logic_error("Could not find structure for relation.");
     }
 
     const std::string& getName() const override { return name; }
 
-    const std::string name = "ostream";
+    const std::string name = "grounder";
 };
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
-    m_problem(problem),
-    m_delete_relax_transformer(),
-    m_delete_free_problem(),
-    m_delete_free_object_to_unrelaxed_object()
+DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) : m_problem(problem), m_ground_actions(), m_ground_axioms()
 {
-    // std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
-    // const auto start_time = std::chrono::high_resolution_clock::now();
-
-    std::cout << create_datalog_program(*problem) << std::endl;
-
-    mimir::datalog::solve(create_datalog_program(*problem), std::make_shared<TestWriteStreamFactory>());
-
-    auto domain_delete_free_builder = DomainBuilder();
-    auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);
-
-    auto delete_relax_builder = ProblemBuilder(delete_free_domain);
-    m_delete_free_problem = m_delete_relax_transformer.translate_level_0(m_problem, delete_relax_builder);
-
-    auto delete_free_applicable_action_generator = KPKCLiftedApplicableActionGeneratorImpl(m_delete_free_problem);
-    auto delete_free_axiom_evalator = std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(m_delete_free_problem);
-    auto delete_free_state_repository = std::make_shared<StateRepositoryImpl>(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
-
-    auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};
-    for (const auto& object : m_problem->get_problem_and_domain_objects())
-    {
-        unrelaxed_objects_by_name.emplace(object->get_name(), object);
-    }
-    for (const auto& object : m_delete_free_problem->get_problem_and_domain_objects())
-    {
-        m_delete_free_object_to_unrelaxed_object.emplace(object, unrelaxed_objects_by_name.at(object->get_name()));
-    }
-
-    auto [initial_state, initial_metric_value] = delete_free_state_repository->get_or_create_initial_state();
-
-    auto state = initial_state;
-
-    // Keep track of changes
-    bool reached_delete_free_explore_fixpoint = true;
-
-    auto ground_atoms = GroundAtomSet<FluentTag> {};
-    for (const auto& atom_index : state.get_atoms<FluentTag>())
-        ground_atoms.insert(m_delete_free_problem->get_repositories().get_ground_atom<FluentTag>(atom_index));
-
-    do
-    {
-        reached_delete_free_explore_fixpoint = true;
-
-        auto num_atoms_before = ground_atoms.size();
-
-        // Create and all applicable actions and apply them
-        // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        for (const auto& action : delete_free_applicable_action_generator.create_applicable_action_generator(state))
-        {
-            for (const auto& conditional_effect : action->get_conditional_effects())
-            {
-                if (is_applicable(conditional_effect, state))
-                {
-                    for (const auto& atom_index : conditional_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>())
-                    {
-                        ground_atoms.insert(m_delete_free_problem->get_repositories().get_ground_atom<FluentTag>(atom_index));
-                    }
-                }
-            }
-        }
-
-        state = std::get<0>(delete_free_state_repository->get_or_create_state(GroundAtomList<FluentTag>(ground_atoms.begin(), ground_atoms.end()),
-                                                                              state.get_numeric_variables()));
-
-        // Note: checking fluent atoms suffices because derived are implied by those.
-        auto num_atoms_after = ground_atoms.size();
-
-        if (num_atoms_before != num_atoms_after)
-        {
-            reached_delete_free_explore_fixpoint = false;
-        }
-
-    } while (!reached_delete_free_explore_fixpoint);
-
-    // const auto end_time = std::chrono::high_resolution_clock::now();
-    // const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    // std::cout << "[DeleteRelaxedProblemExplorator] Total time for delete relaxed exploration: " << total_time.count() << "\n"
-    //           << "[DeleteRelaxedProblemExplorator] Number of fluent grounded atoms reachable in delete-free problem: "
-    //           << delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
-    //           << "[DeleteRelaxedProblemExplorator] Number of derived grounded atoms reachable in delete-free problem: "
-    //           << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
+    mimir::datalog::solve(create_datalog_program(*problem), std::make_shared<GrounderWriteStreamFactory>(*m_problem, m_ground_actions, m_ground_axioms));
 }
-
-static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectList& objects, const ToObjectMap<Object>& delete_free_object_to_unrelaxed_object)
-{
-    auto result = ObjectList {};
-    result.reserve(objects.size());
-    for (const auto& object : objects)
-    {
-        result.push_back(delete_free_object_to_unrelaxed_object.at(object));
-    }
-    return result;
-}
-
-template<IsFluentOrDerivedTag P>
-Predicate<P> get_predicate(const ProblemImpl& problem, const std::string& name)
-{
-    throw std::runtime_error("Unexpected call");
-}
-
-template<>
-Predicate<FluentTag> get_predicate<FluentTag>(const ProblemImpl& problem, const std::string& name)
-{
-    // Fluent predicates are always specified in the domain
-    return problem.get_domain()->get_predicate<FluentTag>(name);
-}
-
-template<>
-Predicate<DerivedTag> get_predicate<DerivedTag>(const ProblemImpl& problem, const std::string& name)
-{
-    // Derived predicates may appear in the problem mainly due to translation of complicated goals.
-    return problem.get_problem_or_domain_derived_predicate(name);
-}
-
-template<IsFluentOrDerivedTag P>
-GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
-{
-    auto result = GroundAtomList<P> {};
-
-    const auto& delete_free_atom_repository =
-        boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<P>> {});
-    for (const auto& delete_free_ground_atom : delete_free_atom_repository)
-    {
-        const auto predicate = get_predicate<P>(*m_problem, delete_free_ground_atom.get_predicate()->get_name());
-
-        auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom.get_objects(), m_delete_free_object_to_unrelaxed_object);
-
-        auto ground_atom = m_problem->get_or_create_ground_atom(predicate, binding);
-
-        result.push_back(ground_atom);
-    }
-
-    return result;
-}
-
-template GroundAtomList<FluentTag> DeleteRelaxedProblemExplorator::create_ground_atoms() const;
-template GroundAtomList<DerivedTag> DeleteRelaxedProblemExplorator::create_ground_atoms() const;
 
 GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
 {
-    auto result = GroundActionList {};
-
-    for (const auto& delete_free_ground_action :
-         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {}))
+    auto ground_actions = GroundActionList {};
+    for (const auto& ground_action : m_ground_actions)
     {
-        // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action.get_action()))
+        if (is_statically_applicable(ground_action->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action.get_objects(), m_delete_free_object_to_unrelaxed_object);
-
-            auto grounded_action = m_problem->ground(action, std::move(binding));
-
-            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
-            {
-                result.push_back(grounded_action);
-            }
+            ground_actions.push_back(ground_action);
         }
     }
-
-    return result;
+    return ground_actions;
 }
 
 GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
 {
-    auto result = GroundAxiomList {};
-
-    for (const auto& delete_free_ground_axiom :
-         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {}))
+    auto ground_axioms = GroundAxiomList {};
+    for (const auto& ground_axiom : m_ground_axioms)
     {
-        // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom.get_axiom()))
+        if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom.get_objects(), m_delete_free_object_to_unrelaxed_object);
-
-            auto ground_axiom = m_problem->ground(axiom, std::move(binding));
-
-            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_positive_static_initial_atoms_bitset()))
-            {
-                result.push_back(ground_axiom);
-            }
+            ground_axioms.push_back(ground_axiom);
         }
     }
-
-    return result;
+    return ground_axioms;
 }
 
 GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,

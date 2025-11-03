@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/options.hpp"
@@ -35,10 +34,8 @@ class DeleteRelaxedProblemExplorator
 private:
     formalism::Problem m_problem;
 
-    /* Delete free info to instantiate the grounded generators. */
-    formalism::DeleteRelaxTranslator m_delete_relax_transformer;
-    formalism::Problem m_delete_free_problem;
-    formalism::ToObjectMap<formalism::Object> m_delete_free_object_to_unrelaxed_object;
+    formalism::GroundActionSet m_ground_actions;
+    formalism::GroundAxiomSet m_ground_axioms;
 
 public:
     explicit DeleteRelaxedProblemExplorator(formalism::Problem problem);
@@ -46,14 +43,6 @@ public:
     DeleteRelaxedProblemExplorator& operator=(const DeleteRelaxedProblemExplorator& other) = delete;
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
-
-    /// @brief Create all delete-relaxed-reachable ground atoms.
-    /// Note: this function is deprecated since it does not deliver the atoms in the unrelaxed task
-    /// because relaxed actions miss some...
-    /// @tparam P is the predicate type.
-    /// @return a vector containing all delete-relaxed reachable ground atoms in the input problem.
-    template<formalism::IsFluentOrDerivedTag P>
-    formalism::GroundAtomList<P> create_ground_atoms() const;
 
     /// @brief Create all delete-relaxed-reachable unrelaxed ground actions.
     /// @return a vector containing all delete-relaxed-reachable unrelaxed ground actions.
