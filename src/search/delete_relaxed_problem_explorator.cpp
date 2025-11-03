@@ -31,26 +31,52 @@
 #include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
+#include <algorithm>  // for std::ranges::replace
+#include <string>
+
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
 
-template<IsStaticOrFluentOrDerivedTag P>
-static std::string to_datalog_predicate_symbol(const PredicateImpl<P>& predicate)
+static std::string to_datalog_symbol(std::string symbol)
 {
-    // The souffle datalog solver doesn't like "=" predicate name.
-    return (predicate.get_name() == "=") ? "_equal" : predicate.get_name();
+    std::ranges::replace(symbol, '-', '_');
+    return symbol;
 }
 
-static std::string to_datalog_variable(const VariableImpl& variable) { return fmt::format("x{}", variable.get_index()); }
+template<IsStaticOrFluentOrDerivedTag P>
+static std::string to_datalog_symbol(const PredicateImpl<P>& predicate)
+{
+    if (predicate.get_name() == "=")
+        return fmt::format("equal_{}", predicate.get_index());
+    else
+        return fmt::format("{}_{}", to_datalog_symbol(predicate.get_name()), predicate.get_index());
+}
+
+static std::string to_datalog_symbol(const ActionImpl& action) { return fmt::format("{}_{}", to_datalog_symbol(action.get_name()), action.get_index()); }
+
+static std::string to_datalog_symbol(const AxiomImpl& axiom)
+{
+    return fmt::format("{}_{}", to_datalog_symbol(*axiom.get_literal()->get_atom()->get_predicate()), axiom.get_index());
+}
+
+static std::string to_datalog_symbol(const VariableImpl& variable) { return fmt::format("x{}", variable.get_index()); }
 
 template<IsStaticOrFluentOrDerivedTag P>
 static std::string to_datalog_atom(const AtomImpl<P>& atom)
 {
     return fmt::format("{}({})",
-                       to_datalog_predicate_symbol(*atom.get_predicate()),
-                       fmt::join(atom.get_variables() | std::views::transform([](auto&& variable) { return to_datalog_variable(*variable); }), ","));
+                       to_datalog_symbol(*atom.get_predicate()),
+                       fmt::join(atom.get_variables() | std::views::transform([](auto&& variable) { return to_datalog_symbol(*variable); }), ","));
+}
+
+static std::string to_datalog_atom(const ActionImpl& action)
+{
+    return fmt::format(
+        "{}({})",
+        to_datalog_symbol(action),
+        fmt::join(action.get_parameters() | std::views::transform([](auto&& parameter) { return to_datalog_symbol(*parameter->get_variable()); }), ","));
 }
 
 static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out)
@@ -64,7 +90,50 @@ static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& o
         create_datalog_axiom_rule(*axiom, out);
 }
 
-static void create_datalog_action_rule(const ActionImpl& action, std::ostream& out) {}
+static void create_datalog_action_rule(const ActionImpl& action, std::ostream& out)
+{
+    auto action_cond = action.get_conjunctive_condition();
+
+    for (const auto& cond_effect : action.get_conditional_effects())
+    {
+        auto effect_cond = cond_effect->get_conjunctive_condition();
+        auto effect = cond_effect->get_conjunctive_effect();
+
+        auto body_atoms = std::vector<std::string> {};
+
+        auto add_positive = [](const auto& literals, std::vector<std::string>& out)
+        {
+            auto range = literals | std::views::filter([](auto&& lit) { return lit->get_polarity(); })
+                         | std::views::transform([](auto&& lit) { return to_datalog_atom(*lit->get_atom()); });
+
+            for (auto&& s : range)
+                out.push_back(std::move(s));
+        };
+
+        // Collect from action condition
+        add_positive(action_cond->get_literals<StaticTag>(), body_atoms);
+        add_positive(action_cond->get_literals<FluentTag>(), body_atoms);
+        add_positive(action_cond->get_literals<DerivedTag>(), body_atoms);
+
+        // Collect from effect condition
+        add_positive(effect_cond->get_literals<StaticTag>(), body_atoms);
+        add_positive(effect_cond->get_literals<FluentTag>(), body_atoms);
+        add_positive(effect_cond->get_literals<DerivedTag>(), body_atoms);
+
+        if (body_atoms.empty())
+            fmt::print(out, "{}.\n", to_datalog_atom(action));
+        else
+            fmt::print(out, "{} :- {}.\n", to_datalog_atom(action), fmt::join(body_atoms, ", "));
+
+        auto head_atoms = std::vector<std::string> {};
+
+        // Collect from effect
+        add_positive(effect->get_literals(), head_atoms);
+
+        for (const auto& head_atom : head_atoms)
+            fmt::print(out, "{} :- {}.\n", head_atom, to_datalog_atom(action));
+    }
+}
 
 static void create_datalog_action_rules(const DomainImpl& domain, std::ostream& out)
 {
@@ -84,10 +153,10 @@ static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostrea
             {
                 fmt::print(out,
                            ".decl {}({})\n",
-                           to_datalog_predicate_symbol(*predicate),
+                           to_datalog_symbol(*predicate),
                            fmt::join(predicate->get_parameters()
                                          | std::views::transform([](auto&& parameter)
-                                                                 { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
+                                                                 { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
                                      ", "));
             }
         });
@@ -95,13 +164,14 @@ static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostrea
 
 static void create_datalog_action_fact(const ActionImpl& action, std::ostream& out)
 {
-    fmt::print(
-        out,
-        ".decl {}({})\n",
-        action.get_name(),
-        fmt::join(action.get_parameters()
-                      | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
-                  ", "));
+    fmt::print(out,
+               ".decl {}({})\n",
+               to_datalog_symbol(action),
+               fmt::join(action.get_parameters()
+                             | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
+                         ", "));
+
+    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(action));
 }
 
 static void create_datalog_action_facts(const DomainImpl& domain, std::ostream& out)
@@ -112,13 +182,14 @@ static void create_datalog_action_facts(const DomainImpl& domain, std::ostream& 
 
 static void create_datalog_axiom_fact(const AxiomImpl& axiom, std::ostream& out)
 {
-    fmt::print(
-        out,
-        ".decl {}({})\n",
-        axiom.get_literal()->get_atom()->get_predicate()->get_name(),
-        fmt::join(axiom.get_parameters()
-                      | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_variable(*parameter->get_variable())); }),
-                  ", "));
+    fmt::print(out,
+               ".decl {}({})\n",
+               to_datalog_symbol(axiom),
+               fmt::join(axiom.get_parameters()
+                             | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
+                         ", "));
+
+    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(axiom));
 }
 
 static void create_datalog_axiom_facts(const DomainImpl& domain, std::ostream& out)
@@ -141,7 +212,7 @@ static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostrea
                 {
                     fmt::print(out,
                                "{}({}).\n",
-                               to_datalog_predicate_symbol(*literal->get_atom()->get_predicate()),
+                               to_datalog_symbol(*literal->get_atom()->get_predicate()),
                                fmt::join(literal->get_atom()->get_objects() | std::views::transform([](auto&& object) { return object->get_index(); }), ","));
                 }
             }
@@ -164,6 +235,58 @@ static std::string create_datalog_program(const ProblemImpl& problem)
     return ss.str();
 }
 
+/// A custom output write stream
+struct TestWriteStream : public souffle::WriteStream
+{
+    explicit TestWriteStream(const std::map<std::string, std::string>& rwOperation,
+                             const souffle::SymbolTable& symbolTable,
+                             const souffle::RecordTable& recordTable) :
+        WriteStream(rwOperation, symbolTable, recordTable)
+    {
+    }
+
+    void writeNullary() override { std::cout << "()\n"; }
+
+    void writeNextTuple(const souffle::RamDomain* tup) override
+    {
+        for (std::size_t col = 0; col < arity; ++col)
+        {
+            if (col > 0)
+            {
+                std::cout << "\t";
+            }
+            writeNextTupleElement(typeAttributes.at(col), tup[col]);
+        }
+        std::cout << "\n";
+    }
+
+    void writeNextTupleElement(const std::string& type, souffle::RamDomain value)
+    {
+        switch (type[0])
+        {
+            case 'i':
+                std::cout << value;
+                break;
+            default: /* don't care about other types */
+                break;
+        }
+    }
+};
+
+/// Factory of the custom output write stream
+struct TestWriteStreamFactory : public souffle::WriteStreamFactory
+{
+    std::unique_ptr<souffle::WriteStream>
+    getWriter(const std::map<std::string, std::string>& rwOperation, const souffle::SymbolTable& symbolTable, const souffle::RecordTable& recordTable) override
+    {
+        return std::make_unique<TestWriteStream>(rwOperation, symbolTable, recordTable);
+    }
+
+    const std::string& getName() const override { return name; }
+
+    const std::string name = "ostream";
+};
+
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
     m_problem(problem),
     m_delete_relax_transformer(),
@@ -175,7 +298,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
 
     std::cout << create_datalog_program(*problem) << std::endl;
 
-    mimir::datalog::solve(create_datalog_program(*problem));
+    mimir::datalog::solve(create_datalog_program(*problem), std::make_shared<TestWriteStreamFactory>());
 
     auto domain_delete_free_builder = DomainBuilder();
     auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);
@@ -448,5 +571,4 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
 }
 
 const Problem& DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }
-
 }
