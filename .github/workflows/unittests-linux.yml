@@ -29,6 +29,7 @@ jobs:
         cd dependencies
         cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build
+        cmake --install build/
 
     # Debug
     - name: Debug, Configure, and Build Mimir
