@@ -31,13 +31,17 @@
 #include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state_unpacked.hpp"
 
-#include <algorithm>  // for std::ranges::replace
+#include <algorithm>
 #include <string>
 
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
+
+/**
+ * Symbols
+ */
 
 static std::string to_datalog_symbol(std::string symbol)
 {
@@ -54,7 +58,10 @@ static std::string to_datalog_symbol(const PredicateImpl<P>& predicate)
         return fmt::format("{}_{}", to_datalog_symbol(predicate.get_name()), predicate.get_index());
 }
 
-static std::string to_datalog_symbol(const ActionImpl& action) { return fmt::format("{}_{}", to_datalog_symbol(action.get_name()), action.get_index()); }
+static std::string to_datalog_symbol(const ActionImpl& action, const ConditionalEffectImpl& effect)
+{
+    return fmt::format("{}_{}_{}", to_datalog_symbol(action.get_name()), effect.get_index(), action.get_index());
+}
 
 static std::string to_datalog_symbol(const AxiomImpl& axiom)
 {
@@ -62,6 +69,112 @@ static std::string to_datalog_symbol(const AxiomImpl& axiom)
 }
 
 static std::string to_datalog_symbol(const VariableImpl& variable) { return fmt::format("x{}", variable.get_index()); }
+
+/**
+ * Relations
+ */
+
+template<IsStaticOrFluentOrDerivedTag P>
+static std::string to_datalog_relation(const PredicateImpl<P>& predicate)
+{
+    return fmt::format(
+        "{}({})",
+        to_datalog_symbol(predicate),
+        fmt::join(predicate.get_parameters()
+                      | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
+                  ","));
+}
+
+static std::string to_datalog_relation(const ActionImpl& action, const ConditionalEffectImpl& effect)
+{
+    auto add_parameters = [](const auto& parameters, std::vector<std::string>& out)
+    {
+        auto range = parameters | std::views::transform([](auto&& param) { return fmt::format("{}:number", to_datalog_symbol(*param->get_variable())); });
+
+        for (auto&& s : range)
+            out.push_back(std::move(s));
+    };
+
+    auto parameters = std::vector<std::string> {};
+
+    add_parameters(action.get_parameters(), parameters);
+    add_parameters(effect.get_conjunctive_condition()->get_parameters(), parameters);
+
+    return fmt::format("{}({})", to_datalog_symbol(action, effect), fmt::join(parameters, ","));
+}
+
+static std::string to_datalog_relation(const AxiomImpl& axiom)
+{
+    auto add_parameters = [](const auto& parameters, std::vector<std::string>& out)
+    {
+        auto range = parameters | std::views::transform([](auto&& param) { return fmt::format("{}:number", to_datalog_symbol(*param->get_variable())); });
+
+        for (auto&& s : range)
+            out.push_back(std::move(s));
+    };
+
+    auto parameters = std::vector<std::string> {};
+
+    add_parameters(axiom.get_parameters(), parameters);
+
+    return fmt::format("{}({})", to_datalog_symbol(axiom), fmt::join(parameters, ","));
+}
+
+static void create_datalog_predicate_relations(const DomainImpl& domain, std::ostream& out)
+{
+    boost::hana::for_each(
+        domain.get_hana_predicates(),
+        [&](auto&& pair)
+        {
+            const auto& predicates = boost::hana::second(pair);
+
+            for (const auto& predicate : predicates)
+            {
+                fmt::print(out,
+                           ".decl {}({})\n",
+                           to_datalog_symbol(*predicate),
+                           fmt::join(predicate->get_parameters()
+                                         | std::views::transform([](auto&& parameter)
+                                                                 { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
+                                     ", "));
+            }
+        });
+}
+
+static void create_datalog_action_relations(const ActionImpl& action, std::ostream& out)
+{
+    for (const auto& cond_effect : action.get_conditional_effects())
+    {
+        fmt::print(out, ".decl {}\n", to_datalog_relation(action, *cond_effect));
+
+        fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(action, *cond_effect));
+        // fmt::print(out, ".output {}\n", to_datalog_symbol(action, *cond_effect));
+    }
+}
+
+static void create_datalog_action_relations(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& action : domain.get_actions())
+        create_datalog_action_relations(*action, out);
+}
+
+static void create_datalog_axiom_relations(const AxiomImpl& axiom, std::ostream& out)
+{
+    fmt::print(out, ".decl {}\n", to_datalog_relation(axiom));
+
+    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(axiom));
+    // fmt::print(out, ".output {}\n", to_datalog_symbol(axiom));
+}
+
+static void create_datalog_axiom_relations(const DomainImpl& domain, std::ostream& out)
+{
+    for (const auto& axiom : domain.get_axioms())
+        create_datalog_axiom_relations(*axiom, out);
+}
+
+/**
+ * Atoms
+ */
 
 template<IsStaticOrFluentOrDerivedTag P>
 static std::string to_datalog_atom(const AtomImpl<P>& atom)
@@ -71,17 +184,65 @@ static std::string to_datalog_atom(const AtomImpl<P>& atom)
                        fmt::join(atom.get_variables() | std::views::transform([](auto&& variable) { return to_datalog_symbol(*variable); }), ","));
 }
 
-static std::string to_datalog_atom(const ActionImpl& action)
+static std::string to_datalog_atom(const AxiomImpl& axiom)
 {
-    return fmt::format(
-        "{}({})",
-        to_datalog_symbol(action),
-        fmt::join(action.get_parameters() | std::views::transform([](auto&& parameter) { return to_datalog_symbol(*parameter->get_variable()); }), ","));
+    return fmt::format("{}({})",
+                       to_datalog_symbol(axiom),
+                       fmt::join(axiom.get_parameters() | std::views::transform([](auto&& param) { return to_datalog_symbol(*param->get_variable()); }), ","));
 }
+
+static std::string to_datalog_atom(const ActionImpl& action, const ConditionalEffectImpl& effect)
+{
+    auto add_parameters = [](const auto& parameters, std::vector<std::string>& out)
+    {
+        auto range = parameters | std::views::transform([](auto&& param) { return to_datalog_symbol(*param->get_variable()); });
+
+        for (auto&& s : range)
+            out.push_back(std::move(s));
+    };
+
+    auto parameters = std::vector<std::string> {};
+
+    add_parameters(action.get_parameters(), parameters);
+    add_parameters(effect.get_conjunctive_condition()->get_parameters(), parameters);
+
+    return fmt::format("{}({})", to_datalog_symbol(action, effect), fmt::join(parameters, ","));
+}
+
+/**
+ * Rules
+ */
 
 static void create_datalog_axiom_rule(const AxiomImpl& axiom, std::ostream& out)
 {
-    // fmt::print(out, "{} :- {}\n", create_datalog_atom(*axiom.get_literal()->get_atom()));
+    auto axiom_cond = axiom.get_conjunctive_condition();
+
+    auto body_atoms = std::vector<std::string> {};
+
+    auto add_positive = [](const auto& literals, std::vector<std::string>& out)
+    {
+        auto range = literals | std::views::filter([](auto&& lit) { return lit->get_polarity(); })
+                     | std::views::transform([](auto&& lit) { return to_datalog_atom(*lit->get_atom()); });
+
+        for (auto&& s : range)
+            out.push_back(std::move(s));
+    };
+
+    // Collect from action condition
+    add_positive(axiom_cond->get_literals<StaticTag>(), body_atoms);
+    add_positive(axiom_cond->get_literals<FluentTag>(), body_atoms);
+    add_positive(axiom_cond->get_literals<DerivedTag>(), body_atoms);
+
+    if (body_atoms.empty())
+    {
+        fmt::print(out, "{}.\n", to_datalog_atom(axiom));
+        fmt::print(out, "{}.\n", to_datalog_atom(*axiom.get_literal()->get_atom()));
+    }
+    else
+    {
+        fmt::print(out, "{} :- {}.\n", to_datalog_atom(axiom), fmt::join(body_atoms, ", "));
+        fmt::print(out, "{} :- {}.\n", to_datalog_atom(*axiom.get_literal()->get_atom()), fmt::join(body_atoms, ", "));
+    }
 }
 
 static void create_datalog_axiom_rules(const DomainImpl& domain, std::ostream& out)
@@ -121,9 +282,9 @@ static void create_datalog_action_rule(const ActionImpl& action, std::ostream& o
         add_positive(effect_cond->get_literals<DerivedTag>(), body_atoms);
 
         if (body_atoms.empty())
-            fmt::print(out, "{}.\n", to_datalog_atom(action));
+            fmt::print(out, "{}.\n", to_datalog_atom(action, *cond_effect));
         else
-            fmt::print(out, "{} :- {}.\n", to_datalog_atom(action), fmt::join(body_atoms, ", "));
+            fmt::print(out, "{} :- {}.\n", to_datalog_atom(action, *cond_effect), fmt::join(body_atoms, ", "));
 
         auto head_atoms = std::vector<std::string> {};
 
@@ -131,7 +292,7 @@ static void create_datalog_action_rule(const ActionImpl& action, std::ostream& o
         add_positive(effect->get_literals(), head_atoms);
 
         for (const auto& head_atom : head_atoms)
-            fmt::print(out, "{} :- {}.\n", head_atom, to_datalog_atom(action));
+            fmt::print(out, "{} :- {}.\n", head_atom, to_datalog_atom(action, *cond_effect));
     }
 }
 
@@ -141,62 +302,9 @@ static void create_datalog_action_rules(const DomainImpl& domain, std::ostream& 
         create_datalog_action_rule(*action, out);
 }
 
-static void create_datalog_predicate_facts(const DomainImpl& domain, std::ostream& out)
-{
-    boost::hana::for_each(
-        domain.get_hana_predicates(),
-        [&](auto&& pair)
-        {
-            const auto& predicates = boost::hana::second(pair);
-
-            for (const auto& predicate : predicates)
-            {
-                fmt::print(out,
-                           ".decl {}({})\n",
-                           to_datalog_symbol(*predicate),
-                           fmt::join(predicate->get_parameters()
-                                         | std::views::transform([](auto&& parameter)
-                                                                 { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
-                                     ", "));
-            }
-        });
-}
-
-static void create_datalog_action_fact(const ActionImpl& action, std::ostream& out)
-{
-    fmt::print(out,
-               ".decl {}({})\n",
-               to_datalog_symbol(action),
-               fmt::join(action.get_parameters()
-                             | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
-                         ", "));
-
-    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(action));
-}
-
-static void create_datalog_action_facts(const DomainImpl& domain, std::ostream& out)
-{
-    for (const auto& action : domain.get_actions())
-        create_datalog_action_fact(*action, out);
-}
-
-static void create_datalog_axiom_fact(const AxiomImpl& axiom, std::ostream& out)
-{
-    fmt::print(out,
-               ".decl {}({})\n",
-               to_datalog_symbol(axiom),
-               fmt::join(axiom.get_parameters()
-                             | std::views::transform([](auto&& parameter) { return fmt::format("{}:number", to_datalog_symbol(*parameter->get_variable())); }),
-                         ", "));
-
-    fmt::print(out, ".output {}(IO=ostream)\n", to_datalog_symbol(axiom));
-}
-
-static void create_datalog_axiom_facts(const DomainImpl& domain, std::ostream& out)
-{
-    for (const auto& axiom : domain.get_axioms())
-        create_datalog_axiom_fact(*axiom, out);
-}
+/**
+ * Facts
+ */
 
 static void create_datalog_initial_facts(const ProblemImpl& problem, std::ostream& out)
 {
@@ -223,9 +331,9 @@ static std::string create_datalog_program(const ProblemImpl& problem)
 {
     std::stringstream ss;
 
-    create_datalog_predicate_facts(*problem.get_domain(), ss);
-    create_datalog_action_facts(*problem.get_domain(), ss);
-    create_datalog_axiom_facts(*problem.get_domain(), ss);
+    create_datalog_predicate_relations(*problem.get_domain(), ss);
+    create_datalog_action_relations(*problem.get_domain(), ss);
+    create_datalog_axiom_relations(*problem.get_domain(), ss);
 
     create_datalog_action_rules(*problem.get_domain(), ss);
     create_datalog_axiom_rules(*problem.get_domain(), ss);
