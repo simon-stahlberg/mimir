@@ -39,6 +39,7 @@ public:
     IGrounder& operator=(const IGrounder& other) = delete;
     IGrounder(IGrounder&& other) = delete;
     IGrounder& operator=(IGrounder&& other) = delete;
+    virtual ~IGrounder() = default;
 
     /// @brief Create all delete-relaxed-reachable unrelaxed ground actions.
     /// @return a vector containing all delete-relaxed-reachable unrelaxed ground actions.
@@ -52,16 +53,16 @@ public:
     /// @param options the match tree options
     /// @param event_handler the grounded axiom evaluator event handler.
     /// @return a grounded axiom evaluator.
-    virtual GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                                   axiom_evaluator::grounded::EventHandler event_handler = nullptr) const = 0;
+    GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
+                                                           axiom_evaluator::grounded::EventHandler event_handler = nullptr) const;
 
     /// @brief Create a grounded applicable action generator.
     /// @param options the match tree options
     /// @param event_handler the grounded applicable action generator event handler.
     /// @return a grounded applicable action generator.
-    virtual GroundedApplicableActionGenerator
+    GroundedApplicableActionGenerator
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const = 0;
+                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const;
 
     /// @brief Get the input problem.
     /// @return the input problem.

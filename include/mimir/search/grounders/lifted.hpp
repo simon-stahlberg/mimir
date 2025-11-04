@@ -41,28 +41,9 @@ public:
     LiftedGrounder(LiftedGrounder&& other) = delete;
     LiftedGrounder& operator=(LiftedGrounder&& other) = delete;
 
-    /// @brief Create all delete-relaxed-reachable unrelaxed ground actions.
-    /// @return a vector containing all delete-relaxed-reachable unrelaxed ground actions.
     formalism::GroundActionList create_ground_actions() const override;
 
-    /// @brief Create all delete-relaxed-reachable unrelaxed ground axioms.
-    /// @return a vector containing all delete-relaxed-reachable unrelaxed ground axioms.
     formalism::GroundAxiomList create_ground_axioms() const override;
-
-    /// @brief Create a grounded axiom evaluator.
-    /// @param options the match tree options
-    /// @param event_handler the grounded axiom evaluator event handler.
-    /// @return a grounded axiom evaluator.
-    GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                           axiom_evaluator::grounded::EventHandler event_handler = nullptr) const override;
-
-    /// @brief Create a grounded applicable action generator.
-    /// @param options the match tree options
-    /// @param event_handler the grounded applicable action generator event handler.
-    /// @return a grounded applicable action generator.
-    GroundedApplicableActionGenerator
-    create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const override;
 };
 
 }  // namespace mimir
