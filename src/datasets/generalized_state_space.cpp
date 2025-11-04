@@ -36,7 +36,6 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics/blind.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"

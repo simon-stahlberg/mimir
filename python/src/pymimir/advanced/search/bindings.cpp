@@ -622,7 +622,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);
 
-    /* DeleteRelaxedProblemExplorator */
+    /* Grounder */
 
     nb::class_<match_tree::Options>(m, "MatchTreeOptions")
         .def(nb::init<>())
@@ -633,18 +633,23 @@ void bind_module_definitions(nb::module_& m)
         .def_rw("split_metric", &match_tree::Options::split_metric)
         .def_rw("optimization_direction", &match_tree::Options::optimization_direction);
 
-    nb::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
-        .def(nb::init<Problem>(), "problem"_a)
-        .def("create_ground_actions", &DeleteRelaxedProblemExplorator::create_ground_actions)
-        .def("create_ground_axioms", &DeleteRelaxedProblemExplorator::create_ground_axioms)
+    nb::class_<IGrounder>(m, "IGrounder")  //
+        .def("create_ground_actions", &IGrounder::create_ground_actions)
+        .def("create_ground_axioms", &IGrounder::create_ground_axioms)
         .def("create_grounded_axiom_evaluator",
-             &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
+             &IGrounder::create_grounded_axiom_evaluator,
              "match_tree_options"_a,
              "axiom_evaluator_event_handler"_a = nullptr)
         .def("create_grounded_applicable_action_generator",
-             &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
+             &IGrounder::create_grounded_applicable_action_generator,
              "match_tree_options"_a,
              "axiom_evaluator_event_handler"_a = nullptr);
+
+    nb::class_<LiftedGrounder, IGrounder>(m, "LiftedGrounder")  //
+        .def(nb::init<Problem>(), "problem"_a);
+
+    nb::class_<DatalogGrounder, IGrounder>(m, "DatalogGrounder")  //
+        .def(nb::init<Problem>(), "problem"_a);
 
     /* Heuristics */
     nb::class_<PreferredActions>(m, "PreferredActions")  //

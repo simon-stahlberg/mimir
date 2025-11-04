@@ -21,7 +21,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders.hpp"
 #include "mimir/search/state_repository.hpp"
 
 using namespace mimir::formalism;
@@ -50,11 +50,11 @@ SearchContext SearchContextImpl::create(Problem problem, const Options& options)
 
             if constexpr (std::is_same_v<T, GroundedOptions>)
             {
-                auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(problem);
+                auto grounder = std::make_unique<LiftedGrounder>(problem);
 
                 return create(problem,
-                              delete_relaxed_explorator.create_grounded_applicable_action_generator(),
-                              std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator()));
+                              grounder->create_grounded_applicable_action_generator(),
+                              std::make_shared<StateRepositoryImpl>(grounder->create_grounded_axiom_evaluator()));
             }
             else if constexpr (std::is_same_v<T, LiftedOptions>)
             {  // Lifted

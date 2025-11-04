@@ -71,7 +71,7 @@ def main():
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 
     # Create some heuristics
-    delete_relaxation = search.DeleteRelaxedProblemExplorator(problem)
+    delete_relaxation = search.LiftedGrounder(problem)
     heuristic = search.FFHeuristic.create(delete_relaxation)
 
     # Create the goal strategy

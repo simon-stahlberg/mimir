@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders/datalog.hpp"
 
 #include "mimir/algorithms/souffle.hpp"
 #include "mimir/formalism/formatter.hpp"
@@ -466,12 +466,12 @@ struct GrounderWriteStreamFactory : public souffle::WriteStreamFactory
     const std::string name = "grounder";
 };
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) : m_problem(problem), m_ground_actions(), m_ground_axioms()
+DatalogGrounder::DatalogGrounder(Problem problem) : IGrounder(problem), m_ground_actions(), m_ground_axioms()
 {
     mimir::datalog::solve(create_datalog_program(*problem), std::make_shared<GrounderWriteStreamFactory>(*m_problem, m_ground_actions, m_ground_axioms));
 }
 
-GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
+GroundActionList DatalogGrounder::create_ground_actions() const
 {
     auto ground_actions = GroundActionList {};
     for (const auto& ground_action : m_ground_actions)
@@ -484,7 +484,7 @@ GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
     return ground_actions;
 }
 
-GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
+GroundAxiomList DatalogGrounder::create_ground_axioms() const
 {
     auto ground_axioms = GroundAxiomList {};
     for (const auto& ground_axiom : m_ground_axioms)
@@ -497,8 +497,8 @@ GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
     return ground_axioms;
 }
 
-GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
-                                                                                       GroundedAxiomEvaluatorImpl::EventHandler event_handler) const
+GroundedAxiomEvaluator DatalogGrounder::create_grounded_axiom_evaluator(const match_tree::Options& options,
+                                                                        GroundedAxiomEvaluatorImpl::EventHandler event_handler) const
 {
     if (!event_handler)
     {
@@ -560,8 +560,8 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
 }
 
 GroundedApplicableActionGenerator
-DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
-                                                                            GroundedApplicableActionGeneratorImpl::EventHandler event_handler) const
+DatalogGrounder::create_grounded_applicable_action_generator(const match_tree::Options& options,
+                                                             GroundedApplicableActionGeneratorImpl::EventHandler event_handler) const
 {
     if (!event_handler)
     {
@@ -588,6 +588,4 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
 
     return GroundedApplicableActionGeneratorImpl::create(m_problem, std::move(match_tree), std::move(event_handler));
 }
-
-const Problem& DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }
 }

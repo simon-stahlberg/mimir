@@ -15,49 +15,46 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
-#define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_LIFTED_HPP_
+#define MIMIR_SEARCH_GROUNDERS_LIFTED_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
-#include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/options.hpp"
-#include "mimir/search/state_repository.hpp"
+#include "mimir/formalism/translator/delete_relax.hpp"
+#include "mimir/search/grounders/interface.hpp"
 
 #include <memory>
 
 namespace mimir::search
 {
 
-class DeleteRelaxedProblemExplorator
+class LiftedGrounder : public IGrounder
 {
 private:
-    formalism::Problem m_problem;
-
-    formalism::GroundActionSet m_ground_actions;
-    formalism::GroundAxiomSet m_ground_axioms;
+    /* Delete free info to instantiate the grounded generators. */
+    formalism::DeleteRelaxTranslator m_delete_relax_transformer;
+    formalism::Problem m_delete_free_problem;
+    formalism::ToObjectMap<formalism::Object> m_delete_free_object_to_unrelaxed_object;
 
 public:
-    explicit DeleteRelaxedProblemExplorator(formalism::Problem problem);
-    DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
-    DeleteRelaxedProblemExplorator& operator=(const DeleteRelaxedProblemExplorator& other) = delete;
-    DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
-    DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
+    explicit LiftedGrounder(formalism::Problem problem);
+    LiftedGrounder(const LiftedGrounder& other) = delete;
+    LiftedGrounder& operator=(const LiftedGrounder& other) = delete;
+    LiftedGrounder(LiftedGrounder&& other) = delete;
+    LiftedGrounder& operator=(LiftedGrounder&& other) = delete;
 
     /// @brief Create all delete-relaxed-reachable unrelaxed ground actions.
     /// @return a vector containing all delete-relaxed-reachable unrelaxed ground actions.
-    formalism::GroundActionList create_ground_actions() const;
+    formalism::GroundActionList create_ground_actions() const override;
 
     /// @brief Create all delete-relaxed-reachable unrelaxed ground axioms.
     /// @return a vector containing all delete-relaxed-reachable unrelaxed ground axioms.
-    formalism::GroundAxiomList create_ground_axioms() const;
+    formalism::GroundAxiomList create_ground_axioms() const override;
 
     /// @brief Create a grounded axiom evaluator.
     /// @param options the match tree options
     /// @param event_handler the grounded axiom evaluator event handler.
     /// @return a grounded axiom evaluator.
     GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                           axiom_evaluator::grounded::EventHandler event_handler = nullptr) const;
+                                                           axiom_evaluator::grounded::EventHandler event_handler = nullptr) const override;
 
     /// @brief Create a grounded applicable action generator.
     /// @param options the match tree options
@@ -65,11 +62,7 @@ public:
     /// @return a grounded applicable action generator.
     GroundedApplicableActionGenerator
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const;
-
-    /// @brief Get the input problem.
-    /// @return the input problem.
-    const formalism::Problem& get_problem() const;
+                                                applicable_action_generator::grounded::EventHandler event_handler = nullptr) const override;
 };
 
 }  // namespace mimir

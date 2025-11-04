@@ -25,7 +25,7 @@
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -94,7 +94,7 @@ class GroundedIWPlanner
 private:
     Problem m_problem;
     size_t m_arity;
-    DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
+    LiftedGrounder m_delete_relaxed_problem_explorator;
     GroundedApplicableActionGeneratorImpl::EventHandler m_applicable_action_generator_event_handler;
     GroundedApplicableActionGenerator m_applicable_action_generator;
     GroundedAxiomEvaluatorImpl::EventHandler m_axiom_evaluator_event_handler;

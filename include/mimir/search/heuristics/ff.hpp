@@ -34,9 +34,9 @@ inline auto& get(FFStructuresAnnotations& annotations)
 class FFHeuristicImpl : public rpg::RelaxedPlanningGraph<FFHeuristicImpl>
 {
 public:
-    explicit FFHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    explicit FFHeuristicImpl(const IGrounder& grounder);
 
-    static FFHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    static FFHeuristic create(const IGrounder& grounder);
 
 private:
     /**

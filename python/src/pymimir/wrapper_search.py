@@ -4,7 +4,7 @@ from typing import Callable, Union
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
 from pymimir.advanced.search import BlindHeuristic as AdvancedBlindHeuristic
-from pymimir.advanced.search import DeleteRelaxedProblemExplorator as AdvancedDeleteRelaxedProblemExplorator
+from pymimir.advanced.search import LiftedGrounder as AdvancedLiftedGrounder
 from pymimir.advanced.search import FFHeuristic as AdvancedFFHeuristic
 from pymimir.advanced.search import IHeuristic as AdvancedHeuristicBase
 from pymimir.advanced.search import MaxHeuristic as AdvancedMaxHeuristic
@@ -65,7 +65,7 @@ class AddHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
+        delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedAddHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
@@ -112,7 +112,7 @@ class MaxHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
+        delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedMaxHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
@@ -159,7 +159,7 @@ class SetAddHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
+        delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedSetAddHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
@@ -183,7 +183,7 @@ class FFHeuristic(Heuristic):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
-        delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
+        delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedFFHeuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':

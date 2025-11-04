@@ -14,8 +14,8 @@ def test_astar_search():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
 
-    delete_relaxation = search.DeleteRelaxedProblemExplorator(search_context.get_problem())
-    heuristic = search.MaxHeuristic.create(delete_relaxation)
+    grounder = search.LiftedGrounder(search_context.get_problem())
+    heuristic = search.MaxHeuristic.create(grounder)
 
     astar_options = search.AStarEagerOptions()
 

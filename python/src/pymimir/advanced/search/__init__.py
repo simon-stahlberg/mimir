@@ -163,6 +163,8 @@ from pymimir.pymimir.advanced.search import (
     GroundedAxiomEvaluator,
     IGroundedApplicableActionGeneratorEventHandler,
     IGroundedAxiomEvaluatorEventHandler,
-    DeleteRelaxedProblemExplorator,
+    IGrounder,
+    LiftedGrounder,
+    DatalogGrounder,
     MatchTreeOptions,
 )

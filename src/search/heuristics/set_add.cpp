@@ -25,17 +25,14 @@ using namespace rpg;
  * HMax
  */
 
-SetAddHeuristicImpl::SetAddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<SetAddHeuristicImpl>(delete_relaxation)
+SetAddHeuristicImpl::SetAddHeuristicImpl(const IGrounder& grounder) : RelaxedPlanningGraph<SetAddHeuristicImpl>(grounder)
 {
     get_setadd_structure_annotations<Action>().resize(get<Action>(this->get_structures()).size());
     get_setadd_structure_annotations<Axiom>().resize(get<Axiom>(this->get_structures()).size());
     get_setadd_proposition_annotations().resize(this->get_propositions().size());
 }
 
-SetAddHeuristic SetAddHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation)
-{
-    return std::make_shared<SetAddHeuristicImpl>(delete_relaxation);
-}
+SetAddHeuristic SetAddHeuristicImpl::create(const IGrounder& grounder) { return std::make_shared<SetAddHeuristicImpl>(grounder); }
 
 void SetAddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {

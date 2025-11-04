@@ -27,14 +27,14 @@ using namespace rpg;
  * HMax
  */
 
-FFHeuristicImpl::FFHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<FFHeuristicImpl>(delete_relaxation)
+FFHeuristicImpl::FFHeuristicImpl(const IGrounder& grounder) : RelaxedPlanningGraph<FFHeuristicImpl>(grounder)
 {
     get<Action>(get_ff_structures_annotations()).resize(get<Action>(this->get_structures()).size());
     get<Axiom>(get_ff_structures_annotations()).resize(get<Axiom>(this->get_structures()).size());
     get_ff_proposition_annotations().resize(this->get_propositions().size());
 }
 
-FFHeuristic FFHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<FFHeuristicImpl>(delete_relaxation); }
+FFHeuristic FFHeuristicImpl::create(const IGrounder& grounder) { return std::make_shared<FFHeuristicImpl>(grounder); }
 
 void FFHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {

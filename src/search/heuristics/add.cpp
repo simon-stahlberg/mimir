@@ -25,9 +25,9 @@ using namespace rpg;
  * HMax
  */
 
-AddHeuristicImpl::AddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<AddHeuristicImpl>(delete_relaxation) {}
+AddHeuristicImpl::AddHeuristicImpl(const IGrounder& grounder) : RelaxedPlanningGraph<AddHeuristicImpl>(grounder) {}
 
-AddHeuristic AddHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<AddHeuristicImpl>(delete_relaxation); }
+AddHeuristic AddHeuristicImpl::create(const IGrounder& grounder) { return std::make_shared<AddHeuristicImpl>(grounder); }
 
 void AddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {

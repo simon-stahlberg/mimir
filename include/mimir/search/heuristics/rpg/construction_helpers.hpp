@@ -18,8 +18,11 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_RPG_CONSTRUCTION_HELPERS_HPP_
 #define MIMIR_SEARCH_HEURISTICS_RPG_CONSTRUCTION_HELPERS_HPP_
 
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/search/grounders/interface.hpp"
 #include "mimir/search/heuristics/rpg/annotations.hpp"
 #include "mimir/search/heuristics/rpg/proposition.hpp"
 #include "mimir/search/heuristics/rpg/structures.hpp"
@@ -44,13 +47,13 @@ void fill_precondition_of_structure(formalism::GroundConjunctiveCondition condit
     }
 }
 
-inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_actions(const DeleteRelaxedProblemExplorator& delete_relaxation)
+inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_actions(const IGrounder& grounder)
 {
     auto actions = ActionList {};
     auto is_precondition_of_action = IsPreconditionOfContainer {};
     auto trivial_unary_actions = IndexList {};
 
-    for (const auto& action : delete_relaxation.create_ground_actions())
+    for (const auto& action : grounder.create_ground_actions())
     {
         for (const auto& cond_effect : action->get_conditional_effects())
         {
@@ -147,13 +150,13 @@ inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_
     return std::make_tuple(std::move(actions), std::move(is_precondition_of_action), std::move(trivial_unary_actions));
 }
 
-inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_axioms(const DeleteRelaxedProblemExplorator& delete_relaxation)
+inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_axioms(const IGrounder& grounder)
 {
     auto axioms = AxiomList {};
     auto is_precondition_of_axiom = IsPreconditionOfContainer {};
     auto trivial_unary_axioms = IndexList {};
 
-    for (const auto& axiom : delete_relaxation.create_ground_axioms())
+    for (const auto& axiom : grounder.create_ground_axioms())
     {
         const auto unary_axiom_index = axioms.size();
 

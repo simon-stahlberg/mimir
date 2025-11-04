@@ -20,7 +20,7 @@
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -39,7 +39,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
-    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(problem);
+    auto delete_free_problem_explorator = LiftedGrounder(problem);
     const auto applicable_action_generator_event_handler = GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create();
     const auto applicable_action_generator =
         delete_free_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(), applicable_action_generator_event_handler);

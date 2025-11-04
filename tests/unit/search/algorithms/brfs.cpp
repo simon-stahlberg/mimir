@@ -21,7 +21,7 @@
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -83,7 +83,7 @@ class GroundedBrFSPlanner
 {
 private:
     Problem m_problem;
-    DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
+    LiftedGrounder m_grounder;
     GroundedApplicableActionGeneratorImpl::EventHandler m_applicable_action_generator_event_handler;
     GroundedApplicableActionGenerator m_applicable_action_generator;
     GroundedAxiomEvaluatorImpl::EventHandler m_axiom_evaluator_event_handler;
@@ -95,13 +95,12 @@ private:
 public:
     GroundedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
-        m_delete_relaxed_problem_explorator(m_problem),
+        m_grounder(m_problem),
         m_applicable_action_generator_event_handler(GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create()),
         m_applicable_action_generator(
-            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
-                                                                                            m_applicable_action_generator_event_handler)),
+            m_grounder.create_grounded_applicable_action_generator(match_tree::Options(), m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
-        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
+        m_axiom_evaluator(m_grounder.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
         m_brfs_event_handler(brfs::DefaultEventHandlerImpl::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))

@@ -21,14 +21,16 @@
 #include "mimir/common/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/heuristics/rpg/annotations.hpp"
 #include "mimir/search/heuristics/rpg/construction_helpers.hpp"
 #include "mimir/search/heuristics/rpg/proposition.hpp"
 #include "mimir/search/heuristics/rpg/structures.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir::search::rpg
 {
@@ -70,8 +72,8 @@ public:
     }
 
 private:
-    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) :
-        m_problem(delete_relaxation.get_problem()),
+    explicit RelaxedPlanningGraph(const IGrounder& grounder) :
+        m_problem(grounder.get_problem()),
         m_offsets(),
         m_atom_indices(),
         m_structures(),
@@ -86,30 +88,30 @@ private:
          * Instantiate actions.
          */
 
-        auto [actions, is_precondition_of_action, trivial_unary_actions] = instantiate_actions(delete_relaxation);
+        auto [actions, is_precondition_of_action, trivial_unary_actions] = instantiate_actions(grounder);
         get<Action>(get_structures()) = std::move(actions);
 
         /**
          * Instantiate axioms
          */
 
-        auto [axioms, is_precondition_of_axiom, trivial_unary_axioms] = instantiate_axioms(delete_relaxation);
+        auto [axioms, is_precondition_of_axiom, trivial_unary_axioms] = instantiate_axioms(grounder);
         get<Axiom>(get_structures()) = std::move(axioms);
 
         /**
          * Instantiate atoms.
          */
 
-        auto fluent_atoms_indices = instantiate_atoms<formalism::FluentTag>(*delete_relaxation.get_problem());
+        auto fluent_atoms_indices = instantiate_atoms<formalism::FluentTag>(*grounder.get_problem());
         get<formalism::FluentTag>(get_atom_indices()) = std::move(fluent_atoms_indices);
-        auto derived_atom_indices = instantiate_atoms<formalism::DerivedTag>(*delete_relaxation.get_problem());
+        auto derived_atom_indices = instantiate_atoms<formalism::DerivedTag>(*grounder.get_problem());
         get<formalism::DerivedTag>(get_atom_indices()) = std::move(derived_atom_indices);
 
         /**
          * Instantiate propositions.
          */
 
-        auto [propositions, goal_propositions, proposition_offsets] = instantiate_propositions(*delete_relaxation.get_problem(),
+        auto [propositions, goal_propositions, proposition_offsets] = instantiate_propositions(*grounder.get_problem(),
                                                                                                std::move(is_precondition_of_action),
                                                                                                std::move(is_precondition_of_axiom),
                                                                                                std::move(trivial_unary_actions),

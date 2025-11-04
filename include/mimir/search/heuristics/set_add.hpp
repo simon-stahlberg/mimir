@@ -26,9 +26,9 @@ namespace mimir::search
 class SetAddHeuristicImpl : public rpg::RelaxedPlanningGraph<SetAddHeuristicImpl>
 {
 public:
-    explicit SetAddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    explicit SetAddHeuristicImpl(const IGrounder& grounder);
 
-    static SetAddHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    static SetAddHeuristic create(const IGrounder& grounder);
 
 private:
     /// @brief Initialize "And"-structure node annotations.

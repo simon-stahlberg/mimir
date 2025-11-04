@@ -30,9 +30,9 @@ namespace mimir::search
 class MaxHeuristicImpl : public rpg::RelaxedPlanningGraph<MaxHeuristicImpl>
 {
 public:
-    explicit MaxHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    explicit MaxHeuristicImpl(const IGrounder& grounder);
 
-    static MaxHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    static MaxHeuristic create(const IGrounder& grounder);
 
 private:
     /// @brief Initialize "And"-structure node annotations.
