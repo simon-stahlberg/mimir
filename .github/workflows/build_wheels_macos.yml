@@ -38,13 +38,6 @@ jobs:
         CIBW_BUILD: "${{ matrix.python-version }}-*"
         CIBW_ARCHS: "arm64"  # Only build for Apple Silicon
         CIBW_BUILD_VERBOSITY: "1"
-        # Install deps inside cibuildwheel's macOS build env
-        CIBW_BEFORE_BUILD_MACOS: |
-          brew update
-          brew install bison flex
-        # Ensure Homebrew tools win over /usr/bin (bison 2.x there is too old)
-        CIBW_ENVIRONMENT_MACOS: |
-          PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"
 
     - name: Upload to PyPI
       env:

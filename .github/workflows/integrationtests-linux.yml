@@ -18,7 +18,7 @@ jobs:
     - name: Install CMake
       run: |
         apt-get update
-        apt-get install -y cmake bison flex
+        apt-get install -y cmake
 
     - name: Configure, Build, and Install Dependencies
       run: |

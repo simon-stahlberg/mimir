@@ -42,7 +42,6 @@ jobs:
         CIBW_BUILD: "${{ matrix.python-version }}-*"
         CIBW_ARCHS: "${{ matrix.architecture }}"
         CIBW_BUILD_VERBOSITY: "1"
-        CIBW_BEFORE_BUILD: yum -y install bison flex
 
     - name: Upload to PyPI
       env:
