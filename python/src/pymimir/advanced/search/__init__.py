@@ -165,6 +165,5 @@ from pymimir.pymimir.advanced.search import (
     IGroundedAxiomEvaluatorEventHandler,
     IGrounder,
     LiftedGrounder,
-    DatalogGrounder,
     MatchTreeOptions,
 )

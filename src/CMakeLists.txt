@@ -44,7 +44,6 @@ target_link_libraries(core
   PRIVATE
     Nauty::Nauty
     fmt::fmt
-    Souffle::souffle
 )
 
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})

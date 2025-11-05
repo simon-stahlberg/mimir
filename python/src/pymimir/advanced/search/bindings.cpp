@@ -648,9 +648,6 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<LiftedGrounder, IGrounder>(m, "LiftedGrounder")  //
         .def(nb::init<Problem>(), "problem"_a);
 
-    nb::class_<DatalogGrounder, IGrounder>(m, "DatalogGrounder")  //
-        .def(nb::init<Problem>(), "problem"_a);
-
     /* Heuristics */
     nb::class_<PreferredActions>(m, "PreferredActions")  //
         .def_rw("data", &PreferredActions::data);

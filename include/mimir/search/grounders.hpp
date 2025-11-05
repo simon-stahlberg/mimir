@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_GROUNDERS_HPP_
 #define MIMIR_SEARCH_GROUNDERS_HPP_
 
-#include "mimir/search/grounders/datalog.hpp"
 #include "mimir/search/grounders/lifted.hpp"
 
 #endif

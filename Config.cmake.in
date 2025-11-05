@@ -117,16 +117,6 @@ if(valla_FOUND)
 endif()
 
 
-# -----------
-# Souffle
-# -----------
-
-find_dependency(Souffle CONFIG COMPONENTS souffle REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-if (Souffle_FOUND)
-  message(STATUS "Found Souffle: ${Souffle_DIR} (found version ${Souffle_VERSION})")
-endif()
-
-
 ############
 # Components
 ############
