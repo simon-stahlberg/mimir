@@ -96,8 +96,8 @@ Inheritance diagram for mimir::search::MaxHeuristicImpl:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a757ee176fe79cd837eb04defe8e803af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1MaxHeuristicImpl.html#a757ee176fe79cd837eb04defe8e803af">MaxHeuristicImpl</a> (const <a class="el" href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html">DeleteRelaxedProblemExplorator</a> &amp;delete_relaxation)</td></tr>
-<tr class="separator:a757ee176fe79cd837eb04defe8e803af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44d4065695bc3dc172c1dfa849b65155"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1MaxHeuristicImpl.html#a44d4065695bc3dc172c1dfa849b65155">MaxHeuristicImpl</a> (const IGrounder &amp;grounder)</td></tr>
+<tr class="separator:a44d4065695bc3dc172c1dfa849b65155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html">mimir::search::rpg::RelaxedPlanningGraph&lt; MaxHeuristicImpl &gt;</a></td></tr>
 <tr class="memitem:a77307f1d86737dc299aa22b269a1425e inherit pub_methods_classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#a77307f1d86737dc299aa22b269a1425e">compute_heuristic</a> (const State &amp;state, <a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">formalism::GroundConjunctiveCondition</a> goal=nullptr) override</td></tr>
 <tr class="separator:a77307f1d86737dc299aa22b269a1425e inherit pub_methods_classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,8 +111,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2932d116bade5911802acb3a046a7823"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacemimir_1_1search.html#a61372e181a342008676286466b5da49f">MaxHeuristic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1MaxHeuristicImpl.html#a2932d116bade5911802acb3a046a7823">create</a> (const <a class="el" href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html">DeleteRelaxedProblemExplorator</a> &amp;delete_relaxation)</td></tr>
-<tr class="separator:a2932d116bade5911802acb3a046a7823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4026911e2b956d62404a9bd8e8372f7f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacemimir_1_1search.html#a61372e181a342008676286466b5da49f">MaxHeuristic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1MaxHeuristicImpl.html#a4026911e2b956d62404a9bd8e8372f7f">create</a> (const IGrounder &amp;grounder)</td></tr>
+<tr class="separator:a4026911e2b956d62404a9bd8e8372f7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -128,8 +128,8 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>HMax </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a757ee176fe79cd837eb04defe8e803af" name="a757ee176fe79cd837eb04defe8e803af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a757ee176fe79cd837eb04defe8e803af">&#9670;&#160;</a></span>MaxHeuristicImpl()</h2>
+<a id="a44d4065695bc3dc172c1dfa849b65155" name="a44d4065695bc3dc172c1dfa849b65155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d4065695bc3dc172c1dfa849b65155">&#9670;&#160;</a></span>MaxHeuristicImpl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -140,8 +140,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">mimir::search::MaxHeuristicImpl::MaxHeuristicImpl </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html">DeleteRelaxedProblemExplorator</a> &amp;&#160;</td>
-          <td class="paramname"><em>delete_relaxation</em></td><td>)</td>
+          <td class="paramtype">const IGrounder &amp;&#160;</td>
+          <td class="paramname"><em>grounder</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -155,8 +155,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2932d116bade5911802acb3a046a7823" name="a2932d116bade5911802acb3a046a7823"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2932d116bade5911802acb3a046a7823">&#9670;&#160;</a></span>create()</h2>
+<a id="a4026911e2b956d62404a9bd8e8372f7f" name="a4026911e2b956d62404a9bd8e8372f7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4026911e2b956d62404a9bd8e8372f7f">&#9670;&#160;</a></span>create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -167,8 +167,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">static <a class="el" href="namespacemimir_1_1search.html#a61372e181a342008676286466b5da49f">MaxHeuristic</a> mimir::search::MaxHeuristicImpl::create </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1DeleteRelaxedProblemExplorator.html">DeleteRelaxedProblemExplorator</a> &amp;&#160;</td>
-          <td class="paramname"><em>delete_relaxation</em></td><td>)</td>
+          <td class="paramtype">const IGrounder &amp;&#160;</td>
+          <td class="paramname"><em>grounder</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
