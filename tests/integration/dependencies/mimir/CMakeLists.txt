@@ -20,6 +20,6 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
     GIT_TAG main
     PREFIX ${CMAKE_BINARY_DIR}/mimir
-    DEPENDS loki boost gtl fmt nauty abseil argparse oneTBB valla souffle
+    DEPENDS loki boost gtl fmt nauty abseil argparse oneTBB valla
     CMAKE_ARGS ${CMAKE_ARGS}
 )
