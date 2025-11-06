@@ -103,12 +103,11 @@ int main(int argc, char** argv)
 
     if (grounded)
     {
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
-        applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
-            match_tree::Options(),
-            GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
-                                                                                            GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+        auto grounder = std::make_unique<LiftedGrounder>(problem);
+        applicable_action_generator =
+            grounder->create_grounded_applicable_action_generator(match_tree::Options(),
+                                                                  GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+        axiom_evaluator = grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
     else

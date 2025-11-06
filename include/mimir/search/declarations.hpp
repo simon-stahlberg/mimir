@@ -52,8 +52,9 @@ class UnpackedStateImpl;
 // State
 class State;
 
-/* DeleteRelaxedProblemExplorator */
-class DeleteRelaxedProblemExplorator;
+/* Grounder */
+class Grounder;
+class LiftedGrounder;
 
 class ActionSatisficingBindingGenerator;
 class AxiomSatisficingBindingGenerator;
