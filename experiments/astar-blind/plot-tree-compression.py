@@ -3,6 +3,8 @@ import json
 
 from collections import defaultdict
 
+MAX_MEMORY_MB = 20_000_000_000
+
 def main():
     with open("combined-astar-blind-300-propositional-eval/properties", 'r') as file:
     # with open("combined-astar-blind-300-numeric-eval/properties", 'r') as file:
@@ -21,28 +23,32 @@ def main():
 
         X = []
         Y = []
-        for task, runs in task_to_all_solved_runs.items():
+        for task, runs in task_to_runs.items():
             list_peak_mem = None
             tree_peak_mem = None
-            list_avg_num_state_variables = None
+            avg_num_state_variables = None
             for run in runs:
+                if "average_num_state_variables" in run and avg_num_state_variables is None:
+                    avg_num_state_variables = run["average_num_state_variables"] 
+
                 if run["algorithm"] == "list-lifted-astar-eager-blind":
                     if "state_peak_memory_usage_in_bytes" in run:
                         list_peak_mem = run["state_peak_memory_usage_in_bytes"]
-                    if "average_num_state_variables" in run:
-                        list_avg_num_state_variables = run["average_num_state_variables"] 
+                    else:
+                        list_peak_mem = MAX_MEMORY_MB
                 elif run["algorithm"] == "dtdb-s-lifted-astar-eager-blind":
-                    print(run)
                     if "state_peak_memory_usage_in_bytes" in run:
                         tree_peak_mem = run["state_peak_memory_usage_in_bytes"]
+                    else:
+                        tree_peak_mem = MAX_MEMORY_MB
 
-            if list_peak_mem is None or tree_peak_mem is None or list_avg_num_state_variables is None:
+            if list_peak_mem is None or tree_peak_mem is None or avg_num_state_variables is None:
                 continue
             
-            X.append(list_avg_num_state_variables)
+            X.append(avg_num_state_variables)
             Y.append(list_peak_mem / tree_peak_mem)
 
-            if list_peak_mem / tree_peak_mem > 1:
+            if list_peak_mem > tree_peak_mem and list_peak_mem != MAX_MEMORY_MB and tree_peak_mem != MAX_MEMORY_MB:
                 count_compression_ratio_below_1 += 1
 
         print(" ".join([f"({x:.4f}, {y:.4f})" for x, y in zip(X, Y)]))
