@@ -19,7 +19,6 @@ Mimir depends on the following set of libraries:
 - [Abseil](https://github.com/abseil/abseil-cpp) for flat containers,
 - [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking,
 - [GoogleTest](https://github.com/google/googletest) for unit testing,
-- [Souffle](https://github.com/souffle-lang/souffle) for datalog solving,
 - [valla](https://github.com/drexlerd/tree-compression) for tree compression,
 - [fmt](https://github.com/fmtlib/fmt) for formatting,
 - [gtl](https://github.com/greg7mdp/gtl) for flat hash sets,

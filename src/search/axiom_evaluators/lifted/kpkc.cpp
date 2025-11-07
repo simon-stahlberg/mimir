@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
