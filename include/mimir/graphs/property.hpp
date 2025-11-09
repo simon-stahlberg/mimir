@@ -66,7 +66,7 @@ public:
 
             return *this == other_derived;
         }
-        return typeid(*this).before(typeid(other));
+        return false;
     }
     bool operator<(const IProperty& other) const override
     {

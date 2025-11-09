@@ -33,16 +33,27 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
                                                                    const ProblemImpl& problem,
                                                                    graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
-    auto object_to_atom_color = ObjectMap<PredicateVariantList> {};
-    auto object_to_literal_color = ObjectMap<std::vector<std::pair<PredicateVariant, bool>>> {};
+    struct ObjectColorData
+    {
+        PredicateVariantList atoms;
+        std::vector<std::pair<PredicateVariant, bool>> literals;
+    };
+
+    auto object_colors = ObjectMap<ObjectColorData> {};
+
+    // --- Step 1: initialize all objects appearing in the state or goal ---
+
     auto initialize_object_colors_func = [&](auto&& atom)
     {
         for (const auto& object : atom->get_objects())
         {
-            object_to_atom_color[object] = PredicateVariantList();
-            object_to_literal_color[object] = std::vector<std::pair<PredicateVariant, bool>>();
+            // default-construct ObjectColorData if not present
+            (void) object_colors[object];
         }
     };
+
+    // state atoms
+
     for (const auto& atom : problem.get_static_initial_atoms())
     {
         initialize_object_colors_func(atom);
@@ -55,6 +66,9 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
     {
         initialize_object_colors_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
+
+    // goal literals
+
     boost::hana::for_each(problem.get_goal_literals(),
                           [&](auto&& pair)
                           {
@@ -65,13 +79,26 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
                               }
                           });
 
+    // --- Step 2: fill unary colors ---
+
     auto add_unary_atom_graph_structures_func = [&](auto&& atom)
     {
         if (atom->get_arity() == 1)
         {
-            object_to_atom_color[atom->get_objects().front()].push_back(atom->get_predicate());
+            object_colors.at(atom->get_objects().front()).atoms.push_back(atom->get_predicate());
         }
     };
+
+    auto add_unary_literal_graph_structures_func = [&](auto&& literal)
+    {
+        if (literal->get_atom()->get_arity() == 1)
+        {
+            object_colors.at(literal->get_atom()->get_objects().front()).literals.emplace_back(literal->get_atom()->get_predicate(), literal->get_polarity());
+        }
+    };
+
+    // state atoms
+
     for (const auto& atom : problem.get_static_initial_atoms())
     {
         add_unary_atom_graph_structures_func(atom);
@@ -84,13 +111,9 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
     {
         add_unary_atom_graph_structures_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
-    auto add_unary_literal_graph_structures_func = [&](auto&& literal)
-    {
-        if (literal->get_atom()->get_arity() == 1)
-        {
-            object_to_literal_color[literal->get_atom()->get_objects().front()].emplace_back(literal->get_atom()->get_predicate(), literal->get_polarity());
-        }
-    };
+
+    // goal literal
+
     boost::hana::for_each(problem.get_goal_literals(),
                           [&](auto&& pair)
                           {
@@ -101,24 +124,18 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
                               }
                           });
 
-    auto index_to_object = std::vector<std::pair<Index, Object>> {};
-    for (const auto& [object, color] : object_to_atom_color)
-    {
-        index_to_object.emplace_back(object->get_index(), object);
-    }
-    for (const auto& [object, color] : object_to_literal_color)
-    {
-        index_to_object.emplace_back(object->get_index(), object);
-    }
-    std::sort(index_to_object.begin(), index_to_object.end());
+    // --- Step 3: create object vertices ---
 
     auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
-    for (const auto& [index, object] : index_to_object)
-    {
-        std::sort(object_to_atom_color[object].begin(), object_to_atom_color[object].end());
-        std::sort(object_to_literal_color[object].begin(), object_to_literal_color[object].end());
 
-        object_to_vertex_index.emplace(object, out_digraph.add_vertex(graphs::PropertyValue(object_to_atom_color[object], object_to_literal_color[object])));
+    for (auto& [object, color_data] : object_colors)
+    {
+        std::sort(color_data.atoms.begin(), color_data.atoms.end());
+        std::sort(color_data.literals.begin(), color_data.literals.end());
+
+        auto v = out_digraph.add_vertex(graphs::PropertyValue(color_data.atoms, color_data.literals));
+
+        object_to_vertex_index.emplace(object, v);
     }
 
     return object_to_vertex_index;
@@ -134,7 +151,7 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
     {
         out_digraph.add_vertex(graphs::PropertyValue(atom->get_predicate()));
     }
-    else if (atom->get_arity() > 1)
+    else if (atom->get_arity() >= 2)
     {
         for (size_t pos = 0; pos < atom->get_arity(); ++pos)
         {
@@ -156,21 +173,7 @@ static void add_ground_atoms_graph_structures(const ProblemImpl& problem,
                                               const GroundAtomList<P>& atoms,
                                               graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
-    auto canonical_structure_to_atom = std::vector<std::tuple<Index, IndexList, GroundAtom<P>>> {};
-
     for (const auto& atom : atoms)
-    {
-        auto object_indices = IndexList {};
-        for (const auto& object : atom->get_objects())
-        {
-            object_indices.push_back(object->get_index());
-        }
-        canonical_structure_to_atom.emplace_back(atom->get_predicate()->get_index(), object_indices, atom);
-    }
-
-    std::sort(canonical_structure_to_atom.begin(), canonical_structure_to_atom.end());
-
-    for (const auto& [predicate_index, object_indices, atom] : canonical_structure_to_atom)
     {
         add_ground_atom_graph_structures(problem, object_to_vertex_index, atom, out_digraph);
     }
@@ -204,7 +207,7 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
     {
         out_digraph.add_vertex(graphs::PropertyValue(literal->get_atom()->get_predicate(), literal->get_polarity()));
     }
-    else if (literal->get_atom()->get_arity() > 1)
+    else if (literal->get_atom()->get_arity() >= 2)
     {
         for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
         {
@@ -226,21 +229,7 @@ static void add_ground_literals_graph_structures(const ProblemImpl& problem,
                                                  GroundLiteralList<P> literals,
                                                  graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
-    auto canonical_structure_to_literal = std::vector<std::tuple<Index, IndexList, bool, GroundLiteral<P>>> {};
-
     for (const auto& literal : literals)
-    {
-        auto object_indices = IndexList {};
-        for (const auto& object : literal->get_atom()->get_objects())
-        {
-            object_indices.push_back(object->get_index());
-        }
-        canonical_structure_to_literal.emplace_back(literal->get_atom()->get_predicate()->get_index(), object_indices, literal->get_polarity(), literal);
-    }
-
-    std::sort(canonical_structure_to_literal.begin(), canonical_structure_to_literal.end());
-
-    for (const auto& [predicate_index, object_indices, polarity, literal] : canonical_structure_to_literal)
     {
         add_ground_literal_graph_structures(problem, object_to_vertex_index, literal, out_digraph);
     }
