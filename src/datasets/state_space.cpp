@@ -96,7 +96,7 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    auto compute_canonical_graph(const State& state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
+    auto compute_canonical_graph(const State& state) { return nauty::SparseGraph(create_object_graph(state, *m_problem).first).canonize(); }
 
     void on_expand_state_impl(const State& state) {}
 

@@ -17,8 +17,11 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
+#include "mimir/common/formatter.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/property.hpp"
 #include "mimir/search/state.hpp"
 
 #include <random>
@@ -29,9 +32,9 @@ using namespace mimir::search;
 namespace mimir::datasets
 {
 
-static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& state,
-                                                                   const ProblemImpl& problem,
-                                                                   graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
+static IndexMap<graphs::VertexIndex> add_objects_graph_structures(const State& state,
+                                                                  const ProblemImpl& problem,
+                                                                  graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
     struct ObjectColorData
     {
@@ -126,7 +129,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
 
     // --- Step 3: create object vertices ---
 
-    auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
+    auto object_to_vertex_index = IndexMap<graphs::VertexIndex> {};
 
     for (auto& [object, color_data] : object_colors)
     {
@@ -135,7 +138,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
 
         auto v = out_digraph.add_vertex(graphs::PropertyValue(color_data.atoms, color_data.literals));
 
-        object_to_vertex_index.emplace(object, v);
+        object_to_vertex_index.emplace(object->get_index(), v);
     }
 
     return object_to_vertex_index;
@@ -143,7 +146,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(const State& 
 
 template<IsStaticOrFluentOrDerivedTag P>
 static void add_ground_atom_graph_structures(const ProblemImpl& problem,
-                                             const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                             const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
                                              graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
@@ -157,7 +160,7 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
         {
             const auto vertex_index = out_digraph.add_vertex(graphs::PropertyValue(atom->get_predicate(), pos));
 
-            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)->get_index()));
 
             if (pos > 0)
             {
@@ -169,7 +172,7 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
 
 template<IsStaticOrFluentOrDerivedTag P>
 static void add_ground_atoms_graph_structures(const ProblemImpl& problem,
-                                              const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                              const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                               const GroundAtomList<P>& atoms,
                                               graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
@@ -181,7 +184,7 @@ static void add_ground_atoms_graph_structures(const ProblemImpl& problem,
 
 static void add_ground_atoms_graph_structures(const State& state,
                                               const ProblemImpl& problem,
-                                              const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                              const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                               graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
     add_ground_atoms_graph_structures(problem, object_to_vertex_index, problem.get_static_initial_atoms(), out_digraph);
@@ -199,7 +202,7 @@ static void add_ground_atoms_graph_structures(const State& state,
 
 template<IsStaticOrFluentOrDerivedTag P>
 static void add_ground_literal_graph_structures(const ProblemImpl& problem,
-                                                const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                                const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                                 GroundLiteral<P> literal,
                                                 graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
@@ -213,7 +216,7 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
         {
             const auto vertex_index = out_digraph.add_vertex(graphs::PropertyValue(literal->get_atom()->get_predicate(), pos, literal->get_polarity()));
 
-            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)->get_index()));
 
             if (pos > 0)
             {
@@ -225,7 +228,7 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
 
 template<IsStaticOrFluentOrDerivedTag P>
 static void add_ground_literals_graph_structures(const ProblemImpl& problem,
-                                                 const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                                 const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                                  GroundLiteralList<P> literals,
                                                  graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
@@ -236,7 +239,7 @@ static void add_ground_literals_graph_structures(const ProblemImpl& problem,
 }
 
 static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem,
-                                                      const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                                      const IndexMap<graphs::VertexIndex>& object_to_vertex_index,
                                                       graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>& out_digraph)
 {
     add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_literals<StaticTag>(), out_digraph);
@@ -246,7 +249,8 @@ static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem
     add_ground_literals_graph_structures(problem, object_to_vertex_index, problem.get_goal_literals<DerivedTag>(), out_digraph);
 }
 
-graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_object_graph(const State& state, const ProblemImpl& problem)
+std::pair<graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>, IndexMap<graphs::VertexIndex>>
+create_object_graph(const State& state, const ProblemImpl& problem)
 {
     if (!problem.get_derived_predicates().empty())
     {
@@ -262,7 +266,7 @@ graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> creat
 
     add_ground_goal_literals_graph_structures(problem, object_to_vertex_index, vertex_colored_digraph);
 
-    return vertex_colored_digraph;
+    return { std::move(vertex_colored_digraph), std::move(object_to_vertex_index) };
 }
 
 }

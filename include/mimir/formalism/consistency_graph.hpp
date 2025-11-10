@@ -172,6 +172,7 @@ public:
 
     /// @brief Get the vertex indices partitioned by the parameter index.
     const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+    const std::vector<IndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
 
 private:
     class EdgeIterator

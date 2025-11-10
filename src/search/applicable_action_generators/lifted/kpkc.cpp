@@ -18,11 +18,15 @@
 #include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
 
 #include "mimir/common/formatter.hpp"
+#include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/graphs/formatter.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/interface.hpp"
@@ -68,7 +72,7 @@ KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl
 KPKCLiftedApplicableActionGenerator
 KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler, satisficing_binding_generator::EventHandler binding_event_handler)
 {
-    return std::shared_ptr<KPKCLiftedApplicableActionGeneratorImpl>(new KPKCLiftedApplicableActionGeneratorImpl(problem, event_handler, binding_event_handler));
+    return std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem, event_handler, binding_event_handler);
 }
 
 mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
@@ -82,6 +86,33 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
     const auto& ground_action_repository =
         boost::hana::at_key(state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
 
+    auto [object_graph, object_to_vertex] = datasets::create_object_graph(state, *m_problem);
+    std::cout << object_graph << std::endl;
+    std::cout << "object_to_vertex: " << to_string(object_to_vertex) << std::endl;
+    auto nauty_graph = graphs::nauty::SparseGraph(object_graph);
+    nauty_graph.canonize();
+    std::cout << "lab: " << to_string(nauty_graph.get_lab()) << std::endl;
+    std::cout << "ptn: " << to_string(nauty_graph.get_ptn()) << std::endl;
+
+    auto vertex_to_orbit = IndexList(nauty_graph.get_nv());
+    auto orbit_to_vertices = std::vector<IndexList> {};
+    auto vertices = IndexList {};
+    for (Index i = 0; i < (Index) nauty_graph.get_nv(); ++i)
+    {
+        vertices.push_back(nauty_graph.get_lab()[i]);
+        vertex_to_orbit[nauty_graph.get_lab()[i]] = orbit_to_vertices.size();
+
+        if (nauty_graph.get_ptn()[i] == 0)  // finish orbit
+        {
+            std::sort(vertices.begin(), vertices.end());
+            orbit_to_vertices.push_back(vertices);
+            vertices.clear();
+        }
+    }
+
+    std::cout << "vertex_to_orbit: " << to_string(vertex_to_orbit) << std::endl;
+    std::cout << "orbit_to_vertices: " << to_string(orbit_to_vertices) << std::endl << std::endl;
+
     for (auto& condition_grounder : m_action_grounding_data)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
@@ -89,6 +120,27 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
         {
             continue;
         }
+
+        auto touched_orbits_per_parameter = std::vector<IndexSet> {};
+        auto touched_orbits = IndexSet {};
+        auto count_touched_orbits = std::vector<Index>(nauty_graph.get_nv(), 0);
+
+        for (const auto& objects : condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+        {
+            for (const auto& object : objects)
+            {
+                touched_orbits.insert(vertex_to_orbit[object_to_vertex[object]]);  // vertex index
+            }
+            for (const auto orbit : touched_orbits)
+            {
+                ++count_touched_orbits[orbit];
+            }
+            touched_orbits_per_parameter.push_back(touched_orbits);
+            touched_orbits.clear();
+        }
+
+        std::cout << "touched_orbits_per_parameter: " << to_string(touched_orbits_per_parameter) << std::endl;
+        std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl << std::endl;
 
         for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
         {

@@ -46,6 +46,10 @@ std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& e
 template<IsVertex V, IsEdge E>
 std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& element);
 
+extern std::ostream& operator<<(std::ostream& out, const IProperty& element);
+
+extern std::ostream& operator<<(std::ostream& out, const PropertyValue& element);
+
 namespace color_refinement
 {
 extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& element);
@@ -87,6 +91,10 @@ template<size_t K>
 std::ostream& print(std::ostream& out, const mimir::graphs::kfwl::CertificateImpl<K>& element);
 
 extern std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& graph);
+
+extern std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element);
+
+extern std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element);
 }
 
 #endif

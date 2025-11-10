@@ -272,6 +272,8 @@ class VariableImpl;
 using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
+template<typename Value>
+using VariableMap = std::unordered_map<Variable, Value>;
 
 class ParameterImpl;
 using Parameter = const ParameterImpl*;

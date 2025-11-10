@@ -162,7 +162,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
     if constexpr (sizeof...(Ts) > 0)
     {
         std::size_t n = 0;
-        std::apply([&os, &n](const Ts&... args) { ((os << (n++ == 0 ? "" : ", ") << args), ...); }, tuple);
+        std::apply([&os, &n](const Ts&... args) { ((os << (n++ == 0 ? "" : ", ") << to_string(args)), ...); }, tuple);
     }
     os << ">";
     return os;
@@ -192,21 +192,21 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec)
 template<typename T1>
 std::ostream& operator<<(std::ostream& os, const std::variant<T1>& variant)
 {
-    std::visit([&](auto&& arg) { os << arg; }, variant);
+    std::visit([&](auto&& arg) { os << to_string(arg); }, variant);
     return os;
 }
 
 template<typename T1, typename T2>
 std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2>& variant)
 {
-    std::visit([&](auto&& arg) { os << arg; }, variant);
+    std::visit([&](auto&& arg) { os << to_string(arg); }, variant);
     return os;
 }
 
 template<typename T1, typename T2, typename T3>
 std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant)
 {
-    std::visit([&](auto&& arg) { os << arg; }, variant);
+    std::visit([&](auto&& arg) { os << to_string(arg); }, variant);
     return os;
 }
 
@@ -222,7 +222,7 @@ std::ostream& operator<<(std::ostream& os, const Map& map)
 
                               using KeyType = typename decltype(+key)::type;
 
-                              os << "{ " << KeyType::name << " : " << value << " }, ";
+                              os << "{ " << KeyType::name << " : " << to_string(value) << " }, ";
                           });
     os << " }";
     return os;

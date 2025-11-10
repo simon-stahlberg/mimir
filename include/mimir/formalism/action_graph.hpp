@@ -26,7 +26,7 @@ namespace mimir::formalism
 {
 /// @brief Create an `ActionGraph` for a given `Action`.
 /// @param action is the action.
-extern graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_action_graph(Action action);
+extern graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_action_graph(const ActionImpl& action);
 }
 
 #endif

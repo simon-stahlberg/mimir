@@ -111,10 +111,6 @@ private:
 
 using PropertyValueList = std::vector<PropertyValue>;
 
-extern std::ostream& operator<<(std::ostream& out, const IProperty& element);
-
-extern std::ostream& operator<<(std::ostream& out, const PropertyValue& element);
-
 }
 
 namespace loki
@@ -145,13 +141,6 @@ struct EqualTo<mimir::graphs::PropertyValue>
 {
     bool operator()(const mimir::graphs::PropertyValue& lhs, const mimir::graphs::PropertyValue& rhs) const;
 };
-}
-
-namespace mimir
-{
-extern std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element);
-
-extern std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element);
 }
 
 #endif

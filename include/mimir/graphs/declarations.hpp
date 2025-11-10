@@ -71,6 +71,11 @@ concept Property = requires(const T& a, const T& b, std::ostream& os) {
     // { os << a } -> std::same_as<std::ostream&>;
 };
 
+class IProperty;
+template<Property... Ps>
+class Properties;
+class PropertyValue;
+
 template<typename T>
 concept IsVertex = requires(T a) {
     typename T::PropertyType;

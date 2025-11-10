@@ -30,8 +30,13 @@
 
 namespace mimir
 {
+
 namespace graphs
 {
+std::ostream& operator<<(std::ostream& out, const IProperty& property) { return mimir::print(out, property); }
+
+std::ostream& operator<<(std::ostream& out, const PropertyValue& property) { return mimir::print(out, property); }
+
 namespace color_refinement
 {
 std::ostream& operator<<(std::ostream& out, const CertificateImpl& element) { return mimir::print(out, element); }
@@ -58,4 +63,16 @@ std::ostream& print(std::ostream& out, const mimir::graphs::color_refinement::Ce
 }
 
 std::ostream& print(std::ostream& out, const mimir::graphs::nauty::SparseGraph& element) { return mimir::print(out, *element.m_impl); }
+
+std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element)
+{
+    out << element.str();
+    return out;
+}
+
+std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element)
+{
+    out << element.str();
+    return out;
+}
 }

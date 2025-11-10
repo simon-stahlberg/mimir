@@ -18,6 +18,8 @@
 #include "nauty_sparse_impl.hpp"
 
 #include "mimir/common/formatter.hpp"
+#include "mimir/formalism/formatter.hpp"
+#include "mimir/graphs/formatter.hpp"
 
 #include <iostream>
 

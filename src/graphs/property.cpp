@@ -17,6 +17,10 @@
 
 #include "mimir/graphs/property.hpp"
 
+#include "mimir/common/formatter.hpp"
+#include "mimir/formalism/formatter.hpp"
+#include "mimir/graphs/formatter.hpp"
+
 namespace mimir::graphs
 {
 
@@ -35,10 +39,6 @@ std::string PropertyValue::str() const
 
 size_t PropertyValue::hash() const { return loki::Hash<IProperty> {}(*m_property); }
 
-std::ostream& operator<<(std::ostream& out, const IProperty& property) { return mimir::print(out, property); }
-
-std::ostream& operator<<(std::ostream& out, const PropertyValue& property) { return mimir::print(out, property); }
-
 }
 
 namespace loki
@@ -53,20 +53,5 @@ size_t Hash<mimir::graphs::PropertyValue>::operator()(const mimir::graphs::Prope
 bool EqualTo<mimir::graphs::PropertyValue>::operator()(const mimir::graphs::PropertyValue& lhs, const mimir::graphs::PropertyValue& rhs) const
 {
     return lhs == rhs;
-}
-}
-
-namespace mimir
-{
-std::ostream& print(std::ostream& out, const mimir::graphs::IProperty& element)
-{
-    out << element.str();
-    return out;
-}
-
-std::ostream& print(std::ostream& out, const mimir::graphs::PropertyValue& element)
-{
-    out << element.str();
-    return out;
 }
 }

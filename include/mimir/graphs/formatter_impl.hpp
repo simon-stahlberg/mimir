@@ -85,7 +85,7 @@ template<mimir::graphs::IsVertex V, mimir::graphs::IsEdge E>
 std::ostream& print(std::ostream& out, const mimir::graphs::StaticGraph<V, E>& element)
 {
     fmt::print(out,
-               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
+               "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}\n}}",
                fmt::join(element.get_vertices()
                              | std::views::transform([&](auto&& vertex) { return fmt::format("n{} [label=\"{}\"];", vertex.get_index(), to_string(vertex)); }),
                          "\n"),
@@ -114,7 +114,7 @@ std::ostream& print(std::ostream& out, const mimir::graphs::DynamicGraph<V, E>& 
 {
     fmt::print(
         out,
-        "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}}}",
+        "digraph Tree {{\nrankdir=TB;\n\n{}\n\n{}\n}}",
         fmt::join(element.get_vertices()
                       | std::views::transform([&](auto&& arg) { return fmt::format("n{} [label=\"{}\"];", arg.second.get_index(), to_string(arg.second)); }),
                   "\n"),
