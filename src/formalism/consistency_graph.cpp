@@ -669,6 +669,11 @@ StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem, Conjunctive
                 vertices.push_back(std::move(vertex));
             }
         }
+        // Sort by object for symmetry reduction.
+        std::sort(vertex_partition.begin(),
+                  vertex_partition.end(),
+                  [&](auto&& lhs, auto&& rhs) { return vertices[lhs].get_object_index() < vertices[rhs].get_object_index(); });
+        std::sort(object_partition.begin(), object_partition.end());
         vertices_by_parameter_index.push_back(std::move(vertex_partition));
         objects_by_parameter_index.push_back(std::move(object_partition));
     }

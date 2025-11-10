@@ -139,8 +139,35 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             touched_orbits.clear();
         }
 
+        std::cout << "action: " << *condition_grounder.get_action() << std::endl;
         std::cout << "touched_orbits_per_parameter: " << to_string(touched_orbits_per_parameter) << std::endl;
-        std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl << std::endl;
+        std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl;
+
+        auto reduced_objects_by_parameter_index = std::vector<IndexList> {};
+        auto reduced_objects = IndexList {};
+        for (size_t i = 0; i < condition_grounder.get_action()->get_arity(); ++i)
+        {
+            const auto& objects = condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index()[i];
+            auto tmp_count_touched_orbits = count_touched_orbits;
+
+            for (const auto& object : objects)
+            {
+                const auto vertex = object_to_vertex[object];
+                const auto orbit = vertex_to_orbit[vertex];
+
+                if (tmp_count_touched_orbits[orbit] > 0)
+                {
+                    reduced_objects.push_back(object);
+                    --tmp_count_touched_orbits[orbit];
+                }
+            }
+            reduced_objects_by_parameter_index.push_back(reduced_objects);
+            reduced_objects.clear();
+        }
+
+        std::cout << "objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+                  << std::endl;
+        std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
 
         for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
         {
