@@ -101,7 +101,9 @@ void KPKCLiftedAxiomEvaluatorImpl::generate_and_apply_axioms(UnpackedStateImpl& 
 
                 auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
-                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state, m_dynamic_assignment_sets))
+                auto vertex_mask = std::optional<boost::dynamic_bitset<>> { std::nullopt };
+
+                for (auto&& binding : condition_grounder.create_binding_generator(unpacked_state, m_dynamic_assignment_sets, vertex_mask))
                 {
                     const auto num_ground_axioms = ground_axiom_repository.size();
 

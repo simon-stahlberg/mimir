@@ -152,8 +152,7 @@ public:
                           const DynamicAssignmentSets& dynamic_details,
                           const std::optional<boost::dynamic_bitset<>>& vertex_mask) const
     {
-        static thread_local SharedObjectPool<boost::dynamic_bitset<>> s_pool;
-        auto vertex_mask_2 = s_pool.get_or_allocate();
+        auto vertex_mask_2 = get_shared_pool<boost::dynamic_bitset<>>().get_or_allocate();
         vertex_mask_2->resize(get_num_vertices());
         vertex_mask_2->reset();
         for (const auto& v : consistent_vertices(static_details, dynamic_details, vertex_mask))

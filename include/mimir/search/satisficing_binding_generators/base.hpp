@@ -51,11 +51,11 @@ public:
 
     mimir::generator<formalism::ObjectList> create_binding_generator(const State& state,
                                                                      const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
-                                                                     const std::optional<boost::dynamic_bitset<>>& vertex_mask = std::nullopt);
+                                                                     const std::optional<boost::dynamic_bitset<>>& vertex_mask);
 
     mimir::generator<formalism::ObjectList> create_binding_generator(const UnpackedStateImpl& unpacked_state,
                                                                      const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
-                                                                     const std::optional<boost::dynamic_bitset<>>& vertex_mask = std::nullopt);
+                                                                     const std::optional<boost::dynamic_bitset<>>& vertex_mask);
 
     mimir::generator<std::pair<formalism::ObjectList,
                                std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,

@@ -101,7 +101,9 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
                 continue;
             }
 
-            for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
+            auto vertex_mask = std::optional<boost::dynamic_bitset<>> { std::nullopt };
+
+            for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets, vertex_mask))
             {
                 const auto num_ground_actions = ground_action_repository.size();
 

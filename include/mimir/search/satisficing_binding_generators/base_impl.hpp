@@ -289,7 +289,9 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
         co_return;
     }
 
-    for (const auto& binding : create_binding_generator(unpacked_state, dynamic_assignment_sets))
+    auto vertex_mask = std::optional<boost::dynamic_bitset<>> { std::nullopt };
+
+    for (const auto& binding : create_binding_generator(unpacked_state, dynamic_assignment_sets, vertex_mask))
     {
         formalism::GroundLiteralList<formalism::StaticTag> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::StaticTag>())
