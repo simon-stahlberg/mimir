@@ -25,6 +25,7 @@
 #include "mimir/search/applicable_action_generators/lifted/kpkc/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/action.hpp"
+#include "mimir/search/search_context.hpp"
 
 namespace mimir::search
 {
@@ -46,11 +47,15 @@ public:
     using DefaultEventHandler = applicable_action_generator::lifted::kpkc::DefaultEventHandler;
 
     KPKCLiftedApplicableActionGeneratorImpl(formalism::Problem problem,
+                                            const SearchContextImpl::LiftedOptions::KPKCOptions& options = SearchContextImpl::LiftedOptions::KPKCOptions(),
                                             EventHandler event_handler = nullptr,
                                             satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     static KPKCLiftedApplicableActionGenerator
-    create(formalism::Problem problem, EventHandler event_handler = nullptr, satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
+    create(formalism::Problem problem,
+           const SearchContextImpl::LiftedOptions::KPKCOptions& options = SearchContextImpl::LiftedOptions::KPKCOptions(),
+           EventHandler event_handler = nullptr,
+           satisficing_binding_generator::EventHandler binding_event_handler = nullptr);
 
     // Uncopyable
     KPKCLiftedApplicableActionGeneratorImpl(const KPKCLiftedApplicableActionGeneratorImpl& other) = delete;
@@ -72,6 +77,7 @@ public:
 
 private:
     formalism::Problem m_problem;
+    SearchContextImpl::LiftedOptions::KPKCOptions m_options;
     EventHandler m_event_handler;
     satisficing_binding_generator::EventHandler m_binding_event_handler;
 

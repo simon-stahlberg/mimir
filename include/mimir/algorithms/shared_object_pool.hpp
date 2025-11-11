@@ -228,6 +228,15 @@ public:
     [[nodiscard]] size_t get_num_free() const { return m_stack.size(); }
 };
 
+template<typename T>
+inline thread_local SharedObjectPool<T> g_shared_pool;
+
+template<typename T>
+SharedObjectPool<T>& get_shared_pool()
+{
+    return g_shared_pool<T>;
+}
+
 }
 
 #endif

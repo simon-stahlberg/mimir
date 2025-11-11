@@ -44,11 +44,11 @@ SearchContext SearchContextImpl::create(const fs::path& domain_filepath, const f
 SearchContext SearchContextImpl::create(Problem problem, const Options& options)
 {
     return std::visit(
-        [&](auto&& arg)
+        [&](auto&& mode) -> SearchContext
         {
-            using T = std::decay_t<decltype(arg)>;
+            using ModeT = std::decay_t<decltype(mode)>;
 
-            if constexpr (std::is_same_v<T, GroundedOptions>)
+            if constexpr (std::is_same_v<ModeT, GroundedOptions>)
             {
                 auto grounder = std::make_unique<LiftedGrounder>(problem);
 
@@ -56,29 +56,35 @@ SearchContext SearchContextImpl::create(Problem problem, const Options& options)
                               grounder->create_grounded_applicable_action_generator(),
                               std::make_shared<StateRepositoryImpl>(grounder->create_grounded_axiom_evaluator()));
             }
-            else if constexpr (std::is_same_v<T, LiftedOptions>)
-            {  // Lifted
-                switch (arg.kind)
-                {
-                    case LiftedOptions::Kind::EXHAUSTIVE:
+            else if constexpr (std::is_same_v<ModeT, LiftedOptions>)
+            {
+                return std::visit(
+                    [&](auto&& option) -> SearchContext
                     {
-                        return create(problem,
-                                      std::make_shared<ExhaustiveLiftedApplicableActionGeneratorImpl>(problem),
-                                      std::make_shared<StateRepositoryImpl>(std::make_shared<ExhaustiveLiftedAxiomEvaluatorImpl>(problem)));
-                    }
-                    case LiftedOptions::Kind::KPKC:
-                    {
-                        return create(problem,
-                                      std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
-                                      std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
-                    }
-                    default:
-                        throw std::logic_error("Unknown GeneratorOptions.");
-                }
+                        using OptionT = std::decay_t<decltype(option)>;
+
+                        if constexpr (std::is_same_v<OptionT, LiftedOptions::KPKCOptions>)
+                        {
+                            return create(problem,
+                                          std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
+                                          std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
+                        }
+                        else if constexpr (std::is_same_v<OptionT, LiftedOptions::ExhaustiveOptions>)
+                        {
+                            return create(problem,
+                                          std::make_shared<ExhaustiveLiftedApplicableActionGeneratorImpl>(problem),
+                                          std::make_shared<StateRepositoryImpl>(std::make_shared<ExhaustiveLiftedAxiomEvaluatorImpl>(problem)));
+                        }
+                        else
+                        {
+                            static_assert(dependent_false<OptionT>::value, "Missing implementation for option.");
+                        }
+                    },
+                    mode.option);
             }
             else
             {
-                static_assert(dependent_false<T>::value, "Unhandled generator kind");
+                static_assert(dependent_false<ModeT>::value, "Missing implementation for mode.");
             }
         },
         options.mode);
@@ -103,5 +109,4 @@ const Problem& SearchContextImpl::get_problem() const { return m_problem; }
 const ApplicableActionGenerator SearchContextImpl::get_applicable_action_generator() const { return m_applicable_action_generator; }
 
 const StateRepository SearchContextImpl::get_state_repository() const { return m_state_repository; }
-
 }

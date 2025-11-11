@@ -46,11 +46,9 @@ int main(int argc, char** argv)
         .scan<'u', size_t>()
         .help("Weight of the standard queue. Ignored in eager search.");
     program.add_argument("-H", "--heuristic-type").default_value("ff").choices("blind", "perfect", "max", "add", "setadd", "ff");
-    program.add_argument("-G", "--enable-grounding")
-        .default_value(size_t(0))
-        .scan<'u', size_t>()
-        .help("Non-zero values enabled grounding. Might be necessary for some features. Defaults to grounded.");
-    program.add_argument("-LO", "--lifted-kind").default_value("kpkc").choices("exhaustive", "kpkc");
+    program.add_argument("-M", "--mode").default_value("lifted").choices("grounded", "lifted");
+    program.add_argument("-L", "--lifted-mode").default_value("kpkc").choices("exhaustive", "kpkc");
+    program.add_argument("-S", "--lifted-symmetry-pruning-mode").default_value("off").choices("off", "gi", "1-wl");
     program.add_argument("-V", "--verbosity")
         .default_value(size_t(0))
         .scan<'u', size_t>()
@@ -75,8 +73,9 @@ int main(int argc, char** argv)
     auto weight_queue_preferred = program.get<size_t>("--weight-queue-preferred");
     auto weight_queue_standard = program.get<size_t>("--weight-queue-standard");
     auto heuristic_type = get_heuristic_type(program.get<std::string>("--heuristic-type"));
-    auto grounded = static_cast<bool>(program.get<size_t>("--enable-grounding"));
-    auto lifted_kind = get_lifted_kind(program.get<std::string>("--lifted-kind"));
+    auto search_mode = get_search_mode(program.get<std::string>("--mode"),
+                                       program.get<std::string>("--lifted-mode"),
+                                       program.get<std::string>("--lifted-symmetry-pruning-mode"));
     auto verbosity = program.get<size_t>("--verbosity");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
@@ -114,67 +113,83 @@ int main(int argc, char** argv)
 
     auto heuristic = Heuristic(nullptr);
 
-    if (grounded)
-    {
-        auto grounder = std::make_unique<LiftedGrounder>(problem);
-        applicable_action_generator =
-            grounder->create_grounded_applicable_action_generator(match_tree::Options(),
-                                                                  GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
-        state_repository = StateRepositoryImpl::create(axiom_evaluator);
-
-        if (heuristic_type == HeuristicType::MAX)
-            heuristic = MaxHeuristicImpl::create(*grounder);
-        else if (heuristic_type == HeuristicType::ADD)
-            heuristic = AddHeuristicImpl::create(*grounder);
-        else if (heuristic_type == HeuristicType::SETADD)
-            heuristic = SetAddHeuristicImpl::create(*grounder);
-        else if (heuristic_type == HeuristicType::FF)
-            heuristic = FFHeuristicImpl::create(*grounder);
-    }
-    else
-    {
-        switch (lifted_kind)
+    std::visit(
+        [&](auto&& mode)
         {
-            case SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE:
-            {
-                applicable_action_generator =
-                    ExhaustiveLiftedApplicableActionGeneratorImpl::create(problem,
-                                                                          ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
-                                                                          satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
-                axiom_evaluator = ExhaustiveLiftedAxiomEvaluatorImpl::create(problem,
-                                                                             ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
-                                                                             satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
-                state_repository = StateRepositoryImpl::create(axiom_evaluator);
-                break;
-            }
-            case SearchContextImpl::LiftedOptions::Kind::KPKC:
-            {
-                applicable_action_generator =
-                    KPKCLiftedApplicableActionGeneratorImpl::create(problem,
-                                                                    KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
-                                                                    satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
-                axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem,
-                                                                       KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
-                                                                       satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
-                state_repository = StateRepositoryImpl::create(axiom_evaluator);
-                break;
-            }
-            default:
-            {
-                throw std::runtime_error("Unexpected lifted kind.");
-            }
-        }
+            using ModeT = std::decay_t<decltype(mode)>;
 
-        if (heuristic_type == HeuristicType::MAX)
-            throw std::runtime_error("Lifted h_max is not supported");
-        else if (heuristic_type == HeuristicType::ADD)
-            throw std::runtime_error("Lifted h_add is not supported");
-        else if (heuristic_type == HeuristicType::SETADD)
-            throw std::runtime_error("Lifted h_setadd is not supported");
-        else if (heuristic_type == HeuristicType::FF)
-            throw std::runtime_error("Lifted h_ff is not supported");
-    }
+            if constexpr (std::is_same_v<ModeT, SearchContextImpl::GroundedOptions>)
+            {
+                auto grounder = std::make_unique<LiftedGrounder>(problem);
+                applicable_action_generator =
+                    grounder->create_grounded_applicable_action_generator(match_tree::Options(),
+                                                                          GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator =
+                    grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                state_repository = StateRepositoryImpl::create(axiom_evaluator);
+
+                if (heuristic_type == HeuristicType::MAX)
+                    heuristic = MaxHeuristicImpl::create(*grounder);
+                else if (heuristic_type == HeuristicType::ADD)
+                    heuristic = AddHeuristicImpl::create(*grounder);
+                else if (heuristic_type == HeuristicType::SETADD)
+                    heuristic = SetAddHeuristicImpl::create(*grounder);
+                else if (heuristic_type == HeuristicType::FF)
+                    heuristic = FFHeuristicImpl::create(*grounder);
+            }
+            else if constexpr (std::is_same_v<ModeT, SearchContextImpl::LiftedOptions>)
+            {
+                std::visit(
+                    [&](auto&& option)
+                    {
+                        using OptionT = std::decay_t<decltype(option)>;
+
+                        if constexpr (std::is_same_v<OptionT, SearchContextImpl::LiftedOptions::KPKCOptions>)
+                        {
+                            applicable_action_generator =
+                                KPKCLiftedApplicableActionGeneratorImpl::create(problem,
+                                                                                option,
+                                                                                KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                                                                satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem,
+                                                                                   KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                                   satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                        }
+                        else if constexpr (std::is_same_v<OptionT, SearchContextImpl::LiftedOptions::ExhaustiveOptions>)
+                        {
+                            applicable_action_generator = ExhaustiveLiftedApplicableActionGeneratorImpl::create(
+                                problem,
+                                ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            axiom_evaluator =
+                                ExhaustiveLiftedAxiomEvaluatorImpl::create(problem,
+                                                                           ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                           satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                        }
+                        else
+                        {
+                            static_assert(dependent_false<OptionT>::value, "Missing implementation for option.");
+                        }
+                    },
+                    mode.option);
+
+                if (heuristic_type == HeuristicType::MAX)
+                    throw std::runtime_error("Lifted h_max is not supported");
+                else if (heuristic_type == HeuristicType::ADD)
+                    throw std::runtime_error("Lifted h_add is not supported");
+                else if (heuristic_type == HeuristicType::SETADD)
+                    throw std::runtime_error("Lifted h_setadd is not supported");
+                else if (heuristic_type == HeuristicType::FF)
+                    throw std::runtime_error("Lifted h_ff is not supported");
+            }
+            else
+            {
+                static_assert(dependent_false<ModeT>::value, "Missing implementation for mode.");
+            }
+        },
+        search_mode);
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 

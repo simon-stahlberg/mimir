@@ -15,6 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Test local include
+#include "utils.hpp"
+
 // Test loki include
 #include <loki/loki.hpp>
 
@@ -28,6 +31,7 @@
 #include <argparse/argparse.hpp>
 
 // STL includes
+
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -42,10 +46,9 @@ int main(int argc, char** argv)
     program.add_argument("-D", "--domain-filepath").required().help("The path to the PDDL domain file.");
     program.add_argument("-P", "--problem-filepath").required().help("The path to the PDDL problem file.");
     program.add_argument("-O", "--plan-filepath").required().help("The path to the output plan file.");
-    program.add_argument("-G", "--enable-grounding")
-        .default_value(size_t(0))
-        .scan<'u', size_t>()
-        .help("Non-zero values enabled grounding. Might be necessary for some features. Defaults to grounded.");
+    program.add_argument("-M", "--mode").default_value("lifted").choices("grounded", "lifted");
+    program.add_argument("-L", "--lifted-mode").default_value("kpkc").choices("exhaustive", "kpkc");
+    program.add_argument("-S", "--lifted-symmetry-pruning-mode").default_value("off").choices("off", "gi", "1-wl");
     program.add_argument("-V", "--verbosity")
         .default_value(size_t(0))
         .scan<'u', size_t>()
@@ -65,7 +68,9 @@ int main(int argc, char** argv)
     auto domain_filepath = program.get<std::string>("--domain-filepath");
     auto problem_filepath = program.get<std::string>("--problem-filepath");
     auto plan_filepath = program.get<std::string>("--plan-filepath");
-    auto grounded = static_cast<bool>(program.get<size_t>("--enable-grounding"));
+    auto search_mode = get_search_mode(program.get<std::string>("--mode"),
+                                       program.get<std::string>("--lifted-mode"),
+                                       program.get<std::string>("--lifted-symmetry-pruning-mode"));
     auto verbosity = program.get<size_t>("--verbosity");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
@@ -101,22 +106,65 @@ int main(int argc, char** argv)
     auto axiom_evaluator = AxiomEvaluator(nullptr);
     auto state_repository = StateRepository(nullptr);
 
-    if (grounded)
-    {
-        auto grounder = std::make_unique<LiftedGrounder>(problem);
-        applicable_action_generator =
-            grounder->create_grounded_applicable_action_generator(match_tree::Options(),
-                                                                  GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
-        state_repository = StateRepositoryImpl::create(axiom_evaluator);
-    }
-    else
-    {
-        applicable_action_generator =
-            KPKCLiftedApplicableActionGeneratorImpl::create(problem, KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
-        axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
-        state_repository = StateRepositoryImpl::create(axiom_evaluator);
-    }
+    std::visit(
+        [&](auto&& mode)
+        {
+            using ModeT = std::decay_t<decltype(mode)>;
+
+            if constexpr (std::is_same_v<ModeT, SearchContextImpl::GroundedOptions>)
+            {
+                auto grounder = std::make_unique<LiftedGrounder>(problem);
+                applicable_action_generator =
+                    grounder->create_grounded_applicable_action_generator(match_tree::Options(),
+                                                                          GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+                axiom_evaluator =
+                    grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+                state_repository = StateRepositoryImpl::create(axiom_evaluator);
+            }
+            else if constexpr (std::is_same_v<ModeT, SearchContextImpl::LiftedOptions>)
+            {
+                std::visit(
+                    [&](auto&& option)
+                    {
+                        using OptionT = std::decay_t<decltype(option)>;
+
+                        if constexpr (std::is_same_v<OptionT, SearchContextImpl::LiftedOptions::KPKCOptions>)
+                        {
+                            applicable_action_generator =
+                                KPKCLiftedApplicableActionGeneratorImpl::create(problem,
+                                                                                option,
+                                                                                KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                                                                satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem,
+                                                                                   KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                                   satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                        }
+                        else if constexpr (std::is_same_v<OptionT, SearchContextImpl::LiftedOptions::ExhaustiveOptions>)
+                        {
+                            applicable_action_generator = ExhaustiveLiftedApplicableActionGeneratorImpl::create(
+                                problem,
+                                ExhaustiveLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
+                                satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            axiom_evaluator =
+                                ExhaustiveLiftedAxiomEvaluatorImpl::create(problem,
+                                                                           ExhaustiveLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false),
+                                                                           satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
+                            state_repository = StateRepositoryImpl::create(axiom_evaluator);
+                        }
+                        else
+                        {
+                            static_assert(dependent_false<OptionT>::value, "Missing implementation for option.");
+                        }
+                    },
+                    mode.option);
+            }
+            else
+            {
+                static_assert(dependent_false<ModeT>::value, "Missing implementation for mode.");
+            }
+        },
+        search_mode);
 
     auto event_handler = (verbosity > 1) ? brfs::EventHandler { brfs::DebugEventHandlerImpl::create(problem, false) } :
                                            brfs::EventHandler { brfs::DefaultEventHandlerImpl::create(problem, false) };

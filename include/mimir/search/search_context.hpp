@@ -41,15 +41,29 @@ public:
 
     struct LiftedOptions
     {
-        enum class Kind
+        struct KPKCOptions
         {
-            EXHAUSTIVE = 0,
-            KPKC = 1
+            enum class SymmetryPruning
+            {
+                OFF,
+                GI,
+                WL1,
+            };
+
+            SymmetryPruning pruning;
+
+            KPKCOptions(SymmetryPruning pruning = SymmetryPruning::OFF) : pruning(pruning) {}
         };
 
-        Kind kind;
+        struct ExhaustiveOptions
+        {
+        };
 
-        LiftedOptions(Kind kind = Kind::KPKC) : kind(kind) {}
+        using VariantOption = std::variant<KPKCOptions, ExhaustiveOptions>;
+
+        VariantOption option;
+
+        LiftedOptions(VariantOption option = KPKCOptions()) : option(option) {}
     };
 
     using SearchMode = std::variant<GroundedOptions, LiftedOptions>;

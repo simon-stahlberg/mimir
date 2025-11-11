@@ -17,6 +17,7 @@
 
 #include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
 
+#include "mimir/algorithms/unique_object_pool.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -25,6 +26,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/formatter.hpp"
 #include "mimir/search/applicability.hpp"
@@ -51,9 +53,11 @@ namespace mimir::search
  */
 
 KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl(Problem problem,
+                                                                                 const SearchContextImpl::LiftedOptions::KPKCOptions& options,
                                                                                  EventHandler event_handler,
                                                                                  satisficing_binding_generator::EventHandler binding_event_handler) :
     m_problem(problem),
+    m_options(options),
     m_event_handler(event_handler ? event_handler : DefaultEventHandlerImpl::create()),
     m_binding_event_handler(binding_event_handler ? binding_event_handler : satisficing_binding_generator::DefaultEventHandlerImpl::create()),
     m_action_grounding_data(),
@@ -69,10 +73,12 @@ KPKCLiftedApplicableActionGeneratorImpl::KPKCLiftedApplicableActionGeneratorImpl
     }
 }
 
-KPKCLiftedApplicableActionGenerator
-KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler, satisficing_binding_generator::EventHandler binding_event_handler)
+KPKCLiftedApplicableActionGenerator KPKCLiftedApplicableActionGeneratorImpl::create(Problem problem,
+                                                                                    const SearchContextImpl::LiftedOptions::KPKCOptions& options,
+                                                                                    EventHandler event_handler,
+                                                                                    satisficing_binding_generator::EventHandler binding_event_handler)
 {
-    return std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem, event_handler, binding_event_handler);
+    return std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem, options, event_handler, binding_event_handler);
 }
 
 mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
@@ -86,102 +92,146 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
     const auto& ground_action_repository =
         boost::hana::at_key(state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
 
-    auto object_graph = datasets::create_object_graph(state, *m_problem);
-    // std::cout << object_graph << std::endl;
-    auto nauty_graph = graphs::nauty::SparseGraph(object_graph);
-    nauty_graph.canonize();
-    // std::cout << "orbits: " << to_string(nauty_graph.get_orbits()) << std::endl;
-
-    auto vertex_to_orbit = IndexList(nauty_graph.get_nv());
-    for (Index i = 0; i < (Index) nauty_graph.get_nv(); ++i)
-        vertex_to_orbit[i] = nauty_graph.get_orbits()[i];
-
-    // std::cout << "vertex_to_orbit: " << to_string(vertex_to_orbit) << std::endl;
-
-    for (auto& condition_grounder : m_action_grounding_data)
+    if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::OFF)
     {
-        // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_unpacked_state()))
+        for (auto& condition_grounder : m_action_grounding_data)
         {
-            continue;
+            // We move this check here to avoid unnecessary creations of mimir::generator.
+            if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_unpacked_state()))
+            {
+                continue;
+            }
+
+            for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
+            {
+                const auto num_ground_actions = ground_action_repository.size();
+
+                const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
+
+                assert(is_applicable(ground_action, state));
+
+                m_event_handler->on_ground_action(ground_action);
+
+                (ground_action_repository.size() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                         m_event_handler->on_ground_action_cache_hit(ground_action);
+
+                co_yield ground_action;
+            }
+        }
+    }
+    else
+    {
+        // TODO(option): create vertex_to_orbit depending on nauty or 1-WL option.
+        auto object_graph = datasets::create_object_graph(state, *m_problem);
+        // std::cout << object_graph << std::endl;
+
+        auto vertex_to_orbit = IndexList(object_graph.get_num_vertices());
+
+        if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::GI)
+        {
+            auto nauty_graph = graphs::nauty::SparseGraph(object_graph);
+            nauty_graph.canonize();
+            // std::cout << "orbits: " << to_string(nauty_graph.get_orbits()) << std::endl;
+
+            for (Index i = 0; i < (Index) object_graph.get_num_vertices(); ++i)
+                vertex_to_orbit[i] = nauty_graph.get_orbits()[i];
+        }
+        else if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::WL1)
+        {
+            const auto certificate = graphs::color_refinement::compute_certificate(object_graph);
+            // std::cout << "orbits: " << to_string(certificate->get_hash_to_color()) << std::endl;
+
+            for (Index i = 0; i < (Index) object_graph.get_num_vertices(); ++i)
+                vertex_to_orbit[i] = certificate->get_hash_to_color()[i];
         }
 
-        auto touched_orbits = IndexSet {};
-        auto count_touched_orbits = std::vector<Index>(nauty_graph.get_nv(), 0);
+        // std::cout << "vertex_to_orbit: " << to_string(vertex_to_orbit) << std::endl;
 
-        // std::cout << "get_objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
-        //           << std::endl;
-
-        for (const auto& objects : condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+        for (auto& condition_grounder : m_action_grounding_data)
         {
-            for (const auto& object : objects)
+            // We move this check here to avoid unnecessary creations of mimir::generator.
+            if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), state.get_unpacked_state()))
             {
-                touched_orbits.insert(vertex_to_orbit[object]);  // vertex index
+                continue;
             }
-            for (const auto orbit : touched_orbits)
+
+            auto touched_orbits = IndexSet {};
+            auto count_touched_orbits = std::vector<Index>(object_graph.get_num_vertices(), 0);
+
+            // std::cout << "get_objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+            //           << std::endl;
+
+            for (const auto& objects : condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
             {
-                ++count_touched_orbits[orbit];
-            }
-            touched_orbits.clear();
-        }
-
-        // std::cout << "action: " << condition_grounder.get_action()->get_name() << std::endl;
-        // std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl;
-
-        auto reduced_objects_by_parameter_index = std::vector<IndexSet> {};
-        auto reduced_objects = IndexSet {};
-        for (size_t i = 0; i < condition_grounder.get_action()->get_arity(); ++i)
-        {
-            const auto& objects = condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index()[i];
-            auto tmp_count_touched_orbits = count_touched_orbits;
-
-            for (const auto& object : objects)
-            {
-                const auto orbit = vertex_to_orbit[object];
-
-                if (tmp_count_touched_orbits[orbit] > 0)
+                for (const auto& object : objects)
                 {
-                    reduced_objects.insert(object);
-                    --tmp_count_touched_orbits[orbit];
+                    touched_orbits.insert(vertex_to_orbit[object]);  // vertex index
+                }
+                for (const auto orbit : touched_orbits)
+                {
+                    ++count_touched_orbits[orbit];
+                }
+                touched_orbits.clear();
+            }
+
+            // std::cout << "action: " << condition_grounder.get_action()->get_name() << std::endl;
+            // std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl;
+
+            auto reduced_objects_by_parameter_index = std::vector<IndexSet> {};
+            auto reduced_objects = IndexSet {};
+            for (size_t i = 0; i < condition_grounder.get_action()->get_arity(); ++i)
+            {
+                const auto& objects = condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index()[i];
+                auto tmp_count_touched_orbits = count_touched_orbits;
+
+                for (const auto& object : objects)
+                {
+                    const auto orbit = vertex_to_orbit[object];
+
+                    if (tmp_count_touched_orbits[orbit] > 0)
+                    {
+                        reduced_objects.insert(object);
+                        --tmp_count_touched_orbits[orbit];
+                    }
+                }
+                reduced_objects_by_parameter_index.push_back(reduced_objects);
+                reduced_objects.clear();
+            }
+
+            // std::cout << "objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+            //           << std::endl;
+            // std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
+
+            auto vertex_mask = boost::dynamic_bitset(condition_grounder.get_static_consistency_graph().get_vertices().size(), false);
+
+            for (const auto& vertex : condition_grounder.get_static_consistency_graph().get_vertices())
+            {
+                const auto parameter_index = vertex.get_parameter_index();
+                const auto object_index = vertex.get_object_index();
+
+                if (reduced_objects_by_parameter_index[parameter_index].contains(object_index))
+                {
+                    vertex_mask[vertex.get_index()] = true;
                 }
             }
-            reduced_objects_by_parameter_index.push_back(reduced_objects);
-            reduced_objects.clear();
-        }
 
-        // std::cout << "objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
-        //           << std::endl;
-        // std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
+            // std::cout << "vertex_mask: " << to_string(vertex_mask) << std::endl;
 
-        auto vertex_mask = boost::dynamic_bitset(condition_grounder.get_static_consistency_graph().get_vertices().size(), false);
-
-        for (const auto& vertex : condition_grounder.get_static_consistency_graph().get_vertices())
-        {
-            const auto parameter_index = vertex.get_parameter_index();
-            const auto object_index = vertex.get_object_index();
-
-            if (reduced_objects_by_parameter_index[parameter_index].contains(object_index))
+            for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets, vertex_mask))
             {
-                vertex_mask[vertex.get_index()] = true;
+                const auto num_ground_actions = ground_action_repository.size();
+
+                const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
+
+                assert(is_applicable(ground_action, state));
+
+                m_event_handler->on_ground_action(ground_action);
+
+                (ground_action_repository.size() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                         m_event_handler->on_ground_action_cache_hit(ground_action);
+
+                co_yield ground_action;
             }
-        }
-
-        // std::cout << "vertex_mask: " << to_string(vertex_mask) << std::endl;
-
-        for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets, vertex_mask))
-        {
-            const auto num_ground_actions = ground_action_repository.size();
-
-            const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
-
-            assert(is_applicable(ground_action, state));
-
-            m_event_handler->on_ground_action(ground_action);
-
-            (ground_action_repository.size() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
-                                                                     m_event_handler->on_ground_action_cache_hit(ground_action);
-
-            co_yield ground_action;
         }
     }
 
