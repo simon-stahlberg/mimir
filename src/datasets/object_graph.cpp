@@ -200,12 +200,6 @@ static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem
 
 graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_object_graph(const State& state, const ProblemImpl& problem)
 {
-    if (!problem.get_derived_predicates().empty())
-    {
-        throw std::runtime_error("create_object_graph(state, problem): Cannot create object graphs for problems with additional derived predicates. If you "
-                                 "have quantified goals then you should define them as derived predicates in the domain file.");
-    }
-
     auto vertex_colored_digraph = graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>();
 
     add_objects_graph_structures(state, problem, vertex_colored_digraph);
