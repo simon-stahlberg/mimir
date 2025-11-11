@@ -125,7 +125,7 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae1d703f7edfd6edb8e3d87d98a23c04d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">graphs::StaticGraph</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">graphs::Vertex</a>&lt; graphs::PropertyValue &gt;, <a class="el" href="classmimir_1_1graphs_1_1Edge.html">graphs::Edge</a>&lt;&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ae1d703f7edfd6edb8e3d87d98a23c04d">create_object_graph</a> (const search::State &amp;state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)</td></tr>
-<tr class="memdesc:ae1d703f7edfd6edb8e3d87d98a23c04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <code>ObjectGraph</code> for a given <code>search::State</code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>.  <br /></td></tr>
+<tr class="memdesc:ae1d703f7edfd6edb8e3d87d98a23c04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <code>ObjectGraph</code> for a given <code>search::State</code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. Invariant: The object in the problem with index i has vertex index i.  <br /></td></tr>
 <tr class="separator:ae1d703f7edfd6edb8e3d87d98a23c04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -256,7 +256,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create an <code>ObjectGraph</code> for a given <code>search::State</code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. </p>
+<p>Create an <code>ObjectGraph</code> for a given <code>search::State</code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. Invariant: The object in the problem with index i has vertex index i. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>is the state. </td></tr>

@@ -20,5 +20,6 @@ var searchData=
   ['problembuilder_17',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemBuilder.html',1,'mimir::formalism']]],
   ['problemgoalstrategyimpl_18',['ProblemGoalStrategyImpl',['../classmimir_1_1search_1_1ProblemGoalStrategyImpl.html',1,'mimir::search']]],
   ['problemgoalstrategyimplcounter_19',['ProblemGoalStrategyImplCounter',['../classmimir_1_1search_1_1siw_1_1ProblemGoalStrategyImplCounter.html',1,'mimir::search::siw']]],
-  ['problemimpl_20',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]]
+  ['problemimpl_20',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]],
+  ['properties_21',['Properties',['../classmimir_1_1graphs_1_1Properties.html',1,'mimir::graphs']]]
 ];
