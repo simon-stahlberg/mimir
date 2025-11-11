@@ -128,13 +128,13 @@ public:
     /// @return
     auto consistent_vertices(const StaticAssignmentSets& static_details,
                              const DynamicAssignmentSets& dynamic_details,
-                             const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask = std::nullopt) const
+                             const std::optional<boost::dynamic_bitset<>>& vertex_mask) const
     {
         return get_vertices()
                | std::views::filter(
                    [this, &static_details, &dynamic_details, &vertex_mask](auto&& vertex)
                    {
-                       return (vertex_mask.has_value() ? vertex_mask.value().get()[vertex.get_index()] : true)
+                       return (vertex_mask.has_value() ? vertex_mask.value().test(vertex.get_index()) : true)
                               && vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
                               && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(),
                                                             dynamic_details.derived_predicate_assignment_sets)
@@ -150,7 +150,7 @@ public:
     /// @return
     auto consistent_edges(const StaticAssignmentSets& static_details,
                           const DynamicAssignmentSets& dynamic_details,
-                          const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask = std::nullopt) const
+                          const std::optional<boost::dynamic_bitset<>>& vertex_mask) const
     {
         static thread_local SharedObjectPool<boost::dynamic_bitset<>> s_pool;
         auto vertex_mask_2 = s_pool.get_or_allocate();

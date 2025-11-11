@@ -17,7 +17,6 @@
 
 #include "mimir/search/applicable_action_generators/lifted/kpkc.hpp"
 
-#include "mimir/algorithms/unique_object_pool.hpp"
 #include "mimir/common/formatter.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -126,9 +125,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
         auto object_graph = datasets::create_object_graph(state, *m_problem);
         // std::cout << object_graph << std::endl;
 
-        const auto vertex_to_orbit_ptr = get_unique_pool<IndexList>().get_or_allocate();
-        auto& vertex_to_orbit = *vertex_to_orbit_ptr;
-        vertex_to_orbit.resize(object_graph.get_num_vertices());
+        auto vertex_to_orbit = IndexList(object_graph.get_num_vertices());
 
         if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::GI)
         {
@@ -164,12 +161,8 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
             // --- Step 2: Compute number of times each orbits is touched by an action parameter. ---
 
-            const auto touched_orbits_ptr = get_unique_pool<IndexSet>().get_or_allocate();
-            auto& touched_orbits = *touched_orbits_ptr;
-            const auto count_touched_orbits_ptr = get_unique_pool<IndexList>().get_or_allocate();
-            auto& count_touched_orbits = *count_touched_orbits_ptr;
-            count_touched_orbits.resize(object_graph.get_num_vertices());
-            count_touched_orbits.assign(object_graph.get_num_vertices(), 0);
+            auto touched_orbits = IndexSet {};
+            auto count_touched_orbits = IndexList(object_graph.get_num_vertices(), 0);
 
             // std::cout << "get_objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
             //           << std::endl;
@@ -195,17 +188,13 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
             const auto num_objects = m_problem->get_problem_and_domain_objects().size();
             const auto arity = condition_grounder.get_action()->get_arity();
-            const auto reduced_objects_ptr = get_unique_pool<boost::dynamic_bitset<>>().get_or_allocate();
-            auto& reduced_objects = *reduced_objects_ptr;
-            reduced_objects.resize(num_objects * arity);
-            reduced_objects.reset();
+            auto reduced_objects = boost::dynamic_bitset<>(num_objects * arity);
+            auto tmp_count_touched_orbits = IndexList {};
 
             for (size_t i = 0; i < condition_grounder.get_action()->get_arity(); ++i)
             {
                 const auto& objects = condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index()[i];
 
-                const auto tmp_count_touched_orbits_ptr = get_unique_pool<IndexList>().get_or_allocate();
-                auto& tmp_count_touched_orbits = *tmp_count_touched_orbits_ptr;
                 tmp_count_touched_orbits = count_touched_orbits;
 
                 for (const auto& object : objects)
@@ -224,10 +213,8 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             //           << std::endl;
             // std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
 
-            const auto vertex_mask_ptr = get_unique_pool<boost::dynamic_bitset<>>().get_or_allocate();
-            auto& vertex_mask = *vertex_mask_ptr;
-            vertex_mask.resize(condition_grounder.get_static_consistency_graph().get_vertices().size());
-            vertex_mask.reset();
+            auto vertex_mask =
+                std::optional<boost::dynamic_bitset<>>(boost::dynamic_bitset<>(condition_grounder.get_static_consistency_graph().get_vertices().size(), false));
 
             for (const auto& vertex : condition_grounder.get_static_consistency_graph().get_vertices())
             {
@@ -236,11 +223,9 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
                 if (reduced_objects[parameter * num_objects + object])
                 {
-                    vertex_mask[vertex.get_index()] = true;
+                    vertex_mask->set(vertex.get_index());
                 }
             }
-
-            // std::cout << "vertex_mask: " << to_string(vertex_mask) << std::endl;
 
             for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets, vertex_mask))
             {
