@@ -167,12 +167,10 @@ public:
 };
 
 template<typename T>
-inline thread_local UniqueObjectPool<T> g_unique_pool;
-
-template<typename T>
 UniqueObjectPool<T>& get_unique_pool()
 {
-    return g_unique_pool<T>;
+    static thread_local UniqueObjectPool<T> pool;
+    return pool;
 }
 
 }

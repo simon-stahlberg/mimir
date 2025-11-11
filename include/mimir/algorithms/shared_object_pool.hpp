@@ -229,12 +229,10 @@ public:
 };
 
 template<typename T>
-inline thread_local SharedObjectPool<T> g_shared_pool;
-
-template<typename T>
 SharedObjectPool<T>& get_shared_pool()
 {
-    return g_shared_pool<T>;
+    static thread_local SharedObjectPool<T> pool;
+    return pool;
 }
 
 }
