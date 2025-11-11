@@ -48,7 +48,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     for (const auto& vertex : state_space_result->first->get_graph().get_vertices())
     {
-        certificates.insert(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex)).first).canonize());
+        certificates.insert(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex))).canonize());
     }
 
     EXPECT_EQ(certificates.size(), 12);

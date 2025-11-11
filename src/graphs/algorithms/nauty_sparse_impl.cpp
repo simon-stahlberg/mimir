@@ -60,6 +60,7 @@ SparseGraphImpl::SparseGraphImpl(size_t nde,
     m_elen(elen),
     m_lab(std::move(lab)),
     m_ptn(std::move(ptn)),
+    m_orbits(m_nv),
     m_coloring(std::move(coloring)),
     m_graph(),
     m_is_canonical(false)
@@ -78,6 +79,7 @@ SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     m_elen(other.get_elen()),
     m_lab(other.get_lab()),
     m_ptn(other.get_ptn()),
+    m_orbits(other.get_orbits()),
     m_coloring(other.get_coloring()),
     m_graph(),
     m_is_canonical(other.m_is_canonical)
@@ -99,6 +101,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         m_elen = other.get_elen();
         m_lab = other.get_lab();
         m_ptn = other.get_ptn();
+        m_orbits = other.get_orbits();
         m_graph = sparsegraph();
         m_is_canonical = other.m_is_canonical;
         initialize_sparsegraph();
@@ -126,6 +129,8 @@ size_t SparseGraphImpl::get_elen() const { return m_elen; }
 const std::vector<int>& SparseGraphImpl::get_lab() const { return m_lab; }
 
 const std::vector<int>& SparseGraphImpl::get_ptn() const { return m_ptn; }
+
+const std::vector<int>& SparseGraphImpl::get_orbits() const { return m_orbits; }
 
 const PropertyValueList& SparseGraphImpl::get_coloring() const { return m_coloring; }
 
@@ -159,15 +164,13 @@ void SparseGraphImpl::canonize()
     options.digraph = FALSE;
     options.writeautoms = FALSE;
 
-    auto orbits = std::vector<int>(m_nv);
-
     statsblk stats;
 
     auto canon_graph = SparseGraphImpl(*this);
 
     // std::cout << "Canongraph before: " << canon_graph << std::endl;
 
-    sparsenauty(&m_graph, canon_graph.m_lab.data(), canon_graph.m_ptn.data(), orbits.data(), &options, &stats, &canon_graph.m_graph);
+    sparsenauty(&m_graph, canon_graph.m_lab.data(), canon_graph.m_ptn.data(), canon_graph.m_orbits.data(), &options, &stats, &canon_graph.m_graph);
 
     // According to documentation:
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
@@ -227,6 +230,8 @@ std::ostream& print(std::ostream& out, const mimir::graphs::nauty::details::Spar
     out << "\n"
         << "ptn: ";
     out << graph.get_ptn();
+    out << "\n"
+        << "orbits: " << graph.get_orbits();
     out << "\n"
         << "coloring: ";
     out << graph.get_coloring();

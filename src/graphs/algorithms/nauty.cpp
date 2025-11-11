@@ -95,6 +95,8 @@ const std::vector<int>& SparseGraph::get_lab() const { return m_impl->get_lab();
 
 const std::vector<int>& SparseGraph::get_ptn() const { return m_impl->get_ptn(); }
 
+const std::vector<int>& SparseGraph::get_orbits() const { return m_impl->get_orbits(); }
+
 const PropertyValueList& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
 
 SparseGraph& SparseGraph::canonize()

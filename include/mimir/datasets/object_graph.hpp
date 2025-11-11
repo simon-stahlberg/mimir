@@ -28,10 +28,11 @@
 namespace mimir::datasets
 {
 /// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl`.
+/// Invariant: The object in the problem with index i has vertex index i.
 /// @param state is the state.
 /// @param problem is the Problem.
-extern std::pair<graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>>, IndexMap<graphs::VertexIndex>>
-create_object_graph(const search::State& state, const formalism::ProblemImpl& problem);
+extern graphs::StaticGraph<graphs::Vertex<graphs::PropertyValue>, graphs::Edge<>> create_object_graph(const search::State& state,
+                                                                                                      const formalism::ProblemImpl& problem);
 }
 
 #endif

@@ -156,10 +156,12 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state,
-                                                                                          const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
+mimir::generator<formalism::ObjectList>
+SatisficingBindingGenerator<Derived_>::unary_case(const UnpackedStateImpl& unpacked_state,
+                                                  const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
+                                                  const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask)
 {
-    for (const auto& vertex : m_static_consistency_graph.consistent_vertices(m_problem->get_static_assignment_sets(), dynamic_assignment_sets))
+    for (const auto& vertex : m_static_consistency_graph.consistent_vertices(m_problem->get_static_assignment_sets(), dynamic_assignment_sets, vertex_mask))
     {
         auto binding = formalism::ObjectList { m_problem->get_repositories().get_object(vertex.get_object_index()) };
 
@@ -169,8 +171,10 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::u
 }
 
 template<typename Derived_>
-mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state,
-                                                                                            const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
+mimir::generator<formalism::ObjectList>
+SatisficingBindingGenerator<Derived_>::general_case(const UnpackedStateImpl& unpacked_state,
+                                                    const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
+                                                    const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask)
 {
     if (m_static_consistency_graph.get_num_edges() == 0)
     {
@@ -179,7 +183,7 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::g
 
     clear_full_consistency_graph(m_full_consistency_graph);
 
-    for (const auto& edge : m_static_consistency_graph.consistent_edges(m_problem->get_static_assignment_sets(), dynamic_assignment_sets))
+    for (const auto& edge : m_static_consistency_graph.consistent_edges(m_problem->get_static_assignment_sets(), dynamic_assignment_sets, vertex_mask))
     {
         const auto first_index = edge.get_src().get_index();
         const auto second_index = edge.get_dst().get_index();
@@ -228,15 +232,18 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
-SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state, const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
+SatisficingBindingGenerator<Derived_>::create_binding_generator(const State& state,
+                                                                const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
+                                                                const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask)
 {
-    return create_binding_generator(state.get_unpacked_state(), dynamic_assignment_sets);
+    return create_binding_generator(state.get_unpacked_state(), dynamic_assignment_sets, vertex_mask);
 }
 
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
 SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedStateImpl& unpacked_state,
-                                                                const formalism::DynamicAssignmentSets& dynamic_assignment_sets)
+                                                                const formalism::DynamicAssignmentSets& dynamic_assignment_sets,
+                                                                const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -249,11 +256,11 @@ SatisficingBindingGenerator<Derived_>::create_binding_generator(const UnpackedSt
     }
     else if (m_conjunctive_condition->get_arity() == 1)
     {
-        return unary_case(unpacked_state, dynamic_assignment_sets);
+        return unary_case(unpacked_state, dynamic_assignment_sets, vertex_mask);
     }
     else
     {
-        return general_case(unpacked_state, dynamic_assignment_sets);
+        return general_case(unpacked_state, dynamic_assignment_sets, vertex_mask);
     }
 }
 

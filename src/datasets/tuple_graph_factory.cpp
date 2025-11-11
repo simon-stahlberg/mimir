@@ -96,7 +96,7 @@ private:
             if (!m_certificate_maps->state_to_cert.contains(successor_state))
             {
                 m_certificate_maps->state_to_cert.emplace(successor_state,
-                                                          graphs::nauty::SparseGraph(create_object_graph(successor_state, problem).first).canonize());
+                                                          graphs::nauty::SparseGraph(create_object_graph(successor_state, problem)).canonize());
             }
 
             const auto problem_v_idx = m_certificate_maps->cert_to_v_idx.at(m_certificate_maps->state_to_cert.at(successor_state));
@@ -380,7 +380,7 @@ private:
             /* Map state to representative vertex. */
             if (!m_certificate_maps->state_to_cert.contains(state))
             {
-                m_certificate_maps->state_to_cert.emplace(state, graphs::nauty::SparseGraph(create_object_graph(state, problem).first).canonize());
+                m_certificate_maps->state_to_cert.emplace(state, graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize());
             }
 
             const auto problem_v_idx = m_certificate_maps->cert_to_v_idx.at(m_certificate_maps->state_to_cert.at(state));

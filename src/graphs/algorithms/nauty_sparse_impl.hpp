@@ -41,6 +41,7 @@ private:
     size_t m_elen;
     std::vector<int> m_lab;
     std::vector<int> m_ptn;
+    std::vector<int> m_orbits;
     PropertyValueList m_coloring;
 
     // The nauty graph that consumes the data above.
@@ -82,6 +83,7 @@ public:
     size_t get_elen() const;
     const std::vector<int>& get_lab() const;
     const std::vector<int>& get_ptn() const;
+    const std::vector<int>& get_orbits() const;
     const PropertyValueList& get_coloring() const;
 
     /// @brief Return vertex permutation from input graph to canonical graphs.

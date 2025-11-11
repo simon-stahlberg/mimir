@@ -86,32 +86,17 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
     const auto& ground_action_repository =
         boost::hana::at_key(state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
 
-    auto [object_graph, object_to_vertex] = datasets::create_object_graph(state, *m_problem);
-    std::cout << object_graph << std::endl;
-    std::cout << "object_to_vertex: " << to_string(object_to_vertex) << std::endl;
+    auto object_graph = datasets::create_object_graph(state, *m_problem);
+    // std::cout << object_graph << std::endl;
     auto nauty_graph = graphs::nauty::SparseGraph(object_graph);
     nauty_graph.canonize();
-    std::cout << "lab: " << to_string(nauty_graph.get_lab()) << std::endl;
-    std::cout << "ptn: " << to_string(nauty_graph.get_ptn()) << std::endl;
+    // std::cout << "orbits: " << to_string(nauty_graph.get_orbits()) << std::endl;
 
     auto vertex_to_orbit = IndexList(nauty_graph.get_nv());
-    auto orbit_to_vertices = std::vector<IndexList> {};
-    auto vertices = IndexList {};
     for (Index i = 0; i < (Index) nauty_graph.get_nv(); ++i)
-    {
-        vertices.push_back(nauty_graph.get_lab()[i]);
-        vertex_to_orbit[nauty_graph.get_lab()[i]] = orbit_to_vertices.size();
+        vertex_to_orbit[i] = nauty_graph.get_orbits()[i];
 
-        if (nauty_graph.get_ptn()[i] == 0)  // finish orbit
-        {
-            std::sort(vertices.begin(), vertices.end());
-            orbit_to_vertices.push_back(vertices);
-            vertices.clear();
-        }
-    }
-
-    std::cout << "vertex_to_orbit: " << to_string(vertex_to_orbit) << std::endl;
-    std::cout << "orbit_to_vertices: " << to_string(orbit_to_vertices) << std::endl << std::endl;
+    // std::cout << "vertex_to_orbit: " << to_string(vertex_to_orbit) << std::endl;
 
     for (auto& condition_grounder : m_action_grounding_data)
     {
@@ -121,30 +106,30 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             continue;
         }
 
-        auto touched_orbits_per_parameter = std::vector<IndexSet> {};
         auto touched_orbits = IndexSet {};
         auto count_touched_orbits = std::vector<Index>(nauty_graph.get_nv(), 0);
+
+        // std::cout << "get_objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+        //           << std::endl;
 
         for (const auto& objects : condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
         {
             for (const auto& object : objects)
             {
-                touched_orbits.insert(vertex_to_orbit[object_to_vertex[object]]);  // vertex index
+                touched_orbits.insert(vertex_to_orbit[object]);  // vertex index
             }
             for (const auto orbit : touched_orbits)
             {
                 ++count_touched_orbits[orbit];
             }
-            touched_orbits_per_parameter.push_back(touched_orbits);
             touched_orbits.clear();
         }
 
-        std::cout << "action: " << *condition_grounder.get_action() << std::endl;
-        std::cout << "touched_orbits_per_parameter: " << to_string(touched_orbits_per_parameter) << std::endl;
-        std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl;
+        // std::cout << "action: " << condition_grounder.get_action()->get_name() << std::endl;
+        // std::cout << "count_touched_orbits: " << to_string(count_touched_orbits) << std::endl;
 
-        auto reduced_objects_by_parameter_index = std::vector<IndexList> {};
-        auto reduced_objects = IndexList {};
+        auto reduced_objects_by_parameter_index = std::vector<IndexSet> {};
+        auto reduced_objects = IndexSet {};
         for (size_t i = 0; i < condition_grounder.get_action()->get_arity(); ++i)
         {
             const auto& objects = condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index()[i];
@@ -152,12 +137,11 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
             for (const auto& object : objects)
             {
-                const auto vertex = object_to_vertex[object];
-                const auto orbit = vertex_to_orbit[vertex];
+                const auto orbit = vertex_to_orbit[object];
 
                 if (tmp_count_touched_orbits[orbit] > 0)
                 {
-                    reduced_objects.push_back(object);
+                    reduced_objects.insert(object);
                     --tmp_count_touched_orbits[orbit];
                 }
             }
@@ -165,11 +149,26 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             reduced_objects.clear();
         }
 
-        std::cout << "objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
-                  << std::endl;
-        std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
+        // std::cout << "objects_by_parameter_index: " << to_string(condition_grounder.get_static_consistency_graph().get_objects_by_parameter_index())
+        //           << std::endl;
+        // std::cout << "reduced_objects_by_parameter_index: " << to_string(reduced_objects_by_parameter_index) << std::endl << std::endl;
 
-        for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets))
+        auto vertex_mask = boost::dynamic_bitset(condition_grounder.get_static_consistency_graph().get_vertices().size(), false);
+
+        for (const auto& vertex : condition_grounder.get_static_consistency_graph().get_vertices())
+        {
+            const auto parameter_index = vertex.get_parameter_index();
+            const auto object_index = vertex.get_object_index();
+
+            if (reduced_objects_by_parameter_index[parameter_index].contains(object_index))
+            {
+                vertex_mask[vertex.get_index()] = true;
+            }
+        }
+
+        // std::cout << "vertex_mask: " << to_string(vertex_mask) << std::endl;
+
+        for (auto&& binding : condition_grounder.create_binding_generator(state, m_dynamic_assignment_sets, vertex_mask))
         {
             const auto num_ground_actions = ground_action_repository.size();
 

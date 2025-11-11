@@ -126,13 +126,16 @@ public:
     /// @param static_details is the static assignment sets.
     /// @param dynamic_details is the dynamic assignment sets representing the given state.
     /// @return
-    auto consistent_vertices(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
+    auto consistent_vertices(const StaticAssignmentSets& static_details,
+                             const DynamicAssignmentSets& dynamic_details,
+                             const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask = std::nullopt) const
     {
         return get_vertices()
                | std::views::filter(
-                   [this, &static_details, &dynamic_details](auto&& vertex)
+                   [this, &static_details, &dynamic_details, &vertex_mask](auto&& vertex)
                    {
-                       return vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
+                       return (vertex_mask.has_value() ? vertex_mask.value().get()[vertex.get_index()] : true)
+                              && vertex.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
                               && vertex.consistent_literals(m_condition->get_literals<formalism::DerivedTag>(),
                                                             dynamic_details.derived_predicate_assignment_sets)
                               && vertex.consistent_literals(m_condition->get_numeric_constraints(),
@@ -145,18 +148,20 @@ public:
     /// @param static_details is the static assignment sets.
     /// @param dynamic_details is the dynamic assignment sets representing the given state.
     /// @return
-    auto consistent_edges(const StaticAssignmentSets& static_details, const DynamicAssignmentSets& dynamic_details) const
+    auto consistent_edges(const StaticAssignmentSets& static_details,
+                          const DynamicAssignmentSets& dynamic_details,
+                          const std::optional<std::reference_wrapper<const boost::dynamic_bitset<>>>& vertex_mask = std::nullopt) const
     {
         static thread_local SharedObjectPool<boost::dynamic_bitset<>> s_pool;
-        auto vertex_mask = s_pool.get_or_allocate();
-        vertex_mask->resize(get_num_vertices());
-        vertex_mask->reset();
-        for (const auto& v : consistent_vertices(static_details, dynamic_details))
-            vertex_mask->set(v.get_index());
+        auto vertex_mask_2 = s_pool.get_or_allocate();
+        vertex_mask_2->resize(get_num_vertices());
+        vertex_mask_2->reset();
+        for (const auto& v : consistent_vertices(static_details, dynamic_details, vertex_mask))
+            vertex_mask_2->set(v.get_index());
 
         return get_edges()
                | std::views::filter(
-                   [this, mask = std::move(vertex_mask), &static_details, &dynamic_details](auto&& edge)
+                   [this, mask = std::move(vertex_mask_2), &static_details, &dynamic_details](auto&& edge)
                    {
                        return mask->test(edge.get_src().get_index()) && mask->test(edge.get_dst().get_index())
                               && edge.consistent_literals(m_condition->get_literals<formalism::FluentTag>(), dynamic_details.fluent_predicate_assignment_sets)
