@@ -34,6 +34,13 @@ private:
     SearchContextImpl(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
 public:
+    enum class SymmetryPruning
+    {
+        OFF,
+        GI,
+        WL1,
+    };
+
     struct GroundedOptions
     {
         GroundedOptions() = default;
@@ -43,13 +50,6 @@ public:
     {
         struct KPKCOptions
         {
-            enum class SymmetryPruning
-            {
-                OFF,
-                GI,
-                WL1,
-            };
-
             SymmetryPruning pruning;
 
             KPKCOptions(SymmetryPruning pruning = SymmetryPruning::OFF) : pruning(pruning) {}

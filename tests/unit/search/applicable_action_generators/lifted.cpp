@@ -39,7 +39,8 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
     const auto applicable_action_generator_event_handler = KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create();
-    const auto applicable_action_generator = KPKCLiftedApplicableActionGeneratorImpl::create(problem, applicable_action_generator_event_handler);
+    const auto applicable_action_generator =
+        KPKCLiftedApplicableActionGeneratorImpl::create(problem, SearchContextImpl::LiftedOptions::KPKCOptions(), applicable_action_generator_event_handler);
     const auto axiom_evaluator_event_handler = KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create();
     const auto axiom_evaluator = KPKCLiftedAxiomEvaluatorImpl::create(problem, axiom_evaluator_event_handler);
     const auto state_repository = StateRepositoryImpl::create(axiom_evaluator);

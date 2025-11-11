@@ -37,7 +37,7 @@ def test_astar_search_2():
 
     axiom_evaluator = search.KPKCLiftedAxiomEvaluator.create(problem)
     state_repository = search.StateRepository.create(axiom_evaluator)
-    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem)
+    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem, search.LiftedKPKCOptions())
 
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 

@@ -50,7 +50,7 @@ from pymimir.advanced.formalism import TypeList as AdvancedTypeList
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
-from pymimir.advanced.search import GroundedOptions, LiftedOptions, LiftedGeneratorKind, SearchContext, SearchContextOptions
+from pymimir.advanced.search import GroundedOptions, LiftedOptions, LiftedKPKCOptions, LiftedExhaustiveOptions, SymmetryPruning, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
 from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpression
 
@@ -1769,7 +1769,7 @@ class Problem:
         if mode == 'grounded':
             search_mode = GroundedOptions()
         elif mode == 'lifted':
-            search_mode = LiftedOptions(LiftedGeneratorKind.KPKC)
+            search_mode = LiftedOptions()
         else:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
         self._domain = domain

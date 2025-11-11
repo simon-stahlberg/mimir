@@ -33,10 +33,7 @@ int main(int argc, char** argv)
     program.add_argument("-D", "--domain-filepath").required().help("The path to the PDDL domain file.");
     program.add_argument("-P", "--problem-filepath").required().help("The path to the PDDL problem file.");
     program.add_argument("-O", "--plan-filepath").required().help("The path to the output plan file.");
-    program.add_argument("-E", "--enable-eager")
-        .default_value(size_t(0))
-        .scan<'u', size_t>()
-        .help("Non-zero values enable eager search. Defaults to lazy search.");
+    program.add_argument("-A", "--gbfs-mode").default_value("lazy").choices("eager", "lazy");
     program.add_argument("-W0", "--weight-queue-preferred")
         .default_value(size_t(64))
         .scan<'u', size_t>()
@@ -46,7 +43,7 @@ int main(int argc, char** argv)
         .scan<'u', size_t>()
         .help("Weight of the standard queue. Ignored in eager search.");
     program.add_argument("-H", "--heuristic-type").default_value("ff").choices("blind", "perfect", "max", "add", "setadd", "ff");
-    program.add_argument("-M", "--mode").default_value("lifted").choices("grounded", "lifted");
+    program.add_argument("-M", "--search-mode").default_value("lifted").choices("grounded", "lifted");
     program.add_argument("-L", "--lifted-mode").default_value("kpkc").choices("exhaustive", "kpkc");
     program.add_argument("-S", "--lifted-symmetry-pruning-mode").default_value("off").choices("off", "gi", "1-wl");
     program.add_argument("-V", "--verbosity")
@@ -69,11 +66,11 @@ int main(int argc, char** argv)
     auto problem_filepath = program.get<std::string>("--problem-filepath");
     auto plan_filepath = program.get<std::string>("--plan-filepath");
 
-    auto eager = static_cast<bool>(program.get<size_t>("--enable-eager"));
+    auto gbfs_mode = program.get<std::string>("--gbfs-mode");
     auto weight_queue_preferred = program.get<size_t>("--weight-queue-preferred");
     auto weight_queue_standard = program.get<size_t>("--weight-queue-standard");
     auto heuristic_type = get_heuristic_type(program.get<std::string>("--heuristic-type"));
-    auto search_mode = get_search_mode(program.get<std::string>("--mode"),
+    auto search_mode = get_search_mode(program.get<std::string>("--search-mode"),
                                        program.get<std::string>("--lifted-mode"),
                                        program.get<std::string>("--lifted-symmetry-pruning-mode"));
     auto verbosity = program.get<size_t>("--verbosity");
@@ -202,7 +199,7 @@ int main(int argc, char** argv)
 
     auto result = SearchResult();
 
-    if (eager)
+    if (gbfs_mode == "eager")
     {
         auto event_handler = (verbosity > 1) ? gbfs_eager::EventHandler { gbfs_eager::DebugEventHandlerImpl::create(problem, false) } :
                                                gbfs_eager::EventHandler { gbfs_eager::DefaultEventHandlerImpl::create(problem, false) };
@@ -212,7 +209,7 @@ int main(int argc, char** argv)
 
         result = gbfs_eager::find_solution(search_context, heuristic, gbfs_options);
     }
-    else
+    else if (gbfs_mode == "lazy")
     {
         auto event_handler = (verbosity > 1) ? gbfs_lazy::EventHandler { gbfs_lazy::DebugEventHandlerImpl::create(problem, false) } :
                                                gbfs_lazy::EventHandler { gbfs_lazy::DefaultEventHandlerImpl::create(problem, false) };
@@ -222,6 +219,10 @@ int main(int argc, char** argv)
         gbfs_options.openlist_weights = std::array<size_t, 6> { 1, 1, 1, 1, weight_queue_preferred, weight_queue_standard };
 
         result = gbfs_lazy::find_solution(search_context, heuristic, gbfs_options);
+    }
+    else
+    {
+        throw std::runtime_error("Unexpected gbfs mode.");
     }
 
     std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)

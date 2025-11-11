@@ -260,9 +260,10 @@ public:
 void bind_module_definitions(nb::module_& m)
 {
     /* Enums */
-    nb::enum_<SearchContextImpl::LiftedOptions::Kind>(m, "LiftedGeneratorKind")
-        .value("EXHAUSTIVE", SearchContextImpl::LiftedOptions::Kind::EXHAUSTIVE)
-        .value("KPKC", SearchContextImpl::LiftedOptions::Kind::KPKC)
+    nb::enum_<SearchContextImpl::SymmetryPruning>(m, "SymmetryPruning")
+        .value("OFF", SearchContextImpl::SymmetryPruning::OFF)
+        .value("GI", SearchContextImpl::SymmetryPruning::GI)
+        .value("WL1", SearchContextImpl::SymmetryPruning::WL1)
         .export_values();
 
     nb::enum_<SearchNodeStatus>(m, "SearchNodeStatus")
@@ -300,8 +301,16 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<SearchContextImpl::GroundedOptions>(m, "GroundedOptions")  //
         .def(nb::init<>());
 
+    nb::class_<SearchContextImpl::LiftedOptions::ExhaustiveOptions>(m, "LiftedExhaustiveOptions")  //
+        .def(nb::init<>());
+
+    nb::class_<SearchContextImpl::LiftedOptions::KPKCOptions>(m, "LiftedKPKCOptions")  //
+        .def(nb::init<>())
+        .def(nb::init<SearchContextImpl::SymmetryPruning>(), "symmetry_pruning"_a);
+
     nb::class_<SearchContextImpl::LiftedOptions>(m, "LiftedOptions")  //
-        .def(nb::init<SearchContextImpl::LiftedOptions::Kind>());
+        .def(nb::init<>())
+        .def(nb::init<SearchContextImpl::LiftedOptions::VariantOption>(), "variant_options"_a);
 
     nb::class_<SearchContextImpl::Options>(m, "SearchContextOptions")
         .def(nb::init<>())
@@ -542,7 +551,12 @@ void bind_module_definitions(nb::module_& m)
         .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<KPKCLiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
                                                                                     "KPKCLiftedApplicableActionGenerator")  //
-        .def_static("create", &KPKCLiftedApplicableActionGeneratorImpl::create, "problem"_a, "event_handler"_a = nullptr, "binding_event_handler"_a = nullptr);
+        .def_static("create",
+                    &KPKCLiftedApplicableActionGeneratorImpl::create,
+                    "problem"_a,
+                    "options"_a,
+                    "event_handler"_a = nullptr,
+                    "binding_event_handler"_a = nullptr);
 
     // Grounded
     nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,

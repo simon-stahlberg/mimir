@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     program.add_argument("-P", "--problem-filepath").required().help("The path to the PDDL problem file.");
     program.add_argument("-O", "--plan-filepath").required().help("The path to the output plan file.");
     program.add_argument("-A", "--arity").default_value(size_t(1)).scan<'u', size_t>().help("The arity used in novelty search.");
-    program.add_argument("-M", "--mode").default_value("lifted").choices("grounded", "lifted");
+    program.add_argument("-M", "--search-mode").default_value("lifted").choices("grounded", "lifted");
     program.add_argument("-L", "--lifted-mode").default_value("kpkc").choices("exhaustive", "kpkc");
     program.add_argument("-S", "--lifted-symmetry-pruning-mode").default_value("off").choices("off", "gi", "1-wl");
     program.add_argument("-V", "--verbosity")
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     auto problem_filepath = program.get<std::string>("--problem-filepath");
     auto plan_filepath = program.get<std::string>("--plan-filepath");
     auto arity = program.get<size_t>("--arity");
-    auto search_mode = get_search_mode(program.get<std::string>("--mode"),
+    auto search_mode = get_search_mode(program.get<std::string>("--search-mode"),
                                        program.get<std::string>("--lifted-mode"),
                                        program.get<std::string>("--lifted-symmetry-pruning-mode"));
     auto verbosity = program.get<size_t>("--verbosity");

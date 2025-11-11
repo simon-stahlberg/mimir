@@ -91,7 +91,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
     const auto& ground_action_repository =
         boost::hana::at_key(state.get_problem().get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
 
-    if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::OFF)
+    if (m_options.pruning == SearchContextImpl::SymmetryPruning::OFF)
     {
         for (auto& condition_grounder : m_action_grounding_data)
         {
@@ -129,7 +129,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
 
         auto vertex_to_orbit = IndexList(object_graph.get_num_vertices());
 
-        if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::GI)
+        if (m_options.pruning == SearchContextImpl::SymmetryPruning::GI)
         {
             auto nauty_graph = graphs::nauty::SparseGraph(object_graph);
             nauty_graph.canonize();
@@ -140,7 +140,7 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
                 vertex_to_orbit[i] = nauty_graph.get_orbits()[i];
             }
         }
-        else if (m_options.pruning == SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::WL1)
+        else if (m_options.pruning == SearchContextImpl::SymmetryPruning::WL1)
         {
             const auto certificate = graphs::color_refinement::compute_certificate(object_graph);
             // std::cout << "orbits: " << to_string(certificate->get_hash_to_color()) << std::endl;

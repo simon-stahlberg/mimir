@@ -117,12 +117,11 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     weight_preferred_queue = 64
     weight_standard_queue = 1
     heuristic_type = "blind"
-    enabled_grounding = True
-    enable_eager = True
-    lifted_kind = "kpkc"
+    astar_mode = "eager"
+    lifted_mode = "kpkc"
+    symmetry_pruning_mode = "off"
 
-    for enabled_grounding in [True, False]:
-        enabled_grounding_str = "grounded" if enabled_grounding else "lifted"
+    for search_mode in ["grounded", "lifted"]:
 
         ################ Grounded ################
         run = exp.add_run()
@@ -137,12 +136,13 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
                 "{domain}", 
                 "{problem}", 
                 "plan.out", 
-                str(int(enable_eager)), 
+                astar_mode, 
                 str(weight_preferred_queue), 
                 str(weight_standard_queue), 
                 heuristic_type, 
-                str(int(enabled_grounding)),
-                lifted_kind
+                search_mode,
+                lifted_mode,
+                symmetry_pruning_mode
             ],
             time_limit=TIME_LIMIT,
             memory_limit=MEMORY_LIMIT,
@@ -151,7 +151,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
         # 'domain', 'problem', 'algorithm', 'coverage'.
         run.set_property("domain", task.domain)
         run.set_property("problem", task.problem)
-        run.set_property("algorithm", f"mimir-{enabled_grounding_str}-astar-eager-blind")
+        run.set_property("algorithm", f"mimir-{search_mode}-astar-{astar_mode}-{heuristic_type}")
         # BaseReport needs the following properties:
         # 'time_limit', 'memory_limit'.
         run.set_property("time_limit", TIME_LIMIT)
@@ -159,7 +159,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
         # Every run has to have a unique id in the form of a list.
         # The algorithm name is only really needed when there are
         # multiple algorithms.
-        run.set_property("id", [f"mimir-{enabled_grounding_str}-astar-eager-blind", task.domain, task.problem])
+        run.set_property("id", [f"mimir-{search_mode}-astar-{astar_mode}-{heuristic_type}", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

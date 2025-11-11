@@ -6,12 +6,13 @@ planner_exe=$1
 domain_file=$PWD/$2   # Assuming full path or relative to current dir
 problem_file=$PWD/$3  # Assuming full path or relative to current dir
 plan_file=$PWD/$4     # Assuming full path or relative to current dir
-enable_eager=$5
+astar_mode=$5
 weight_preferred_queue=$6
 weight_standard_queue=$7
 heuristic_type=$8
-enable_grounding=$9
-lifted_kind=${10}
+search_mode=$9
+lifted_mode=${10}
+symmetry_pruning_mode=${11}
 
 # Check if the plan file already exists and prompt for removal
 if [ -f "$plan_file" ]; then
@@ -23,7 +24,7 @@ fi
 export LANG=C
 
 # Run planner
-"$planner_exe" "-D" "$domain_file" "-P" "$problem_file" "-O" "$plan_file" "-E" "$enable_eager" "-W0" "$weight_preferred_queue" "-W1" "$weight_standard_queue" "-H" "$heuristic_type" "-G" "$enable_grounding" "-LO" "$lifted_kind"
+"$planner_exe" "-D" "$domain_file" "-P" "$problem_file" "-O" "$plan_file" "-A" "$astar_mode" "-W0" "$weight_preferred_queue" "-W1" "$weight_standard_queue" "-H" "$heuristic_type" "-M" "$search_mode" "-L" "$lifted_mode" "-S" "$symmetry_pruning_mode"
 
 # Run VAL
 echo -e "\nRun VAL\n"

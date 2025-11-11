@@ -73,7 +73,7 @@ def main():
 
     # Create the search context
     problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
-    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem)
+    applicable_action_generator = search.KPKCLiftedApplicableActionGenerator.create(problem, search.LiftedKPKCOptions())
     axiom_evaluator = search.KPKCLiftedAxiomEvaluator.create(problem)
     state_repository = search.StateRepository.create(axiom_evaluator)
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)

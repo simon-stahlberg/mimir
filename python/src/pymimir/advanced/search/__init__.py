@@ -2,7 +2,7 @@
 
 # Enums
 from pymimir.pymimir.advanced.search import (
-    LiftedGeneratorKind,
+    SymmetryPruning,
     SearchNodeStatus,
     SearchStatus,
     MatchTreeSplitMetric,
@@ -25,6 +25,8 @@ from pymimir.pymimir.advanced.search import (
     compute_state_metric_value,
     GroundedOptions,
     LiftedOptions,
+    LiftedExhaustiveOptions,
+    LiftedKPKCOptions,
     SearchContext,
     SearchContextOptions,
     GeneralizedSearchContext,

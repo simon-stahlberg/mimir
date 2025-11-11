@@ -51,7 +51,9 @@ public:
     LiftedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_applicable_action_generator_event_handler(KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create()),
-        m_applicable_action_generator(KPKCLiftedApplicableActionGeneratorImpl::create(m_problem, m_applicable_action_generator_event_handler)),
+        m_applicable_action_generator(KPKCLiftedApplicableActionGeneratorImpl::create(m_problem,
+                                                                                      SearchContextImpl::LiftedOptions::KPKCOptions(),
+                                                                                      m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(KPKCLiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
         m_axiom_evaluator(KPKCLiftedAxiomEvaluatorImpl::create(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),

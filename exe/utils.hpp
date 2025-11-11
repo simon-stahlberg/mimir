@@ -52,14 +52,14 @@ inline HeuristicType get_heuristic_type(const std::string& name)
         throw std::runtime_error("Undefined mapping from name to heuristic type.");
 }
 
-inline search::SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning get_symmetry_pruning(const std::string& symmetry_pruning_mode)
+inline search::SearchContextImpl::SymmetryPruning get_symmetry_pruning(const std::string& symmetry_pruning_mode)
 {
     if (symmetry_pruning_mode == "off")
-        return search::SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::OFF;
+        return search::SearchContextImpl::SymmetryPruning::OFF;
     else if (symmetry_pruning_mode == "gi")
-        return search::SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::GI;
+        return search::SearchContextImpl::SymmetryPruning::GI;
     else if (symmetry_pruning_mode == "1-wl")
-        return search::SearchContextImpl::LiftedOptions::KPKCOptions::SymmetryPruning::WL1;
+        return search::SearchContextImpl::SymmetryPruning::WL1;
     else
         throw std::runtime_error("Undefined symmetry pruning mode.");
 }
