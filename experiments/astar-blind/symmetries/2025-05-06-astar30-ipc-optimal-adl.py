@@ -64,38 +64,7 @@ ATTRIBUTES = [
     "num_expanded_until_last_f_layer",
     "num_generated_until_last_f_layer",
     "num_pruned_until_last_f_layer",
-
-    "num_reachable_fluent_atoms",
-    "num_reachable_derived_atoms",
-
-    "memory_in_bytes_for_nodes",
-    "memory_in_bytes_per_node",
-    "memory_in_bytes_for_problem",
-    "total_memory_in_bytes",
     "peak_memory_usage_in_bytes",
-    "state_peak_memory_usage_in_bytes",
-
-    "score_peak_memory_usage_in_bytes",
-    "score_state_peak_memory_usage_in_bytes",
-    
-    "num_of_states",
-    "num_of_nodes",
-    "num_of_actions",
-    "num_of_axioms",
-
-    "num_index_slots",
-    "num_double_slots",
-    "num_slots",
-    "average_num_fluent_state_variables",
-    "average_num_derived_state_variables",
-    "average_num_numeric_state_variables",
-    "average_num_state_variables",
-    "average_num_index_slots_per_state",
-    "average_num_double_slots_per_state",
-    "average_num_slots_per_state",
-
-    "initial_h_value",
-
     "cost",
     "length",
     "invalid_plan_reported",
