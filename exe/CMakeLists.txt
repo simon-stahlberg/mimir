@@ -16,3 +16,6 @@ target_link_libraries(planner_siw mimir::core)
 
 add_executable(kb "knowledge_base.cpp")
 target_link_libraries(kb mimir::core)
+
+add_executable(planner_astar_symmetries "planner_astar_symmetries.cpp")
+target_link_libraries(planner_astar_symmetries mimir::core)
