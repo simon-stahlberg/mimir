@@ -110,6 +110,8 @@ int main(int argc, char** argv)
 
     auto heuristic = Heuristic(nullptr);
 
+    auto grounder = std::unique_ptr<LiftedGrounder> { nullptr };
+
     std::visit(
         [&](auto&& mode)
         {
@@ -117,22 +119,13 @@ int main(int argc, char** argv)
 
             if constexpr (std::is_same_v<ModeT, SearchContextImpl::GroundedOptions>)
             {
-                auto grounder = std::make_unique<LiftedGrounder>(problem);
+                grounder = std::make_unique<LiftedGrounder>(problem);
                 applicable_action_generator =
                     grounder->create_grounded_applicable_action_generator(match_tree::Options(),
                                                                           GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
                 axiom_evaluator =
                     grounder->create_grounded_axiom_evaluator(match_tree::Options(), GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
                 state_repository = StateRepositoryImpl::create(axiom_evaluator);
-
-                if (heuristic_type == HeuristicType::MAX)
-                    heuristic = MaxHeuristicImpl::create(*grounder);
-                else if (heuristic_type == HeuristicType::ADD)
-                    heuristic = AddHeuristicImpl::create(*grounder);
-                else if (heuristic_type == HeuristicType::SETADD)
-                    heuristic = SetAddHeuristicImpl::create(*grounder);
-                else if (heuristic_type == HeuristicType::FF)
-                    heuristic = FFHeuristicImpl::create(*grounder);
             }
             else if constexpr (std::is_same_v<ModeT, SearchContextImpl::LiftedOptions>)
             {
@@ -171,15 +164,6 @@ int main(int argc, char** argv)
                         }
                     },
                     mode.option);
-
-                if (heuristic_type == HeuristicType::MAX)
-                    throw std::runtime_error("Lifted h_max is not supported");
-                else if (heuristic_type == HeuristicType::ADD)
-                    throw std::runtime_error("Lifted h_add is not supported");
-                else if (heuristic_type == HeuristicType::SETADD)
-                    throw std::runtime_error("Lifted h_setadd is not supported");
-                else if (heuristic_type == HeuristicType::FF)
-                    throw std::runtime_error("Lifted h_ff is not supported");
             }
             else
             {
@@ -189,6 +173,24 @@ int main(int argc, char** argv)
         search_mode);
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
+
+    if (heuristic_type != HeuristicType::BLIND && heuristic_type != HeuristicType::PERFECT && !grounder)
+        grounder = std::make_unique<LiftedGrounder>(problem);
+
+    if (heuristic_type == HeuristicType::MAX)
+        heuristic = MaxHeuristicImpl::create(*grounder);
+    else if (heuristic_type == HeuristicType::ADD)
+        heuristic = AddHeuristicImpl::create(*grounder);
+    else if (heuristic_type == HeuristicType::SETADD)
+        heuristic = SetAddHeuristicImpl::create(*grounder);
+    else if (heuristic_type == HeuristicType::FF)
+        heuristic = FFHeuristicImpl::create(*grounder);
+    else if (heuristic_type == HeuristicType::BLIND)
+        heuristic = BlindHeuristicImpl::create(problem);
+    else if (heuristic_type == HeuristicType::PERFECT)
+        heuristic = PerfectHeuristicImpl::create(search_context);
+
+    assert(heuristic);
 
     /**
      * Execute IW search to generate sample data.
@@ -256,88 +258,20 @@ int main(int argc, char** argv)
             }
         };
 
-        auto iw_applicable_action_generator = KPKCLiftedApplicableActionGeneratorImpl::create(
-            problem,
-            search::SearchContextImpl::LiftedOptions::KPKCOptions(search::SearchContextImpl::SymmetryPruning::OFF),
-            KPKCLiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false),
-            satisficing_binding_generator::DefaultEventHandlerImpl::create(false));
-        auto search_context = SearchContextImpl::create(problem, iw_applicable_action_generator, state_repository);
-
-        auto expanded_iw_states = StateList {};
-
-        auto brfs_event_handler = CollectStatesBrFSEventHandler::create(problem, expanded_iw_states, false);
-        auto iw_event_handler = iw::DefaultEventHandlerImpl::create(problem, false);
-        auto iw_options = iw::Options();
-        iw_options.max_arity = 1;
-        iw_options.iw_event_handler = iw_event_handler;
-        iw_options.brfs_event_handler = brfs_event_handler;
-
-        auto result = iw::find_solution(search_context, iw_options);
-
-        std::cout << brfs_event_handler->get_statistics() << std::endl;
-
-        auto branching_factors = std::vector<size_t> {};
-        auto unique_ground_actions = std::unordered_set<GroundAction> {};
-        auto unique_generated_successors = std::unordered_set<PackedState> {};
-        auto num_generated_successors = size_t(0);
-
+        auto branching_factor = size_t { 0 };
         const auto start_collect_time = std::chrono::high_resolution_clock::now();
 
-        for (const auto& state : expanded_iw_states)
+        const auto [initial_state, initial_metric_value] = state_repository->get_or_create_initial_state();
+        for (const auto& ground_action : applicable_action_generator->create_applicable_action_generator(initial_state))
         {
-            size_t branching_factor = 0;
-
-            for (const auto& ground_action : applicable_action_generator->create_applicable_action_generator(state))
-            {
-                ++num_generated_successors;
-                ++branching_factor;
-                unique_ground_actions.insert(ground_action);
-
-                const auto [successor_state, successor_state_metric_value] = state_repository->get_or_create_successor_state(state, ground_action, 0);
-                unique_generated_successors.insert(successor_state.get_packed_state());
-            }
-            branching_factors.push_back(branching_factor);
+            ++branching_factor;
         }
-
-        // mean, var (population) via Welford in one pass
-        double mean = 0.0;
-        double M2 = 0.0;
-        size_t n = 0;
-
-        for (size_t x : branching_factors)
-        {
-            ++n;
-            double dx = static_cast<double>(x) - mean;
-            mean += dx / static_cast<double>(n);
-            double dx2 = static_cast<double>(x) - mean;
-            M2 += dx * dx2;  // sum of squared diffs
-        }
-
-        double var_pop = (n > 0) ? M2 / static_cast<double>(n) : 0.0;
-        double var_sample = (n > 1) ? M2 / static_cast<double>(n - 1) : 0.0;
-        double sd_pop = std::sqrt(var_pop);
-        double sd_sample = std::sqrt(var_sample);
 
         std::cout << "[KPKCTrain] Number of objects: " << problem->get_problem_and_domain_objects().size() << std::endl;
-        std::cout << "[KPKCTrain] Branching factors: " << branching_factors << std::endl;
-        std::cout << "[KPKCTrain] Branching factor - Average: " << mean << "\n";
-        std::cout << "[KPKCTrain] Branching factor - Variance (population): " << var_pop << "\n";
-        std::cout << "[KPKCTrain] Branching factor - Stddev  (population): " << sd_pop << "\n";
-        std::cout << "[KPKCTrain] Branching factor - Variance (sample): " << var_sample << "\n";
-        std::cout << "[KPKCTrain] Branching factor - Stddev  (sample): " << sd_sample << "\n";
-        std::cout << "[KPKCTrain] Number of generated successors: " << num_generated_successors << std::endl;
-        std::cout << "[KPKCTrain] Number of unique generated ground actions: " << unique_ground_actions.size() << std::endl;
-        std::cout << "[KPKCTrain] Number of unique generated successors: " << unique_generated_successors.size() << std::endl;
-        std::cout << "[KPKCTrain] Total time: "
+        std::cout << "[KPKCTrain] Branching factor: " << branching_factor << std::endl;
+        std::cout << "[KPKCTrain] Preprocessing time: "
                   << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_collect_time) << std::endl;
     }
-
-    if (heuristic_type == HeuristicType::BLIND)
-        heuristic = BlindHeuristicImpl::create(problem);
-    else if (heuristic_type == HeuristicType::PERFECT)
-        heuristic = PerfectHeuristicImpl::create(search_context);
-
-    assert(heuristic);
 
     auto result = SearchResult();
 

@@ -70,14 +70,7 @@ ATTRIBUTES = [
     "invalid_plan_reported",
 
     "kpkc_num_objects",
-    "kpkc_branching_factor_average",
-    "kpkc_branching_factor_variance_population",
-    "kpkc_branching_factor_stddev_population",
-    "kpkc_branching_factor_variance_sample",
-    "kpkc_branching_factor_stddev_sample",
-    "kpkc_num_generated_successors",
-    "kpkc_num_unique_generated_ground_actions",
-    "kpkc_num_unique_generated_successors",
+    "kpkc_branching_factor",
     "kpkc_total_time",
 ]
 
@@ -102,7 +95,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     lifted_mode = "kpkc"
     search_mode = "lifted"
 
-    for symmetry_pruning_mode in ["off", "gi"]:
+    for symmetry_pruning_mode in ["off", "gi", "1-wl"]:
 
         ################ Grounded ################
         run = exp.add_run()
@@ -111,6 +104,54 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
 
         run.add_command(
             f"astar_eager_planner",
+            [
+                "{run_planner}", 
+                "{planner_exe}", 
+                "{domain}", 
+                "{problem}", 
+                "plan.out", 
+                astar_mode, 
+                str(weight_preferred_queue), 
+                str(weight_standard_queue), 
+                heuristic_type, 
+                search_mode,
+                lifted_mode,
+                symmetry_pruning_mode
+            ],
+            time_limit=TIME_LIMIT,
+            memory_limit=MEMORY_LIMIT,
+        )
+        # AbsoluteReport needs the following properties:
+        # 'domain', 'problem', 'algorithm', 'coverage'.
+        run.set_property("domain", task.domain)
+        run.set_property("problem", task.problem)
+        run.set_property("algorithm", f"mimir-{search_mode}-astar-{astar_mode}-{heuristic_type}-{symmetry_pruning_mode}")
+        # BaseReport needs the following properties:
+        # 'time_limit', 'memory_limit'.
+        run.set_property("time_limit", TIME_LIMIT)
+        run.set_property("memory_limit", MEMORY_LIMIT)
+        # Every run has to have a unique id in the form of a list.
+        # The algorithm name is only really needed when there are
+        # multiple algorithms.
+        run.set_property("id", [f"mimir-{search_mode}-astar-{astar_mode}-{heuristic_type}-{symmetry_pruning_mode}", task.domain, task.problem])
+
+for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
+    weight_preferred_queue = 64
+    weight_standard_queue = 1
+    heuristic_type = "ff"
+    astar_mode = "lazy"
+    lifted_mode = "kpkc"
+    search_mode = "lifted"
+
+    for symmetry_pruning_mode in ["off", "gi", "1-wl"]:
+
+        ################ Grounded ################
+        run = exp.add_run()
+        run.add_resource("domain", task.domain_file, symlink=True)
+        run.add_resource("problem", task.problem_file, symlink=True)
+
+        run.add_command(
+            f"astar_lazy_planner",
             [
                 "{run_planner}", 
                 "{planner_exe}", 
