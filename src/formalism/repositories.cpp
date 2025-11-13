@@ -18,6 +18,7 @@
 #include "mimir/formalism/repositories.hpp"
 
 #include "mimir/common/itertools.hpp"
+#include "mimir/formalism/formatter.hpp"
 
 namespace mimir::formalism
 {

@@ -192,86 +192,19 @@ int main(int argc, char** argv)
 
     assert(heuristic);
 
-    /**
-     * Execute IW search to generate sample data.
-     */
+    auto branching_factor = size_t { 0 };
+    const auto start_collect_time = std::chrono::high_resolution_clock::now();
 
+    const auto [initial_state, initial_metric_value] = state_repository->get_or_create_initial_state();
+    for (const auto& ground_action : applicable_action_generator->create_applicable_action_generator(initial_state))
     {
-        class CollectStatesBrFSEventHandler : public brfs::EventHandlerBase<CollectStatesBrFSEventHandler>
-        {
-        private:
-            StateList& m_expanded_states;
-
-        private:
-            /* Implement EventHandlerBase interface */
-            friend class brfs::EventHandlerBase<CollectStatesBrFSEventHandler>;
-
-            void on_expand_state_impl(const State& state) const { m_expanded_states.push_back(state); }
-
-            void on_expand_goal_state_impl(const State& state) const {}
-
-            void on_generate_state_impl(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) const {}
-
-            void on_generate_state_in_search_tree_impl(const State& state,
-                                                       formalism::GroundAction action,
-                                                       ContinuousCost action_cost,
-                                                       const State& successor_state) const
-            {
-            }
-
-            void on_generate_state_not_in_search_tree_impl(const State& state,
-                                                           formalism::GroundAction action,
-                                                           ContinuousCost action_cost,
-                                                           const State& successor_state) const
-            {
-            }
-
-            void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const {}
-
-            void on_start_search_impl(const State& start_state) const {}
-
-            void on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                    uint64_t num_reached_derived_atoms,
-                                    uint64_t num_states,
-                                    uint64_t num_nodes,
-                                    uint64_t num_actions,
-                                    uint64_t num_axioms) const
-            {
-            }
-
-            void on_solved_impl(const Plan& plan) const {}
-
-            void on_unsolvable_impl() const {}
-
-            void on_exhausted_impl() const {}
-
-        public:
-            CollectStatesBrFSEventHandler(Problem problem, StateList& expanded_states, bool quiet = true) :
-                brfs::EventHandlerBase<CollectStatesBrFSEventHandler>(problem, quiet),
-                m_expanded_states(expanded_states)
-            {
-            }
-
-            static std::shared_ptr<CollectStatesBrFSEventHandler> create(formalism::Problem problem, StateList& expanded_states, bool quiet = true)
-            {
-                return std::make_shared<CollectStatesBrFSEventHandler>(problem, expanded_states, quiet);
-            }
-        };
-
-        auto branching_factor = size_t { 0 };
-        const auto start_collect_time = std::chrono::high_resolution_clock::now();
-
-        const auto [initial_state, initial_metric_value] = state_repository->get_or_create_initial_state();
-        for (const auto& ground_action : applicable_action_generator->create_applicable_action_generator(initial_state))
-        {
-            ++branching_factor;
-        }
-
-        std::cout << "[KPKCTrain] Number of objects: " << problem->get_problem_and_domain_objects().size() << std::endl;
-        std::cout << "[KPKCTrain] Branching factor: " << branching_factor << std::endl;
-        std::cout << "[KPKCTrain] Preprocessing time: "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_collect_time) << std::endl;
+        ++branching_factor;
     }
+
+    std::cout << "[KPKCTrain] Number of objects: " << problem->get_problem_and_domain_objects().size() << std::endl;
+    std::cout << "[KPKCTrain] Branching factor: " << branching_factor << std::endl;
+    std::cout << "[KPKCTrain] Preprocessing time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_collect_time) << std::endl;
 
     auto result = SearchResult();
 

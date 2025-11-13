@@ -145,9 +145,11 @@ mimir::generator<GroundAction> KPKCLiftedApplicableActionGeneratorImpl::create_a
             const auto certificate = graphs::color_refinement::compute_certificate(object_graph);
             // std::cout << "orbits: " << to_string(certificate->get_hash_to_color()) << std::endl;
 
+            auto color_to_index = IndexMap<Index> {};
             for (Index i = 0; i < (Index) object_graph.get_num_vertices(); ++i)
             {
-                vertex_to_orbit[i] = certificate->get_hash_to_color()[i];
+                const auto [it, success] = color_to_index.emplace(certificate->get_hash_to_color()[i], color_to_index.size());
+                vertex_to_orbit[i] = it->second;
             }
         }
 
