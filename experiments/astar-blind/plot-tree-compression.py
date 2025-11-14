@@ -4,6 +4,7 @@ import json
 from collections import defaultdict
 
 MAX_MEMORY_MB = 20_000_000_000
+MAX_AVG_NUM_STATE_VARIABLES = 200_000_000
 
 def main():
     with open("combined-astar-blind-300-propositional-eval/properties", 'r') as file:
@@ -13,11 +14,6 @@ def main():
         task_to_runs = defaultdict(list)
         for task, run in data.items():
             task_to_runs[tuple(run["id"][1:])].append(run)
-
-        task_to_all_solved_runs = dict()
-        for task, runs in task_to_runs.items():
-            if all(run["coverage"] for run in runs):
-                task_to_all_solved_runs[task] = runs
 
         count_compression_ratio_below_1 = 0
 
@@ -42,8 +38,8 @@ def main():
                     else:
                         tree_peak_mem = MAX_MEMORY_MB
 
-            if list_peak_mem is None or tree_peak_mem is None or avg_num_state_variables is None:
-                continue
+            if avg_num_state_variables is None:
+                avg_num_state_variables = MAX_AVG_NUM_STATE_VARIABLES
             
             X.append(avg_num_state_variables)
             Y.append(list_peak_mem / tree_peak_mem)
