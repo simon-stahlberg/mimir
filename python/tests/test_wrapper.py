@@ -175,12 +175,14 @@ class TestProblem(unittest.TestCase):
             assert str(goal_literal.get_atom()) in expected_goal_condition
 
     def test_numeric_goal_condition(self):
-        domain_path = DATA_DIR / 'refuel' / 'domain.pddl'
-        problem_path = DATA_DIR / 'refuel' / 'test_problem.pddl'
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
-        actual_numeric_goal_condition = problem.get_goal_numeric_constraints()
-        pass
+        derived_goal_predicates = problem.get_derived_goal_predicates()
+        derived_problem_predicates = problem.get_derived_problem_predicates()
+        assert len(derived_goal_predicates) > 0
+        assert len(derived_goal_predicates) == len(derived_problem_predicates)
 
     def test_str_repr_hash(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -737,6 +739,19 @@ class TestStateSpaceSampler(unittest.TestCase):
             expected_index = state.get_index()
             actual_index = sampler.get_state(expected_index).get_index()
             assert actual_index == expected_index
+
+
+class TestNumericFluents(unittest.TestCase):
+    def test_get_initial_functions(self):
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        action = domain.get_action('fuel-vehicle')
+        precondition = action.get_precondition()
+        numeric_conditions = precondition.get_numeric_conditions()
+        assert len(numeric_conditions) == 1
+
 
 if __name__ == '__main__':
     unittest.main()

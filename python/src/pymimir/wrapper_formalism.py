@@ -2,6 +2,13 @@ from pathlib import Path
 from typing import overload, Union, Iterator, Literal as Lit
 
 from pymimir.advanced.formalism import Action as AdvancedAction
+from pymimir.advanced.formalism import AuxiliaryFunction as AdvancedAuxiliaryFunction
+from pymimir.advanced.formalism import AuxiliaryFunctionExpressionFunction as AdvancedAuxiliaryFunctionExpressionFunction
+from pymimir.advanced.formalism import AuxiliaryFunctionSkeleton as AdvancedAuxiliaryFunctionSkeleton
+from pymimir.advanced.formalism import AuxiliaryFunctionSkeletonList as AdvancedAuxiliaryFunctionSkeletonList
+from pymimir.advanced.formalism import AuxiliaryGroundFunction as AdvancedAuxiliaryGroundFunction
+from pymimir.advanced.formalism import AuxiliaryGroundFunctionExpressionFunction as AdvancedAuxiliaryGroundFunctionExpressionFunction
+from pymimir.advanced.formalism import AuxiliaryGroundFunctionValue as AdvancedAuxiliaryGroundFunctionValue
 from pymimir.advanced.formalism import ConditionalEffect as AdvancedConditionalEffect
 from pymimir.advanced.formalism import ConjunctiveCondition as AdvancedConjunctiveCondition
 from pymimir.advanced.formalism import ConjunctiveEffect as AdvancedConjunctiveEffect
@@ -14,19 +21,37 @@ from pymimir.advanced.formalism import DerivedLiteral as AdvancedDerivedLiteral
 from pymimir.advanced.formalism import DerivedLiteralList as AdvancedDerivedLiteralList
 from pymimir.advanced.formalism import DerivedPredicate as AdvancedDerivedPredicate
 from pymimir.advanced.formalism import FluentAtom as AdvancedFluentAtom
+from pymimir.advanced.formalism import FluentFunction as AdvancedFluentFunction
+from pymimir.advanced.formalism import FluentFunctionExpressionFunction as AdvancedFluentFunctionExpressionFunction
+from pymimir.advanced.formalism import FluentFunctionSkeleton as AdvancedFluentFunctionSkeleton
+from pymimir.advanced.formalism import FluentFunctionSkeletonList as AdvancedFluentFunctionSkeletonList
 from pymimir.advanced.formalism import FluentGroundAtom as AdvancedFluentGroundAtom
 from pymimir.advanced.formalism import FluentGroundAtomList as AdvancedFluentGroundAtomList
+from pymimir.advanced.formalism import FluentGroundFunction as AdvancedFluentGroundFunction
+from pymimir.advanced.formalism import FluentGroundFunctionExpressionFunction as AdvancedFluentGroundFunctionExpressionFunction
+from pymimir.advanced.formalism import FluentGroundFunctionValue as AdvancedFluentGroundFunctionValue
 from pymimir.advanced.formalism import FluentGroundLiteral as AdvancedFluentGroundLiteral
 from pymimir.advanced.formalism import FluentGroundLiteralList as AdvancedFluentGroundLiteralList
 from pymimir.advanced.formalism import FluentLiteral as AdvancedFluentLiteral
 from pymimir.advanced.formalism import FluentLiteralList as AdvancedFluentLiteralList
 from pymimir.advanced.formalism import FluentPredicate as AdvancedFluentPredicate
+from pymimir.advanced.formalism import FunctionExpression as AdvancedFunctionExpressionBase
+from pymimir.advanced.formalism import FunctionExpressionBinaryOperator as AdvancedFunctionExpressionBinaryOperator
+from pymimir.advanced.formalism import FunctionExpressionMinus as AdvancedFunctionExpressionMinus
+from pymimir.advanced.formalism import FunctionExpressionMultiOperator as AdvancedFunctionExpressionMultiOperator
+from pymimir.advanced.formalism import FunctionExpressionNumber as AdvancedFunctionExpressionNumber
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.formalism import GroundConditionalEffect as AdvancedGroundConditionalEffect
 from pymimir.advanced.formalism import GroundConjunctiveCondition as AdvancedGroundConjunctiveCondition
 from pymimir.advanced.formalism import GroundConjunctiveEffect as AdvancedGroundConjunctiveEffect
+from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpressionBase
+from pymimir.advanced.formalism import GroundFunctionExpressionBinaryOperator as AdvancedGroundFunctionExpressionBinaryOperator
+from pymimir.advanced.formalism import GroundFunctionExpressionMinus as AdvancedGroundFunctionExpressionMinus
+from pymimir.advanced.formalism import GroundFunctionExpressionMultiOperator as AdvancedGroundFunctionExpressionMultiOperator
+from pymimir.advanced.formalism import GroundFunctionExpressionNumber as AdvancedGroundFunctionExpressionNumber
 from pymimir.advanced.formalism import GroundNumericConstraint as AdvancedGroundNumericConstraint
 from pymimir.advanced.formalism import GroundNumericConstraintList as AdvancedGroundNumericConstraintList
+from pymimir.advanced.formalism import NumericConstraint as AdvancedNumericConstraint
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
@@ -36,8 +61,15 @@ from pymimir.advanced.formalism import Parser as AdvancedParser
 from pymimir.advanced.formalism import ParserOptions as AdvancedParserOptions
 from pymimir.advanced.formalism import Problem as AdvancedProblem
 from pymimir.advanced.formalism import StaticAtom as AdvancedStaticAtom
+from pymimir.advanced.formalism import StaticFunction as AdvancedStaticFunction
+from pymimir.advanced.formalism import StaticFunctionExpressionFunction as AdvancedStaticFunctionExpressionFunction
+from pymimir.advanced.formalism import StaticFunctionSkeleton as AdvancedStaticFunctionSkeleton
+from pymimir.advanced.formalism import StaticFunctionSkeletonList as AdvancedStaticFunctionSkeletonList
 from pymimir.advanced.formalism import StaticGroundAtom as AdvancedStaticGroundAtom
 from pymimir.advanced.formalism import StaticGroundAtomList as AdvancedStaticGroundAtomList
+from pymimir.advanced.formalism import StaticGroundFunction as AdvancedStaticGroundFunction
+from pymimir.advanced.formalism import StaticGroundFunctionExpressionFunction as AdvancedStaticGroundFunctionExpressionFunction
+from pymimir.advanced.formalism import StaticGroundFunctionValue as AdvancedStaticGroundFunctionValue
 from pymimir.advanced.formalism import StaticGroundLiteral as AdvancedStaticGroundLiteral
 from pymimir.advanced.formalism import StaticGroundLiteralList as AdvancedStaticGroundLiteralList
 from pymimir.advanced.formalism import StaticLiteral as AdvancedStaticLiteral
@@ -52,7 +84,6 @@ from pymimir.advanced.formalism import VariableList as AdvancedVariableList
 from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
 from pymimir.advanced.search import GroundedOptions, LiftedOptions, LiftedKPKCOptions, LiftedExhaustiveOptions, SymmetryPruning, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
-from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroundFunctionExpression
 
 
 # -------------------------------
@@ -60,12 +91,18 @@ from pymimir.advanced.formalism import GroundFunctionExpression as AdvancedGroun
 # -------------------------------
 
 AdvancedAtom = Union[AdvancedStaticAtom, AdvancedFluentAtom, AdvancedDerivedAtom]
+AdvancedFunction = Union[AdvancedStaticFunction, AdvancedFluentFunction, AdvancedAuxiliaryFunction]
+AdvancedFunctionExpression = Union[AdvancedFunctionExpressionBinaryOperator, AdvancedFunctionExpressionMultiOperator, AdvancedFunctionExpressionMinus, AdvancedFunctionExpressionNumber, AdvancedStaticFunctionExpressionFunction, AdvancedFluentFunctionExpressionFunction, AdvancedAuxiliaryFunctionExpressionFunction]
+AdvancedFunctionSkeleton = Union[AdvancedStaticFunctionSkeleton, AdvancedFluentFunctionSkeleton, AdvancedAuxiliaryFunctionSkeleton]
+AdvancedFunctionSkeletonList = Union[AdvancedStaticFunctionSkeletonList, AdvancedFluentFunctionSkeletonList, AdvancedAuxiliaryFunctionSkeletonList]
 AdvancedGroundAtom = Union[AdvancedStaticGroundAtom, AdvancedFluentGroundAtom, AdvancedDerivedGroundAtom]
 AdvancedGroundAtomList = Union[AdvancedStaticGroundAtomList, AdvancedFluentGroundAtomList, AdvancedDerivedGroundAtomList]
-AdvancedLiteral = Union[AdvancedStaticLiteral, AdvancedFluentLiteral, AdvancedDerivedLiteral]
-AdvancedLiteralList = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
+AdvancedGroundFunction = Union[AdvancedStaticGroundFunction, AdvancedFluentGroundFunction, AdvancedAuxiliaryGroundFunction]
+AdvancedGroundFunctionExpression = Union[AdvancedGroundFunctionExpressionBinaryOperator, AdvancedGroundFunctionExpressionMultiOperator, AdvancedGroundFunctionExpressionMinus, AdvancedGroundFunctionExpressionNumber, AdvancedStaticGroundFunctionExpressionFunction, AdvancedFluentGroundFunctionExpressionFunction, AdvancedAuxiliaryGroundFunctionExpressionFunction]
 AdvancedGroundLiteral = Union[AdvancedStaticGroundLiteral, AdvancedFluentGroundLiteral, AdvancedDerivedGroundLiteral]
 AdvancedGroundLiteralList = Union[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
+AdvancedLiteral = Union[AdvancedStaticLiteral, AdvancedFluentLiteral, AdvancedDerivedLiteral]
+AdvancedLiteralList = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
 AdvancedPredicate = Union[AdvancedStaticPredicate, AdvancedFluentPredicate, AdvancedDerivedPredicate]
 
 
@@ -1615,6 +1652,32 @@ class Domain:
         requirements = str(self._advanced_domain.get_requirements())[15:-1].split()
         return requirements
 
+    def get_function_signatures(self, ignore_static: bool = False, ignore_fluent: bool = False, ignore_auxiliary: bool = False) -> 'list[NumericFunction]':
+        """
+        Get the function signatures of the domain.
+
+        :param ignore_static: If True, do not include signatures of static functions.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include signatures of fluent functions.
+        :type ignore_fluent: bool
+        :param ignore_auxiliary: If True, do not include signatures of auxiliary functions.
+        :type ignore_auxiliary: bool
+        :return: A list of function signatures of the domain.
+        :rtype: list[FunctionSignature]
+        """
+        function_signatures = []
+        if not ignore_static:
+            static_functions = self._advanced_domain.get_static_functions()
+            function_signatures.extend(NumericFunction(x) for x in static_functions)
+        if not ignore_fluent:
+            fluent_functions = self._advanced_domain.get_fluent_functions()
+            function_signatures.extend(NumericFunction(x) for x in fluent_functions)
+        if not ignore_auxiliary:
+            auxiliary_function = self._advanced_domain.get_auxiliary_function()
+            if auxiliary_function:
+                function_signatures.append(NumericFunction(auxiliary_function))
+        return function_signatures
+
     def get_actions(self) -> 'list[Action]':
         """
         Get the actions of the domain.
@@ -1711,11 +1774,11 @@ class Domain:
         assert isinstance(ignore_derived, bool), "Invalid ignore_derived type."
         predicates = []
         if not ignore_static:
-            predicates.extend([Predicate(x) for x in self._advanced_domain.get_static_predicates()])
+            predicates.extend(Predicate(x) for x in self._advanced_domain.get_static_predicates())
         if not ignore_fluent:
-            predicates.extend([Predicate(x) for x in self._advanced_domain.get_fluent_predicates()])
+            predicates.extend(Predicate(x) for x in self._advanced_domain.get_fluent_predicates())
         if not ignore_derived:
-            predicates.extend([Predicate(x) for x in self._advanced_domain.get_derived_predicates()])
+            predicates.extend(Predicate(x) for x in self._advanced_domain.get_derived_predicates())
         return predicates
 
     def get_predicate(self, predicate_name: 'str') -> 'Predicate':
@@ -1868,6 +1931,29 @@ class Problem:
         requirements = str(self._advanced_problem.get_requirements()).removeprefix('(:requirements').removesuffix(')').split()
         return requirements
 
+    def get_derived_goal_predicates(self) -> 'list[Predicate]':
+        """
+        Get the derived predicates used in the goal.
+        These can be specific to the problem instance.
+        This happens, for example, when quantifiers are used in the goal.
+
+        :return: A list of derived predicates used in the goal.
+        :rtype: list[Predicate]
+        """
+        return [Predicate(x.get_atom().get_predicate()) for x in self._advanced_problem.get_derived_goal_literals()]
+
+    def get_derived_problem_predicates(self) -> 'list[Predicate]':
+        """
+        Get the derived predicates specific to the problem.
+
+        :return: A list of derived predicates specific to the problem.
+        :rtype: list[Predicate]
+        """
+        advanced_domain = self._advanced_problem.get_domain()
+        domain_derived_predicates = advanced_domain.get_derived_predicates()
+        all_derived_predicates = self._advanced_problem.get_problem_and_domain_derived_predicates()
+        return [Predicate(x) for x in all_derived_predicates if x not in domain_derived_predicates]
+
     def get_initial_state(self) -> 'State':
         """
         Get the initial state of the problem.
@@ -1912,24 +1998,17 @@ class Problem:
             initial_atoms.extend([GroundAtom(x) for x in derived_atoms])
         return initial_atoms
 
+    def get_initial_function_values(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[tuple[NumericFunction, list[Object], float]]':
+        raise NotImplementedError()
+
     def get_goal_condition(self) -> 'GroundConjunctiveCondition':
         """
-        Get the goal condition of the problem.
+        Get the propositional goal condition of the problem.
 
         :return: The goal condition of the problem.
         :rtype: GroundConjunctiveCondition
         """
         return GroundConjunctiveCondition(self._advanced_problem.get_goal_condition(), self)
-
-    def get_goal_numeric_constraints(self) -> 'ConjunctiveNumericCondition':
-        """
-        Get the numeric goal condition of the problem.
-
-        :return: The numeric goal condition of the problem.
-        :rtype: ConjunctiveNumericCondition
-        """
-        advanced_numeric_condition = self._advanced_problem.get_goal_numeric_constraints()
-        return ConjunctiveNumericCondition(advanced_numeric_condition)
 
     def new_atom(self, predicate: 'Predicate', terms: 'list[Term]') -> 'Atom':
         """
@@ -2146,6 +2225,26 @@ class State:
             ground_atoms.extend([GroundAtom(x) for x in derived_ground_atoms])
         return ground_atoms
 
+    def get_function_values(self, ignore_static: bool = False, ignore_fluent: bool = False, ignore_auxiliary: bool = False) -> 'list[tuple[NumericFunction, list[Object], float]]':
+        def helper_function(function_value: 'Union[AdvancedStaticGroundFunctionValue, AdvancedFluentGroundFunctionValue, AdvancedAuxiliaryGroundFunctionValue]') -> 'tuple[NumericFunction, list[Object], float]':
+            function = function_value.get_function()
+            signature = NumericFunction(function.get_function_skeleton())
+            terms = [Object(x) for x in function.get_objects()]
+            value = function_value.get_number()
+            return (signature, terms, value)
+        advanced_problem = self.get_problem()._advanced_problem
+        function_values = []
+        if not ignore_static:
+            static_function_values = advanced_problem.get_static_function_values()
+            function_values.extend(helper_function(x) for x in static_function_values)
+        if not ignore_fluent:
+            fluent_function_values = advanced_problem.get_fluent_function_values()
+            function_values.extend(helper_function(x) for x in fluent_function_values)
+        if not ignore_auxiliary:
+            auxiliary_function_value = advanced_problem.get_auxiliary_function_value()
+            function_values.append(helper_function(auxiliary_function_value))
+        return function_values
+
     def contains(self, ground_atom: 'GroundAtom') -> bool:
         """
         Checks if a ground atom is contained in the state.
@@ -2356,6 +2455,7 @@ class GroundConjunctiveCondition:
         self._fluent_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._fluent_neg_ground_atoms]
         self._derived_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._derived_pos_ground_atoms]
         self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
+        # TODO: Getter bindings for GroundNumericConstraints need to be exposed.
 
     @staticmethod
     def new(ground_literals: 'list[GroundLiteral]', problem: 'Problem') -> 'GroundConjunctiveCondition':
@@ -2575,6 +2675,10 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
+    def get_numeric_conditions(self) -> 'list[NumericCondition]':
+        advanced_numeric_constraints = self._advanced_conjunctive_condition.get_numeric_constraints()
+        return [NumericCondition(x) for x in advanced_numeric_constraints]
+
     def ground(self, state: 'State', max_groundings: int = -1, blacklist: 'Union[list[Predicate], None]' = None) -> 'list[GroundConjunctiveCondition]':
         """
         Ground the conjunctive condition.
@@ -2591,6 +2695,7 @@ class ConjunctiveCondition:
         assert isinstance(state, State), "Invalid state type."
         assert isinstance(max_groundings, int), "Invalid max_groundings type."
         assert blacklist is None or isinstance(blacklist, list), "Invalid blacklist type."
+        assert len(self.get_numeric_conditions()) == 0, "Numeric conditions are not supported."
         if max_groundings < 0:
             max_groundings = 1_000_000_000  # Generate all groundings
         problem = state._problem
@@ -2658,33 +2763,498 @@ class ConjunctiveCondition:
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition
 
 
-# class NumericConstant:
-#     def __init__(self, constant: float) -> None:
-#         self._constant = constant
+class NumericFunction:
+    def __init__(self, advanced_function_skeleton: 'AdvancedFunctionSkeleton') -> None:
+        assert isinstance(advanced_function_skeleton, AdvancedStaticFunctionSkeleton) \
+            or isinstance(advanced_function_skeleton, AdvancedFluentFunctionSkeleton) \
+            or isinstance(advanced_function_skeleton, AdvancedAuxiliaryFunctionSkeleton), "Invalid advanced function skeleton type."
+        self._advanced_function_skeleton = advanced_function_skeleton
 
-#     def value(self) -> float:
-#         return self._constant
+    def is_static(self) -> 'bool':
+        """
+        Get whether the function signature is static.
+
+        :return: True if the function signature is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function_skeleton, AdvancedStaticFunctionSkeleton)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the function signature is fluent.
+
+        :return: True if the function signature is fluent, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function_skeleton, AdvancedFluentFunctionSkeleton)
+
+    def is_auxiliary(self) -> 'bool':
+        """
+        Get whether the function signature is auxiliary.
+
+        :return: True if the function signature is auxiliary, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function_skeleton, AdvancedAuxiliaryFunctionSkeleton)
+
+    def get_index(self):
+        """
+        Get the index of the function signature.
+
+        :return: The index of the function signature.
+        :rtype: int
+        """
+        return self._advanced_function_skeleton.get_index()
+
+    def get_name(self):
+        """
+        Get the name of the function signature.
+
+        :return: The name of the function signature.
+        :rtype: str
+        """
+        return self._advanced_function_skeleton.get_name()
+
+    def get_parameters(self) -> 'list[Variable]':
+        """
+        Get the parameters of the function signature.
+
+        :return: A list of variables representing the parameters of the function signature.
+        :rtype: list[Variable]
+        """
+        return [Variable(x) for x in self._advanced_function_skeleton.get_parameters()]
 
 
-class NumericExpression:
-    def __init__(self, advanced_ground_function_expression: 'AdvancedGroundFunctionExpression') -> None:
-        self._advanced_ground_function_expression = advanced_ground_function_expression
+class FunctionTerm:
+    def __init__(self, advanced_function: 'AdvancedFunction') -> None:
+        assert isinstance(advanced_function, AdvancedStaticFunction) \
+            or isinstance(advanced_function, AdvancedFluentFunction) \
+            or isinstance(advanced_function, AdvancedAuxiliaryFunction), "Invalid advanced function type."
+        self._advanced_function = advanced_function
 
-    @staticmethod
-    def _parse_expression(expression: 'AdvancedGroundFunctionExpression'):  # TODO: Add typing information.
-        raise NotImplementedError()
+    def get_index(self) -> 'int':
+        """
+        Get the index of the function term.
 
-    def get_operand(self) -> 'str':
-        raise NotImplementedError()
+        :return: The index of the function term.
+        :rtype: int
+        """
+        return self._advanced_function.get_index()
 
-    def get_left_expression(self):  # TODO: Add typing information.
-        raise NotImplementedError()
+    def is_static(self) -> 'bool':
+        """
+        Get whether the function term is static.
 
-    def get_right_expression(self):  # TODO: Add typing information.
-        raise NotImplementedError()
+        :return: True if the function term is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function, AdvancedStaticFunction)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the function term is fluent.
+
+        :return: True if the function term is fluent, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function, AdvancedFluentFunction)
+
+    def is_auxiliary(self) -> 'bool':
+        """
+        Get whether the function term is auxiliary.
+
+        :return: True if the function term is auxiliary, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_function, AdvancedAuxiliaryFunction)
+
+    def get_numeric_function(self) -> 'NumericFunction':
+        """
+        Get the underlying numeric function.
+
+        :return: The underlying numeric function.
+        :rtype: NumericFunction
+        """
+        return NumericFunction(self._advanced_function.get_function_skeleton())
+
+    def get_terms(self) -> 'list[Union[Object, Variable]]':
+        """
+        Get the terms of the function term.
+
+        :return: A list of objects and variables representing the terms of the function term.
+        :rtype: list[Union[Object, Variable]]
+        """
+        return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_function.get_terms()]  # type: ignore
+
+
+class GroundFunctionTerm:
+    def __init__(self, advanced_ground_function: 'AdvancedGroundFunction') -> None:
+        assert isinstance(advanced_ground_function, AdvancedStaticGroundFunction) \
+            or isinstance(advanced_ground_function, AdvancedFluentGroundFunction) \
+            or isinstance(advanced_ground_function, AdvancedAuxiliaryGroundFunction), "Invalid advanced ground function type."
+        self._advanced_ground_function = advanced_ground_function
+
+    def get_index(self) -> 'int':
+        """
+        Get the index of the ground function term.
+
+        :return: The index of the ground function term.
+        :rtype: int
+        """
+        return self._advanced_ground_function.get_index()
+
+    def is_static(self) -> 'bool':
+        """
+        Get whether the ground function term is static.
+
+        :return: True if the ground function term is static, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_function, AdvancedStaticGroundFunction)
+
+    def is_fluent(self) -> 'bool':
+        """
+        Get whether the ground function term is fluent.
+
+        :return: True if the ground function term is fluent, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_function, AdvancedFluentGroundFunction)
+
+    def is_auxiliary(self) -> 'bool':
+        """
+        Get whether the ground function term is auxiliary.
+
+        :return: True if the ground function term is auxiliary, False otherwise.
+        :rtype: bool
+        """
+        return isinstance(self._advanced_ground_function, AdvancedAuxiliaryGroundFunction)
+
+    def get_numeric_function(self) -> 'NumericFunction':
+        """
+        Get the underlying numeric function.
+
+        :return: The underlying numeric function.
+        :rtype: NumericFunction
+        """
+        return NumericFunction(self._advanced_ground_function.get_function_skeleton())
+
+    def get_terms(self) -> 'list[Object]':
+        """
+        Get the terms of the ground function term.
+
+        :return: A list of objects representing the terms of the ground function term.
+        :rtype: list[Object]
+        """
+        return [Object(x) for x in self._advanced_ground_function.get_objects()]
+
+
+class FunctionExpression:
+    def __init__(self, advanced_function_expression_base: 'AdvancedFunctionExpressionBase') -> None:
+        assert isinstance(advanced_function_expression_base, AdvancedFunctionExpressionBase), "Invalid advanced function expression type."
+        self._advanced_function_expression: AdvancedFunctionExpression = advanced_function_expression_base.get()  # type: ignore
+        self._operator_names = {
+            'PLUS': '+',
+            'MINUS': '-',
+            'MUL': '*',
+            'DIV': '/'
+        }
+
+    def get_index(self) -> 'int':
+        return self._advanced_function_expression.get_index()
+
+    def is_term(self) -> 'bool':
+        return isinstance(self._advanced_function_expression, AdvancedFunctionExpressionNumber) \
+               or isinstance(self._advanced_function_expression, AdvancedStaticFunctionExpressionFunction) \
+               or isinstance(self._advanced_function_expression, AdvancedFluentFunctionExpressionFunction) \
+               or isinstance(self._advanced_function_expression, AdvancedAuxiliaryFunctionExpressionFunction)
+
+    def is_number_term(self) -> 'bool':
+        return isinstance(self._advanced_function_expression, AdvancedFunctionExpressionNumber)
+
+    def get_number_term(self) -> 'float':
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionNumber):
+            return self._advanced_function_expression.get_number()
+        raise RuntimeError("Number requested from non-number expression.")
+
+    def is_function_term(self) -> 'bool':
+        return isinstance(self._advanced_function_expression, AdvancedStaticFunctionExpressionFunction) \
+               or isinstance(self._advanced_function_expression, AdvancedFluentFunctionExpressionFunction) \
+               or isinstance(self._advanced_function_expression, AdvancedAuxiliaryFunctionExpressionFunction)
+
+    def get_function_term(self) -> 'FunctionTerm':
+        if isinstance(self._advanced_function_expression, AdvancedStaticFunctionExpressionFunction) \
+           or isinstance(self._advanced_function_expression, AdvancedFluentFunctionExpressionFunction) \
+           or isinstance(self._advanced_function_expression, AdvancedAuxiliaryFunctionExpressionFunction):
+            return FunctionTerm(self._advanced_function_expression.get_function())
+        raise RuntimeError("Function term requested from non-function expression.")
+
+    def is_compound(self) -> 'bool':
+        return isinstance(self._advanced_function_expression, AdvancedFunctionExpressionBinaryOperator) \
+               or isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMultiOperator) \
+               or isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMinus)
+
+    def get_operator(self) -> 'str':
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMinus):
+            return self._operator_names['SUBTRACT']
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionBinaryOperator):
+            operator = self._advanced_function_expression.get_binary_operator()
+            return self._operator_names[operator.name]
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMultiOperator):
+            operator = self._advanced_function_expression.get_multi_operator()
+            return self._operator_names[operator.name]
+        raise RuntimeError("Operand requested from non-compound expression.")
+
+    def get_num_operands(self) -> 'int':
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMinus):
+            return 1
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionBinaryOperator):
+            return 2
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMultiOperator):
+            return len(self._advanced_function_expression.get_function_expressions())
+        raise RuntimeError("Number of operands requested from non-compound expression.")
+
+    def get_operands(self) -> 'list[FunctionExpression]':
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMinus):
+            advanced_function_expressions = self._advanced_function_expression.get_function_expression()
+            return [FunctionExpression(advanced_function_expressions)]
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionBinaryOperator):
+            advanced_left_function_expressions = self._advanced_function_expression.get_left_function_expression()
+            advanced_right_function_expressions = self._advanced_function_expression.get_right_function_expression()
+            return [FunctionExpression(advanced_left_function_expressions), FunctionExpression(advanced_right_function_expressions)]
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMultiOperator):
+            advanced_function_expressions = self._advanced_function_expression.get_function_expressions()
+            return [FunctionExpression(x) for x in advanced_function_expressions]
+        raise RuntimeError("Operands requested from non-compound expression.")
+
+    def get_nth_operand(self, n: int) -> 'FunctionExpression':
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMinus):
+            if n == 0:
+                advanced_function_expressions = self._advanced_function_expression.get_function_expression()
+                return FunctionExpression(advanced_function_expressions)
+            raise RuntimeError("Index out of bounds for unary operator expression.")
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionBinaryOperator):
+            if n == 0:
+                advanced_function_expressions = self._advanced_function_expression.get_left_function_expression()
+                return FunctionExpression(advanced_function_expressions)
+            if n == 1:
+                advanced_function_expressions = self._advanced_function_expression.get_right_function_expression()
+                return FunctionExpression(advanced_function_expressions)
+            raise RuntimeError("Index out of bounds for binary operator expression.")
+        if isinstance(self._advanced_function_expression, AdvancedFunctionExpressionMultiOperator):
+            advanced_function_expressions = self._advanced_function_expression.get_function_expressions()
+            if n < len(advanced_function_expressions):
+                return FunctionExpression(advanced_function_expressions[n])
+            raise RuntimeError("Index out of bounds for multi-operator expression.")
+        raise RuntimeError("Nth expression requested from non-multi-operator expression.")
+
+    def __str__(self) -> 'str':
+        """
+        Get a string representation of the expression.
+
+        :return: A string representation of the expression.
+        :rtype: str
+        """
+        if self.is_number_term():
+            return f'{self.get_number_term():.2f}'
+        elif self.is_function_term():
+            outer_term = self.get_function_term()
+            outer_symbol = outer_term.get_numeric_function()
+            inner_terms = outer_term.get_terms()
+            return f'({outer_symbol.get_name()} {" ".join(x.get_name() for x in inner_terms)})'
+        elif self.is_compound():
+            operands = self.get_operands()
+            return f'({self.get_operator()} {" ".join(str(expr) for expr in operands)})'
+        else:
+            raise RuntimeError(f'Internal error. Please report this. Missing branch for type: {type(self._advanced_function_expression)}')
+
+    def __repr__(self) -> 'str':
+        """
+        Get a string representation of the expression.
+
+        :return: A string representation of the expression.
+        :rtype: str
+        """
+        return str(self)
+
+
+class GroundFunctionExpression:
+    def __init__(self, advanced_ground_function_expression_base: 'AdvancedGroundFunctionExpressionBase') -> None:
+        assert isinstance(advanced_ground_function_expression_base, AdvancedGroundFunctionExpressionBase), "Invalid advanced ground function expression type."
+        self._advanced_ground_function_expression: AdvancedGroundFunctionExpression = advanced_ground_function_expression_base.get()  # type: ignore
+        self._operator_names = {
+            'PLUS': '+',
+            'MINUS': '-',
+            'MUL': '*',
+            'DIV': '/'
+        }
+
+    def get_index(self) -> 'int':
+        return self._advanced_ground_function_expression.get_index()
+
+    def is_term(self) -> 'bool':
+        return isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionNumber) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedStaticGroundFunctionExpressionFunction) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedFluentGroundFunctionExpressionFunction) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedAuxiliaryGroundFunctionExpressionFunction)
+
+    def is_number_term(self) -> 'bool':
+        return isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionNumber)
+
+    def get_number_term(self) -> 'float':
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionNumber):
+            return self._advanced_ground_function_expression.get_number()
+        raise RuntimeError("Number requested from non-number expression.")
+
+    def is_function_term(self) -> 'bool':
+        return isinstance(self._advanced_ground_function_expression, AdvancedStaticGroundFunctionExpressionFunction) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedFluentGroundFunctionExpressionFunction) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedAuxiliaryGroundFunctionExpressionFunction)
+
+    def get_function_term(self) -> 'GroundFunctionTerm':
+        if isinstance(self._advanced_ground_function_expression, AdvancedStaticGroundFunctionExpressionFunction) \
+           or isinstance(self._advanced_ground_function_expression, AdvancedFluentGroundFunctionExpressionFunction) \
+           or isinstance(self._advanced_ground_function_expression, AdvancedAuxiliaryGroundFunctionExpressionFunction):
+            return GroundFunctionTerm(self._advanced_ground_function_expression.get_function())
+        raise RuntimeError("Function term requested from non-function expression.")
+
+    def is_compound(self) -> 'bool':
+        return isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionBinaryOperator) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMultiOperator) \
+               or isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMinus)
+
+    def get_operator(self) -> 'str':
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMinus):
+            return self._operator_names['SUBTRACT']
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionBinaryOperator):
+            operator = self._advanced_ground_function_expression.get_binary_operator()
+            return self._operator_names[operator.name]
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMultiOperator):
+            operator = self._advanced_ground_function_expression.get_multi_operator()
+            return self._operator_names[operator.name]
+        raise RuntimeError("Operand requested from non-compound expression.")
+
+    def get_num_operands(self) -> 'int':
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMinus):
+            return 1
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionBinaryOperator):
+            return 2
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMultiOperator):
+            return len(self._advanced_ground_function_expression.get_function_expressions())
+        raise RuntimeError("Number of operands requested from non-compound expression.")
+
+    def get_operands(self) -> 'list[GroundFunctionExpression]':
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMinus):
+            advanced_function_expressions = self._advanced_ground_function_expression.get_function_expression()
+            return [GroundFunctionExpression(advanced_function_expressions)]
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionBinaryOperator):
+            advanced_left_function_expressions = self._advanced_ground_function_expression.get_left_function_expression()
+            advanced_right_function_expressions = self._advanced_ground_function_expression.get_right_function_expression()
+            return [GroundFunctionExpression(advanced_left_function_expressions), GroundFunctionExpression(advanced_right_function_expressions)]
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMultiOperator):
+            advanced_function_expressions = self._advanced_ground_function_expression.get_function_expressions()
+            return [GroundFunctionExpression(x) for x in advanced_function_expressions]
+        raise RuntimeError("Operands requested from non-compound expression.")
+
+    def get_nth_operand(self, n: int) -> 'GroundFunctionExpression':
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMinus):
+            if n == 0:
+                advanced_function_expressions = self._advanced_ground_function_expression.get_function_expression()
+                return GroundFunctionExpression(advanced_function_expressions)
+            raise RuntimeError("Index out of bounds for unary operator expression.")
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionBinaryOperator):
+            if n == 0:
+                advanced_function_expressions = self._advanced_ground_function_expression.get_left_function_expression()
+                return GroundFunctionExpression(advanced_function_expressions)
+            if n == 1:
+                advanced_function_expressions = self._advanced_ground_function_expression.get_right_function_expression()
+                return GroundFunctionExpression(advanced_function_expressions)
+            raise RuntimeError("Index out of bounds for binary operator expression.")
+        if isinstance(self._advanced_ground_function_expression, AdvancedGroundFunctionExpressionMultiOperator):
+            advanced_function_expressions = self._advanced_ground_function_expression.get_function_expressions()
+            if n < len(advanced_function_expressions):
+                return GroundFunctionExpression(advanced_function_expressions[n])
+            raise RuntimeError("Index out of bounds for multi-operator expression.")
+        raise RuntimeError("Nth expression requested from non-multi-operator expression.")
+
+    def __str__(self) -> 'str':
+        """
+        Get a string representation of the expression.
+
+        :return: A string representation of the expression.
+        :rtype: str
+        """
+        if self.is_number_term():
+            return f'{self.get_number_term():.2f}'
+        elif self.is_function_term():
+            outer_term = self.get_function_term()
+            outer_symbol = outer_term.get_numeric_function()
+            inner_terms = outer_term.get_terms()
+            return f'({outer_symbol.get_name()} {" ".join(x.get_name() for x in inner_terms)})'
+        elif self.is_compound():
+            operands = self.get_operands()
+            return f'({self.get_operator()} {" ".join(str(expr) for expr in operands)})'
+        else:
+            raise RuntimeError(f'Internal error. Please report this. Missing branch for type: {type(self._advanced_ground_function_expression)}')
+
+    def __repr__(self) -> 'str':
+        """
+        Get a string representation of the expression.
+
+        :return: A string representation of the expression.
+        :rtype: str
+        """
+        return str(self)
 
 
 class NumericCondition:
+    def __init__(self, advanced_numeric_constraint: AdvancedNumericConstraint) -> None:
+        assert isinstance(advanced_numeric_constraint, AdvancedNumericConstraint), "Invalid ground numeric constraint type."
+        self._advanced_numeric_constraint = advanced_numeric_constraint
+        self._comparator_names = {
+            'EQUAL': '==',
+            'GREATER': '>',
+            'GREATER_EQUAL': '>=',
+            'LESS': '<',
+            'LESS_EQUAL': '<='
+        }
+
+    def get_index(self) -> 'int':
+        return self._advanced_numeric_constraint.get_index()
+
+    def get_comparator(self) -> 'str':
+        advanced_name = self._advanced_numeric_constraint.get_binary_comparator().name
+        assert advanced_name in self._comparator_names
+        return self._comparator_names[advanced_name]
+
+    def get_left_expression(self) -> 'FunctionExpression':
+        advanced_left_expression = self._advanced_numeric_constraint.get_left_function_expression()
+        return FunctionExpression(advanced_left_expression)
+
+    def get_right_expression(self) -> 'FunctionExpression':
+        advanced_right_expression = self._advanced_numeric_constraint.get_right_function_expression()
+        return FunctionExpression(advanced_right_expression)
+
+    def __str__(self) -> 'str':
+        """
+        Get a string representation of the condition.
+
+        :return: A string representation of the condition.
+        :rtype: str
+        """
+        return f'({self.get_comparator()} {str(self.get_left_expression())} {str(self.get_right_expression())})'
+
+    def __repr__(self) -> 'str':
+        """
+        Get a string representation of the condition.
+
+        :return: A string representation of the condition.
+        :rtype: str
+        """
+        return str(self)
+
+
+class GroundNumericCondition:
     def __init__(self, advanced_ground_numeric_constraint: AdvancedGroundNumericConstraint) -> None:
         assert isinstance(advanced_ground_numeric_constraint, AdvancedGroundNumericConstraint), "Invalid ground numeric constraint type."
         self._advanced_ground_numeric_constraint = advanced_ground_numeric_constraint
@@ -2696,106 +3266,39 @@ class NumericCondition:
             'LESS_EQUAL': '<='
         }
 
+    def get_index(self) -> 'int':
+        return self._advanced_ground_numeric_constraint.get_index()
+
     def get_comparator(self) -> 'str':
         advanced_name = self._advanced_ground_numeric_constraint.get_binary_comparator().name
         assert advanced_name in self._comparator_names
         return self._comparator_names[advanced_name]
 
-    def get_left_expression(self):  # TODO: Add typing information.
-        left_expression = self._advanced_ground_numeric_constraint.get_left_function_expression()
-        return NumericExpression._parse_expression(left_expression)
+    def get_left_expression(self) -> 'GroundFunctionExpression':
+        advanced_left_expression = self._advanced_ground_numeric_constraint.get_left_function_expression()
+        return GroundFunctionExpression(advanced_left_expression)
 
+    def get_right_expression(self) -> 'GroundFunctionExpression':
+        advanced_right_expression = self._advanced_ground_numeric_constraint.get_right_function_expression()
+        return GroundFunctionExpression(advanced_right_expression)
 
-    def get_right_expression(self):  # TODO: Add typing information.
-        right_expression = self._advanced_ground_numeric_constraint.get_right_function_expression()
-        return NumericExpression._parse_expression(right_expression)
-
-    def __str__(self):
+    def __str__(self) -> 'str':
         """
-        Get a string representation of the numeric condition.
+        Get a string representation of the condition.
 
-        :return: A string representation of the numeric condition.
+        :return: A string representation of the condition.
         :rtype: str
         """
-        return "NumericCondition(...)"
+        return f'({self.get_comparator()} {str(self.get_left_expression())} {str(self.get_right_expression())})'
 
-    def __repr__(self):
+    def __repr__(self) -> 'str':
         """
-        Get a string representation of the conjunctive numeric condition.
+        Get a string representation of the condition.
 
-        :return: A string representation of the conjunctive numeric condition.
-        :rtype: str
-        """
-        return str(self)
-
-
-class ConjunctiveNumericCondition:
-    def __init__(self, advanced_ground_numeric_constraints: 'Union[AdvancedGroundNumericConstraintList, list[AdvancedGroundNumericConstraint]]') -> None:
-        assert isinstance(advanced_ground_numeric_constraints, AdvancedGroundNumericConstraintList) or isinstance(advanced_ground_numeric_constraints, list), "Invalid ground numeric constraints type."
-        assert not isinstance(advanced_ground_numeric_constraints, list) or all(isinstance(x, list) for x in advanced_ground_numeric_constraints), "Invalid ground numeric constraints type."
-        self._advanced_ground_numeric_constraints = list(advanced_ground_numeric_constraints)
-
-    def __len__(self) -> 'int':
-        """
-        Get the number of constraints in the conjunctive numeric condition.
-
-        :return: The number of constraints in the condition.
-        :rtype: int
-        """
-        return len(self._advanced_ground_numeric_constraints)
-
-    def __iter__(self) -> 'Iterator[NumericCondition]':
-        """
-        Get an iterator over the numeric conditions.
-
-        :return: An iterator over the numeric conditions.
-        :rtype: Iterator[NumericCondition]
-        """
-        return (NumericCondition(x) for x in self._advanced_ground_numeric_constraints)
-
-    def __getitem__(self, index: Union[int, slice]) -> 'Union[NumericCondition, list[NumericCondition]]':
-        if isinstance(index, int):
-            assert index < len(self._advanced_ground_numeric_constraints), "Index is out of bounds."
-            return NumericCondition(self._advanced_ground_numeric_constraints[index])
-        elif isinstance(index, slice):
-            return [NumericCondition(x) for x in self._advanced_ground_numeric_constraints[index]]
-        else:
-            raise RuntimeError("Index is not an index or a slice.")
-
-    def __str__(self):
-        """
-        Get a string representation of the conjunctive numeric condition.
-
-        :return: A string representation of the conjunctive numeric condition.
-        :rtype: str
-        """
-        return "ConjunctiveNumericCondition([" + ", ".join(str(x) for x in self.__iter__()) + "])"
-
-    def __repr__(self):
-        """
-        Get a string representation of the conjunctive numeric condition.
-
-        :return: A string representation of the conjunctive numeric condition.
+        :return: A string representation of the condition.
         :rtype: str
         """
         return str(self)
 
 
-# class AlgebraicVariable:
-#     def __init__(self) -> None:
-#         pass
-
-
-# class AlgebraicExpression:
-#     def __init__(self) -> None:
-#         pass
-
-
-# class AlgebraicCondition:
-#     def __init__(self) -> None:
-#         pass
-
-
-# class ConjunctiveAlgebraicCondition:
-#     def __init__(self) -> None:
-#         pass
+# TODO: increase, decrease, scale-up, scale-down
