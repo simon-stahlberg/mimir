@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Union
 
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
+from pymimir.advanced.formalism import GroundConjunctiveCondition as AdvancedGroundConjunctiveCondition
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
 from pymimir.advanced.search import BlindHeuristic as AdvancedBlindHeuristic
 from pymimir.advanced.search import LiftedGrounder as AdvancedLiftedGrounder
@@ -225,9 +226,10 @@ class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
     def get_problem(self) -> 'Problem':
         return self._problem
 
-    def compute_heuristic(self, state: 'AdvancedState', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+    def compute_heuristic(self, state: 'AdvancedState', goal: 'Union[AdvancedGroundConjunctiveCondition, None]' = None) -> float:
         wrapped_state = State(state, self._problem)
-        return self._heuristic.compute_value(wrapped_state, goal)
+        wrapped_goal = GroundConjunctiveCondition(goal, self._problem) if goal else None
+        return self._heuristic.compute_value(wrapped_state, wrapped_goal)
 
     def get_preferred_actions(self) -> AdvancedPreferredActions:
         preferred_actions = AdvancedPreferredActions()

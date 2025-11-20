@@ -742,15 +742,54 @@ class TestStateSpaceSampler(unittest.TestCase):
 
 
 class TestNumericFluents(unittest.TestCase):
-    def test_get_initial_functions(self):
+    def test_get_numeric_conditions(self):
         domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
-        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path)
         action = domain.get_action('fuel-vehicle')
         precondition = action.get_precondition()
         numeric_conditions = precondition.get_numeric_conditions()
         assert len(numeric_conditions) == 1
+
+    def test_get_function_values(self):
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        numeric_values = initial_state.get_function_values()
+        assert len(numeric_values) == 4
+        assert sum(x for _, _, x in numeric_values) == 6.0
+
+    def test_get_function_effect(self):
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        domain = Domain(domain_path)
+        action = domain.get_action('fuel-vehicle')
+        effects = action.get_conditional_effect()
+        assert len(effects) == 1
+        effect = effects[0]
+        function_updates = effect.get_effect().get_functions()
+        assert len(function_updates) == 1
+        assert function_updates[0][0] == 'increase'
+        assert function_updates[0][1].get_numeric_function().get_name() == 'fuel-level'
+        assert function_updates[0][2].is_number_term()
+        assert function_updates[0][2].get_number_term() == 1.0
+
+    def test_get_ground_function_effect(self):
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        action = initial_state.generate_applicable_actions()[0]
+        effects = action.get_conditional_effect()
+        assert len(effects) == 1
+        effect = effects[0]
+        function_updates = effect.get_effect().get_functions()
+        assert len(function_updates) == 1
+        assert function_updates[0][0] == 'increase'
+        assert function_updates[0][1].get_numeric_function().get_name() == 'fuel-level'
+        assert function_updates[0][2].is_number_term()
+        assert function_updates[0][2].get_number_term() == 1.0
 
 
 if __name__ == '__main__':

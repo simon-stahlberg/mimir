@@ -383,7 +383,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_index", &ConjunctiveEffectImpl::get_index, nb::rv_policy::copy)
         .def("get_parameters", &ConjunctiveEffectImpl::get_parameters, nb::rv_policy::copy)
         .def("get_literals", &ConjunctiveEffectImpl::get_literals, nb::rv_policy::copy)
-        .def("get_fluent_numeric_effects", &ConjunctiveEffectImpl::get_fluent_numeric_effects, nb::rv_policy::copy)
+        .def("get_fluent_numeric_effects", &ConjunctiveEffectImpl::get_fluent_numeric_effects, nb::rv_policy::reference_internal)
         .def("get_auxiliary_numeric_effect", &ConjunctiveEffectImpl::get_auxiliary_numeric_effect, nb::rv_policy::copy);
 
     /* ConditionalEffect */
@@ -622,7 +622,7 @@ void bind_module_definitions(nb::module_& m)
                                          self.get_propositional_effects<NegativeTag>().end());
             },
             nb::keep_alive<0, 1>())
-        .def("get_fluent_numeric_effects", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_fluent_numeric_effects, nb::const_), nb::rv_policy::copy)
+        .def("get_fluent_numeric_effects", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_fluent_numeric_effects, nb::const_), nb::rv_policy::reference_internal)
         .def("get_auxiliary_numeric_effect", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_auxiliary_numeric_effect, nb::const_), nb::rv_policy::copy);
 
     /* GroundConditionalEffect */

@@ -9,6 +9,8 @@ from pymimir.advanced.formalism import AuxiliaryFunctionSkeletonList as Advanced
 from pymimir.advanced.formalism import AuxiliaryGroundFunction as AdvancedAuxiliaryGroundFunction
 from pymimir.advanced.formalism import AuxiliaryGroundFunctionExpressionFunction as AdvancedAuxiliaryGroundFunctionExpressionFunction
 from pymimir.advanced.formalism import AuxiliaryGroundFunctionValue as AdvancedAuxiliaryGroundFunctionValue
+from pymimir.advanced.formalism import AuxiliaryGroundNumericEffect as AdvancedAuxiliaryGroundNumericEffect
+from pymimir.advanced.formalism import AuxiliaryNumericEffect as AdvancedAuxiliaryNumericEffect
 from pymimir.advanced.formalism import ConditionalEffect as AdvancedConditionalEffect
 from pymimir.advanced.formalism import ConjunctiveCondition as AdvancedConjunctiveCondition
 from pymimir.advanced.formalism import ConjunctiveEffect as AdvancedConjunctiveEffect
@@ -32,8 +34,10 @@ from pymimir.advanced.formalism import FluentGroundFunctionExpressionFunction as
 from pymimir.advanced.formalism import FluentGroundFunctionValue as AdvancedFluentGroundFunctionValue
 from pymimir.advanced.formalism import FluentGroundLiteral as AdvancedFluentGroundLiteral
 from pymimir.advanced.formalism import FluentGroundLiteralList as AdvancedFluentGroundLiteralList
+from pymimir.advanced.formalism import FluentGroundNumericEffect as AdvancedFluentGroundNumericEffect
 from pymimir.advanced.formalism import FluentLiteral as AdvancedFluentLiteral
 from pymimir.advanced.formalism import FluentLiteralList as AdvancedFluentLiteralList
+from pymimir.advanced.formalism import FluentNumericEffect as AdvancedFluentNumericEffect
 from pymimir.advanced.formalism import FluentPredicate as AdvancedFluentPredicate
 from pymimir.advanced.formalism import FunctionExpression as AdvancedFunctionExpressionBase
 from pymimir.advanced.formalism import FunctionExpressionBinaryOperator as AdvancedFunctionExpressionBinaryOperator
@@ -991,6 +995,13 @@ class GroundEffect:
         assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_ground_effect = advanced_effect
         self._problem = problem
+        self._operation_names = {
+            'ASSIGN': 'assign',
+            'INCREASE': 'increase',
+            'DECREASE': 'decrease',
+            'SCALE_UP': 'scale_up',
+            'SCALE_DOWN': 'scale_down'
+        }
 
     def get_index(self) -> 'int':
         """
@@ -1031,6 +1042,22 @@ class GroundEffect:
         repositories = self._problem._advanced_problem.get_repositories()
         advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_ground_effect.get_negative_effects()))
         return [GroundAtom(x) for x in advanced_ground_atoms]
+
+    def get_functions(self) -> 'list[tuple[str, GroundFunctionTerm, GroundFunctionExpression]]':
+        """
+        Get the operation performed on the numeric functions by the conditional effect.
+
+        :return: A list of tuples containing operation name, ground function term, and ground function expression.
+        :rtype: list[tuple[str, GroundFunctionTerm, GroundFunctionExpression]]
+        """
+        def to_tuple(effect: 'Union[AdvancedFluentGroundNumericEffect, AdvancedAuxiliaryGroundNumericEffect]') -> 'tuple[str, GroundFunctionTerm, GroundFunctionExpression]':
+            return (self._operation_names[effect.get_assign_operator().name], GroundFunctionTerm(effect.get_function()), GroundFunctionExpression(effect.get_function_expression()))
+        fluent_effects = self._advanced_ground_effect.get_fluent_numeric_effects()
+        auxiliary_effect = self._advanced_ground_effect.get_auxiliary_numeric_effect()
+        function_effects = [to_tuple(effect) for effect in fluent_effects]
+        if auxiliary_effect is not None:
+            function_effects.append(to_tuple(auxiliary_effect))
+        return function_effects
 
     def __str__(self):
         """
@@ -1179,6 +1206,13 @@ class Effect:
         """
         assert isinstance(advanced_effect, AdvancedConjunctiveEffect), "Invalid conjunctive effect type."
         self._advanced_conjunctive_effect = advanced_effect
+        self._operation_names = {
+            'ASSIGN': 'assign',
+            'INCREASE': 'increase',
+            'DECREASE': 'decrease',
+            'SCALE_UP': 'scale_up',
+            'SCALE_DOWN': 'scale_down'
+        }
 
     def get_index(self) -> 'int':
         """
@@ -1206,6 +1240,22 @@ class Effect:
         :rtype: list[Literal]
         """
         return [Literal(x) for x in self._advanced_conjunctive_effect.get_literals()]
+
+    def get_functions(self) -> 'list[tuple[str, FunctionTerm, FunctionExpression]]':
+        """
+        Get the operation performed on the numeric functions by the conditional effect.
+
+        :return: A list of tuples containing operation name, function term, and function expression.
+        :rtype: list[tuple[str, FunctionTerm, FunctionExpression]]
+        """
+        def to_tuple(effect: 'Union[AdvancedFluentNumericEffect, AdvancedAuxiliaryNumericEffect]') -> 'tuple[str, FunctionTerm, FunctionExpression]':
+            return (self._operation_names[effect.get_assign_operator().name], FunctionTerm(effect.get_function()), FunctionExpression(effect.get_function_expression()))
+        fluent_effects = self._advanced_conjunctive_effect.get_fluent_numeric_effects()
+        auxiliary_effect = self._advanced_conjunctive_effect.get_auxiliary_numeric_effect()
+        function_effects = [to_tuple(effect) for effect in fluent_effects]
+        if auxiliary_effect is not None:
+            function_effects.append(to_tuple(auxiliary_effect))
+        return function_effects
 
     def __iter__(self) -> 'Iterator[Literal]':
         """
@@ -1652,31 +1702,31 @@ class Domain:
         requirements = str(self._advanced_domain.get_requirements())[15:-1].split()
         return requirements
 
-    def get_function_signatures(self, ignore_static: bool = False, ignore_fluent: bool = False, ignore_auxiliary: bool = False) -> 'list[NumericFunction]':
+    def get_numeric_functions(self, ignore_static: bool = False, ignore_fluent: bool = False, ignore_auxiliary: bool = False) -> 'list[NumericFunction]':
         """
-        Get the function signatures of the domain.
+        Get the numeric functions of the domain.
 
-        :param ignore_static: If True, do not include signatures of static functions.
+        :param ignore_static: If True, do not include static functions.
         :type ignore_static: bool
-        :param ignore_fluent: If True, do not include signatures of fluent functions.
+        :param ignore_fluent: If True, do not include fluent functions.
         :type ignore_fluent: bool
-        :param ignore_auxiliary: If True, do not include signatures of auxiliary functions.
+        :param ignore_auxiliary: If True, do not include auxiliary functions.
         :type ignore_auxiliary: bool
-        :return: A list of function signatures of the domain.
-        :rtype: list[FunctionSignature]
+        :return: A list of numeric functions of the domain.
+        :rtype: list[NumericFunction]
         """
-        function_signatures = []
+        numeric_functions = []
         if not ignore_static:
             static_functions = self._advanced_domain.get_static_functions()
-            function_signatures.extend(NumericFunction(x) for x in static_functions)
+            numeric_functions.extend(NumericFunction(x) for x in static_functions)
         if not ignore_fluent:
             fluent_functions = self._advanced_domain.get_fluent_functions()
-            function_signatures.extend(NumericFunction(x) for x in fluent_functions)
+            numeric_functions.extend(NumericFunction(x) for x in fluent_functions)
         if not ignore_auxiliary:
             auxiliary_function = self._advanced_domain.get_auxiliary_function()
             if auxiliary_function:
-                function_signatures.append(NumericFunction(auxiliary_function))
-        return function_signatures
+                numeric_functions.append(NumericFunction(auxiliary_function))
+        return numeric_functions
 
     def get_actions(self) -> 'list[Action]':
         """
@@ -2228,10 +2278,10 @@ class State:
     def get_function_values(self, ignore_static: bool = False, ignore_fluent: bool = False, ignore_auxiliary: bool = False) -> 'list[tuple[NumericFunction, list[Object], float]]':
         def helper_function(function_value: 'Union[AdvancedStaticGroundFunctionValue, AdvancedFluentGroundFunctionValue, AdvancedAuxiliaryGroundFunctionValue]') -> 'tuple[NumericFunction, list[Object], float]':
             function = function_value.get_function()
-            signature = NumericFunction(function.get_function_skeleton())
+            schema = NumericFunction(function.get_function_skeleton())
             terms = [Object(x) for x in function.get_objects()]
             value = function_value.get_number()
-            return (signature, terms, value)
+            return (schema, terms, value)
         advanced_problem = self.get_problem()._advanced_problem
         function_values = []
         if not ignore_static:
@@ -2242,7 +2292,8 @@ class State:
             function_values.extend(helper_function(x) for x in fluent_function_values)
         if not ignore_auxiliary:
             auxiliary_function_value = advanced_problem.get_auxiliary_function_value()
-            function_values.append(helper_function(auxiliary_function_value))
+            if auxiliary_function_value:
+                function_values.append(helper_function(auxiliary_function_value))
         return function_values
 
     def contains(self, ground_atom: 'GroundAtom') -> bool:
@@ -2772,57 +2823,75 @@ class NumericFunction:
 
     def is_static(self) -> 'bool':
         """
-        Get whether the function signature is static.
+        Get whether the numeric function is static.
 
-        :return: True if the function signature is static, False otherwise.
+        :return: True if the numeric function is static, False otherwise.
         :rtype: bool
         """
         return isinstance(self._advanced_function_skeleton, AdvancedStaticFunctionSkeleton)
 
     def is_fluent(self) -> 'bool':
         """
-        Get whether the function signature is fluent.
+        Get whether the numeric function is fluent.
 
-        :return: True if the function signature is fluent, False otherwise.
+        :return: True if the numeric function is fluent, False otherwise.
         :rtype: bool
         """
         return isinstance(self._advanced_function_skeleton, AdvancedFluentFunctionSkeleton)
 
     def is_auxiliary(self) -> 'bool':
         """
-        Get whether the function signature is auxiliary.
+        Get whether the numeric function is auxiliary.
 
-        :return: True if the function signature is auxiliary, False otherwise.
+        :return: True if the numeric function is auxiliary, False otherwise.
         :rtype: bool
         """
         return isinstance(self._advanced_function_skeleton, AdvancedAuxiliaryFunctionSkeleton)
 
     def get_index(self):
         """
-        Get the index of the function signature.
+        Get the index of the numeric function.
 
-        :return: The index of the function signature.
+        :return: The index of the numeric function.
         :rtype: int
         """
         return self._advanced_function_skeleton.get_index()
 
     def get_name(self):
         """
-        Get the name of the function signature.
+        Get the name of the numeric function.
 
-        :return: The name of the function signature.
+        :return: The name of the numeric function.
         :rtype: str
         """
         return self._advanced_function_skeleton.get_name()
 
     def get_parameters(self) -> 'list[Variable]':
         """
-        Get the parameters of the function signature.
+        Get the parameters of the numeric function.
 
-        :return: A list of variables representing the parameters of the function signature.
+        :return: A list of variables representing the parameters of the numeric function.
         :rtype: list[Variable]
         """
         return [Variable(x) for x in self._advanced_function_skeleton.get_parameters()]
+
+    def __str__(self):
+        """
+        Get the string representation of the numeric function.
+
+        :return: A string representation of the numeric function.
+        :rtype: str
+        """
+        return f'({self.get_name()} {" ".join(str(x) for x in self.get_parameters())})'
+
+    def __repr__(self):
+        """
+        Get the string representation of the numeric function.
+
+        :return: A string representation of the numeric function.
+        :rtype: str
+        """
+        return str(self)
 
 
 class FunctionTerm:
@@ -2886,6 +2955,24 @@ class FunctionTerm:
         """
         return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_function.get_terms()]  # type: ignore
 
+    def __str__(self):
+        """
+        Get the string representation of the function term.
+
+        :return: A string representation of the function term.
+        :rtype: str
+        """
+        return f'({self.get_numeric_function().get_name()} {" ".join(str(x) for x in self.get_terms())})'
+
+    def __repr__(self):
+        """
+        Get the string representation of the function term.
+
+        :return: A string representation of the function term.
+        :rtype: str
+        """
+        return str(self)
+
 
 class GroundFunctionTerm:
     def __init__(self, advanced_ground_function: 'AdvancedGroundFunction') -> None:
@@ -2947,6 +3034,24 @@ class GroundFunctionTerm:
         :rtype: list[Object]
         """
         return [Object(x) for x in self._advanced_ground_function.get_objects()]
+
+    def __str__(self):
+        """
+        Get the string representation of the ground function term.
+
+        :return: A string representation of the ground function term.
+        :rtype: str
+        """
+        return f'({self.get_numeric_function().get_name()} {" ".join(str(x) for x in self.get_terms())})'
+
+    def __repr__(self):
+        """
+        Get the string representation of the ground function term.
+
+        :return: A string representation of the ground function term.
+        :rtype: str
+        """
+        return str(self)
 
 
 class FunctionExpression:
