@@ -744,6 +744,23 @@ class TestStateSpaceSampler(unittest.TestCase):
 class TestNumericFluents(unittest.TestCase):
     def test_get_numeric_conditions(self):
         domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'refuel-adl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        action = next(x for x in initial_state.generate_applicable_actions() if x.get_action().get_name() == 'drive-vehicle')
+        precondition = action.get_precondition()
+        numerics = precondition.get_numerics()
+        assert len(numerics) == 1
+        numeric = numerics[0]
+        assert numeric.get_comparator() == '>'
+        assert numeric.get_left_expression().is_function_term()
+        assert numeric.get_left_expression().get_function_term().get_numeric_function().get_name() == 'fuel-level'
+        assert numeric.get_right_expression().is_number_term()
+        assert numeric.get_right_expression().get_number_term() == 0.0
+
+    def test_get_ground_numeric_conditions(self):
+        domain_path = DATA_DIR / 'refuel-adl' / 'domain.pddl'
         domain = Domain(domain_path)
         action = domain.get_action('fuel-vehicle')
         precondition = action.get_precondition()
@@ -780,7 +797,7 @@ class TestNumericFluents(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
-        action = initial_state.generate_applicable_actions()[0]
+        action = next(x for x in initial_state.generate_applicable_actions() if x.get_action().get_name() == 'fuel-vehicle')
         effects = action.get_conditional_effect()
         assert len(effects) == 1
         effect = effects[0]

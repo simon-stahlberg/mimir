@@ -591,7 +591,8 @@ void bind_module_definitions(nb::module_& m)
                                          self.get_precondition<NegativeTag, DerivedTag>().begin(),
                                          self.get_precondition<NegativeTag, DerivedTag>().end());
             },
-            nb::keep_alive<0, 1>());
+            nb::keep_alive<0, 1>())
+        .def("get_numeric_constraints", &GroundConjunctiveConditionImpl::get_numeric_constraints, nb::rv_policy::copy);
 
     /* GroundConjunctiveEffect */
     nb::class_<GroundConjunctiveEffectImpl>(m, "GroundConjunctiveEffect")

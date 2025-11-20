@@ -2412,6 +2412,18 @@ class State:
         holds = holds and self._literals_hold_derived(advanced_derived_ground_literals)
         return holds
 
+    def numeric_holds(self, numeric: 'GroundNumericCondition') -> bool:
+        """
+        Checks if a numeric condition holds in the state.
+
+        :param numeric: The ground numeric condition to check.
+        :type numeric: GroundNumericCondition
+        :return: True if the numeric condition holds in the state, False otherwise.
+        :rtype: bool
+        """
+        assert isinstance(numeric, GroundNumericCondition), "Invalid numeric condition type."
+        raise NotImplementedError('numeric_holds is not implemented yet.')
+
     def generate_applicable_actions(self, cache_result = True) -> 'list[GroundAction]':
         """
         Generates a list of all applicable ground actions in the state.
@@ -2506,7 +2518,7 @@ class GroundConjunctiveCondition:
         self._fluent_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._fluent_neg_ground_atoms]
         self._derived_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._derived_pos_ground_atoms]
         self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
-        # TODO: Getter bindings for GroundNumericConstraints need to be exposed.
+        self._numerics = [GroundNumericCondition(x) for x in self._advanced_condition.get_numeric_constraints()]
 
     @staticmethod
     def new(ground_literals: 'list[GroundLiteral]', problem: 'Problem') -> 'GroundConjunctiveCondition':
@@ -2531,6 +2543,37 @@ class GroundConjunctiveCondition:
         """
         return self._problem
 
+    def get_literals(self, ignore_static: 'bool' = False, ignore_fluent: 'bool' = False,  ignore_derived: 'bool' = False) -> 'list[GroundLiteral]':
+        """
+        Get the ground literals of the ground conjunctive condition.
+
+        :param ignore_static: If True, do not include static ground literals.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent ground literals.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived ground literals.
+        :type ignore_derived: bool
+        :return: A list of ground literals in the condition.
+        :rtype: list[GroundLiteral]
+        """
+        literals = []
+        if not ignore_static:
+            literals.extend(self._static_ground_literals)
+        if not ignore_fluent:
+            literals.extend(self._fluent_ground_literals)
+        if not ignore_derived:
+            literals.extend(self._derived_ground_literals)
+        return literals
+
+    def get_numerics(self) -> 'list[GroundNumericCondition]':
+        """
+        Get the numeric constraints of the ground conjunctive condition.
+
+        :return: A list of ground numeric constraints in the condition.
+        :rtype: list[GroundNumericCondition]
+        """
+        return self._numerics
+
     def holds(self, state: 'State') -> bool:
         """
         Check if the ground conjunctive condition holds in the given state.
@@ -2541,7 +2584,7 @@ class GroundConjunctiveCondition:
         :rtype: bool
         """
         assert isinstance(state, State), "Invalid state type."
-        return not any(not state.literal_holds(literal) for literal in self)
+        return all(state.literal_holds(literal) for literal in self.get_literals()) and all(state.numeric_holds(numeric) for numeric in self.get_numerics())
 
     def lift(self, add_inequalities: bool = False) -> 'ConjunctiveCondition':
         """
@@ -2557,20 +2600,21 @@ class GroundConjunctiveCondition:
         lifted_literals = []
         # Lift the ground literals in the  ground conjunctive condition.
         for literal in self.__iter__():
-            predicate = literal.get_atom().get_predicate()
-            polarity = literal.get_polarity()
-            grounded_terms = literal.get_atom().get_terms()
-            lifted_terms = []
-            for obj in grounded_terms:
-                if obj.get_index() in variable_map:
-                    variable = variable_map[obj.get_index()]
-                else:
-                    variable_id = len(variable_map)
-                    variable = Variable.new(f'?x{variable_id}', variable_id, problem)
-                    variable_map[obj.get_index()] = variable
-                lifted_terms.append(variable)
-            lifted_atom = Atom.new(predicate, lifted_terms, problem)
-            lifted_literals.append(Literal.new(lifted_atom, polarity, problem))
+            if isinstance(literal, GroundLiteral):
+                predicate = literal.get_atom().get_predicate()
+                polarity = literal.get_polarity()
+                grounded_terms = literal.get_atom().get_terms()
+                lifted_terms = []
+                for obj in grounded_terms:
+                    if obj.get_index() in variable_map:
+                        variable = variable_map[obj.get_index()]
+                    else:
+                        variable_id = len(variable_map)
+                        variable = Variable.new(f'?x{variable_id}', variable_id, problem)
+                        variable_map[obj.get_index()] = variable
+                    lifted_terms.append(variable)
+                lifted_atom = Atom.new(predicate, lifted_terms, problem)
+                lifted_literals.append(Literal.new(lifted_atom, polarity, problem))
         # If the domain supports :equality, add inequalities if asked for.
         domain = problem.get_domain()
         requirements = domain.get_requirements()
@@ -2589,16 +2633,17 @@ class GroundConjunctiveCondition:
         variables.sort(key=lambda x: x.get_index())
         return ConjunctiveCondition.new(variables, lifted_literals, problem)
 
-    def __iter__(self) -> 'Iterator[GroundLiteral]':
+    def __iter__(self) -> 'Iterator[Union[GroundLiteral, GroundNumericCondition]]':
         """
-        Iterate over all literals in the ground conjunctive condition.
+        Iterate over all ground literals and numeric conditions.
 
-        :return: An iterable of GroundLiteral objects representing the literals in the condition.
-        :rtype: Iterator[GroundLiteral]
+        :return: An iterable of GroundLiteral and GroundNumericCondition objects representing the conditions in the conjunction.
+        :rtype: Iterator[Union[GroundLiteral, GroundNumericCondition]]
         """
         yield from self._static_ground_literals
         yield from self._fluent_ground_literals
         yield from self._derived_ground_literals
+        yield from self.get_numerics()
 
     def __len__(self) -> 'int':
         """
