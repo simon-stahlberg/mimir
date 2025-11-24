@@ -171,6 +171,7 @@ class TestProblem(unittest.TestCase):
         expected_goal_condition = ['(clear b2)', '(on b2 b3)', '(on-table b3)', '(clear b1)', '(on-table b1)']
         assert len(actual_goal_condition) == len(expected_goal_condition)
         for goal_literal in actual_goal_condition:
+            assert isinstance(goal_literal, GroundLiteral)
             assert goal_literal.get_polarity() is True
             assert str(goal_literal.get_atom()) in expected_goal_condition
 
@@ -472,7 +473,7 @@ class TestSearchAlgorithms(unittest.TestCase):
                 return set()
         heuristic = CustomHeuristic()
         result = astar_eager(problem, initial_state, heuristic)
-        assert result.status == "solved"
+        assert result.status == 'solved'
         assert result.solution is not None
         assert len(result.solution) == 4
         assert result.solution_cost == 4.0
@@ -485,7 +486,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         heuristic = BlindHeuristic(problem)
         result = astar_eager(problem, initial_state, heuristic)
-        assert result.status == "solved"
+        assert result.status == 'solved'
         assert result.solution is not None
         assert len(result.solution) == 4
         assert result.solution_cost == 4.0
@@ -514,6 +515,123 @@ class TestSearchAlgorithms(unittest.TestCase):
         assert len(expanded_states) == 6
         assert len(finished_f_layers) == 5
         assert len(generated_states) == 16
+        assert len(pruned_states) == 0
+
+    def test_astar_lazy(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        result = astar_lazy(problem, initial_state, heuristic)
+        assert result.status == 'solved'
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
+
+    def test_astar_lazy_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        expanded_goal_states = []
+        expanded_states = []
+        finished_f_layers = []
+        generated_states = []
+        pruned_states = []
+        _ = astar_lazy(problem,
+                       initial_state,
+                       heuristic,
+                       on_expand_state=lambda state: expanded_states.append(state),
+                       on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+                       on_generate_state=lambda state, action, cost, new_state: generated_states.append((state, action, cost, new_state)),
+                       on_prune_state=lambda state: pruned_states.append(state),
+                       on_finish_f_layer=lambda f_value: finished_f_layers.append(f_value))
+        assert len(expanded_goal_states) == 1
+        assert len(expanded_states) == 6
+        assert len(finished_f_layers) == 5
+        assert len(generated_states) == 16
+        assert len(pruned_states) == 0
+
+    def test_gbfs_eager(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        result = gbfs_eager(problem, initial_state, heuristic)
+        assert result.status == 'solved'
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
+
+    def test_gbfs_eager_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        expanded_goal_states = []
+        expanded_states = []
+        new_best_h_values = []
+        generated_states = []
+        pruned_states = []
+        _ = gbfs_eager(problem,
+                       initial_state,
+                       heuristic,
+                       on_expand_state=lambda state: expanded_states.append(state),
+                       on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+                       on_generate_state=lambda state, action, cost, new_state: generated_states.append((state, action, cost, new_state)),
+                       on_prune_state=lambda state: pruned_states.append(state),
+                       on_new_best_h_value=lambda f_value: new_best_h_values.append(f_value))
+        assert len(expanded_goal_states) == 1
+        assert len(expanded_states) == 6
+        assert len(new_best_h_values) == 0
+        assert len(generated_states) == 5
+        assert len(pruned_states) == 0
+
+    def test_gbfs_lazy(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        result = gbfs_lazy(problem, initial_state, heuristic)
+        assert result.status == 'solved'
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
+
+    def test_gbfs_lazy_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        expanded_goal_states = []
+        expanded_states = []
+        new_best_h_values = []
+        generated_states = []
+        pruned_states = []
+        _ = gbfs_lazy(problem,
+                      initial_state,
+                      heuristic,
+                      on_expand_state=lambda state: expanded_states.append(state),
+                      on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+                      on_generate_state=lambda state, action, cost, new_state: generated_states.append((state, action, cost, new_state)),
+                      on_prune_state=lambda state: pruned_states.append(state),
+                      on_new_best_h_value=lambda f_value: new_best_h_values.append(f_value))
+        assert len(expanded_goal_states) == 1
+        assert len(expanded_states) == 6
+        assert len(new_best_h_values) == 0
+        assert len(generated_states) == 5
         assert len(pruned_states) == 0
 
     def test_set_add_heuristic(self):
@@ -582,6 +700,44 @@ class TestSearchAlgorithms(unittest.TestCase):
         assert heuristic.compute_value(initial_state, different_goal) == 2.0
         assert len(heuristic.get_preferred_actions()) == 1
 
+    def test_brfs(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        result = brfs(problem, initial_state, 1)
+        assert result.status == 'solved'
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
+        assert result.goal_state is not None
+
+    def test_brfs_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        expanded_states = []
+        expanded_goal_states = []
+        generated_states = []
+        generated_new_states = []
+        pruned_states = []
+        _ = brfs(problem,
+               initial_state,
+               1,
+               on_expand_state=lambda state: expanded_states.append(state),
+               on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+               on_generate_state=lambda state, action, cost, successor_state: generated_states.append((state, action, cost, successor_state)),
+               on_generate_new_state=lambda state, action, cost, successor_state: generated_new_states.append((state, action, cost, successor_state)),
+               on_prune_state=lambda state, action, cost, successor_state: pruned_states.append((state, action, cost, successor_state)))
+        assert len(expanded_states) == 6
+        assert len(expanded_goal_states) == 1
+        assert len(generated_states) == 16
+        assert len(generated_new_states) == 6
+        assert len(pruned_states) == 10
+
     def test_iw(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
@@ -589,7 +745,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
         result = iw(problem, initial_state, 1)
-        assert result.status == "failed"
+        assert result.status == 'failed'
         assert result.solution is None
         assert result.solution_cost is None
         assert result.goal_state is None

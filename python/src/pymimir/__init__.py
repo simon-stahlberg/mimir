@@ -21,20 +21,39 @@ from .wrapper_formalism import (
     Variable,
 )
 
-from .wrapper_search import (
-    Heuristic,
+from .wrapper_heuristics import (
     AddHeuristic,
     BlindHeuristic,
+    FFHeuristic,
+    Heuristic,
     MaxHeuristic,
     PerfectHeuristic,
     SetAddHeuristic,
+)
+
+from .wrapper_search import (
     SearchResult,
-    FFHeuristic,
+)
+
+from .wrapper_search_astar import (
     astar_eager,
-    iw
+    astar_lazy,
+)
+
+from .wrapper_search_brfs import (
+    brfs,
+)
+
+from .wrapper_search_gbfs import (
+    gbfs_eager,
+    gbfs_lazy,
+)
+
+from .wrapper_search_width import (
+    iw,
 )
 
 from .wrapper_datasets import (
     StateSpaceSampler,
-    StateLabel
+    StateLabel,
 )
