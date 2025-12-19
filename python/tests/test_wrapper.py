@@ -83,6 +83,15 @@ class TestProblem(unittest.TestCase):
         expected_mode = 'lifted'
         assert actual_mode == expected_mode
 
+    def test_lifted_symmetry_pruning(self):
+        domain_path = DATA_DIR / 'gripper' / 'domain.pddl'
+        problem_path = DATA_DIR / 'gripper' / 'test_problem4.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path, 'lifted_symmetry_pruning')
+        initial_state = problem.get_initial_state()
+        applicable_actions = initial_state.generate_applicable_actions()
+        assert len(applicable_actions) == 3  # Only three actions should be applicable due to symmetry pruning.
+
     # def test_requirements(self):
     #     domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
     #     problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'

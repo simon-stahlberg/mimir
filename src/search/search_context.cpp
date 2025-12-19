@@ -66,7 +66,7 @@ SearchContext SearchContextImpl::create(Problem problem, const Options& options)
                         if constexpr (std::is_same_v<OptionT, LiftedOptions::KPKCOptions>)
                         {
                             return create(problem,
-                                          std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem),
+                                          std::make_shared<KPKCLiftedApplicableActionGeneratorImpl>(problem, option),
                                           std::make_shared<StateRepositoryImpl>(std::make_shared<KPKCLiftedAxiomEvaluatorImpl>(problem)));
                         }
                         else if constexpr (std::is_same_v<OptionT, LiftedOptions::ExhaustiveOptions>)

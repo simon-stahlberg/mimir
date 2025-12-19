@@ -1873,7 +1873,7 @@ class Problem:
         :type domain: Domain
         :param problem_path: The path to the problem definition file.
         :type problem_path: Union[Path, str]
-        :param mode: The mode of the problem, either 'lifted' or 'grounded'.
+        :param mode: The mode of the problem, either 'grounded', 'lifted', or 'lifted_symmetry_pruning'.
         :type mode: str
         """
         assert isinstance(domain, Domain), "Invalid domain type."
@@ -1882,9 +1882,11 @@ class Problem:
         if mode == 'grounded':
             search_mode = GroundedOptions()
         elif mode == 'lifted':
-            search_mode = LiftedOptions()
+            search_mode = LiftedOptions(LiftedKPKCOptions(SymmetryPruning.OFF))
+        elif mode == 'lifted_symmetry_pruning':
+            search_mode = LiftedOptions(LiftedKPKCOptions(SymmetryPruning.GI))
         else:
-            raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
+            raise ValueError("Invalid mode. Use 'grounded', 'lifted', or 'lifted_symmetry_pruning'.")
         self._domain = domain
         self._mode = mode
         self._advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
