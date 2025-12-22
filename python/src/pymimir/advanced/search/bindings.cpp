@@ -1,4 +1,5 @@
 #include "../init_declarations.hpp"
+#include "mimir/search/heuristics/h2.hpp"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/trampoline.h>
@@ -688,6 +689,9 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<FFHeuristicImpl, IHeuristic>(m, "FFHeuristic")  //
         .def_static("create", &FFHeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
+
+    nb::class_<H2HeuristicImpl, IHeuristic>(m, "H2Heuristic")  //
+        .def_static("create", &H2HeuristicImpl::create, "delete_relaxed_problem_explorator"_a);
 
     /* Algorithms */
 

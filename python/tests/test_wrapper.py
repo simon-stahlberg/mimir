@@ -1,7 +1,7 @@
 import unittest
 
 from pathlib import Path
-from pymimir import *
+from pymimir import *  # type: ignore
 from typing import Union
 
 
@@ -708,6 +708,32 @@ class TestSearchAlgorithms(unittest.TestCase):
         different_goal = GroundConjunctiveCondition.new([literal_on_b1_b2], problem)
         assert heuristic.compute_value(initial_state, different_goal) == 2.0
         assert len(heuristic.get_preferred_actions()) == 1
+
+    def test_h2_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = H2Heuristic(problem)
+        initial_state = problem.get_initial_state()
+        assert heuristic.compute_value(initial_state) == 4.0
+        assert len(heuristic.get_preferred_actions()) == 0
+
+    def test_h2_heuristic_with_different_goal(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = H2Heuristic(problem)
+        initial_state = problem.get_initial_state()
+        predicate_on = domain.get_predicate('on')
+        obj_b1 = problem.get_object('b1')
+        obj_b2 = problem.get_object('b2')
+        atom_on_b1_b2 = problem.new_ground_atom(predicate_on, [obj_b1, obj_b2])
+        literal_on_b1_b2 = problem.new_ground_literal(atom_on_b1_b2, True)
+        different_goal = GroundConjunctiveCondition.new([literal_on_b1_b2], problem)
+        assert heuristic.compute_value(initial_state, different_goal) == 1.0
+        assert len(heuristic.get_preferred_actions()) == 0
 
     def test_brfs(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'

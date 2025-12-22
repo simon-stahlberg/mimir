@@ -4,9 +4,10 @@ from typing import Union
 from pymimir.advanced.formalism import GroundConjunctiveCondition as AdvancedGroundConjunctiveCondition
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
 from pymimir.advanced.search import BlindHeuristic as AdvancedBlindHeuristic
-from pymimir.advanced.search import LiftedGrounder as AdvancedLiftedGrounder
 from pymimir.advanced.search import FFHeuristic as AdvancedFFHeuristic
+from pymimir.advanced.search import H2Heuristic as AdvancedH2Heuristic
 from pymimir.advanced.search import IHeuristic as AdvancedHeuristicBase
+from pymimir.advanced.search import LiftedGrounder as AdvancedLiftedGrounder
 from pymimir.advanced.search import MaxHeuristic as AdvancedMaxHeuristic
 from pymimir.advanced.search import PerfectHeuristic as AdvancedPerfectHeuristic
 from pymimir.advanced.search import PreferredActions as AdvancedPreferredActions
@@ -175,6 +176,30 @@ class FFHeuristic(Heuristic):
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedFFHeuristic.create(delete_relaxed)
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
+    def compute_value(self, state: 'State', goal: 'Union[GroundConjunctiveCondition, None]' = None) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, goal._advanced_condition if goal else None)
+
+    def get_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
+
+
+class H2Heuristic(Heuristic):
+    def __init__(self, problem: 'Problem') -> None:
+        super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
+        delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
+        self._advanced_heuristic = AdvancedH2Heuristic.create(delete_relaxed)
 
     def get_problem(self) -> 'Problem':
         """

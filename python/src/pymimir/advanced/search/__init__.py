@@ -11,7 +11,7 @@ from pymimir.pymimir.advanced.search import (
 )
 
 # Common
-from pymimir.pymimir.advanced.search import (   
+from pymimir.pymimir.advanced.search import (
     is_applicable,
     IApplicableActionGenerator,
     IAxiomEvaluator,
@@ -32,16 +32,17 @@ from pymimir.pymimir.advanced.search import (
     GeneralizedSearchContext,
 )
 
-# Heuristics 
-from pymimir.pymimir.advanced.search import (  
-    PreferredActions, 
-    IHeuristic,
-    BlindHeuristic,
-    PerfectHeuristic,
-    MaxHeuristic,
+# Heuristics
+from pymimir.pymimir.advanced.search import (
+    PreferredActions,
     AddHeuristic,
+    BlindHeuristic,
+    FFHeuristic,
+    H2Heuristic,
+    IHeuristic,
+    MaxHeuristic,
+    PerfectHeuristic,
     SetAddHeuristic,
-    FFHeuristic
 )
 
 # SatisficingBindingGenerator

@@ -25,6 +25,7 @@ from .wrapper_heuristics import (
     AddHeuristic,
     BlindHeuristic,
     FFHeuristic,
+    H2Heuristic,
     Heuristic,
     MaxHeuristic,
     PerfectHeuristic,
