@@ -190,6 +190,12 @@ inline bool evaluate(loki::BinaryComparatorEnum comparator, const ClosedInterval
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x = y.
             return lower(lhs) <= upper(rhs) && upper(lhs) >= lower(rhs);
         }
+        case loki::BinaryComparatorEnum::UNEQUAL:
+        {
+            // ∃ x ∈ lhs, ∃ y ∈ rhs : x ≠ y
+            // False iff both are singletons with the same value
+            return !(lower(lhs) == upper(lhs) && lower(rhs) == upper(rhs) && lower(lhs) == lower(rhs));
+        }
         case loki::BinaryComparatorEnum::GREATER:
         {
             // ∃ x ∈ lhs, ∃ y ∈ rhs : x > y.

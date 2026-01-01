@@ -62,6 +62,10 @@ bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_n
         {
             return left_value == right_value;
         }
+        case loki::BinaryComparatorEnum::UNEQUAL:
+        {
+            return left_value != right_value;
+        }
         case loki::BinaryComparatorEnum::GREATER:
         {
             return left_value > right_value;
