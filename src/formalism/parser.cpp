@@ -32,6 +32,33 @@ Parser::Parser(const fs::path& domain_filepath, const loki::ParserOptions& optio
     m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain())),
     m_domain()
 {
+    translate_domain();
+}
+
+Parser::Parser(const std::string& domain_content, const fs::path& domain_filepath, const loki::ParserOptions& options) :
+    m_loki_parser(domain_content, domain_filepath, options),
+    m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain())),
+    m_domain()
+{
+    translate_domain();
+}
+
+Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options)
+{
+    auto loki_problem = m_loki_parser.parse_problem(problem_filepath, options);
+    return translate_problem(loki_problem);
+}
+
+Problem Parser::parse_problem(const std::string& problem_content, const fs::path& problem_filepath, const loki::ParserOptions& options)
+{
+    auto loki_problem = m_loki_parser.parse_problem(problem_content, problem_filepath, options);
+    return translate_problem(loki_problem);
+}
+
+const Domain& Parser::get_domain() const { return m_domain; }
+
+void Parser::translate_domain()
+{
     auto loki_translated_domain = m_loki_domain_translation_result.get_translated_domain();
 
     auto to_mimir_structures_translator = ToMimirStructures();
@@ -43,9 +70,8 @@ Parser::Parser(const fs::path& domain_filepath, const loki::ParserOptions& optio
     m_domain = encode_parameter_index_in_variables_translator.translate_level_0(m_domain, builder);
 }
 
-Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options)
+Problem Parser::translate_problem(const loki::Problem& loki_problem)
 {
-    auto loki_problem = m_loki_parser.parse_problem(problem_filepath, options);
     auto loki_translated_problem = loki::translate(loki_problem, m_loki_domain_translation_result);
 
     auto to_mimir_structures_translator = ToMimirStructures();
@@ -58,7 +84,5 @@ Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Pars
 
     return problem;
 }
-
-const Domain& Parser::get_domain() const { return m_domain; }
 
 }

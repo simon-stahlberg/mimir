@@ -1,3 +1,5 @@
+import os
+
 from pathlib import Path
 from typing import overload, Union, Iterator, Literal as Lit
 
@@ -1669,15 +1671,27 @@ class GroundAction:
 class Domain:
     """Class representing the PDDL domain."""
 
-    def __init__(self, domain_path: 'Union[Path, str]') -> None:
+    def __init__(self, domain_path_or_content: 'Union[Path, str]') -> None:
         """
-        Initialize the domain with the given path.
+        Initialize the domain with the given path or content.
 
-        :param domain_path: The path to the domain definition file.
-        :type domain_path: Union[Path, str]
+        :param domain_path_or_content: The path to the domain definition file or the content of the domain definition.
+        :type domain_path_or_content: Union[Path, str]
         """
-        assert isinstance(domain_path, (Path, str)), "Invalid domain path type."
-        self._advanced_parser = AdvancedParser(domain_path, AdvancedParserOptions())
+        assert isinstance(domain_path_or_content, (Path, str)), "Invalid domain path or content type."
+        # Check if the input is a valid file path
+        if isinstance(domain_path_or_content, Path): domain_path = domain_path_or_content
+        else:
+            assert isinstance(domain_path_or_content, str)
+            if len(domain_path_or_content) > 255: domain_path = None
+            else: domain_path = Path(domain_path_or_content)
+        # Initialize the parser
+        if domain_path is not None and domain_path.is_file():
+            self._advanced_parser = AdvancedParser(domain_path, AdvancedParserOptions())
+        elif isinstance(domain_path_or_content, str):
+            self._advanced_parser = AdvancedParser(domain_path_or_content, "", AdvancedParserOptions())
+        else:
+            raise ValueError("Domain path or content is neither a valid file path nor a string.")
         self._advanced_domain = self._advanced_parser.get_domain()
         self._repositories = self._advanced_domain.get_repositories()
 
@@ -1865,19 +1879,19 @@ class Domain:
 class Problem:
     """Class representing the PDDL problem."""
 
-    def __init__(self, domain: 'Domain', problem_path: Union[Path, str], mode: 'str' = 'lifted') -> None:
+    def __init__(self, domain: 'Domain', problem_path_or_content: Union[Path, str], mode: 'str' = 'lifted') -> None:
         """
         Initialize the problem with the given domain, path, and mode.
 
         :param domain: The domain to which the problem belongs.
         :type domain: Domain
-        :param problem_path: The path to the problem definition file.
-        :type problem_path: Union[Path, str]
+        :param problem_path_or_content: The path to the problem definition file or the content of the problem definition.
+        :type problem_path_or_content: Union[Path, str]
         :param mode: The mode of the problem, either 'grounded', 'lifted', or 'lifted_symmetry_pruning'.
         :type mode: str
         """
         assert isinstance(domain, Domain), "Invalid domain type."
-        assert isinstance(problem_path, (Path, str)), "Invalid problem path type."
+        assert isinstance(problem_path_or_content, (Path, str)), "Invalid problem path or content type."
         assert isinstance(mode, str), "Invalid mode type."
         if mode == 'grounded':
             search_mode = GroundedOptions()
@@ -1889,7 +1903,19 @@ class Problem:
             raise ValueError("Invalid mode. Use 'grounded', 'lifted', or 'lifted_symmetry_pruning'.")
         self._domain = domain
         self._mode = mode
-        self._advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
+        # Check if the input is a valid file path
+        if isinstance(problem_path_or_content, Path): problem_path = problem_path_or_content
+        else:
+            assert isinstance(problem_path_or_content, str)
+            if len(problem_path_or_content) > 255: problem_path = None
+            else: problem_path = Path(problem_path_or_content)
+        # Initialize the problem parser
+        if problem_path is not None and problem_path.is_file():
+            self._advanced_problem = domain._advanced_parser.parse_problem(problem_path_or_content, AdvancedParserOptions())
+        elif isinstance(problem_path_or_content, str):
+            self._advanced_problem = domain._advanced_parser.parse_problem(problem_path_or_content, "", AdvancedParserOptions())
+        else:
+            raise ValueError("Problem path or content is neither a valid file path nor a string.")
         self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }
 

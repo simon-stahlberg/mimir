@@ -101,6 +101,8 @@ public:
 
     static Problem create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
+    static Problem create(const std::string& domain_content, const fs::path& domain_filepath, const std::string& problem_content, const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
+
     Index get_index() const;
     const Repositories& get_repositories() const;
     const std::optional<fs::path>& get_filepath() const;

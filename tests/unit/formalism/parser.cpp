@@ -28,7 +28,7 @@ using namespace mimir::formalism;
 namespace mimir::tests
 {
 
-TEST(MimirTests, MimirFormalismPraserTest)
+TEST(MimirTests, MimirFormalismParserTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
@@ -108,4 +108,59 @@ TEST(MimirTests, MimirFormalismPraserTest)
                 */
 }
 
+}
+
+TEST(MimirTests, MimirFormalismParserStringTest)
+{
+    const auto domain_content = std::string(
+        "(define (domain test-domain) "
+        "    (:requirements :strips :negative-preconditions) "
+        "    (:predicates (p ?x)) "
+        "    (:action a "
+        "    :parameters (?x) "
+        "    :precondition (and (not (p ?x))) "
+        "    :effect (p ?x)) "
+        ")");
+
+    const auto problem_content = std::string(
+        "(define (problem test-problem) "
+        "    (:domain test-domain) "
+        "    (:objects a) "
+        "    (:init) "
+        "    (:goal (p a)) "
+        ")");
+
+    auto parser = Parser(domain_content, "");
+    const auto domain = parser.get_domain();
+    const auto problem = parser.parse_problem(problem_content, "");
+
+    EXPECT_EQ(domain->get_name(), "test-domain");
+    EXPECT_EQ(problem->get_name(), "test-problem");
+}
+
+TEST(MimirTests, MimirFormalismProblemStringTest)
+{
+    const auto domain_content = std::string(
+        "(define (domain test-domain) "
+        "    (:requirements :strips :negative-preconditions) "
+        "    (:predicates (p ?x)) "
+        "    (:action a "
+        "    :parameters (?x) "
+        "    :precondition (and (not (p ?x))) "
+        "    :effect (p ?x)) "
+        ")");
+
+    const auto problem_content = std::string(
+        "(define (problem test-problem) "
+        "    (:domain test-domain) "
+        "    (:objects a) "
+        "    (:init) "
+        "    (:goal (p a)) "
+        ")");
+
+
+    const auto problem = ProblemImpl::create(domain_content, "", problem_content, "");
+
+    EXPECT_EQ(problem->get_name(), "test-problem");
+    EXPECT_EQ(problem->get_domain()->get_name(), "test-domain");
 }

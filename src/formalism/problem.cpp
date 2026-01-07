@@ -177,6 +177,11 @@ Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& pro
     return Parser(domain_filepath, options).parse_problem(problem_filepath, options);
 }
 
+Problem ProblemImpl::create(const std::string& domain_content, const fs::path& domain_filepath, const std::string& problem_content, const fs::path& problem_filepath, const loki::ParserOptions& options)
+{
+    return Parser(domain_content, domain_filepath, options).parse_problem(problem_content, problem_filepath, options);
+}
+
 Index ProblemImpl::get_index() const { return m_index; }
 
 const Repositories& ProblemImpl::get_repositories() const { return m_repositories; }

@@ -31,11 +31,19 @@ class Parser
 public:
     Parser(const fs::path& domain_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
+    Parser(const std::string& domain_content, const fs::path& domain_filepath, const loki::ParserOptions& options = loki::ParserOptions());
+
     Problem parse_problem(const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
+
+    Problem parse_problem(const std::string& problem_content, const fs::path& problem_filepath, const loki::ParserOptions& options = loki::ParserOptions());
 
     const Domain& get_domain() const;
 
 private:
+    void translate_domain();
+
+    Problem translate_problem(const loki::Problem& loki_problem);
+
     loki::Parser m_loki_parser;
     loki::DomainTranslationResult m_loki_domain_translation_result;
 

@@ -63,7 +63,7 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<loki::ParserOptions>(m, "ParserOptions")
         .def(nb::init<>())
         .def_rw("strict", &loki::ParserOptions::strict, "Enable strict mode")
-        .def_rw("quiet", &loki::ParserOptions::quiet, "Suppress output");
+        .def_rw("verbose", &loki::ParserOptions::verbose, "Enable verbose output");
 
     nb::class_<RequirementsImpl>(m, "Requirements")  //
         .def("__str__", [](const RequirementsImpl& self) { return mimir::to_string(self); })
@@ -745,7 +745,18 @@ void bind_module_definitions(nb::module_& m)
 
     /* Problem */
     nb::class_<ProblemImpl>(m, "Problem")  //
-        .def_static("create", &ProblemImpl::create, "domain_filepath"_a, "problem_filepath"_a, "options"_a)
+        .def_static("create",
+                    nb::overload_cast<const fs::path&, const fs::path&, const loki::ParserOptions&>(&ProblemImpl::create),
+                    "domain_filepath"_a,
+                    "problem_filepath"_a,
+                    "options"_a)
+        .def_static("create",
+                    nb::overload_cast<const std::string&, const fs::path&, const std::string&, const fs::path&, const loki::ParserOptions&>(&ProblemImpl::create),
+                    "domain_content"_a,
+                    "domain_filepath"_a,
+                    "problem_content"_a,
+                    "problem_filepath"_a,
+                    "options"_a)
         .def("__str__", [](const ProblemImpl& self) { return mimir::to_string(self); })
         .def("get_index", &ProblemImpl::get_index, nb::rv_policy::copy)
         .def("get_repositories", &ProblemImpl::get_repositories, nb::rv_policy::reference_internal)
@@ -1009,7 +1020,16 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<Parser>(m, "Parser")
         .def(nb::init<const fs::path&, const loki::ParserOptions&>(), "domain_filepath"_a, "options"_a)
-        .def("parse_problem", &Parser::parse_problem, "problem_filepath"_a, "options"_a)
+        .def(nb::init<const std::string&, const fs::path&, const loki::ParserOptions&>(), "domain_content"_a, "domain_filepath"_a, "options"_a)
+        .def("parse_problem",
+             nb::overload_cast<const fs::path&, const loki::ParserOptions&>(&Parser::parse_problem),
+             "problem_filepath"_a,
+             "options"_a)
+        .def("parse_problem",
+             nb::overload_cast<const std::string&, const fs::path&, const loki::ParserOptions&>(&Parser::parse_problem),
+             "problem_content"_a,
+             "problem_filepath"_a,
+             "options"_a)
         .def("get_domain", &Parser::get_domain);
 }
 
