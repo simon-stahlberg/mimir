@@ -13,6 +13,10 @@ namespace mimir::search
 
 H2HeuristicImpl::H2HeuristicImpl(const IGrounder& grounder) : m_problem(grounder.get_problem())
 {
+    // This must be done before `get_ground_actions()` as it might create new ground atoms.
+    const auto ground_actions = grounder.create_ground_actions();
+    const auto ground_axioms = grounder.create_ground_axioms();  // Ignored for H2
+
     const auto& repositories = m_problem->get_repositories();
     const auto& fluent_atoms = repositories.get_ground_atoms<formalism::FluentTag>();
     m_num_fluent_atoms = std::distance(fluent_atoms.begin(), fluent_atoms.end());
@@ -20,14 +24,14 @@ H2HeuristicImpl::H2HeuristicImpl(const IGrounder& grounder) : m_problem(grounder
     const auto& derived_atoms = repositories.get_ground_atoms<formalism::DerivedTag>();
     m_num_derived_atoms = std::distance(derived_atoms.begin(), derived_atoms.end());
 
-    uint32_t num_vars = m_num_fluent_atoms + m_num_derived_atoms;
-    m_num_atoms = 2 * num_vars;
+    uint32_t num_fluent_and_derived_atoms = m_num_fluent_atoms + m_num_derived_atoms;
+    m_num_state_variables = 2 * num_fluent_and_derived_atoms;  // Positive and negative literals
 
-    m_h1_table.resize(m_num_atoms);
-    m_h2_table.resize(m_num_atoms * m_num_atoms);
+    m_h1_table.resize(m_num_state_variables);
+    m_h2_table.resize(m_num_state_variables * m_num_state_variables);
 
     // Build internal ground actions
-    for (const auto& action : grounder.create_ground_actions())
+    for (const auto& action : ground_actions)
     {
         InternalGroundAction internal_action;
         internal_action.cost = 1.0;  // Unit costs are assumed
@@ -81,7 +85,7 @@ H2HeuristicImpl::H2HeuristicImpl(const IGrounder& grounder) : m_problem(grounder
         std::sort(internal_action.add_effect.begin(), internal_action.add_effect.end());
         std::sort(internal_action.delete_effect.begin(), internal_action.delete_effect.end());
 
-        for (uint32_t atom_idx = 0; atom_idx < m_num_atoms; ++atom_idx)
+        for (uint32_t atom_idx = 0; atom_idx < m_num_state_variables; ++atom_idx)
         {
             if (!std::binary_search(internal_action.delete_effect.begin(), internal_action.delete_effect.end(), atom_idx))
             {
@@ -154,7 +158,7 @@ void H2HeuristicImpl::initialize_tables(const State& state) const
     std::fill(m_h2_table.begin(), m_h2_table.end(), std::numeric_limits<double>::infinity());
 
     std::vector<uint32_t> true_literals;
-    true_literals.reserve(m_num_atoms);
+    true_literals.reserve(m_num_state_variables);
 
     const auto& fluent_atoms = state.get_atoms<formalism::FluentTag>();
     auto it = fluent_atoms.begin();
@@ -194,8 +198,8 @@ void H2HeuristicImpl::initialize_tables(const State& state) const
         for (size_t j = i; j < true_literals.size(); ++j)
         {
             uint32_t v = true_literals[j];
-            m_h2_table[u * m_num_atoms + v] = 0;
-            m_h2_table[v * m_num_atoms + u] = 0;
+            m_h2_table[u * m_num_state_variables + v] = 0;
+            m_h2_table[v * m_num_state_variables + u] = 0;
         }
     }
 }
@@ -215,7 +219,7 @@ double H2HeuristicImpl::evaluate(const std::vector<uint32_t>& indices) const
 
         for (std::size_t j = i + 1; j < indices.size(); j++)
         {
-            v = std::max(v, m_h2_table[indices[i] * m_num_atoms + indices[j]]);
+            v = std::max(v, m_h2_table[indices[i] * m_num_state_variables + indices[j]]);
 
             if (v == std::numeric_limits<double>::infinity())
             {
@@ -243,7 +247,7 @@ double H2HeuristicImpl::evaluate(const std::vector<uint32_t>& indices, uint32_t 
             continue;
         }
 
-        v = std::max(v, m_h2_table[index * m_num_atoms + indices[i]]);
+        v = std::max(v, m_h2_table[index * m_num_state_variables + indices[i]]);
 
         if (v == std::numeric_limits<double>::infinity())
         {
@@ -259,17 +263,17 @@ void H2HeuristicImpl::update(uint32_t index, double value, bool& changed) const
     if (value < m_h1_table[index])
     {
         m_h1_table[index] = value;
-        m_h2_table[index * m_num_atoms + index] = value;
+        m_h2_table[index * m_num_state_variables + index] = value;
         changed = true;
     }
 }
 
 void H2HeuristicImpl::update(uint32_t u, uint32_t v, double value, bool& changed) const
 {
-    if (value < m_h2_table[u * m_num_atoms + v])
+    if (value < m_h2_table[u * m_num_state_variables + v])
     {
-        m_h2_table[u * m_num_atoms + v] = value;
-        m_h2_table[v * m_num_atoms + u] = value;
+        m_h2_table[u * m_num_state_variables + v] = value;
+        m_h2_table[v * m_num_state_variables + u] = value;
         changed = true;
     }
 }

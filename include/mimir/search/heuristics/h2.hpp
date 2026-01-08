@@ -56,7 +56,7 @@ private:
 
     uint32_t m_num_fluent_atoms;
     uint32_t m_num_derived_atoms;
-    uint32_t m_num_atoms;
+    uint32_t m_num_state_variables;
 
     double evaluate(const std::vector<uint32_t>& indices) const;
     double evaluate(const std::vector<uint32_t>& indices, uint32_t index) const;

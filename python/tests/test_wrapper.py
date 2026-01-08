@@ -690,7 +690,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = SetAddHeuristic(problem)
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 5.0
@@ -700,7 +700,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = MaxHeuristic(problem)
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 2.0
@@ -710,7 +710,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = AddHeuristic(problem)
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 5.0
@@ -730,7 +730,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = FFHeuristic(problem)
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 4.0
@@ -740,7 +740,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = FFHeuristic(problem)
         initial_state = problem.get_initial_state()
         predicate_on = domain.get_predicate('on')
@@ -756,7 +756,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = H2Heuristic(problem)
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state) == 4.0
@@ -766,7 +766,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
-        problem = Problem(domain, problem_path, mode='grounded')
+        problem = Problem(domain, problem_path)
         heuristic = H2Heuristic(problem)
         initial_state = problem.get_initial_state()
         predicate_on = domain.get_predicate('on')

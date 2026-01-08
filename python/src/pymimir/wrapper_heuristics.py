@@ -55,7 +55,6 @@ class AddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
-        assert problem.get_mode() == 'grounded', "AddHeuristic requires a grounded problem."
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedAddHeuristic.create(delete_relaxed)
@@ -103,7 +102,6 @@ class MaxHeuristic(Heuristic):
     def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
-        assert problem.get_mode() == 'grounded', "MaxHeuristic requires a grounded problem."
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedMaxHeuristic.create(delete_relaxed)
@@ -151,7 +149,6 @@ class SetAddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
-        assert problem.get_mode() == 'grounded', "SetAddHeuristic requires a grounded problem."
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedSetAddHeuristic.create(delete_relaxed)
@@ -176,7 +173,6 @@ class FFHeuristic(Heuristic):
     def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
-        assert problem.get_mode() == 'grounded', "FFHeuristic requires a grounded problem."
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedFFHeuristic.create(delete_relaxed)
@@ -201,7 +197,6 @@ class H2Heuristic(Heuristic):
     def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
-        assert problem.get_mode() == 'grounded', "H2Heuristic requires a grounded problem."
         self._problem = problem
         delete_relaxed = AdvancedLiftedGrounder(problem._advanced_problem)
         self._advanced_heuristic = AdvancedH2Heuristic.create(delete_relaxed)
