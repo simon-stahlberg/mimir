@@ -86,14 +86,18 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:addf19aa97d9aea34c44735039e2b31a1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html#addf19aa97d9aea34c44735039e2b31a1">Parser</a> (const fs::path &amp;domain_filepath, const loki::ParserOptions &amp;options=loki::ParserOptions())</td></tr>
 <tr class="separator:addf19aa97d9aea34c44735039e2b31a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28319622b92c856d074d37c796a9cf96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html#a28319622b92c856d074d37c796a9cf96">Parser</a> (const std::string &amp;domain_content, const fs::path &amp;domain_filepath, const loki::ParserOptions &amp;options=loki::ParserOptions())</td></tr>
+<tr class="separator:a28319622b92c856d074d37c796a9cf96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ffd6a7f428a8875e7b8cb0921acaf5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html#a4ffd6a7f428a8875e7b8cb0921acaf5a">parse_problem</a> (const fs::path &amp;problem_filepath, const loki::ParserOptions &amp;options=loki::ParserOptions())</td></tr>
 <tr class="separator:a4ffd6a7f428a8875e7b8cb0921acaf5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa1fa91e97a92b389149ae54d11bfea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html#aefa1fa91e97a92b389149ae54d11bfea">parse_problem</a> (const std::string &amp;problem_content, const fs::path &amp;problem_filepath, const loki::ParserOptions &amp;options=loki::ParserOptions())</td></tr>
+<tr class="separator:aefa1fa91e97a92b389149ae54d11bfea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad24af2686f2a4ef137ea74ec47a0085e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">Domain</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">get_domain</a> () const</td></tr>
 <tr class="separator:ad24af2686f2a4ef137ea74ec47a0085e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="addf19aa97d9aea34c44735039e2b31a1" name="addf19aa97d9aea34c44735039e2b31a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#addf19aa97d9aea34c44735039e2b31a1">&#9670;&#160;</a></span>Parser()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#addf19aa97d9aea34c44735039e2b31a1">&#9670;&#160;</a></span>Parser() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -101,6 +105,40 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">mimir::formalism::Parser::Parser </td>
           <td>(</td>
+          <td class="paramtype">const fs::path &amp;&#160;</td>
+          <td class="paramname"><em>domain_filepath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const loki::ParserOptions &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>loki::ParserOptions()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28319622b92c856d074d37c796a9cf96" name="a28319622b92c856d074d37c796a9cf96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28319622b92c856d074d37c796a9cf96">&#9670;&#160;</a></span>Parser() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::formalism::Parser::Parser </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain_content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const fs::path &amp;&#160;</td>
           <td class="paramname"><em>domain_filepath</em>, </td>
         </tr>
@@ -139,7 +177,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a4ffd6a7f428a8875e7b8cb0921acaf5a" name="a4ffd6a7f428a8875e7b8cb0921acaf5a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ffd6a7f428a8875e7b8cb0921acaf5a">&#9670;&#160;</a></span>parse_problem()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ffd6a7f428a8875e7b8cb0921acaf5a">&#9670;&#160;</a></span>parse_problem() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,6 +185,40 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> mimir::formalism::Parser::parse_problem </td>
           <td>(</td>
+          <td class="paramtype">const fs::path &amp;&#160;</td>
+          <td class="paramname"><em>problem_filepath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const loki::ParserOptions &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>loki::ParserOptions()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aefa1fa91e97a92b389149ae54d11bfea" name="aefa1fa91e97a92b389149ae54d11bfea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefa1fa91e97a92b389149ae54d11bfea">&#9670;&#160;</a></span>parse_problem() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> mimir::formalism::Parser::parse_problem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>problem_content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const fs::path &amp;&#160;</td>
           <td class="paramname"><em>problem_filepath</em>, </td>
         </tr>
