@@ -26,80 +26,70 @@ H2HeuristicImpl::H2HeuristicImpl(const IGrounder& grounder) : m_problem(grounder
     m_h1_table.resize(m_num_atoms);
     m_h2_table.resize(m_num_atoms * m_num_atoms);
 
-    // Build operators
-    const auto& ground_action_repo = boost::hana::at_key(repositories.get_hana_repositories(), boost::hana::type<formalism::GroundActionImpl> {});
-
-    for (const auto& action : ground_action_repo)
+    // Build internal ground actions
+    for (const auto& action : grounder.create_ground_actions())
     {
-        Operator op;
-        op.cost = 1.0;  // TODO: Assuming unit cost for now
+        InternalGroundAction internal_action;
+        internal_action.cost = 1.0;  // Unit costs are assumed
 
         // Preconditions
-        const auto& preconds = action.get_conjunctive_condition();
+        const auto& preconds = action->get_conjunctive_condition();
 
         const auto& pos_fluents = preconds->get_precondition<formalism::PositiveTag, formalism::FluentTag>();
         for (auto idx : pos_fluents)
         {
-            op.precondition.push_back(2 * idx);
+            internal_action.precondition.push_back(2 * idx);
         }
 
         const auto& neg_fluents = preconds->get_precondition<formalism::NegativeTag, formalism::FluentTag>();
         for (auto idx : neg_fluents)
         {
-            op.precondition.push_back(2 * idx + 1);
+            internal_action.precondition.push_back(2 * idx + 1);
         }
 
         const auto& pos_derived = preconds->get_precondition<formalism::PositiveTag, formalism::DerivedTag>();
         for (auto idx : pos_derived)
         {
-            op.precondition.push_back(2 * (m_num_fluent_atoms + idx));
+            internal_action.precondition.push_back(2 * (m_num_fluent_atoms + idx));
         }
 
         const auto& neg_derived = preconds->get_precondition<formalism::NegativeTag, formalism::DerivedTag>();
         for (auto idx : neg_derived)
         {
-            op.precondition.push_back(2 * (m_num_fluent_atoms + idx) + 1);
+            internal_action.precondition.push_back(2 * (m_num_fluent_atoms + idx) + 1);
         }
 
-        std::sort(op.precondition.begin(), op.precondition.end());
+        std::sort(internal_action.precondition.begin(), internal_action.precondition.end());
 
         // Effects
-        const auto& effects = action.get_conditional_effects();
+        const auto& effects = action->get_conditional_effects();
         for (const auto& cond_eff : effects)
         {
-            // TODO: Ignore conditional effects completely?
-            const auto& num_conds =
-                cond_eff->get_conjunctive_condition()->get_num_preconditions<formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag>();
-            if (num_conds > 0)
-            {
-                continue;
-            }
-
             const auto& eff = cond_eff->get_conjunctive_effect();
 
             for (auto idx : eff->get_propositional_effects<formalism::PositiveTag>())
             {
-                op.add_effect.push_back(2 * idx);
+                internal_action.add_effect.push_back(2 * idx);
             }
 
             for (auto idx : eff->get_propositional_effects<formalism::NegativeTag>())
             {
-                op.delete_effect.push_back(2 * idx + 1);
+                internal_action.delete_effect.push_back(2 * idx + 1);
             }
         }
 
-        std::sort(op.add_effect.begin(), op.add_effect.end());
-        std::sort(op.delete_effect.begin(), op.delete_effect.end());
+        std::sort(internal_action.add_effect.begin(), internal_action.add_effect.end());
+        std::sort(internal_action.delete_effect.begin(), internal_action.delete_effect.end());
 
         for (uint32_t atom_idx = 0; atom_idx < m_num_atoms; ++atom_idx)
         {
-            if (std::binary_search(op.delete_effect.begin(), op.delete_effect.end(), atom_idx))
+            if (!std::binary_search(internal_action.delete_effect.begin(), internal_action.delete_effect.end(), atom_idx))
             {
-                op.delete_effect_complement.push_back(atom_idx);
+                internal_action.delete_effect_complement.push_back(atom_idx);
             }
         }
 
-        m_operators.push_back(std::move(op));
+        m_internal_actions.push_back(std::move(internal_action));
     }
 
     update_goal(nullptr);
@@ -109,18 +99,18 @@ std::shared_ptr<H2HeuristicImpl> H2HeuristicImpl::create(const IGrounder& ground
 
 void H2HeuristicImpl::update_goal(formalism::GroundConjunctiveCondition goal) const
 {
-    // TODO: Need to build pairs.
-
     m_goal.clear();
     if (goal == nullptr)
     {
         const auto& goal_literals = m_problem->get_goal_literals();
+
         const auto& fluent_goals = boost::hana::at_key(goal_literals, boost::hana::type<formalism::FluentTag> {});
         for (const auto& lit : fluent_goals)
         {
             uint32_t idx = lit->get_atom()->get_index();
             m_goal.push_back(lit->get_polarity() ? 2 * idx : 2 * idx + 1);
         }
+
         const auto& derived_goals = boost::hana::at_key(goal_literals, boost::hana::type<formalism::DerivedTag> {});
         for (const auto& lit : derived_goals)
         {
@@ -178,7 +168,7 @@ void H2HeuristicImpl::initialize_tables(const State& state) const
             is_true = true;
             ++it;
         }
-        true_literals.push_back(is_true ? 2 * i : 2 * i + 1);
+        true_literals.push_back(is_true ? (2 * i) : (2 * i + 1));
     }
 
     const auto& derived_atoms = state.get_atoms<formalism::DerivedTag>();
@@ -193,8 +183,7 @@ void H2HeuristicImpl::initialize_tables(const State& state) const
             is_true = true;
             ++it_d;
         }
-        uint32_t base = m_num_fluent_atoms;
-        true_literals.push_back(is_true ? 2 * (base + i) : 2 * (base + i) + 1);
+        true_literals.push_back(is_true ? (2 * (m_num_fluent_atoms + i)) : (2 * (m_num_fluent_atoms + i) + 1));
     }
 
     for (size_t i = 0; i < true_literals.size(); ++i)
@@ -295,36 +284,36 @@ void H2HeuristicImpl::fill_tables(const State& state, formalism::GroundConjuncti
     {
         changed = false;
 
-        for (const auto& op : m_operators)
+        for (const auto& internal_action : m_internal_actions)
         {
-            const auto c1 = evaluate(op.precondition);
+            const auto c1 = evaluate(internal_action.precondition);
 
             if (c1 == std::numeric_limits<double>::infinity())
             {
                 continue;
             }
 
-            for (std::size_t i = 0; i < op.add_effect.size(); i++)
+            for (std::size_t i = 0; i < internal_action.add_effect.size(); i++)
             {
-                const auto p = op.add_effect[i];
-                update(p, c1 + op.cost, changed);
+                const auto p = internal_action.add_effect[i];
+                update(p, c1 + internal_action.cost, changed);
 
-                for (std::size_t j = i + 1; j < op.add_effect.size(); j++)
+                for (std::size_t j = i + 1; j < internal_action.add_effect.size(); j++)
                 {
-                    const auto q = op.add_effect[j];
+                    const auto q = internal_action.add_effect[j];
                     if (p != q)
                     {
-                        update(p, q, c1 + op.cost, changed);
+                        update(p, q, c1 + internal_action.cost, changed);
                     }
                 }
 
-                for (const auto r : op.delete_effect_complement)
+                for (const auto r : internal_action.delete_effect_complement)
                 {
-                    const auto c2 = std::max(c1, evaluate(op.precondition, r));
+                    const auto c2 = std::max(c1, evaluate(internal_action.precondition, r));
 
                     if (c2 != std::numeric_limits<double>::infinity())
                     {
-                        update(p, r, c2 + op.cost, changed);
+                        update(p, r, c2 + internal_action.cost, changed);
                     }
                 }
             }

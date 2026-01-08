@@ -48,3 +48,4 @@ add_gtest(search_alternating_test                          "search/openlists/alt
 add_gtest(search_priority_queue_test                       "search/openlists/priority_queue.cpp")
 add_gtest(search_search_node_test                          "search/search_node.cpp")
 add_gtest(search_state_repository_test                     "search/state_repository.cpp")
+add_gtest(heuristics_h2_test                               "heuristics/h2.cpp")

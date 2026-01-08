@@ -37,7 +37,7 @@ public:
     static std::shared_ptr<H2HeuristicImpl> create(const IGrounder& grounder);
 
 private:
-    struct Operator
+    struct InternalGroundAction
     {
         std::vector<uint32_t> precondition;
         std::vector<uint32_t> add_effect;
@@ -47,7 +47,7 @@ private:
     };
 
     formalism::Problem m_problem;
-    std::vector<Operator> m_operators;
+    std::vector<InternalGroundAction> m_internal_actions;
     mutable std::vector<uint32_t> m_goal;
     mutable formalism::GroundConjunctiveCondition m_last_goal = nullptr;
 
