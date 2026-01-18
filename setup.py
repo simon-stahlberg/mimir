@@ -67,6 +67,10 @@ class CMakeBuild(build_ext):
 
         cmake_args = [
             "-DBUILD_PYMIMIR=ON",
+            "-DMIMIR_BUILD_SHARED_CORE=ON",
+            "-DCMAKE_INSTALL_LIBDIR=lib",
+            "-DCMAKE_INSTALL_BINDIR=bin",
+            "-DCMAKE_INSTALL_INCLUDEDIR=include",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
             f"-DCMAKE_PREFIX_PATH={str(temp_directory / 'dependencies' / 'installs')}",
@@ -82,7 +86,7 @@ class CMakeBuild(build_ext):
         )
 
         subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory)}"], check=True
+            ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory / 'pymimir')}"], check=True
         )
 
         # Remove unwanted directories.
