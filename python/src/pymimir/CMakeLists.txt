@@ -24,7 +24,19 @@ nanobind_add_module(pymimir
 
 target_link_libraries(pymimir PRIVATE mimir::core)
 
-install(TARGETS pymimir DESTINATION "pymimir")
+if(APPLE)
+    set(_pymimir_rpath "@loader_path/lib")
+elseif(UNIX)
+    set(_pymimir_rpath "$ORIGIN/lib")
+endif()
+if(_pymimir_rpath)
+    set_target_properties(pymimir PROPERTIES
+        BUILD_RPATH "${_pymimir_rpath}"
+        INSTALL_RPATH "${_pymimir_rpath}"
+    )
+endif()
+
+install(TARGETS pymimir DESTINATION ".")
 
 ## Stubgen
 set(MODULES
@@ -44,6 +56,7 @@ foreach(mod IN LISTS MODULES)
     string(REPLACE "." "_" mod_target "${mod}")
     set(mod_target "${mod_target}_stub")
     string(REPLACE "." "/" mod_path "${mod}")
+    string(REGEX REPLACE "^pymimir/" "" mod_path "${mod_path}")
     set(mod_output "${mod_path}/__init__.pyi")
 
     nanobind_add_stub(

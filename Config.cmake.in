@@ -123,12 +123,16 @@ endif()
 
 set(_mimir_supported_components core)
 
+include("${CMAKE_CURRENT_LIST_DIR}/mimircoreTargets.cmake")
+
 foreach(_comp ${mimir_FIND_COMPONENTS})
   if (NOT _comp IN_LIST _mimir_supported_components)
     set(mimir_FOUND False)
     set(mimir_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
   endif()
-  include("${CMAKE_CURRENT_LIST_DIR}/mimir${_comp}Targets.cmake")
+  if(NOT _comp STREQUAL "core")
+    include("${CMAKE_CURRENT_LIST_DIR}/mimir${_comp}Targets.cmake")
+  endif()
 endforeach()
 
 get_filename_component(MIMIR_CONFIG_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)

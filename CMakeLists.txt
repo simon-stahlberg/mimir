@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
-project(mimir VERSION 0.11.1)
+
+if(NOT DEFINED MIMIR_VERSION_INFO)
+    set(MIMIR_VERSION_INFO "0.11.1")
+endif()
+project(mimir VERSION ${MIMIR_VERSION_INFO})
 
 
 ##############################################################
@@ -14,6 +18,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ##############################################################
 # Options
 ##############################################################
+
+option(MIMIR_BUILD_SHARED_CORE "Build the core Mimir library as shared" ON)
 
 
 ##############################################################
@@ -192,14 +198,16 @@ if(BUILD_TESTS)
 endif()
 
 
-
 ###########
 # Install #
 ###########
 
 # Install header files
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir" "${PROJECT_SOURCE_DIR}/include/cista"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(
+    DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+)
 
 # Install cmake scripts
 install(
