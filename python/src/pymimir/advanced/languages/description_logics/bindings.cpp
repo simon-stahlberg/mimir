@@ -242,9 +242,37 @@ void bind_module_definitions(nb::module_& m)
              "right_concept"_a,
              nb::rv_policy::reference_internal);
 
-    nb::class_<DenotationImpl<ConceptTag>>(m, "ConceptDenotation");
+    nb::class_<DenotationImpl<ConceptTag>>(m, "ConceptDenotation")
+        // Hacky intermediate solution: create adjacency list.
+        .def("get_data",
+             [](const DenotationImpl<ConceptTag>& self)
+             {
+                 auto result = std::vector<size_t> {};
+                 for (const auto bit : self.get_data())
+                 {
+                     result.push_back(bit);
+                 }
+                 return result;
+             })
+        .def("contains", [](const DenotationImpl<ConceptTag>& self, size_t o) { return self.get_data().get(o); });
 
-    nb::class_<DenotationImpl<RoleTag>>(m, "RoleDenotation");
+    nb::class_<DenotationImpl<RoleTag>>(m, "RoleDenotation")
+        // Hacky intermediate solution: create adjacency lists.
+        .def("get_data",
+             [](const DenotationImpl<RoleTag>& self)
+             {
+                 auto result = std::vector<std::vector<size_t>>(self.get_data().size());
+                 for (size_t o = 0; o < self.get_data().size(); ++o)
+                 {
+                     const auto& bitset = self.get_data()[o];
+                     for (const auto bit : bitset)
+                     {
+                         result[o].push_back(bit);
+                     }
+                 }
+                 return result;
+             })
+        .def("contains", [](const DenotationImpl<RoleTag>& self, size_t o1, size_t o2) { return self.get_data()[o1].get(o2); });
 
     nb::class_<DenotationImpl<BooleanTag>>(m, "BooleanDenotation")  //
         .def("get_data", nb::overload_cast<>(&DenotationImpl<BooleanTag>::get_data, nb::const_), nb::rv_policy::copy);
