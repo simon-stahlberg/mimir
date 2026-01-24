@@ -58,3 +58,26 @@ from .wrapper_datasets import (
     StateSpaceSampler,
     StateLabel,
 )
+
+from pathlib import Path
+
+
+def _package_root() -> Path:
+    return Path(__file__).resolve().parent
+
+
+def get_include_dir() -> str:
+    return str(_package_root() / "include")
+
+
+def get_include() -> str:
+    return get_include_dir()
+
+
+def get_cmake_dir() -> str:
+    pkg_root = _package_root()
+    for libdir in ("lib", "lib64"):
+        cmake_dir = pkg_root / libdir / "cmake" / "mimir"
+        if cmake_dir.is_dir():
+            return str(cmake_dir)
+    return str(pkg_root / "lib" / "cmake" / "mimir")
