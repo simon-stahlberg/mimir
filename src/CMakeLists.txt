@@ -1,5 +1,3 @@
-option(MIMIR_BUILD_SHARED_CORE "Build the core Mimir library as shared" ON)
-
 # List of subdirectory names
 set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages")
 
@@ -52,11 +50,11 @@ target_link_libraries(core
     loki::parsers
     absl::flat_hash_set
     absl::flat_hash_map
-    TBB::tbb
+    fmt::fmt
   PRIVATE
     Threads::Threads
+    TBB::tbb
     Nauty::Nauty
-    fmt::fmt
 )
 
 # target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})

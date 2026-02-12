@@ -67,16 +67,6 @@ find_dependency(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMA
 
 
 # -----------
-# Nauty
-# -----------
-
-find_dependency(Nauty REQUIRED)
-if(Nauty_FOUND)
-  message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
-endif()
-
-
-# -----------
 # abseil
 # -----------
 
