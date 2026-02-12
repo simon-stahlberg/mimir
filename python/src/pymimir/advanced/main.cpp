@@ -25,9 +25,6 @@ namespace mimir
 
 NB_MODULE(pymimir, m)
 {
-#ifdef NDEBUG
-    nb::set_leak_warnings(false);
-#endif
     // Create submodules before binding to avoid missing bindings
     auto advanced = m.def_submodule("advanced");
     m.attr("advanced") = advanced;
