@@ -36,10 +36,6 @@ set_target_properties(core PROPERTIES
     OUTPUT_NAME mimir_core
     POSITION_INDEPENDENT_CODE ON
 )
-# Convenience for Windows consumers; a proper export macro is preferable long-term.
-if(WIN32 AND MIMIR_BUILD_SHARED_CORE)
-    set_target_properties(core PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
 
 # Create an alias for simpler reference
 add_library(mimir::core ALIAS core)
