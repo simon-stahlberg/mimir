@@ -85,9 +85,13 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory / 'build')}", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
         )
 
-        subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory / 'pymimir')}"], check=True
-        )
+        install_cmd = ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory / 'pymimir')}"]
+        # Reduce wheel size: strip debug symbols from installed binaries when supported.
+        # (Manylinux builds often inject -g via environment CFLAGS/CXXFLAGS.)
+        if build_type != "Debug" and os.name != "nt":
+            install_cmd.append("--strip")
+
+        subprocess.run(install_cmd, check=True)
 
         # Remove unwanted directories.
         unwanted_dirs = ["include", "lib", "lib64"]
