@@ -13,7 +13,7 @@ jobs:
         # "i686" (32-bit x86), "ppc64le" (PowerPC), "s390x" (IBM Z), "armv7l" (32-bit ARM)
         # The user can still build Mimir locally if they need it.
         architecture: ["x86_64"]  # TODO: Add "aarch64"
-        python-version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
+        python-version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
