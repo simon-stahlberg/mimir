@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout Mimir
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: Configure, Build, and Install Dependencies
       run: |
