@@ -9,8 +9,6 @@ jobs:
   build_wheels:
     runs-on: ubuntu-latest
 
-    if: github.repository_owner == 'simon-stahlberg'
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -29,6 +27,7 @@ jobs:
         run: python setup.py sdist
 
       - name: Upload to PyPI
+        if: github.ref == 'refs/heads/main' && github.repository_owner == 'simon-stahlberg'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
