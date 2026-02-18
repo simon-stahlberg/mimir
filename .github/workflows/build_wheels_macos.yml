@@ -2,8 +2,6 @@ name: Build Wheels for macOS
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build_wheels:

@@ -2,8 +2,6 @@ name: Build Wheels for Linux
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build_wheels:
