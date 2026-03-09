@@ -200,7 +200,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         const auto [state_f_value, packed_state] = openlist.top();
         openlist.pop();
         const auto state = state_repository.get_state(*packed_state);
-        event_handler->on_expand_state(state);
         auto& search_node = get_or_create_search_node(state.get_index(), search_nodes);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
@@ -246,6 +245,10 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             return result;
         }
 
+        /* Expand the successors of the state. */
+
+        event_handler->on_expand_state(state);
+
         /* Ensure that the state is closed */
 
         search_node.status = SearchNodeStatus::CLOSED;
@@ -257,8 +260,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, search_node.g_value);
             auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
             const auto action_cost = successor_state_metric_value - search_node.g_value;
-
-            event_handler->on_generate_state(state, action, action_cost, successor_state);
 
             if (std::isnan(successor_state_metric_value))
             {
@@ -282,6 +283,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             }
 
             /* Check whether state must be reopened or not. */
+
+            event_handler->on_generate_state(state, action, action_cost, successor_state);
 
             if (successor_state_metric_value < successor_search_node.g_value)
             {
