@@ -924,8 +924,10 @@ void bind_module_definitions(nb::module_& m)
         .def_rw("event_handler", &gbfs_eager::Options::event_handler)
         .def_rw("goal_strategy", &gbfs_eager::Options::goal_strategy)
         .def_rw("pruning_strategy", &gbfs_eager::Options::pruning_strategy)
+        .def_rw("exploration_strategy", &gbfs_eager::Options::exploration_strategy)
         .def_rw("max_num_states", &gbfs_eager::Options::max_num_states)
-        .def_rw("max_time_in_ms", &gbfs_eager::Options::max_time_in_ms);
+        .def_rw("max_time_in_ms", &gbfs_eager::Options::max_time_in_ms)
+        .def_rw("openlist_weights", &gbfs_eager::Options::openlist_weights);
 
     m.def("find_solution_gbfs_eager", &gbfs_eager::find_solution, "search_context"_a, "heuristic"_a, "options"_a);
 

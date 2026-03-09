@@ -36,8 +36,10 @@ struct Options
     EventHandler event_handler = nullptr;
     GoalStrategy goal_strategy = nullptr;
     PruningStrategy pruning_strategy = nullptr;
+    ExplorationStategy exploration_strategy = nullptr;
     uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
     uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max();
+    std::array<size_t, 3> openlist_weights = { 1, 1, 1 };
 
     Options() = default;
 };

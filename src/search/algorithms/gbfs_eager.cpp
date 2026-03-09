@@ -23,11 +23,13 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/gbfs_eager/event_handlers.hpp"
+#include "mimir/search/algorithms/strategies/exploration_strategy.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/openlists/alternating.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/plan.hpp"
@@ -50,6 +52,7 @@ struct SearchNode
     ContinuousCost g_value;
     Index parent_state;
     SearchNodeStatus status;
+    bool compatible;
 };
 
 static_assert(sizeof(SearchNode) == 16);
@@ -58,7 +61,7 @@ using SearchNodeVector = SegmentedVector<SearchNode>;
 
 static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVector& search_nodes)
 {
-    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), MAX_INDEX, SearchNodeStatus::NEW };
+    static constexpr auto default_node = SearchNode { ContinuousCost(INFINITY_CONTINUOUS_COST), MAX_INDEX, SearchNodeStatus::NEW, false };
 
     while (state_index >= search_nodes.size())
     {
@@ -71,7 +74,22 @@ static SearchNode& get_or_create_search_node(size_t state_index, SearchNodeVecto
  * GBFS queue entry
  */
 
-struct QueueEntry
+struct GreedyQueueEntry
+{
+    using KeyType = std::tuple<Index, SearchNodeStatus>;
+    using ItemType = PackedState;
+
+    PackedState packed_state;
+    Index step;
+    SearchNodeStatus status;
+
+    KeyType get_key() const { return std::make_tuple(step, status); }
+    ItemType get_item() const { return packed_state; }
+};
+
+static_assert(sizeof(GreedyQueueEntry) == 16);
+
+struct ExhaustiveQueueEntry
 {
     using KeyType = std::tuple<ContinuousCost, ContinuousCost, Index, SearchNodeStatus>;
     using ItemType = PackedState;
@@ -86,9 +104,10 @@ struct QueueEntry
     ItemType get_item() const { return packed_state; }
 };
 
-static_assert(sizeof(QueueEntry) == 32);
+static_assert(sizeof(ExhaustiveQueueEntry) == 32);
 
-using Queue = PriorityQueue<QueueEntry>;
+using GreedyQueue = PriorityQueue<GreedyQueueEntry>;
+using ExhaustiveQueue = PriorityQueue<ExhaustiveQueueEntry>;
 
 /**
  * GBFS
@@ -108,6 +127,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     const auto event_handler = (options.event_handler) ? options.event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (options.pruning_strategy) ? options.pruning_strategy : NoPruningStrategyImpl::create();
+    const auto openlist_weights = options.openlist_weights;
+    const auto exploration_stategy = options.exploration_strategy;
 
     const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
     const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
@@ -150,7 +171,13 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto openlist = Queue();
+    auto compatible_greedy_openlist = GreedyQueue();
+    auto compatible_exhaustive_openlist = ExhaustiveQueue();
+    auto standard_openlist = ExhaustiveQueue();
+    auto openlist = AlternatingOpenList<GreedyQueue, ExhaustiveQueue, ExhaustiveQueue>(compatible_greedy_openlist,
+                                                                                       compatible_exhaustive_openlist,
+                                                                                       standard_openlist,
+                                                                                       openlist_weights);
 
     if (std::isnan(start_g_value))
     {
@@ -183,8 +210,9 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
+    const auto use_exploration_strategy = std::any_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 2, [](double w) { return w > 0; });
     auto applicable_actions = GroundActionList {};
-    openlist.insert(QueueEntry { start_g_value, start_h_value, start_state.get_packed_state(), step++, start_search_node.status });
+    standard_openlist.insert(ExhaustiveQueueEntry { start_g_value, start_h_value, start_state.get_packed_state(), step++, start_search_node.status });
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -199,7 +227,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         const auto state = state_repository.get_state(*openlist.top());
         openlist.pop();
-
+        event_handler->on_expand_state(state);
         auto& search_node = get_or_create_search_node(state.get_index(), search_nodes);
 
         /* Close state. */
@@ -209,19 +237,18 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             continue;
         }
 
-        /* Expand the successors of the state. */
-
-        event_handler->on_expand_state(state);
-
         /* Ensure that the state is closed */
 
         search_node.status = SearchNodeStatus::CLOSED;
+
+        auto first_compatible = true;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
             const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, search_node.g_value);
             auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
             const auto action_cost = successor_state_metric_value - search_node.g_value;
+            event_handler->on_generate_state(state, action, action_cost, successor_state);
 
             if (std::isnan(successor_state_metric_value))
             {
@@ -300,10 +327,37 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 event_handler->on_new_best_h_value(best_h_value);
             }
 
-            event_handler->on_generate_state(state, action, action_cost, successor_state);
+            /* Exploration strategy */
 
-            openlist.insert(
-                QueueEntry { successor_state_metric_value, successor_h_value, successor_state.get_packed_state(), step++, successor_search_node.status });
+            auto is_compatible = false;
+
+            if (exploration_stategy && use_exploration_strategy)
+            {
+                is_compatible = exploration_stategy->on_generate_state(state, action, successor_state);
+                successor_search_node.compatible = is_compatible;
+            }
+
+            if (options.openlist_weights[0] > 0 && is_compatible && first_compatible)
+            {
+                first_compatible = false;
+                compatible_greedy_openlist.insert(GreedyQueueEntry { successor_state.get_packed_state(), step++, successor_search_node.status });
+            }
+            else if (options.openlist_weights[1] > 0 && is_compatible)
+            {
+                compatible_exhaustive_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                             successor_h_value,
+                                                                             successor_state.get_packed_state(),
+                                                                             step++,
+                                                                             successor_search_node.status });
+            }
+            else
+            {
+                standard_openlist.insert(ExhaustiveQueueEntry { successor_state_metric_value,
+                                                                successor_h_value,
+                                                                successor_state.get_packed_state(),
+                                                                step++,
+                                                                successor_search_node.status });
+            }
         }
     }
 

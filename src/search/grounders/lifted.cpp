@@ -17,6 +17,7 @@
 
 #include "mimir/search/grounders/lifted.hpp"
 
+#include "mimir/formalism/formatter.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -107,13 +108,11 @@ LiftedGrounder::LiftedGrounder(Problem problem) :
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    // const auto end_time = std::chrono::high_resolution_clock::now();
-    // const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    // std::cout << "[LiftedGrounder] Total time for delete relaxed exploration: " << total_time.count() << "\n"
-    //           << "[LiftedGrounder] Number of fluent grounded atoms reachable in delete-free problem: "
-    //           << delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
-    //           << "[LiftedGrounder] Number of derived grounded atoms reachable in delete-free problem: "
-    //           << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
+    std::cout << "[LiftedGrounder] Number of fluent grounded atoms reachable in delete-free problem: " << ground_atoms.size() << std::endl;
+    for (const auto atom : ground_atoms)
+    {
+        std::cout << *atom << std::endl;
+    }
 }
 
 static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectList& objects, const ToObjectMap<Object>& delete_free_object_to_unrelaxed_object)
@@ -148,6 +147,8 @@ GroundActionList LiftedGrounder::create_ground_actions() const
         }
     }
 
+    std::cout << "Num actions: " << result.size() << std::endl;
+
     return result;
 }
 
@@ -171,6 +172,8 @@ GroundAxiomList LiftedGrounder::create_ground_axioms() const
             }
         }
     }
+
+    std::cout << "Num axioms: " << result.size() << std::endl;
 
     return result;
 }
