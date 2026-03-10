@@ -10,22 +10,20 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python-version: "3.8"
+            python-version: "3.11"
           - os: ubuntu-latest
-            python-version: "3.9"
+            python-version: "3.12"
           - os: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.14t"
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: main
+        uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 

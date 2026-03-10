@@ -15,6 +15,7 @@ find_package(nanobind QUIET PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 if (NOT nanobind_FOUND)
     list(APPEND CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+            -DNB_TEST=OFF
     )
 
     message(STATUS "Preparing external project \"nanobind\" with args:")
@@ -27,12 +28,11 @@ if (NOT nanobind_FOUND)
     ExternalProject_Add(
             nanobind
             GIT_REPOSITORY https://github.com/wjakob/nanobind.git
-            GIT_TAG v2.7.0
+            GIT_TAG v2.11.0
             PREFIX ${CMAKE_BINARY_DIR}/nanobind
             CMAKE_ARGS ${CMAKE_ARGS}
     )
 else()
     message(STATUS "nanobind is already installed.")
 endif()
-
 

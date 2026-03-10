@@ -52,11 +52,13 @@ class CMakeBuild(build_ext):
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory / 'dependencies' / 'build')}", f"-j{multiprocessing.cpu_count()}"]
+            ["cmake", "--build", f"{str(temp_directory / 'dependencies' / 'build')}", f"-j{multiprocessing.cpu_count()}"],
+            check=True
         )
 
         subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory / 'dependencies' / 'build')}"]
+            ["cmake", "--install", f"{str(temp_directory / 'dependencies' / 'build')}"],
+            check=True
         )
 
         shutil.rmtree(f"{str(temp_directory / 'dependencies' / 'build')}")

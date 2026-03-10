@@ -11,6 +11,7 @@ endif()
 
 
 nanobind_add_module(pymimir
+    FREE_THREADED  # automatically ignored by nanobind if python version is not ft
     NB_DOMAIN pymimir_abi_domain
     advanced/main.cpp
     advanced/common/bindings.cpp

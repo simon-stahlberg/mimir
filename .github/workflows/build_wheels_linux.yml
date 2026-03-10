@@ -2,8 +2,6 @@ name: Build Wheels for Linux
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build_wheels:
@@ -13,20 +11,16 @@ jobs:
         # "i686" (32-bit x86), "ppc64le" (PowerPC), "s390x" (IBM Z), "armv7l" (32-bit ARM)
         # The user can still build Mimir locally if they need it.
         architecture: ["x86_64"]  # TODO: Add "aarch64"
-        python-version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
+        python-version: ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
-    if: github.repository_owner == 'simon-stahlberg'
-
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: main
+      uses: actions/checkout@v6
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: "3.11"  # Use a fixed version for the setup step
 
@@ -44,6 +38,7 @@ jobs:
         CIBW_BUILD_VERBOSITY: "1"
 
     - name: Upload to PyPI
+      if: github.ref == 'refs/heads/main' && github.repository_owner == 'simon-stahlberg'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

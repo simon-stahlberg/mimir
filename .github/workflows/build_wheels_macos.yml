@@ -2,27 +2,21 @@ name: Build Wheels for macOS
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build_wheels:
     strategy:
       matrix:
-        python-version: ["cp39", "cp310", "cp311", "cp312", "cp313"]
+        python-version: ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
 
-    if: github.repository_owner == 'simon-stahlberg'
-
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: main
+      uses: actions/checkout@v6
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: "3.11"  # Use a fixed version for the setup step
 
@@ -40,6 +34,7 @@ jobs:
         CIBW_BUILD_VERBOSITY: "1"
 
     - name: Upload to PyPI
+      if: github.ref == 'refs/heads/main' && github.repository_owner == 'simon-stahlberg'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

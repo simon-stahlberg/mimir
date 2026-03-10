@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Deploy Doxygen Documentation
         uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
