@@ -1,0 +1,12 @@
+include(CheckIPOSupported)
+
+macro(configure_ipo)
+    check_ipo_supported(RESULT IPO_SUPPORTED OUTPUT IPO_OUTPUT LANGUAGES CXX)
+    if(IPO_SUPPORTED)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO ON)
+        message(STATUS "Enabled IPO/LTO for Release and RelWithDebInfo builds")
+    else()
+        message(STATUS "IPO/LTO not enabled: ${IPO_OUTPUT}")
+    endif()
+endmacro()

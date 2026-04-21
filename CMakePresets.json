@@ -1,0 +1,52 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev",
+      "displayName": "Developer Debug",
+      "description": "Debug build using Ninja and dependency installs from dependencies/installs.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/dev",
+      "cacheVariables": {
+        "BUILD_EXECUTABLES": "OFF",
+        "BUILD_PROFILING": "OFF",
+        "BUILD_PYMIMIR": "OFF",
+        "BUILD_TESTS": "OFF",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/dependencies/installs"
+      }
+    },
+    {
+      "name": "relwithdebinfo",
+      "displayName": "Developer RelWithDebInfo",
+      "description": "Optimized build with debug information using Ninja.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/relwithdebinfo",
+      "cacheVariables": {
+        "BUILD_EXECUTABLES": "OFF",
+        "BUILD_PROFILING": "OFF",
+        "BUILD_PYMIMIR": "OFF",
+        "BUILD_TESTS": "OFF",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/dependencies/installs"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "relwithdebinfo",
+      "configurePreset": "relwithdebinfo"
+    }
+  ]
+}

@@ -14,7 +14,7 @@ foreach(subdir ${SUBDIRECTORIES})
     file(GLOB_RECURSE TMP_PRIVATE_HEADER_FILES "${subdir}/*.hpp" "${subdir}/**/*.hpp")
     list(APPEND MIMIR_PRIVATE_HEADER_FILES ${TMP_PRIVATE_HEADER_FILES})
 
-    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES 
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES
         "../include/mimir/${subdir}/*.hpp" "../include/mimir/${subdir}/**/*.hpp")
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 endforeach()
@@ -62,6 +62,19 @@ target_include_directories(core
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
+
+if(MIMIR_ENABLE_PCH)
+    target_precompile_headers(core
+        PRIVATE
+            <absl/container/flat_hash_map.h>
+            <absl/container/flat_hash_set.h>
+            <boost/fusion/include/adapt_struct.hpp>
+            <boost/spirit/home/x3/support/utility/annotate_on_success.hpp>
+            <fmt/format.h>
+            <fmt/ranges.h>
+            "${CMAKE_CURRENT_LIST_DIR}/common/x3/config.hpp"
+    )
+endif()
 
 # Install the target and create export-set
 install(

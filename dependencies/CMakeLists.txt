@@ -15,9 +15,11 @@ endif()
 # Pass the build type to subdirectories
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
-if(COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
-endif ()
+include("${CMAKE_CURRENT_LIST_DIR}/../cmake/configure_ccache.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/../cmake/configure_ipo.cmake")
+
+configure_ccache()
+configure_ipo()
 
 
 ##############################################################

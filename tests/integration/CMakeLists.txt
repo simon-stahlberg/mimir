@@ -32,7 +32,7 @@ else()
     message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
     # if(COMPILER_ID MATCHES "GNU")
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
     endif ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
@@ -46,6 +46,12 @@ message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 ##############################################################
 # CMake modules and macro files
 ##############################################################
+
+include("${CMAKE_CURRENT_LIST_DIR}/../../cmake/configure_ccache.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/../../cmake/configure_ipo.cmake")
+
+configure_ccache()
+configure_ipo()
 
 find_package(mimir COMPONENTS core REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 

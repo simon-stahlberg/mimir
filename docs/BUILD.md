@@ -5,6 +5,8 @@ Before building the project, ensure you have the following installed:
 1. **CMake** (version 3.21 or higher)
 2. **Python 3** and **Python 3 Development Headers**
 3. **C++20 Compiler**
+4. **Ninja** (recommended for developer builds)
+5. **ccache** (recommended for incremental developer builds)
 
 If no C++20 compliant compiler is easily available, we provide install instructions for GCC 14.2.0 (Linux) from source at the bottom of the page.
 
@@ -23,43 +25,65 @@ Mimir depends on the following set of libraries:
 - [fmt](https://github.com/fmtlib/fmt) for formatting,
 - [gtl](https://github.com/greg7mdp/gtl) for flat hash sets,
 - [oneTBB](https://github.com/uxlfoundation/oneTBB) for multi core utilization,
-- [argparse](https://github.com/p-ranav/argparse.git) for argument parsing, and 
+- [argparse](https://github.com/p-ranav/argparse.git) for argument parsing, and
 - [nanobind](https://github.com/wjakob/nanobind.git) for Python bindings.
 
 
 Run the following sequence of commands to download, configure, build, and install all dependencies:
 
-1. Configure the dependencies CMake project with the desired installation path:
+1. Configure the dependencies CMake project with the desired installation path. The developer default is the `dev` preset, which uses Ninja and automatically enables `ccache` when it is installed:
 ```console
-cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs -DCMAKE_PREFIX_PATH=$PWD/dependencies/installs
+cd dependencies
+cmake --preset dev
+```
+
+Manual equivalent:
+```console
+cmake -S . -B build/dev -G Ninja -DCMAKE_INSTALL_PREFIX=$PWD/installs -DCMAKE_PREFIX_PATH=$PWD/installs
 ```
 2. Download, build dependencies:
 ```console
-cmake --build dependencies/build -j$(nproc)
+cmake --build --preset dev
 ```
 3. Install dependencies
 ```console
-cmake --install dependencies/build
+cmake --install build/dev
+cd ..
 ```
 
 ## Building Mimir
 
 Run the following sequence of commands to configure, build, and install Mimir:
 
-1. Configure Mimir in the build directory `build/` with the `CMakePrefixPath` pointing to the installation directory of the dependencies:
+1. Configure Mimir in the build directory with the `CMAKE_PREFIX_PATH` pointing to the installation directory of the dependencies. The developer default is the `dev` preset, which uses Ninja and automatically enables `ccache` when it is installed:
 ```console
-cmake -S . -B build -DCMAKE_PREFIX_PATH=${PWD}/dependencies/installs
+cmake --preset dev
+```
+
+Manual equivalent:
+```console
+cmake -S . -B build/dev -G Ninja -DCMAKE_PREFIX_PATH=${PWD}/dependencies/installs
 ```
 2. Build Mimir in the build directory:
 ```console
-cmake --build build -j$(nproc)
+cmake --build --preset dev
 ```
 3. (Optional) Install Mimir from the build directory to the desired installation `prefix` directory:
 ```console
-cmake --install build --prefix=<path/to/installation-directory>
+cmake --install build/dev --prefix=<path/to/installation-directory>
 ```
 
 The compiled executables should now be in either the build directory or the installation directory.
+
+## Build Presets
+
+The repository now provides developer presets for the main project and the dependencies project:
+
+- `dev`: Debug build with Ninja for fast edit-build-debug cycles.
+- `relwithdebinfo`: Optimized build with debug information.
+
+`ccache` is enabled automatically when it is available on `PATH`.
+IPO/LTO is enabled only for `Release` and `RelWithDebInfo` builds.
 
 
 # Installing a C++20 Compiler From Source (Optional)

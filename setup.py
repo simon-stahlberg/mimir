@@ -40,6 +40,12 @@ class CMakeBuild(build_ext):
         # Create the temporary build directory, if it does not already exist
         os.makedirs(temp_directory, exist_ok=True)
 
+        ninja_executable = shutil.which("ninja")
+        generator_args = []
+        if ninja_executable:
+            print("Using Ninja generator:", ninja_executable)
+            generator_args = ["-GNinja", f"-DCMAKE_MAKE_PROGRAM={ninja_executable}"]
+
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_INSTALL_PREFIX={str(temp_directory / 'dependencies' / 'installs')}",
@@ -48,7 +54,9 @@ class CMakeBuild(build_ext):
         ]
 
         subprocess.run(
-            ["cmake", "-S", f"{str(ext.sourcedir / 'dependencies')}", "-B", f"{str(temp_directory / 'dependencies' / 'build')}"] + cmake_args, cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{str(ext.sourcedir / 'dependencies')}", "-B", f"{str(temp_directory / 'dependencies' / 'build')}"] + generator_args + cmake_args,
+            cwd=str(temp_directory),
+            check=True,
         )
 
         subprocess.run(
@@ -78,7 +86,9 @@ class CMakeBuild(build_ext):
         ]
 
         subprocess.run(
-            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory / 'build')}"] + cmake_args, cwd=str(temp_directory), check=True
+            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory / 'build')}" ] + generator_args + cmake_args,
+            cwd=str(temp_directory),
+            check=True,
         )
 
         subprocess.run(

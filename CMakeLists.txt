@@ -20,6 +20,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ##############################################################
 
 option(MIMIR_BUILD_SHARED_CORE "Build the core Mimir library as shared" ON)
+option(MIMIR_ENABLE_PCH "Enable private precompiled headers for the core library" ON)
 
 
 ##############################################################
@@ -30,6 +31,7 @@ option(BUILD_PYMIMIR "Build" OFF)
 option(BUILD_TESTS "Build" OFF)
 option(BUILD_EXECUTABLES "Build" OFF)
 option(BUILD_PROFILING "Build" OFF)
+option(MIMIR_ENABLE_IPO "Enable IPO/LTO for Release and RelWithDebInfo builds" ON)
 
 ##############################################################
 # Common Settings
@@ -55,9 +57,9 @@ else()
     # if(COMPILER_ID MATCHES "GNU")
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         # When applying -fsanitize=address, also set it in dependencies (loki, abseil) via -DCMAKE_CXX_FLAGS="-fsanitize=address"
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -ftime-trace")  #  -fcoroutines-ts seems outdated
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace")  #  -fcoroutines-ts seems outdated
     endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
@@ -84,6 +86,7 @@ list(APPEND CMAKE_MODULE_PATH
 )
 include("configure_boost")
 include("configure_ccache")
+include("configure_ipo")
 include("configure_loki")
 
 ##############################################################
@@ -92,6 +95,10 @@ include("configure_loki")
 
 # CCache
 configure_ccache()
+
+if(MIMIR_ENABLE_IPO)
+  configure_ipo()
+endif()
 
 
 ##############################################################
