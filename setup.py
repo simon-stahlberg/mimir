@@ -23,6 +23,95 @@ class CMakeExtension(Extension):
         self.sourcedir = Path(os.path.abspath(sourcedir))
 
 
+def get_cmake_generator_args():
+    generator = os.environ.get("CMAKE_GENERATOR")
+    if generator:
+        generator_args = [f"-G{generator}"]
+        make_program = None
+        if generator == "Ninja":
+            ninja_executable = shutil.which("ninja")
+            if ninja_executable:
+                generator_args.append(f"-DCMAKE_MAKE_PROGRAM={ninja_executable}")
+                make_program = ninja_executable
+        print("Using CMake generator from environment:", generator)
+        return generator, generator_args, make_program
+
+    ninja_executable = shutil.which("ninja")
+    if ninja_executable:
+        print("Using Ninja generator:", ninja_executable)
+        return "Ninja", ["-GNinja", f"-DCMAKE_MAKE_PROGRAM={ninja_executable}"], ninja_executable
+
+    return None, [], None
+
+
+def get_cached_cmake_generator(build_directory: Path):
+    cache_file = build_directory / "CMakeCache.txt"
+    if not cache_file.exists():
+        return None
+
+    with cache_file.open() as file:
+        for line in file:
+            if line.startswith("CMAKE_GENERATOR:INTERNAL="):
+                return line.partition("=")[2].strip()
+
+    return None
+
+
+def get_cached_cmake_value(build_directory: Path, key: str):
+    cache_file = build_directory / "CMakeCache.txt"
+    if not cache_file.exists():
+        return None
+
+    prefix = f"{key}:"
+    with cache_file.open() as file:
+        for line in file:
+            if line.startswith(prefix):
+                return line.partition("=")[2].strip()
+
+    return None
+
+
+def get_launcher_executable(cached_launcher: str):
+    return cached_launcher.split(";", 1)[0] if cached_launcher else None
+
+
+def get_stale_cmake_cache_reason(build_directory: Path, expected_generator, expected_make_program, current_cmake_executable):
+    if not build_directory.exists():
+        return None
+
+    cached_generator = get_cached_cmake_generator(build_directory)
+    if expected_generator is not None and cached_generator is not None and cached_generator != expected_generator:
+        return f"generator changed from {cached_generator} to {expected_generator}"
+
+    cached_make_program = get_cached_cmake_value(build_directory, "CMAKE_MAKE_PROGRAM")
+    if cached_make_program and not Path(cached_make_program).exists():
+        return f"cached make program no longer exists: {cached_make_program}"
+    if expected_make_program and cached_make_program and cached_make_program != expected_make_program:
+        return f"cached make program changed from {cached_make_program} to {expected_make_program}"
+
+    for launcher_key in ["CMAKE_C_COMPILER_LAUNCHER", "CMAKE_CXX_COMPILER_LAUNCHER"]:
+        cached_launcher = get_cached_cmake_value(build_directory, launcher_key)
+        if not cached_launcher:
+            continue
+
+        launcher_executable = get_launcher_executable(cached_launcher)
+        if launcher_executable and not Path(launcher_executable).exists():
+            return f"cached launcher executable no longer exists: {launcher_executable}"
+        if current_cmake_executable and launcher_executable and launcher_executable != current_cmake_executable:
+            return f"cached launcher executable changed from {launcher_executable} to {current_cmake_executable}"
+
+    return None
+
+
+def clear_stale_cmake_cache(build_directory: Path, expected_generator, expected_make_program, current_cmake_executable):
+    reason = get_stale_cmake_cache_reason(build_directory, expected_generator, expected_make_program, current_cmake_executable)
+    if reason is None:
+        return
+
+    print(f"Removing stale CMake build directory {build_directory} because {reason}.")
+    shutil.rmtree(build_directory)
+
+
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
@@ -40,11 +129,13 @@ class CMakeBuild(build_ext):
         # Create the temporary build directory, if it does not already exist
         os.makedirs(temp_directory, exist_ok=True)
 
-        ninja_executable = shutil.which("ninja")
-        generator_args = []
-        if ninja_executable:
-            print("Using Ninja generator:", ninja_executable)
-            generator_args = ["-GNinja", f"-DCMAKE_MAKE_PROGRAM={ninja_executable}"]
+        generator, generator_args, make_program = get_cmake_generator_args()
+        current_cmake_executable = shutil.which("cmake")
+        dependency_build_directory = temp_directory / "dependencies" / "build"
+        main_build_directory = temp_directory / "build"
+
+        clear_stale_cmake_cache(dependency_build_directory, generator, make_program, current_cmake_executable)
+        clear_stale_cmake_cache(main_build_directory, generator, make_program, current_cmake_executable)
 
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
@@ -54,20 +145,20 @@ class CMakeBuild(build_ext):
         ]
 
         subprocess.run(
-            ["cmake", "-S", f"{str(ext.sourcedir / 'dependencies')}", "-B", f"{str(temp_directory / 'dependencies' / 'build')}"] + generator_args + cmake_args,
+            ["cmake", "-S", f"{str(ext.sourcedir / 'dependencies')}", "-B", f"{str(dependency_build_directory)}"] + generator_args + cmake_args,
             cwd=str(temp_directory),
             check=True,
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory / 'dependencies' / 'build')}", f"-j{multiprocessing.cpu_count()}"]
+            ["cmake", "--build", f"{str(dependency_build_directory)}", f"-j{multiprocessing.cpu_count()}"]
         )
 
         subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory / 'dependencies' / 'build')}"]
+            ["cmake", "--install", f"{str(dependency_build_directory)}" ]
         )
 
-        shutil.rmtree(f"{str(temp_directory / 'dependencies' / 'build')}")
+        shutil.rmtree(str(dependency_build_directory))
 
         #######################################################################
         # Build mimir
@@ -86,16 +177,16 @@ class CMakeBuild(build_ext):
         ]
 
         subprocess.run(
-            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory / 'build')}" ] + generator_args + cmake_args,
+            ["cmake", "-S", ext.sourcedir, "-B", f"{str(main_build_directory)}" ] + generator_args + cmake_args,
             cwd=str(temp_directory),
             check=True,
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory / 'build')}", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
+            ["cmake", "--build", f"{str(main_build_directory)}", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
         )
 
-        install_cmd = ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory / 'pymimir')}"]
+        install_cmd = ["cmake", "--install", f"{str(main_build_directory)}", "--prefix", f"{str(output_directory / 'pymimir')}"]
         # Reduce wheel size: strip debug symbols from installed binaries when supported.
         # (Manylinux builds often inject -g via environment CFLAGS/CXXFLAGS.)
         if build_type != "Debug" and os.name != "nt":

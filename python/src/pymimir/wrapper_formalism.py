@@ -1,4 +1,5 @@
 import os
+import pymimir.advanced.search as advanced_search
 
 from pathlib import Path
 from typing import overload, Union, Iterator, Literal as Lit
@@ -59,6 +60,8 @@ from pymimir.advanced.formalism import GroundNumericConstraint as AdvancedGround
 from pymimir.advanced.formalism import GroundNumericConstraintList as AdvancedGroundNumericConstraintList
 from pymimir.advanced.formalism import NumericConstraint as AdvancedNumericConstraint
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
+from pymimir.advanced.formalism import NoveltyProblemWrapper as AdvancedNoveltyProblemWrapper
+from pymimir.advanced.formalism import NoveltyTranslator as AdvancedNoveltyTranslator
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
 from pymimir.advanced.formalism import Parameter as AdvancedParameter
@@ -152,6 +155,17 @@ def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiter
     advanced_derived_literals = AdvancedDerivedLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedDerivedLiteral)])
     assert len(advanced_static_literals) + len(advanced_fluent_literals) + len(advanced_derived_literals) == len(literals), "Invalid literal list."
     return advanced_static_literals, advanced_fluent_literals, advanced_derived_literals
+
+
+def _get_search_mode(mode: 'str'):
+    assert isinstance(mode, str), "Invalid mode type."
+    if mode == 'grounded':
+        return GroundedOptions()
+    if mode == 'lifted':
+        return LiftedOptions(LiftedKPKCOptions(SymmetryPruning.OFF))
+    if mode == 'lifted_symmetry_pruning':
+        return LiftedOptions(LiftedKPKCOptions(SymmetryPruning.GI))
+    raise ValueError("Invalid mode. Use 'grounded', 'lifted', or 'lifted_symmetry_pruning'.")
 
 
 # -------
@@ -1695,6 +1709,14 @@ class Domain:
         self._advanced_domain = self._advanced_parser.get_domain()
         self._repositories = self._advanced_domain.get_repositories()
 
+    @classmethod
+    def _from_advanced_domain(cls, advanced_domain: 'AdvancedDomain') -> 'Domain':
+        self = cls.__new__(cls)
+        self._advanced_parser = None
+        self._advanced_domain = advanced_domain
+        self._repositories = advanced_domain.get_repositories()
+        return self
+
     def get_name(self) -> 'str':
         """
         Get the name of the domain.
@@ -1892,15 +1914,7 @@ class Problem:
         """
         assert isinstance(domain, Domain), "Invalid domain type."
         assert isinstance(problem_path_or_content, (Path, str)), "Invalid problem path or content type."
-        assert isinstance(mode, str), "Invalid mode type."
-        if mode == 'grounded':
-            search_mode = GroundedOptions()
-        elif mode == 'lifted':
-            search_mode = LiftedOptions(LiftedKPKCOptions(SymmetryPruning.OFF))
-        elif mode == 'lifted_symmetry_pruning':
-            search_mode = LiftedOptions(LiftedKPKCOptions(SymmetryPruning.GI))
-        else:
-            raise ValueError("Invalid mode. Use 'grounded', 'lifted', or 'lifted_symmetry_pruning'.")
+        search_mode = _get_search_mode(mode)
         self._domain = domain
         self._mode = mode
         # Check if the input is a valid file path
@@ -1918,6 +1932,16 @@ class Problem:
             raise ValueError("Problem path or content is neither a valid file path nor a string.")
         self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }
+
+    @classmethod
+    def _from_advanced_problem(cls, advanced_problem: 'AdvancedProblem', mode: 'str' = 'lifted') -> 'Problem':
+        self = cls.__new__(cls)
+        self._domain = Domain._from_advanced_domain(advanced_problem.get_domain())
+        self._mode = mode
+        self._advanced_problem = advanced_problem
+        self._search_context = SearchContext.create(advanced_problem, SearchContextOptions(_get_search_mode(mode)))
+        self._static_ground_atom_indices = { atom.get_index() for atom in advanced_problem.get_static_initial_atoms() }
+        return self
 
     def _to_advanced_term(self, term: 'Term') -> 'AdvancedTerm':
         assert isinstance(term, (Object, Variable)), "Invalid term type."
@@ -2237,6 +2261,121 @@ class Problem:
         advanced_objects = AdvancedObjectList([x._advanced_object for x in objects])
         advanced_ground_action = self._advanced_problem.ground(action._advanced_action, advanced_objects)
         return GroundAction(advanced_ground_action, self)
+
+    def compile_novelty(self, k: 'int' = 1) -> 'NoveltyProblemWrapper':
+        """
+        Compile the problem into a k=1 novelty-tracking problem.
+
+        :param k: The novelty width parameter.
+        :type k: int
+        :return: The compiled problem and mapping helpers.
+        :rtype: NoveltyProblemWrapper
+        """
+        return NoveltyTranslator(k).translate(self)
+
+    def create_grounded_novelty_applicable_action_generator(self, k: 'int' = 1) -> 'GroundedNoveltyApplicableActionGenerator':
+        """
+        Create a grounded novelty applicable-action generator for this problem.
+
+        :param k: The novelty width parameter.
+        :type k: int
+        :return: A grounded novelty applicable-action generator.
+        :rtype: GroundedNoveltyApplicableActionGenerator
+        """
+        assert isinstance(k, int), 'Invalid k type.'
+        return GroundedNoveltyApplicableActionGenerator(
+            advanced_search.GroundedNoveltyApplicableActionGenerator.create(self._advanced_problem, k),
+            self,
+        )
+
+
+class NoveltyProblemWrapper:
+    def __init__(self, advanced_wrapper: 'AdvancedNoveltyProblemWrapper', mode: 'str') -> None:
+        assert isinstance(advanced_wrapper, AdvancedNoveltyProblemWrapper), 'Invalid novelty problem wrapper type.'
+        self._advanced_wrapper = advanced_wrapper
+        self._problem = Problem._from_advanced_problem(advanced_wrapper.get_problem(), mode)
+
+    @staticmethod
+    def _to_advanced_fluent_ground_atoms(ground_atoms: 'list[GroundAtom]', argument_name: 'str') -> 'AdvancedFluentGroundAtomList':
+        assert isinstance(ground_atoms, list), f"Invalid {argument_name} type."
+        advanced_atoms = []
+        for ground_atom in ground_atoms:
+            assert isinstance(ground_atom, GroundAtom), f"Invalid {argument_name} element type."
+            if not ground_atom.is_fluent():
+                raise ValueError(f"{argument_name} must contain only fluent ground atoms.")
+            advanced_ground_atom = ground_atom._advanced_ground_atom
+            if not isinstance(advanced_ground_atom, AdvancedFluentGroundAtom):
+                raise ValueError(f"{argument_name} must contain only fluent ground atoms.")
+            advanced_atoms.append(advanced_ground_atom)
+        return AdvancedFluentGroundAtomList(advanced_atoms)
+
+    def get_problem(self) -> 'Problem':
+        return self._problem
+
+    def get_k(self) -> 'int':
+        return self._advanced_wrapper.get_k()
+
+    def get_compiled_atom(self, original_atom: 'GroundAtom') -> 'GroundAtom':
+        assert isinstance(original_atom, GroundAtom), 'Invalid original atom type.'
+        if not original_atom.is_fluent():
+            raise ValueError('Novelty compilation is only defined for fluent ground atoms.')
+        advanced_ground_atom = original_atom._advanced_ground_atom
+        if not isinstance(advanced_ground_atom, AdvancedFluentGroundAtom):
+            raise ValueError('Novelty compilation is only defined for fluent ground atoms.')
+        return GroundAtom(self._advanced_wrapper.get_compiled_atom(advanced_ground_atom))
+
+    def get_not_novel_atom(self, original_atom: 'GroundAtom') -> 'GroundAtom':
+        assert isinstance(original_atom, GroundAtom), 'Invalid original atom type.'
+        if not original_atom.is_fluent():
+            raise ValueError('Novelty compilation is only defined for fluent ground atoms.')
+        advanced_ground_atom = original_atom._advanced_ground_atom
+        if not isinstance(advanced_ground_atom, AdvancedFluentGroundAtom):
+            raise ValueError('Novelty compilation is only defined for fluent ground atoms.')
+        return GroundAtom(self._advanced_wrapper.get_not_novel_atom(advanced_ground_atom))
+
+    def create_compiled_state_atoms(self,
+                                    original_state_atoms: 'list[GroundAtom]',
+                                    additional_not_novel_atoms: 'Union[list[GroundAtom], None]' = None) -> 'list[GroundAtom]':
+        advanced_original_atoms = self._to_advanced_fluent_ground_atoms(original_state_atoms, 'original_state_atoms')
+        if additional_not_novel_atoms is None:
+            advanced_additional_atoms = AdvancedFluentGroundAtomList()
+        else:
+            advanced_additional_atoms = self._to_advanced_fluent_ground_atoms(additional_not_novel_atoms, 'additional_not_novel_atoms')
+        return [GroundAtom(atom) for atom in self._advanced_wrapper.create_compiled_state_atoms(advanced_original_atoms, advanced_additional_atoms)]
+
+
+class NoveltyTranslator:
+    def __init__(self, k: 'int' = 1) -> None:
+        assert isinstance(k, int), 'Invalid k type.'
+        self._advanced_translator = AdvancedNoveltyTranslator(k)
+
+    def get_k(self) -> 'int':
+        return self._advanced_translator.get_k()
+
+    def translate(self, problem: 'Problem') -> 'NoveltyProblemWrapper':
+        assert isinstance(problem, Problem), 'Invalid problem type.'
+        return NoveltyProblemWrapper(self._advanced_translator.translate(problem._advanced_problem), problem.get_mode())
+
+
+class GroundedNoveltyApplicableActionGenerator:
+    def __init__(self, advanced_generator: 'advanced_search.GroundedNoveltyApplicableActionGenerator', problem: 'Problem') -> None:
+        assert isinstance(advanced_generator, advanced_search.GroundedNoveltyApplicableActionGenerator), 'Invalid grounded novelty generator type.'
+        assert isinstance(problem, Problem), 'Invalid problem type.'
+        self._advanced_generator = advanced_generator
+        self._problem = problem
+
+    def get_problem(self) -> 'Problem':
+        return self._problem
+
+    def generate_applicable_actions(self, state: 'State') -> 'list[GroundAction]':
+        assert isinstance(state, State), 'Invalid state type.'
+        assert state._problem == self._problem, 'State and generator belong to different problems.'
+        result = [GroundAction(x, self._problem) for x in self._advanced_generator.generate_applicable_actions(state._advanced_state)]
+        result.sort(key=lambda x: x.get_index())
+        return result
+
+    def reset_novelty_history(self) -> None:
+        self._advanced_generator.reset_novelty_history()
 
 
 class State:

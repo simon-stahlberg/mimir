@@ -571,6 +571,25 @@ void bind_module_definitions(nb::module_& m)
         "DebugGroundedApplicableActionGeneratorEventHandler")  //
         .def_static("create", &GroundedApplicableActionGeneratorImpl::DebugEventHandlerImpl::create, "quiet"_a = true);
     nb::class_<GroundedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m, "GroundedApplicableActionGenerator");
+    nb::enum_<GroundedNoveltyApplicableActionGeneratorImpl::Mode>(m, "GroundedNoveltyApplicableActionGeneratorMode")
+        .value("Exhaustive", GroundedNoveltyApplicableActionGeneratorImpl::Mode::Exhaustive)
+        .value("Minimal", GroundedNoveltyApplicableActionGeneratorImpl::Mode::Minimal);
+
+    nb::class_<GroundedNoveltyApplicableActionGeneratorImpl, IApplicableActionGenerator>(m, "GroundedNoveltyApplicableActionGenerator")
+        .def_static(
+            "create",
+            [](Problem problem, std::size_t k) { return GroundedNoveltyApplicableActionGeneratorImpl::create(problem, k); },
+            "problem"_a,
+            "k"_a = 1)
+        .def_static(
+            "create",
+            &GroundedNoveltyApplicableActionGeneratorImpl::create,
+            "problem"_a,
+            "k"_a,
+            "options"_a,
+            "event_handler"_a = nullptr,
+            "mode"_a = GroundedNoveltyApplicableActionGeneratorImpl::Mode::Exhaustive)
+        .def("reset_novelty_history", &GroundedNoveltyApplicableActionGeneratorImpl::reset_novelty_history);
 
     /* IAxiomEvaluator */
     nb::class_<IAxiomEvaluator>(m, "IAxiomEvaluator")  //

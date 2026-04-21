@@ -21,6 +21,7 @@
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/debug.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/grounded/grounded.hpp"
+#include "mimir/search/applicable_action_generators/grounded/novelty.hpp"
 #include "mimir/search/applicable_action_generators/lifted/exhaustive.hpp"
 #include "mimir/search/applicable_action_generators/lifted/exhaustive/event_handlers/debug.hpp"
 #include "mimir/search/applicable_action_generators/lifted/exhaustive/event_handlers/default.hpp"

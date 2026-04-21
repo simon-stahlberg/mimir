@@ -1043,5 +1043,46 @@ class TestNumericFluents(unittest.TestCase):
         assert function_updates[0][2].get_number_term() == 1.0
 
 
+class TestNoveltyCompilation(unittest.TestCase):
+    def test_translate_novelty_problem(self):
+        domain = Domain(r"""(define (domain novelty-test)
+            (:requirements :strips)
+            (:predicates (p ?x) (q ?x) (r ?x))
+            (:action make-q
+             :parameters (?x)
+             :precondition (and (p ?x))
+             :effect (and (q ?x)))
+            (:action make-r
+             :parameters (?x)
+             :precondition (and (p ?x))
+             :effect (and (r ?x)))
+        )""")
+        problem = Problem(domain, r"""(define (problem novelty-problem)
+            (:domain novelty-test)
+            (:objects a)
+            (:init (p a))
+            (:goal (q a))
+        )""")
+        translator = NoveltyTranslator(1)
+
+        novelty_problem = translator.translate(problem)
+        compiled_problem = novelty_problem.get_problem()
+        q_atom = problem.new_ground_atom(domain.get_predicate('q'), [problem.get_object('a')])
+        r_atom = problem.new_ground_atom(domain.get_predicate('r'), [problem.get_object('a')])
+        compiled_state_atoms = novelty_problem.create_compiled_state_atoms([q_atom], [r_atom])
+        compiled_state_atom_strings = {str(atom) for atom in compiled_state_atoms}
+
+        assert novelty_problem.get_k() == 1
+        assert problem.compile_novelty(1).get_k() == 1
+        assert compiled_problem.get_mode() == problem.get_mode()
+        assert compiled_problem.get_domain().has_predicate('not-novel-q')
+        assert compiled_problem.get_domain().has_predicate('not-novel-r')
+        assert compiled_problem.get_domain().has_predicate('novel-witness-make-q')
+        assert str(novelty_problem.get_not_novel_atom(r_atom)) == '(not-novel-r a)'
+        assert str(novelty_problem.get_compiled_atom(q_atom)) in compiled_state_atom_strings
+        assert str(novelty_problem.get_not_novel_atom(q_atom)) in compiled_state_atom_strings
+        assert str(novelty_problem.get_not_novel_atom(r_atom)) in compiled_state_atom_strings
+
+
 if __name__ == '__main__':
     unittest.main()

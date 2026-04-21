@@ -15,8 +15,8 @@
       "cacheVariables": {
         "BUILD_EXECUTABLES": "OFF",
         "BUILD_PROFILING": "OFF",
-        "BUILD_PYMIMIR": "OFF",
-        "BUILD_TESTS": "OFF",
+        "BUILD_PYMIMIR": "ON",
+        "BUILD_TESTS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_PREFIX_PATH": "${sourceDir}/dependencies/installs"

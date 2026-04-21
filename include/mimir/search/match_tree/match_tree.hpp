@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/algorithms/generator.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_splitters/interface.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
@@ -56,6 +57,7 @@ public:
     MatchTreeImpl& operator=(MatchTreeImpl&& other) = delete;
 
     void generate_applicable_elements_iteratively(const UnpackedStateImpl& state, std::vector<const E*>& out_applicable_elements);
+    mimir::generator<const E*> generate_applicable_elements_lazily(const UnpackedStateImpl& state) const;
 
     const Statistics& get_statistics() const;
 };

@@ -989,6 +989,36 @@ void bind_module_definitions(nb::module_& m)
             nb::rv_policy::reference_internal);
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
+    nb::class_<NoveltyProblemWrapper>(m, "NoveltyProblemWrapper")
+        .def("get_problem", &NoveltyProblemWrapper::get_problem, nb::rv_policy::copy)
+        .def("get_k", &NoveltyProblemWrapper::get_k, nb::rv_policy::copy)
+        .def("get_compiled_atom", &NoveltyProblemWrapper::get_compiled_atom, "original_atom"_a, nb::rv_policy::reference_internal)
+        .def("get_not_novel_atom", &NoveltyProblemWrapper::get_not_novel_atom, "original_atom"_a, nb::rv_policy::reference_internal)
+        .def(
+            "create_compiled_state_atoms",
+            [](const NoveltyProblemWrapper& self, const GroundAtomList<FluentTag>& original_state_atoms)
+            { return self.create_compiled_state_atoms(original_state_atoms); },
+            "original_state_atoms"_a,
+            nb::rv_policy::copy)
+        .def(
+            "create_compiled_state_atoms",
+            [](const NoveltyProblemWrapper& self,
+               const GroundAtomList<FluentTag>& original_state_atoms,
+               const GroundAtomList<FluentTag>& additional_not_novel_atoms)
+            { return self.create_compiled_state_atoms(original_state_atoms, additional_not_novel_atoms); },
+            "original_state_atoms"_a,
+            "additional_not_novel_atoms"_a,
+            nb::rv_policy::copy);
+
+    nb::class_<NoveltyTranslator>(m, "NoveltyTranslator")
+        .def(nb::init<std::size_t>(), "k"_a = 1)
+        .def("get_k", &NoveltyTranslator::get_k, nb::rv_policy::copy)
+        .def(
+            "translate",
+            [](NoveltyTranslator& self, Problem problem) { return self.translate(problem); },
+            "problem"_a,
+            nb::rv_policy::move);
+
     /* GeneralizedProblem */
     nb::class_<GeneralizedProblemImpl>(m, "GeneralizedProblem")
         .def_static(

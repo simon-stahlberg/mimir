@@ -56,6 +56,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/translator/novelty_compilation.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"

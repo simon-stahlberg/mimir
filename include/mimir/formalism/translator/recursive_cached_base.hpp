@@ -112,6 +112,13 @@ protected:
 
     TranslatorCaches m_cache;
 
+public:
+    template<typename T>
+    const std::unordered_map<T, T, loki::Hash<T>, loki::EqualTo<T>>& get_cache() const
+    {
+        return boost::hana::at_key(m_cache, boost::hana::type<T>{});
+    }
+
 protected:
     /* Implement ITranslator interface */
     friend class ITranslator<RecursiveCachedBaseTranslator<Derived_>>;

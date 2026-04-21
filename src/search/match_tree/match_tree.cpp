@@ -97,6 +97,30 @@ void MatchTreeImpl<E>::generate_applicable_elements_iteratively(const UnpackedSt
 }
 
 template<formalism::HasConjunctiveCondition E>
+mimir::generator<const E*> MatchTreeImpl<E>::generate_applicable_elements_lazily(const UnpackedStateImpl& state) const
+{
+    auto evaluate_stack = std::vector<const INode<E>*> {};
+    auto applicable_elements = std::vector<const E*> {};
+
+    evaluate_stack.push_back(m_root.get());
+
+    while (!evaluate_stack.empty())
+    {
+        const auto node = evaluate_stack.back();
+
+        evaluate_stack.pop_back();
+        applicable_elements.clear();
+
+        node->generate_applicable_actions(state, evaluate_stack, applicable_elements);
+
+        for (const auto& element : applicable_elements)
+        {
+            co_yield element;
+        }
+    }
+}
+
+template<formalism::HasConjunctiveCondition E>
 const Statistics& MatchTreeImpl<E>::get_statistics() const
 {
     return m_statistics;

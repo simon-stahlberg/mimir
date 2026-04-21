@@ -163,6 +163,7 @@ from pymimir.pymimir.advanced.search import (
     DebugGroundedApplicableActionGeneratorEventHandler,
     DefaultGroundedApplicableActionGeneratorEventHandler,
     GroundedApplicableActionGenerator,
+    GroundedNoveltyApplicableActionGenerator,
     GroundedAxiomEvaluator,
     IGroundedApplicableActionGeneratorEventHandler,
     IGroundedAxiomEvaluatorEventHandler,

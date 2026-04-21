@@ -74,6 +74,8 @@ class IApplicableActionGenerator;
 using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
 class GroundedApplicableActionGeneratorImpl;
 using GroundedApplicableActionGenerator = std::shared_ptr<GroundedApplicableActionGeneratorImpl>;
+class GroundedNoveltyApplicableActionGeneratorImpl;
+using GroundedNoveltyApplicableActionGenerator = std::shared_ptr<GroundedNoveltyApplicableActionGeneratorImpl>;
 class KPKCLiftedApplicableActionGeneratorImpl;
 using KPKCLiftedApplicableActionGenerator = std::shared_ptr<KPKCLiftedApplicableActionGeneratorImpl>;
 class ExhaustiveLiftedApplicableActionGeneratorImpl;

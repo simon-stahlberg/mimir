@@ -119,6 +119,8 @@ from pymimir.pymimir.advanced.formalism import (
     FunctionExpressionNumber,
     NumericConstraint,
     NumericConstraintList,
+    NoveltyProblemWrapper,
+    NoveltyTranslator,
     Object,
     ObjectList,
     OptimizationMetric,

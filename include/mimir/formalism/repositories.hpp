@@ -523,7 +523,7 @@ void Repositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
     out_ground_atoms.clear();
     for (const auto& atom : boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}))
     {
-        out_ground_atoms.push_back(atom);
+        out_ground_atoms.push_back(&atom);
     }
 }
 

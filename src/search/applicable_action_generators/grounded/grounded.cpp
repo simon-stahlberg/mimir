@@ -57,20 +57,21 @@ GroundedApplicableActionGeneratorImpl::create(Problem problem, match_tree::Match
 
 mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(const State& state)
 {
-    auto ground_actions = GroundActionList {};
-    m_match_tree->generate_applicable_elements_iteratively(state.get_unpacked_state(), ground_actions);
-
-    for (const auto& ground_action : ground_actions)
-    {
-        assert(is_applicable(ground_action, state));
-        co_yield ground_action;
-    }
+    return m_match_tree->generate_applicable_elements_lazily(state.get_unpacked_state());
 }
 
 const Problem& GroundedApplicableActionGeneratorImpl::get_problem() const { return m_problem; }
 
-void GroundedApplicableActionGeneratorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void GroundedApplicableActionGeneratorImpl::on_finish_search_layer() { 
+    if (m_event_handler) {
+        m_event_handler->on_finish_search_layer(); 
+    }
+}
 
-void GroundedApplicableActionGeneratorImpl::on_end_search() { m_event_handler->on_end_search(); }
+void GroundedApplicableActionGeneratorImpl::on_end_search() { 
+    if (m_event_handler) {
+        m_event_handler->on_end_search(); 
+    }
+}
 
 }
