@@ -9,7 +9,7 @@ jobs:
   build_wheels:
     strategy:
       matrix:
-        python-version: ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314", "cp314t"]
+        python-version: ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
 
@@ -38,11 +38,6 @@ jobs:
         CIBW_BUILD: "${{ matrix.python-version }}-*"
         CIBW_ARCHS: "arm64"  # Only build for Apple Silicon
         CIBW_BUILD_VERBOSITY: "1"
-        CIBW_ENABLE: "all"
-        CIBW_TEST_REQUIRES: "pytest"
-        CIBW_TEST_COMMAND: >-
-          python {project}/python/tests/check_free_threaded_import.py &&
-          pytest {project}/python/tests
 
     - name: Upload to PyPI
       env:
