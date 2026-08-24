@@ -1,0 +1,19 @@
+"""Unstable low-level ctypes bindings for Mimir.Interop.
+
+This package exposes the raw C-callable surface as ``argtypes`` / ``restype``
+declarations on a single shared :class:`ctypes.CDLL` instance. The wrapper
+layer (``mimir.wrapper_*``) builds Pythonic objects on top.
+
+This module is deliberately outside the public compatibility contract. Most
+users should import from :mod:`mimir` directly. Raw callback callers must keep
+their ``ctypes`` callback objects alive for every native invocation and must
+adopt or free every handle received by a callback.
+"""
+
+from . import formalism, search, heuristics, datasets
+from ._native import free_handle, lib, relationship_value, take_string, value_equals, value_hash
+
+__all__ = [
+    "lib", "take_string", "free_handle", "value_equals", "value_hash", "relationship_value",
+    "formalism", "search", "heuristics", "datasets",
+]

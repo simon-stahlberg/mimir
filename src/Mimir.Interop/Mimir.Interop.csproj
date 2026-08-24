@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishAot>true</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Mimir.Pddl is needed transitively because Core's internal constructors expose Pddl AST types
+         once InternalsVisibleTo("Mimir.Interop") is enabled. -->
+    <ProjectReference Include="..\Mimir.Pddl\Mimir.Pddl.csproj" />
+    <ProjectReference Include="..\Mimir.Core\Mimir.Core.csproj" />
+    <ProjectReference Include="..\Mimir.Search\Mimir.Search.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Mimir.Search.Tests" />
+  </ItemGroup>
+
+</Project>
