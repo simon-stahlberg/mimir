@@ -11,13 +11,16 @@ mypy_path = "python"
 [tool.cibuildwheel]
 build = "cp310-*"
 skip = "*-musllinux_*"
-test-requires = ["pytest>=8"]
+test-requires = ["pytest>=8", "mypy>=1.11"]
 test-command = "pytest {project}/python/tests/test_python_api.py"
 
 [tool.cibuildwheel.linux]
 before-all = [
-    "dnf install -y clang curl zlib-devel",
+    "dnf install -y clang curl libicu zlib-devel",
     "curl --fail --location --silent --show-error https://dot.net/v1/dotnet-install.sh --output /tmp/dotnet-install.sh",
     "bash /tmp/dotnet-install.sh --channel 10.0 --quality GA --install-dir /opt/dotnet",
 ]
 environment = { DOTNET_ROOT = "/opt/dotnet", PATH = "/opt/dotnet:$PATH" }
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "12.0"
