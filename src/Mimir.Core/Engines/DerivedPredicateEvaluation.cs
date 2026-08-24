@@ -14,6 +14,8 @@ internal readonly struct DerivedFactKey : IEquatable<DerivedFactKey>
     private readonly Constant? _arg4;
     private readonly Constant[]? _extraArguments;
 
+    internal Predicate<Derived> Predicate => _predicate;
+
     internal DerivedFactKey(Predicate<Derived> predicate)
     {
         _predicate = predicate;
@@ -143,6 +145,14 @@ internal readonly struct DerivedFactKey : IEquatable<DerivedFactKey>
             3 => _arg4!,
             _ => _extraArguments![index - 4],
         };
+    }
+
+    internal Constant[] GetArguments()
+    {
+        var arguments = new Constant[_arity];
+        for (int i = 0; i < arguments.Length; i++)
+            arguments[i] = GetArgument(i);
+        return arguments;
     }
 
     public bool Equals(DerivedFactKey other)

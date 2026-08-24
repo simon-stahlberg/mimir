@@ -110,7 +110,7 @@ except AttributeError as exc:
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"
     ) from exc
 
-if lib.mimir_abi_version() != 12:
+if lib.mimir_abi_version() != 13:
     raise RuntimeError(
         "Loaded Mimir native library has an incompatible ABI. "
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"
@@ -176,7 +176,7 @@ def _create_finalizer(
     owner: object,
     callback: Callable[..., object],
     *args: object,
-) -> weakref.finalize[..., object]:
+) -> weakref.finalize:
     try:
         return weakref.finalize(owner, callback, *args)
     except BaseException:

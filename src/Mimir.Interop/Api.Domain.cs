@@ -41,6 +41,30 @@ public static partial class Exports
         return AllocUtf8(domain.Requirements[index]);
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_expanded_requirement_count")]
+    public static int DomainGetExpandedRequirementCount(int handle)
+        => ReadValue(handle, -1, (Domain domain) => domain.ExpandedRequirements.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_expanded_requirement")]
+    public static IntPtr DomainGetExpandedRequirement(int handle, int index)
+    {
+        var domain = ObjectRegistry.Get<Domain>(handle);
+        if (domain == null || index < 0 || index >= domain.ExpandedRequirements.Count) return IntPtr.Zero;
+        return AllocUtf8(domain.ExpandedRequirements[index]);
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_uses_typing")]
+    public static int DomainUsesTyping(int handle)
+        => ReadValue(handle, InvalidBoolean, (Domain domain) => domain.UsesTyping ? 1 : 0);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_uses_equality")]
+    public static int DomainUsesEquality(int handle)
+        => ReadValue(handle, InvalidBoolean, (Domain domain) => domain.UsesEquality ? 1 : 0);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_uses_conditional_effects")]
+    public static int DomainUsesConditionalEffects(int handle)
+        => ReadValue(handle, InvalidBoolean, (Domain domain) => domain.UsesConditionalEffects ? 1 : 0);
+
     // -- Predicates --
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_static_predicate_count")]
@@ -108,6 +132,27 @@ public static partial class Exports
     }
 
     // -- Type hierarchy --
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_type_count")]
+    public static int DomainGetTypeCount(int handle)
+        => ReadValue(handle, -1, (Domain domain) => domain.TypeHierarchy.Count + 1);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_type_name")]
+    public static IntPtr DomainGetTypeName(int handle, int index)
+    {
+        var domain = ObjectRegistry.Get<Domain>(handle);
+        if (domain == null || index < 0 || index > domain.TypeHierarchy.Count) return IntPtr.Zero;
+        return AllocUtf8(index == 0 ? "object" : domain.TypeHierarchy.Keys.ElementAt(index - 1));
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_domain_get_type_parent")]
+    public static IntPtr DomainGetTypeParent(int handle, int index)
+    {
+        var domain = ObjectRegistry.Get<Domain>(handle);
+        if (domain == null || index < 0 || index > domain.TypeHierarchy.Count) return IntPtr.Zero;
+        if (index == 0) return IntPtr.Zero;
+        return AllocUtf8(domain.TypeHierarchy.Values.ElementAt(index - 1));
+    }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_domain_is_compatible")]
     public static int DomainIsCompatible(int handle, IntPtr childPtr, IntPtr parentPtr)

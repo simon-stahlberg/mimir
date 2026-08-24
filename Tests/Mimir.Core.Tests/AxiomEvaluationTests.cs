@@ -63,8 +63,8 @@ public class AxiomEvaluationTests
         
         var axiomPred = domain.Derived.First(d => d.Name.Equals("axiom", StringComparison.OrdinalIgnoreCase));
         
-        var o1 = problem.Objects.First(o => o.Name == "o1");
-        var o2 = problem.Objects.First(o => o.Name == "o2");
+        var o1 = problem.AllObjects.First(o => o.Name == "o1");
+        var o2 = problem.AllObjects.First(o => o.Name == "o2");
         
         var factO1 = (Fact<Derived>)problem.Context.RegisterFact(axiomPred, new[] { o1 });
         var factO2 = (Fact<Derived>)problem.Context.RegisterFact(axiomPred, new[] { o2 });
@@ -254,8 +254,8 @@ public class AxiomEvaluationTests
         var isO1Pred = domain.Derived.First(d => d.Name == "is-o1");
         var bothSamePred = domain.Derived.First(d => d.Name == "both-same");
         
-        var o1 = problem.Objects.First(o => o.Name == "o1");
-        var o2 = problem.Objects.First(o => o.Name == "o2");
+        var o1 = problem.AllObjects.First(o => o.Name == "o1");
+        var o2 = problem.AllObjects.First(o => o.Name == "o2");
         
         var factIsO1_o1 = (Fact<Derived>)problem.Context.RegisterFact(isO1Pred, new[] { o1 });
         var factIsO1_o2 = (Fact<Derived>)problem.Context.RegisterFact(isO1Pred, new[] { o2 });
@@ -287,8 +287,8 @@ public class AxiomEvaluationTests
         ExtendedState state = problem.InitialState.Expand();
 
         var notPPred = domain.Derived.First(d => d.Name.Equals("not-p", StringComparison.OrdinalIgnoreCase));
-        var o1 = problem.Objects.First(o => o.Name == "o1");
-        var o2 = problem.Objects.First(o => o.Name == "o2");
+        var o1 = problem.AllObjects.First(o => o.Name == "o1");
+        var o2 = problem.AllObjects.First(o => o.Name == "o2");
 
         var factO1 = (Fact<Derived>)problem.Context.RegisterFact(notPPred, new[] { o1 });
         var factO2 = (Fact<Derived>)problem.Context.RegisterFact(notPPred, new[] { o2 });
@@ -325,9 +325,9 @@ public class AxiomEvaluationTests
         ExtendedState state = problem.InitialState.Expand();
 
         var pred = domain.Derived.First(d => d.Name.Equals("passes-test", StringComparison.OrdinalIgnoreCase));
-        var a = problem.Objects.First(o => o.Name == "a");
-        var b = problem.Objects.First(o => o.Name == "b");
-        var c = problem.Objects.First(o => o.Name == "c");
+        var a = problem.AllObjects.First(o => o.Name == "a");
+        var b = problem.AllObjects.First(o => o.Name == "b");
+        var c = problem.AllObjects.First(o => o.Name == "c");
 
         var factA = (Fact<Derived>)problem.Context.RegisterFact(pred, new[] { a });
         var factB = (Fact<Derived>)problem.Context.RegisterFact(pred, new[] { b });
@@ -359,9 +359,9 @@ public class AxiomEvaluationTests
         ExtendedState state = problem.InitialState.Expand();
 
         var pred = domain.Derived.First(d => d.Name.Equals("any-of", StringComparison.OrdinalIgnoreCase));
-        var o1 = problem.Objects.First(o => o.Name == "o1");
-        var o2 = problem.Objects.First(o => o.Name == "o2");
-        var o3 = problem.Objects.First(o => o.Name == "o3");
+        var o1 = problem.AllObjects.First(o => o.Name == "o1");
+        var o2 = problem.AllObjects.First(o => o.Name == "o2");
+        var o3 = problem.AllObjects.First(o => o.Name == "o3");
 
         var factO1 = (Fact<Derived>)problem.Context.RegisterFact(pred, new[] { o1 });
         var factO2 = (Fact<Derived>)problem.Context.RegisterFact(pred, new[] { o2 });
@@ -391,7 +391,7 @@ public class AxiomEvaluationTests
         ExtendedState state = problem.InitialState.Expand();
         
         var axiomPred = domain.Derived.First(d => d.Name.Equals("AXIOM-G", StringComparison.OrdinalIgnoreCase));
-        var obj1 = problem.Objects.First(o => o.Name.Equals("OBJ-1", StringComparison.OrdinalIgnoreCase));
+        var obj1 = problem.AllObjects.First(o => o.Name.Equals("OBJ-1", StringComparison.OrdinalIgnoreCase));
         
         var fact = (Fact<Derived>)problem.Context.RegisterFact(axiomPred, new[] { obj1 });
         

@@ -11,10 +11,27 @@ problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 
 from . import heuristics, model, search, state_space
 from .model import (
+    Action,
+    ActionGenerator,
+    Atom,
+    ConditionalEffect,
+    ConjunctiveCondition,
     Domain,
+    Effect,
     GroundAction,
+    GroundAtom,
+    GroundConditionalEffect,
+    GroundConjunctiveCondition,
+    GroundEffect,
+    GroundLiteral,
+    Literal,
+    Object,
+    Predicate,
+    PredicateType,
     Problem,
     State,
+    Term,
+    Variable,
 )
 from .search import (
     Solution,
@@ -38,11 +55,14 @@ from .heuristics import (
 from .state_space import StateLabel, StateSpace
 from .errors import MimirError, PddlError
 
-__version__: str = "0.14.0b1"
+__version__: str = "0.14.0b2"
 
 __all__ = [
     # Model
-    "model", "Domain", "Problem", "State", "GroundAction",
+    "model", "Variable", "Object", "Term", "Predicate", "Atom", "GroundAtom",
+    "Literal", "GroundLiteral", "Effect", "ConditionalEffect", "GroundEffect",
+    "GroundConditionalEffect", "Action", "GroundAction", "Domain", "Problem", "State",
+    "ConjunctiveCondition", "GroundConjunctiveCondition", "PredicateType", "ActionGenerator",
     # Search
     "search", "Solution", "SearchResult", "SearchStatistics", "SearchStatus", "Transition",
     "bfs", "ucs", "astar", "gbfs", "iw",

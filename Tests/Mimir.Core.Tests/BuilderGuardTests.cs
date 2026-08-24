@@ -76,7 +76,7 @@ public class BuilderGuardTests
         Assert.Same(ready, problem.Context.RegisterFact(ready, [problem.ObjectLookup["a"]]).Predicate);
         Assert.Same(marked, problem.Goal[0].Value.Predicate);
         Assert.Same(domain.EqualityPredicate, problem.Goal[1].Value.Predicate);
-        Assert.Same(problem.Objects[1], problem.ObjectLookup["a"]);
+        Assert.Same(problem.AllObjects[1], problem.ObjectLookup["a"]);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class BuilderGuardTests
         Problem problem = new ProblemBuilder(domain, "empty-problem", generatorType).Build();
 
         Assert.Equal(generatorType, problem.GeneratorType);
-        Assert.Empty(problem.Objects);
+        Assert.Empty(problem.AllObjects);
         Assert.Empty(problem.Goal);
         Assert.Empty(problem.GetApplicableActionGenerator(problem.InitialState)
             .GetApplicableActions(problem.InitialState.Expand()));

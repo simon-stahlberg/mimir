@@ -13,6 +13,65 @@ public class DomainTests
 {
     private static string BasePath => Path.Combine(AppContext.BaseDirectory, "../../../../../Tests/Examples");
 
+    [Fact]
+    public void AdlRequirementMetadataIncludesCanonicalImplications()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain requirement-metadata)
+  (:requirements :adl)
+  (:predicates (done)))
+""");
+
+        Assert.Equal([":adl"], domain.Requirements);
+        Assert.Equal(
+            [
+                ":strips",
+                ":typing",
+                ":equality",
+                ":negative-preconditions",
+                ":disjunctive-preconditions",
+                ":conditional-effects",
+                ":existential-preconditions",
+                ":universal-preconditions",
+                ":adl",
+            ],
+            domain.ExpandedRequirements);
+        Assert.True(domain.UsesTyping);
+        Assert.True(domain.UsesEquality);
+        Assert.True(domain.UsesConditionalEffects);
+    }
+
+    [Fact]
+    public void EmptyRequirementsImplyOnlyStrips()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain implicit-strips)
+  (:predicates (done)))
+""");
+
+        Assert.Empty(domain.Requirements);
+        Assert.Equal([":strips"], domain.ExpandedRequirements);
+        Assert.False(domain.UsesTyping);
+        Assert.False(domain.UsesEquality);
+        Assert.False(domain.UsesConditionalEffects);
+    }
+
+    [Fact]
+    public void TypeHierarchyPreservesDeclaredOrderAndDirectParents()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain hierarchy)
+  (:requirements :typing)
+  (:types vehicle - object car - vehicle location - object)
+  (:predicates (at ?vehicle - vehicle ?location - location)))
+""");
+
+        Assert.Equal(["vehicle", "car", "location"], domain.TypeHierarchy.Keys);
+        Assert.Equal("object", domain.TypeHierarchy["vehicle"]);
+        Assert.Equal("vehicle", domain.TypeHierarchy["car"]);
+        Assert.Equal("object", domain.TypeHierarchy["location"]);
+    }
+
     [Theory]
     [InlineData("blocks_4", "blocksworld", 5, 0, 0, 4)]
     [InlineData("rovers", "rover", 14, 11, 0, 9)]

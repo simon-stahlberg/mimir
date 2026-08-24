@@ -254,7 +254,7 @@ public class GroundedRpgHeuristicTests
             problem,
             new GroundedAtom(
                 problem.AllPredicates["done"],
-                new ITerm[] { problem.Objects.Single(o => o.Name == "o1") }));
+                new ITerm[] { problem.AllObjects.Single(o => o.Name == "o1") }));
 
         AssertValues(problem, problem.InitialState, new HeuristicValues(1d, 1d, 1d, 1d, 1d));
         AssertValues(problem, problem.InitialState, doneO1, new HeuristicValues(
@@ -338,8 +338,8 @@ public class GroundedRpgHeuristicTests
     public void ConstantsInPreconditionsAndEffects_AreGroundedExactly()
     {
         Problem problem = CreateProblemForSingleActionAchievesTwoGoalFacts_CountsThatActionExactly0();
-        Constant package1 = problem.Objects.Single(o => o.Name == "package1");
-        Constant otherPlace = problem.Objects.Single(o => o.Name == "other-place");
+        Constant package1 = problem.AllObjects.Single(o => o.Name == "package1");
+        Constant otherPlace = problem.AllObjects.Single(o => o.Name == "other-place");
         GoalCondition wrongLocationGoal = GoalCondition.FromExpression(
             problem,
             new GroundedAtom(problem.AllPredicates["delivered"], new ITerm[] { package1, otherPlace }));
@@ -410,7 +410,7 @@ public class GroundedRpgHeuristicTests
             problem,
             new GroundedAtom(
                 problem.AllPredicates["done"],
-                new ITerm[] { problem.Objects.Single(o => o.Name == "a") }));
+                new ITerm[] { problem.AllObjects.Single(o => o.Name == "a") }));
 
         AssertValues(heuristics, problem.InitialState, lateGoal, new HeuristicValues(1d, 1d, 1d, 1d, 1d));
     }
@@ -424,7 +424,7 @@ public class GroundedRpgHeuristicTests
             problem,
             new GroundedAtom(
                 problem.AllPredicates["done"],
-                new ITerm[] { problem.Objects.Single(o => o.Name == "b") }));
+                new ITerm[] { problem.AllObjects.Single(o => o.Name == "b") }));
 
         AssertValues(heuristics, problem.InitialState, lateGoal, new HeuristicValues(
             double.PositiveInfinity,
@@ -439,8 +439,8 @@ public class GroundedRpgHeuristicTests
     {
         Problem problem = CreateProblemForLateRegisteredTrueGoal_IsSkippedWhileCompiledGoalIsStillEvaluated();
         Heuristics heuristics = CreateHeuristics(problem);
-        Constant a = problem.Objects.Single(constant => constant.Name == "a");
-        Constant b = problem.Objects.Single(constant => constant.Name == "b");
+        Constant a = problem.AllObjects.Single(constant => constant.Name == "a");
+        Constant b = problem.AllObjects.Single(constant => constant.Name == "b");
         Predicate done = problem.AllPredicates["done"];
         GoalCondition lateGoal = GoalCondition.FromExpression(
             problem,

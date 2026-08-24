@@ -80,6 +80,7 @@ public class CollectionImmutabilityTests
         (Domain domain, Problem problem) = CreateDomainAndProblem();
 
         AssertReadOnly(domain.Requirements);
+        AssertReadOnly(domain.ExpandedRequirements);
         AssertReadOnly(domain.Fluents);
         AssertReadOnly(domain.Statics);
         AssertReadOnly(domain.Derived);
@@ -87,7 +88,8 @@ public class CollectionImmutabilityTests
         AssertReadOnly(domain.Actions);
         AssertReadOnly(domain.TypeHierarchy);
         AssertReadOnly(domain.DerivedDefinitions);
-        AssertReadOnly(problem.Objects);
+        AssertReadOnly(problem.DeclaredObjects);
+        AssertReadOnly(problem.AllObjects);
         AssertReadOnly(problem.ObjectLookup);
         AssertReadOnly(problem.AllPredicates);
         AssertReadOnly(problem.Goal);

@@ -41,6 +41,10 @@ public partial class Domain
     public IReadOnlyList<Constant> Constants { get; }
     public IReadOnlyList<ActionSchema> Actions { get; }
     public IReadOnlyList<string> Requirements { get; }
+    public IReadOnlyList<string> ExpandedRequirements { get; }
+    public bool UsesTyping { get; }
+    public bool UsesEquality { get; }
+    public bool UsesConditionalEffects { get; }
     public IReadOnlyDictionary<string, string> TypeHierarchy { get; }
     public IReadOnlyDictionary<string, IGroundedExpression> DerivedDefinitions { get; }
     public Predicate<Static>? EqualityPredicate { get; }
@@ -146,6 +150,10 @@ public partial class Domain
 
         Requirements = Array.AsReadOnly(
             astDomain.Requirements.Select(requirement => requirement.ToPddlString()).ToArray());
+        ExpandedRequirements = ExpandRequirements(astDomain.Requirements);
+        UsesTyping = astDomain.Requirements.HasRequirement(PddlRequirement.Typing);
+        UsesEquality = astDomain.Requirements.HasRequirement(PddlRequirement.Equality);
+        UsesConditionalEffects = astDomain.Requirements.HasRequirement(PddlRequirement.ConditionalEffects);
         Fluents = Array.AsReadOnly(builder.Fluents.ToArray());
         Statics = Array.AsReadOnly(builder.Statics.ToArray());
         Derived = Array.AsReadOnly(builder.Derived.ToArray());
@@ -252,7 +260,20 @@ public partial class Domain
         DomainDefinition pddlDefinition = CreatePddlDefinition();
         DerivedDependencyValidator.Validate(DerivedDefinitions);
         PddlDefinition = ValidateProgrammaticDefinition(pddlDefinition);
+        ExpandedRequirements = ExpandRequirements(PddlDefinition.Requirements);
+        UsesTyping = PddlDefinition.Requirements.HasRequirement(PddlRequirement.Typing);
+        UsesEquality = PddlDefinition.Requirements.HasRequirement(PddlRequirement.Equality);
+        UsesConditionalEffects = PddlDefinition.Requirements.HasRequirement(PddlRequirement.ConditionalEffects);
         DerivedPlan = DerivedPredicatePlan.Create(this);
+    }
+
+    private static IReadOnlyList<string> ExpandRequirements(IEnumerable<PddlRequirement> requirements)
+    {
+        PddlRequirement[] declaredRequirements = requirements.ToArray();
+        return Array.AsReadOnly(Enum.GetValues<PddlRequirement>()
+            .Where(declaredRequirements.HasRequirement)
+            .Select(requirement => requirement.ToPddlString())
+            .ToArray());
     }
 
     private static void RejectNullElements<T>(IEnumerable<T> values, string parameterName)

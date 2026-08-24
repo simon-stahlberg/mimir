@@ -8,7 +8,8 @@ namespace Mimir.Core.Schemas;
 internal sealed class PddlProblemTranslator
 {
     public InstanceContext Context { get; }
-    public IReadOnlyList<Constant> Objects { get; }
+    public IReadOnlyList<Constant> DeclaredObjects { get; }
+    public IReadOnlyList<Constant> AllObjects { get; }
     public IReadOnlyDictionary<string, Constant> ObjectLookup { get; }
     public IReadOnlyDictionary<string, Predicate> AllPredicates { get; }
     public IReadOnlyList<Literal<Fact>> Goal { get; }
@@ -19,8 +20,8 @@ internal sealed class PddlProblemTranslator
         ProblemDefinition astProblem,
         ProgrammaticProblemInputs? programmaticInputs = null)
     {
-        // 1. Collect all objects (Constants from domain + Objects from problem)
         var objectsList = new List<Constant>(domain.Constants);
+        var declaredObjectsList = new List<Constant>();
         var objectLookup = objectsList.ToDictionary(o => o.Name, o => o, StringComparer.OrdinalIgnoreCase);
         Constant GetOrCreateObject(string name, string type)
         {
@@ -34,8 +35,9 @@ internal sealed class PddlProblemTranslator
         }
 
         foreach (var obj in astProblem.Objects)
-            GetOrCreateObject(obj.Name, obj.ParentType);
-        Objects = objectsList;
+            declaredObjectsList.Add(GetOrCreateObject(obj.Name, obj.ParentType));
+        DeclaredObjects = declaredObjectsList;
+        AllObjects = objectsList;
         ObjectLookup = objectLookup;
         Context = new InstanceContext(problem, objectsList);
 
@@ -51,8 +53,6 @@ internal sealed class PddlProblemTranslator
         bool totalCostInitialized = false;
 
         // 3. Process Initial State
-        var initialStaticFacts = new List<Fact<Static>>();
-
         int projectedNumericInitializationCount = 0;
         foreach (var initExpr in astProblem.Init)
         {
@@ -70,7 +70,7 @@ internal sealed class PddlProblemTranslator
                 else if (pred is Predicate<Static> ps)
                 {
                     var fact = Context.RegisterFact(ps, args);
-                    initialStaticFacts.Add(fact);
+                    problem._initialStaticFacts.Add(fact);
                 }
                 else
                     throw new InvalidOperationException(
@@ -108,7 +108,7 @@ internal sealed class PddlProblemTranslator
         // StaticBitboard will be built on demand or when requested
         int staticWordCount = (int)Math.Ceiling(Context.StaticCount / 64.0);
         var staticBitboardWords = new ulong[staticWordCount];
-        foreach (var fact in initialStaticFacts)
+        foreach (var fact in problem._initialStaticFacts)
         {
             int arrayIndex = fact.LocalIndex / 64;
             int bitIndex = fact.LocalIndex % 64;

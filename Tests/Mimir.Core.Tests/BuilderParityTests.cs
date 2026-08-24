@@ -404,7 +404,7 @@ public class BuilderParityTests
         [
             problem.Name,
             $"generator:{problem.GeneratorType}",
-            $"objects:{string.Join(',', problem.Objects.Select(FormatConstant))}",
+            $"objects:{string.Join(',', problem.AllObjects.Select(FormatConstant))}",
             $"goal:{string.Join(',', problem.Goal.Select(FormatGoalLiteral))}",
         ];
 

@@ -68,18 +68,42 @@ public static partial class Exports
         return ObjectRegistry.Store(p.Domain);
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_requirement_count")]
+    public static int ProblemGetRequirementCount(int handle)
+        => ReadValue(handle, -1, (Problem problem) => problem.Requirements.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_requirement")]
+    public static IntPtr ProblemGetRequirement(int handle, int index)
+    {
+        var problem = ObjectRegistry.Get<Problem>(handle);
+        if (problem == null || index < 0 || index >= problem.Requirements.Count) return IntPtr.Zero;
+        return AllocUtf8(problem.Requirements[index]);
+    }
+
     // -- Objects --
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_object_count")]
-    public static int ProblemGetObjectCount(int handle)
-        => ReadValue(handle, -1, (Problem problem) => problem.Objects.Count);
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_declared_object_count")]
+    public static int ProblemGetDeclaredObjectCount(int handle)
+        => ReadValue(handle, -1, (Problem problem) => problem.DeclaredObjects.Count);
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_object")]
-    public static int ProblemGetObject(int handle, int index)
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_declared_object")]
+    public static int ProblemGetDeclaredObject(int handle, int index)
     {
-        var p = ObjectRegistry.Get<Problem>(handle);
-        if (p == null || index < 0 || index >= p.Objects.Count) return 0;
-        return ObjectRegistry.Store(p.Objects[index]);
+        var problem = ObjectRegistry.Get<Problem>(handle);
+        if (problem == null || index < 0 || index >= problem.DeclaredObjects.Count) return 0;
+        return ObjectRegistry.Store(problem.DeclaredObjects[index]);
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_all_object_count")]
+    public static int ProblemGetAllObjectCount(int handle)
+        => ReadValue(handle, -1, (Problem problem) => problem.AllObjects.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_all_object")]
+    public static int ProblemGetAllObject(int handle, int index)
+    {
+        var problem = ObjectRegistry.Get<Problem>(handle);
+        if (problem == null || index < 0 || index >= problem.AllObjects.Count) return 0;
+        return ObjectRegistry.Store(problem.AllObjects[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_object_by_name")]
@@ -106,18 +130,14 @@ public static partial class Exports
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_static_initial_atom_count")]
     public static int ProblemGetStaticInitialAtomCount(int handle)
-        => ReadValue(handle, -1, (Problem problem) => BitboardOps.PopCount(problem.Context.StaticBitboardWords));
+        => ReadValue(handle, -1, (Problem problem) => problem._initialStaticFacts.Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_static_initial_atom")]
     public static int ProblemGetStaticInitialAtom(int handle, int index)
     {
-        var p = ObjectRegistry.Get<Problem>(handle);
-        if (p == null) return 0;
-        var ctx = p.Context;
-        int localId = BitboardOps.NthSetBitIndex(ctx.StaticBitboardWords, index);
-        var staticIndex = new StaticIndex(localId);
-        if (!ctx.IsValid(staticIndex)) return 0;
-        return ObjectRegistry.Store(ctx.GetFact(staticIndex));
+        var problem = ObjectRegistry.Get<Problem>(handle);
+        if (problem == null || index < 0 || index >= problem._initialStaticFacts.Count) return 0;
+        return ObjectRegistry.Store(problem._initialStaticFacts[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_fluent_initial_atom_count")]
@@ -323,7 +343,7 @@ public static partial class Exports
         for (int i = 0; i < objects.Count; i++)
         {
             Constant argument = objects[i];
-            if (!problem.Objects.Any(candidate => ReferenceEquals(candidate, argument))) return 0;
+            if (!problem.AllObjects.Any(candidate => ReferenceEquals(candidate, argument))) return 0;
             if (!problem.Domain.IsCompatible(argument.Type, schema.Parameters[i].Type)) return 0;
         }
 

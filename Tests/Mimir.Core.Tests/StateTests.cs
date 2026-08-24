@@ -76,13 +76,13 @@ public class StateTests
         problemBuilder.InitialState().AddFact("present", "o0").Close();
         Problem problem = problemBuilder.Build();
         Mimir.Core.Schemas.Predicate<Fluent> predicate = Assert.Single(domain.Fluents);
-        foreach (Constant obj in problem.Objects)
+        foreach (Constant obj in problem.AllObjects)
             problem.Context.RegisterFact(predicate, [obj]);
 
         State initialState = problem.InitialState;
 
-        Assert.True(initialState.IsTrue(problem.Context.FindFact(predicate, [problem.Objects[0]])!));
-        Assert.False(initialState.IsTrue(problem.Context.FindFact(predicate, [problem.Objects[^1]])!));
+        Assert.True(initialState.IsTrue(problem.Context.FindFact(predicate, [problem.AllObjects[0]])!));
+        Assert.False(initialState.IsTrue(problem.Context.FindFact(predicate, [problem.AllObjects[^1]])!));
     }
 
     [Fact]
@@ -302,16 +302,16 @@ public class StateTests
             .Build();
         Problem problem = new ProblemBuilder(domain, "high-delete-problem").Build();
         Mimir.Core.Schemas.Predicate<Fluent> predicate = Assert.Single(domain.Fluents);
-        Constant firstObject = problem.Objects[0];
+        Constant firstObject = problem.AllObjects[0];
         Fact<Fluent> conditionFact = problem.Context.RegisterFact(
             predicate,
             [firstObject, firstObject]);
         State initialState = StateFactory.Default.Create(problem.Context, [conditionFact]);
         Fact<Fluent> highFact = conditionFact;
 
-        foreach (Constant left in problem.Objects)
+        foreach (Constant left in problem.AllObjects)
         {
-            foreach (Constant right in problem.Objects)
+            foreach (Constant right in problem.AllObjects)
             {
                 if (ReferenceEquals(left, firstObject) && ReferenceEquals(right, firstObject))
                     continue;

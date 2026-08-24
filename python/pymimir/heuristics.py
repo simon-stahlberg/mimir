@@ -73,7 +73,7 @@ class Heuristic(ABC):
 class _NativeHeuristic(_NativeOwner, Heuristic):
     _factory_name: ClassVar[str]
     _handle: int
-    _finalizer: weakref.finalize[..., object]
+    _finalizer: weakref.finalize
 
     def __init__(self, problem: Problem) -> None:
         super().__init__(problem)

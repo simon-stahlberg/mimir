@@ -256,6 +256,10 @@ public class InstanceContext
             GetDerivedEvaluationSlot(new DerivedIndex(fact.LocalIndex)))
             ?? throw new InvalidOperationException(nameof(evaluation));
 
+    internal IReadOnlyList<Fact<Derived>> GetTrueDerivedFacts(
+        DerivedPredicateEvaluation? evaluation)
+        => GetDerivedClosure().GetTrueFacts(evaluation);
+
     private DerivedPredicateClosure GetDerivedClosure()
         => _derivedClosure
             ?? throw new InvalidOperationException(nameof(InitializeDerivedClosure));

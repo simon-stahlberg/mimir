@@ -6,6 +6,7 @@ using Schemas;
 public sealed class ExtendedState : IEquatable<ExtendedState>
 {
     private readonly DerivedPredicateEvaluation? _derivedEvaluation;
+    private IReadOnlyList<Fact<Derived>>? _trueDerivedFacts;
 
     public State State { get; }
 
@@ -52,6 +53,13 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
             predicate,
             arguments,
             _derivedEvaluation);
+
+    public IReadOnlyList<Fact<Derived>> GetTrueDerivedFacts()
+    {
+        _trueDerivedFacts ??=
+            State.Context.GetTrueDerivedFacts(_derivedEvaluation);
+        return _trueDerivedFacts;
+    }
 
     public bool Equals(ExtendedState? other)
         => other is not null && State.Equals(other.State);

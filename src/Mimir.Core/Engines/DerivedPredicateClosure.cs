@@ -98,6 +98,134 @@ internal sealed partial class DerivedPredicateClosure
         }
     }
 
+    internal IReadOnlyList<Fact<Derived>> GetTrueFacts(
+        DerivedPredicateEvaluation? evaluation)
+    {
+        if (_hasStateDependentComponents && evaluation is null)
+            throw new InvalidOperationException(nameof(evaluation));
+
+        if (evaluation is not null)
+            CompleteAcyclicComponents(evaluation);
+
+        int slotCount = _context.DerivedEvaluationSlotCount;
+        var facts = new List<Fact<Derived>>();
+        for (int slotIndex = 0; slotIndex < slotCount; slotIndex++)
+        {
+            var slot = new DerivedEvaluationSlot(slotIndex);
+            DerivedFactKey key = _context.GetDerivedEvaluationKey(slot);
+            if (!IsMaterializedTrue(key.Predicate, slot, evaluation))
+                continue;
+
+            facts.Add(_context.RegisterFact(
+                key.Predicate,
+                key.GetArguments()));
+        }
+
+        return facts.AsReadOnly();
+    }
+
+    private void CompleteAcyclicComponents(
+        DerivedPredicateEvaluation evaluation)
+    {
+        DerivedEvaluationWorkspace workspace =
+            _context.RentDerivedEvaluationWorkspace();
+        try
+        {
+            foreach (DerivedPredicateComponent component in _plan.Components)
+            {
+                if (!component.IsStateDependent || component.RequiresFixedPoint)
+                    continue;
+
+                CompiledRule[] rules = _rulesByComponent[component];
+                for (int i = 0; i < rules.Length; i++)
+                    CompleteAcyclicRule(evaluation, rules[i], workspace);
+            }
+        }
+        finally
+        {
+            _context.ReturnDerivedEvaluationWorkspace(workspace);
+        }
+    }
+
+    private void CompleteAcyclicRule(
+        DerivedPredicateEvaluation evaluation,
+        CompiledRule rule,
+        DerivedEvaluationWorkspace workspace)
+    {
+        DerivedEvaluationFrame frame = workspace.RentFrame(
+            rule.SlotCount,
+            rule.HeadSlots.Length);
+        try
+        {
+            CompleteAcyclicHeadBindings(
+                evaluation,
+                rule,
+                parameterIndex: 0,
+                frame,
+                workspace);
+        }
+        finally
+        {
+            workspace.ReturnFrame(frame);
+        }
+    }
+
+    private void CompleteAcyclicHeadBindings(
+        DerivedPredicateEvaluation evaluation,
+        CompiledRule rule,
+        int parameterIndex,
+        DerivedEvaluationFrame frame,
+        DerivedEvaluationWorkspace workspace)
+    {
+        if (parameterIndex == rule.Predicate.Parameters.Count)
+        {
+            var key = new DerivedFactKey(
+                rule.Predicate,
+                frame.HeadArguments,
+                rule.HeadSlots.Length);
+            IsAcyclicTrue(
+                evaluation,
+                rule.Predicate,
+                key,
+                workspace);
+            return;
+        }
+
+        Constant[] candidates = rule.HeadCandidates[parameterIndex];
+        for (int i = 0; i < candidates.Length; i++)
+        {
+            Constant candidate = candidates[i];
+            frame.HeadArguments[parameterIndex] = candidate;
+            frame.Bindings[rule.HeadSlots[parameterIndex]] = candidate;
+            CompleteAcyclicHeadBindings(
+                evaluation,
+                rule,
+                parameterIndex + 1,
+                frame,
+                workspace);
+        }
+    }
+
+    private bool IsMaterializedTrue(
+        Predicate<Derived> predicate,
+        DerivedEvaluationSlot slot,
+        DerivedPredicateEvaluation? evaluation)
+    {
+        DerivedPredicateComponent component = _plan.GetComponent(predicate);
+        if (!component.IsStateDependent)
+            return _staticTruth.Contains(slot);
+
+        if (evaluation is null)
+            throw new InvalidOperationException(nameof(evaluation));
+        if (component.RequiresFixedPoint)
+            return evaluation.IsRecursiveTrue(slot);
+        if (evaluation.TryGetAcyclicTruth(slot, out bool isTrue))
+            return isTrue;
+
+        throw new InvalidOperationException(
+            $"Derived fact '{predicate.Name}' was not evaluated during enumeration.");
+    }
+
     internal bool IsStateDependentTrue(
         DerivedPredicateEvaluation evaluation,
         Predicate<Derived> predicate,

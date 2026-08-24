@@ -41,6 +41,23 @@ public static partial class Exports
         return ObjectRegistry.Store(s.Context.GetFact(fluentIndex));
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_state_get_derived_atom_count")]
+    public static int StateGetDerivedAtomCount(int handle)
+        => ReadValue(
+            handle,
+            -1,
+            (ExtendedState state) => state.GetTrueDerivedFacts().Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_state_get_derived_atom")]
+    public static int StateGetDerivedAtom(int handle, int index)
+    {
+        ExtendedState? state = ReadExtendedState(handle);
+        if (state is null) return 0;
+        IReadOnlyList<Fact<Derived>> facts = state.GetTrueDerivedFacts();
+        if (index < 0 || index >= facts.Count) return 0;
+        return ObjectRegistry.Store(facts[index]);
+    }
+
     [UnmanagedCallersOnly(EntryPoint = "mimir_state_contains_fluent")]
     public static int StateContainsFluent(int stateHandle, int factHandle)
     {
@@ -73,7 +90,18 @@ public static partial class Exports
     {
         return ReadValue(handle, IntPtr.Zero, (ExtendedState state) =>
         {
-            var facts = state.State.GetTrueFacts().Select(f => f.ToString());
+            IEnumerable<string> staticFacts = state.State.Context.Problem
+                ._initialStaticFacts
+                .Select(fact => fact.ToString());
+            IEnumerable<string> fluentFacts = state.State
+                .GetTrueFacts()
+                .Select(fact => fact.ToString());
+            IEnumerable<string> derivedFacts = state
+                .GetTrueDerivedFacts()
+                .Select(fact => fact.ToString());
+            IEnumerable<string> facts = staticFacts
+                .Concat(fluentFacts)
+                .Concat(derivedFacts);
             return AllocUtf8("[" + string.Join(", ", facts) + "]");
         });
     }

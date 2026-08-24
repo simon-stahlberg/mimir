@@ -1,6 +1,6 @@
 # Mimir Python API
 
-Mimir 0.14.0b1 provides a typed, semantic API for loading PDDL and prototyping
+Mimir 0.14.0b2 provides a typed, semantic API for loading PDDL and prototyping
 search algorithms.
 
 ```python

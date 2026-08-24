@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 
 import pymimir
 
@@ -8,21 +8,21 @@ def use_public_api(
     heuristic: pymimir.heuristics.Heuristic,
 ) -> None:
     state: pymimir.State = problem.initial_state
-    predicate: pymimir.model.Predicate = problem.domain.predicates[0]
-    variable: pymimir.model.Variable = problem.variable("?value")
-    atom: pymimir.model.Atom = problem.atom(predicate, variable)
-    literal: pymimir.model.Literal = problem.literal(atom)
-    condition: pymimir.model.ConjunctiveCondition = problem.condition(
+    predicate: pymimir.Predicate = problem.domain.predicates[0]
+    variable: pymimir.Variable = problem.variable("?value")
+    atom: pymimir.Atom = problem.atom(predicate, variable)
+    literal: pymimir.Literal = problem.literal(atom)
+    condition: pymimir.ConjunctiveCondition = problem.condition(
         literal, variables=[variable]
     )
-    bindings: tuple[dict[pymimir.model.Variable, pymimir.model.Object], ...] = (
+    bindings: tuple[dict[pymimir.Variable, pymimir.Object], ...] = (
         condition.bindings(state)
     )
-    ground_atom: pymimir.model.GroundAtom = problem.fact(
-        predicate.name, *(obj.name for obj in problem.objects[:predicate.arity])
+    ground_atom: pymimir.GroundAtom = problem.fact(
+        predicate.name, *(obj.name for obj in problem.all_objects[:predicate.arity])
     )
-    ground_literal: pymimir.model.GroundLiteral = problem.ground_literal(ground_atom)
-    ground_condition: pymimir.model.GroundConjunctiveCondition = problem.ground_condition(
+    ground_literal: pymimir.GroundLiteral = problem.ground_literal(ground_atom)
+    ground_condition: pymimir.GroundConjunctiveCondition = problem.ground_condition(
         ground_literal
     )
     custom_state: pymimir.State = problem.state(
@@ -30,6 +30,16 @@ def use_public_api(
     )
     held: bool = custom_state.holds(ground_condition)
     actions: tuple[pymimir.GroundAction, ...] = state.applicable_actions()
+    hierarchy: Mapping[str, str | None] = problem.domain.type_hierarchy
+    requirements: tuple[str, ...] = problem.requirements
+    declared_objects: tuple[pymimir.Object, ...] = problem.declared_objects
+    all_objects: tuple[pymimir.Object, ...] = problem.all_objects
+    static_atoms: tuple[pymimir.GroundAtom, ...] = state.static_atoms
+    fluent_atoms: tuple[pymimir.GroundAtom, ...] = state.fluent_atoms
+    derived_atoms: tuple[pymimir.GroundAtom, ...] = state.derived_atoms
+    atoms: tuple[pymimir.GroundAtom, ...] = state.atoms
+    _ = hierarchy, requirements, declared_objects, all_objects
+    _ = static_atoms, fluent_atoms, derived_atoms, atoms
 
     def visit_state(value: pymimir.State) -> None:
         pass
@@ -73,18 +83,18 @@ def use_public_api(
         _ = solved, elapsed
 
     for schema in problem.domain.actions:
-        static: tuple[pymimir.model.Literal, ...] = schema.static_preconditions
-        fluent: tuple[pymimir.model.Literal, ...] = schema.fluent_preconditions
-        derived: tuple[pymimir.model.Literal, ...] = schema.derived_preconditions
+        static: tuple[pymimir.Literal, ...] = schema.static_preconditions
+        fluent: tuple[pymimir.Literal, ...] = schema.fluent_preconditions
+        derived: tuple[pymimir.Literal, ...] = schema.derived_preconditions
         for conditional in schema.conditional_effects:
-            effect: pymimir.model.Effect = conditional.effect
-            effect_literals: tuple[pymimir.model.Literal, ...] = effect.literals
+            effect: pymimir.Effect = conditional.effect
+            effect_literals: tuple[pymimir.Literal, ...] = effect.literals
             _ = static, fluent, derived, effect_literals
 
     for action_value in actions:
-        effect_value: pymimir.model.GroundEffect = action_value.effect
-        added: tuple[pymimir.model.GroundAtom, ...] = effect_value.add_atoms
-        deleted: tuple[pymimir.model.GroundAtom, ...] = effect_value.delete_atoms
+        effect_value: pymimir.GroundEffect = action_value.effect
+        added: tuple[pymimir.GroundAtom, ...] = effect_value.add_atoms
+        deleted: tuple[pymimir.GroundAtom, ...] = effect_value.delete_atoms
         for ground_conditional in action_value.conditional_effects:
             satisfied: bool = ground_conditional.is_satisfied(state)
             _ = satisfied

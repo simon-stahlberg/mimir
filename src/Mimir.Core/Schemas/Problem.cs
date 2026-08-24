@@ -20,11 +20,14 @@ public class Problem
     public string Name { get; }
     public Domain Domain { get; }
     public InstanceContext Context { get; internal set; } = null!;
-    public IReadOnlyList<Constant> Objects { get; }
+    public IReadOnlyList<string> Requirements { get; }
+    public IReadOnlyList<Constant> DeclaredObjects { get; }
+    public IReadOnlyList<Constant> AllObjects { get; }
     public IReadOnlyDictionary<string, Constant> ObjectLookup { get; }
     public ApplicableActionGeneratorType GeneratorType { get; }
 
     internal readonly List<Fact<Fluent>> _initialFluentFacts = new();
+    internal readonly List<Fact<Static>> _initialStaticFacts = new();
     private State? _initialState;
 
     public State InitialState
@@ -114,6 +117,8 @@ public class Problem
 
         Domain = domain;
         Name = validatedProblem.Name;
+        Requirements = Array.AsReadOnly(
+            validatedProblem.Requirements.Select(requirement => requirement.ToPddlString()).ToArray());
         GeneratorType = generatorType;
 
         PddlProblemTranslator builder = programmaticInputs is null
@@ -124,7 +129,8 @@ public class Problem
             : new PddlProblemTranslator(domain, this, validatedProblem, programmaticInputs);
 
         Context = builder.Context;
-        Objects = Array.AsReadOnly(builder.Objects.ToArray());
+        DeclaredObjects = Array.AsReadOnly(builder.DeclaredObjects.ToArray());
+        AllObjects = Array.AsReadOnly(builder.AllObjects.ToArray());
         ObjectLookup = new ReadOnlyDictionary<string, Constant>(
             builder.ObjectLookup.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase));
         AllPredicates = new ReadOnlyDictionary<string, Predicate>(

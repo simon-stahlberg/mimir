@@ -33,8 +33,8 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert pymimir.advanced.lib.mimir_abi_version() == 12
-    assert pymimir.__version__ == "0.14.0b1"
+    assert pymimir.advanced.lib.mimir_abi_version() == 13
+    assert pymimir.__version__ == "0.14.0b2"
     assert not hasattr(pymimir, "brfs")
     assert not hasattr(pymimir, "astar_eager")
     assert not hasattr(pymimir, "gbfs_lazy")
@@ -43,12 +43,11 @@ def test_release_and_public_search_surface():
     assert inspect.signature(pymimir.bfs).parameters["timeout_seconds"].kind is inspect.Parameter.KEYWORD_ONLY
 
 
-def test_root_exports_only_core_model_and_concrete_heuristic_types():
-    root_model_types = {"Domain", "Problem", "State", "GroundAction"}
-    assert all(getattr(pymimir, name) is getattr(pymimir.model, name)
-               for name in root_model_types)
-    assert all(not hasattr(pymimir, name)
-               for name in set(pymimir.model.__all__) - root_model_types)
+def test_root_exports_complete_model_and_concrete_heuristic_types():
+    assert all(
+        getattr(pymimir, name) is getattr(pymimir.model, name)
+        for name in pymimir.model.__all__
+    )
     assert not hasattr(pymimir, "Heuristic")
     assert pymimir.BlindHeuristic is pymimir.heuristics.BlindHeuristic
     assert pymimir.heuristics.Heuristic.__abstractmethods__ == {"evaluate"}
@@ -122,6 +121,7 @@ def test_equality_is_an_ordinary_static_predicate(generator):
           (:goal (= a a)))
     """, generator=generator)
     equals = domain.predicate("=")
+    assert domain.uses_equality
     assert equals.name == "="
     assert equals.arity == 2
     assert tuple(parameter.type_name for parameter in equals.parameters) == ("object", "object")
@@ -146,6 +146,7 @@ def test_equality_is_an_ordinary_static_predicate(generator):
     non_reflexive = problem.fact("=", "a", "b")
     assert problem.initial_state.holds(reflexive)
     assert not problem.initial_state.holds(non_reflexive)
+    assert all(atom.predicate != equals for atom in problem.initial_static_atoms)
     assert problem.condition(
         problem.literal(problem.atom(equals, a, a)), variables=()
     ).bindings(problem.initial_state) == ({},)
@@ -169,6 +170,87 @@ def test_derived_equality_uses_the_ordinary_predicate_truth():
           (:goal (and (same a a) (not (same a b)))))
     """)
     assert problem.initial_state.holds(problem.goal)
+
+
+def test_type_requirement_and_object_metadata_are_direct_immutable_views():
+    domain = pymimir.Domain.from_pddl("""
+        (define (domain metadata-api)
+          (:requirements :adl)
+          (:types vehicle - object car - vehicle)
+          (:constants hub - vehicle)
+          (:predicates (parked ?x - vehicle)))
+    """)
+    problem = pymimir.Problem.from_pddl(domain, """
+        (define (problem metadata-problem)
+          (:domain metadata-api)
+          (:requirements :typing)
+          (:objects c - car v - vehicle)
+          (:init (parked hub))
+          (:goal (parked hub)))
+    """)
+
+    assert domain.requirements == (":adl",)
+    assert domain.expanded_requirements == (
+        ":strips",
+        ":typing",
+        ":equality",
+        ":negative-preconditions",
+        ":disjunctive-preconditions",
+        ":conditional-effects",
+        ":existential-preconditions",
+        ":universal-preconditions",
+        ":adl",
+    )
+    assert domain.uses_typing
+    assert domain.uses_equality
+    assert domain.uses_conditional_effects
+    assert tuple(domain.type_hierarchy.items()) == (
+        ("object", None),
+        ("vehicle", "object"),
+        ("car", "vehicle"),
+    )
+    with pytest.raises(TypeError):
+        domain.type_hierarchy["new"] = "object"  # type: ignore[index]
+
+    assert problem.requirements == (":typing",)
+    assert tuple(obj.name for obj in problem.declared_objects) == ("c", "v")
+    assert tuple(obj.name for obj in problem.all_objects) == ("hub", "c", "v")
+    assert problem.object("hub") == problem.all_objects[0]
+    assert problem.initial_state.static_atoms is problem.initial_static_atoms
+
+
+def test_implicit_strips_and_root_type_metadata():
+    domain = pymimir.Domain.from_pddl(
+        "(define (domain implicit-strips) (:predicates (p)))"
+    )
+    assert domain.requirements == ()
+    assert domain.expanded_requirements == (":strips",)
+    assert tuple(domain.type_hierarchy.items()) == (("object", None),)
+    assert not domain.uses_typing
+    assert not domain.uses_equality
+    assert not domain.uses_conditional_effects
+
+
+def test_lift_adds_inequalities_when_adl_implies_equality():
+    domain = pymimir.Domain.from_pddl("""
+        (define (domain adl-lift)
+          (:requirements :adl)
+          (:predicates (paired ?left ?right)))
+    """)
+    problem = pymimir.Problem.from_pddl(domain, """
+        (define (problem adl-lift-problem)
+          (:domain adl-lift)
+          (:objects a b)
+          (:init (paired a b))
+          (:goal (paired a b)))
+    """)
+
+    lifted = problem.goal.lift(add_inequalities=True)
+    equality_literals = [
+        literal for literal in lifted if literal.atom.predicate.name == "="
+    ]
+    assert len(equality_literals) == 1
+    assert equality_literals[0].is_negative
 
 
 @pytest.fixture
@@ -214,9 +296,13 @@ def test_every_python_state_producer_exposes_derived_truth(extended_state_proble
     assert successor.holds(ready)
     assert successor == custom
     assert hash(successor) == hash(custom)
-    assert tuple(successor) == (enabled,)
-    assert len(successor) == 1
-    assert 'ready' not in str(successor)
+    assert successor.static_atoms == problem.initial_static_atoms
+    assert successor.fluent_atoms == (enabled,)
+    assert successor.derived_atoms == (ready,)
+    assert successor.atoms == (enabled, ready)
+    assert tuple(successor) == successor.atoms
+    assert len(successor) == 2
+    assert 'ready' in str(successor)
 
     finish = problem.action('finish')
     assert finish.is_applicable(successor)
@@ -329,7 +415,10 @@ def test_problem_owns_action_generation_and_search(blocks, generator):
         generator=generator,
     )
     assert problem.generator == generator
-    assert problem.initial_state.applicable_actions()
+    state = problem.initial_state
+    actions = state.applicable_actions()
+    assert actions
+    assert state.applicable_actions() is actions
     assert pymimir.bfs(problem).is_solved
     assert len(pymimir.StateSpace(problem, max_states=1000)) > 1
     custom_state = problem.state()
@@ -341,6 +430,99 @@ def test_problem_owns_action_generation_and_search(blocks, generator):
     goal_count = pymimir.GoalCountHeuristic(problem)
     assert isinstance(goal_count.preferred_actions(problem.initial_state), tuple)
     assert pymimir.PerfectHeuristic(problem).evaluate(problem.initial_state) >= 0.0
+
+
+def test_empty_applicable_action_tuple_is_cached():
+    domain = pymimir.Domain.from_pddl(
+        "(define (domain no-actions) (:requirements :strips) (:predicates (p)))"
+    )
+    problem = pymimir.Problem.from_pddl(domain, """
+        (define (problem no-actions-problem)
+          (:domain no-actions)
+          (:init)
+          (:goal (p)))
+    """)
+    state = problem.initial_state
+    actions = state.applicable_actions()
+    assert actions == ()
+    assert state.applicable_actions() is actions
+
+
+def test_hot_native_views_are_cached(blocks):
+    domain = blocks.domain
+    assert domain.requirements is domain.requirements
+    assert domain.expanded_requirements is domain.expanded_requirements
+    assert domain.type_hierarchy is domain.type_hierarchy
+    assert domain.predicates is domain.predicates
+    assert domain.static_predicates is domain.static_predicates
+    assert domain.fluent_predicates is domain.fluent_predicates
+    assert domain.derived_predicates is domain.derived_predicates
+    assert domain.actions is domain.actions
+    assert domain.constants is domain.constants
+
+    assert blocks.requirements is blocks.requirements
+    assert blocks.declared_objects is blocks.declared_objects
+    assert blocks.all_objects is blocks.all_objects
+    assert blocks.initial_static_atoms is blocks.initial_static_atoms
+    assert blocks.initial_fluent_atoms is blocks.initial_fluent_atoms
+    assert blocks.initial_atoms is blocks.initial_atoms
+
+    state = blocks.initial_state
+    assert state.static_atoms is state.static_atoms
+    assert state.fluent_atoms is state.fluent_atoms
+    assert state.derived_atoms is state.derived_atoms
+    assert state.atoms is state.atoms
+
+    atom = state.atoms[0]
+    assert atom.predicate is atom.predicate
+    assert atom.objects is atom.objects
+    action = state.applicable_actions()[0]
+    assert action.schema is action.schema
+    assert action.objects is action.objects
+    assert action.precondition is action.precondition
+    assert action.effect is action.effect
+    assert action.conditional_effects is action.conditional_effects
+
+
+def test_cached_owner_child_cycles_release_native_handles():
+    def create_cached_values():
+        domain = pymimir.Domain.from_pddl("""
+            (define (domain cached-cycle)
+              (:requirements :strips)
+              (:predicates (p ?x))
+              (:action set
+                :parameters (?x)
+                :precondition ()
+                :effect (p ?x)))
+        """)
+        problem = pymimir.Problem.from_pddl(domain, """
+            (define (problem cached-cycle-problem)
+              (:domain cached-cycle)
+              (:objects a)
+              (:init)
+              (:goal (p a)))
+        """)
+        state = problem.initial_state
+        domain.predicates
+        problem.all_objects
+        state.atoms
+        state.applicable_actions()
+        return (
+            weakref.ref(domain),
+            weakref.ref(problem),
+            weakref.ref(state),
+            (domain._handle, problem._handle, state._handle),
+        )
+
+    domain_ref, problem_ref, state_ref, handles = create_cached_values()
+    gc.collect()
+
+    assert domain_ref() is None
+    assert problem_ref() is None
+    assert state_ref() is None
+    for handle in handles:
+        with pytest.raises(ValueError, match="invalid native value"):
+            pymimir.advanced.value_hash(handle)
 
 
 def test_problem_defaults_to_lifted_generator():
@@ -380,7 +562,9 @@ def test_grounded_rpg_heuristic_rejects_lifted_problem(blocks):
 def test_explicit_loaders_and_raw_constructors(blocks):
     assert blocks.name == "blocksworld-300"
     assert blocks.domain.name == "blocksworld"
-    assert isinstance(blocks.objects, tuple)
+    assert isinstance(blocks.all_objects, tuple)
+    assert isinstance(blocks.declared_objects, tuple)
+    assert not hasattr(blocks, "objects")
     with pytest.raises(TypeError):
         pymimir.Domain(EXAMPLES / "blocks_3" / "domain.pddl")
     with pytest.raises(TypeError):
@@ -395,7 +579,7 @@ def test_legacy_getters_and_factories_are_not_public(blocks):
     values = (
         blocks.domain,
         blocks,
-        blocks.objects[0],
+        blocks.all_objects[0],
         blocks.domain.predicates[0],
         blocks.domain.actions[0],
         blocks.initial_state,
@@ -453,11 +637,11 @@ def test_properties_factories_and_state_construction(blocks):
     fact = blocks.fact("clear", "b1")
     assert fact.predicate == clear
     custom = blocks.state(fact, fact)
-    assert len(custom) == 1
+    assert len(custom) == len(custom.static_atoms) + 1
     assert fact in custom
-    assert tuple(custom) == custom.fluent_atoms
+    assert tuple(custom) == custom.static_atoms + custom.fluent_atoms
     with pytest.raises(TypeError):
-        blocks.ground_atom("clear", blocks.objects[0])
+        blocks.ground_atom("clear", blocks.all_objects[0])
     with pytest.raises(ValueError):
         blocks.ground_atom(clear)
     with pytest.raises(KeyError):
@@ -498,10 +682,11 @@ def test_atom_predicates_retain_the_domain_without_retaining_the_problem(kind):
 
 def test_variadic_state_contract(blocks):
     first, second = blocks.initial_fluent_atoms[:2]
-    assert len(blocks.state()) == 0
-    assert tuple(blocks.state(first)) == (first,)
-    assert set(blocks.state(first, second)) == {first, second}
-    assert tuple(blocks.state(first, first)) == (first,)
+    empty = blocks.state()
+    assert tuple(empty) == empty.static_atoms
+    assert tuple(blocks.state(first)) == empty.static_atoms + (first,)
+    assert set(blocks.state(first, second)) == set(empty.static_atoms) | {first, second}
+    assert tuple(blocks.state(first, first)) == empty.static_atoms + (first,)
     with pytest.raises(TypeError, match="GroundAtom"):
         blocks.state([first])
 
@@ -560,7 +745,7 @@ def test_factory_ownership_errors_are_values(blocks):
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
     with pytest.raises(ValueError):
-        blocks.ground_atom(blocks.domain.predicate("clear"), other.objects[0])
+        blocks.ground_atom(blocks.domain.predicate("clear"), other.all_objects[0])
     with pytest.raises(ValueError):
         blocks.state(other.fact("clear", "b1"))
 

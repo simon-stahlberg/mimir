@@ -199,7 +199,7 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
                     parameterName);
             }
 
-            if (!problem.Objects.Any(candidate => ReferenceEquals(candidate, constant)))
+            if (!problem.AllObjects.Any(candidate => ReferenceEquals(candidate, constant)))
             {
                 throw new ArgumentException(
                     $"Constant '{constant.Name}' does not belong to the goal problem.",

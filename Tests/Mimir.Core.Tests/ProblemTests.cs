@@ -14,6 +14,63 @@ public class ProblemTests
     private static string BasePath => Path.Combine(AppContext.BaseDirectory, "../../../../../Tests/Examples");
 
     [Fact]
+    public void RequirementsAndObjectViewsPreserveSourceOrder()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain problem-metadata)
+  (:requirements :strips :typing)
+  (:types item)
+  (:constants home - item)
+  (:predicates (ready ?item - item)))
+""");
+        Problem problem = Problem.FromText(domain, """
+(define (problem metadata-problem)
+  (:domain problem-metadata)
+  (:requirements :typing)
+  (:objects first second - item)
+  (:init (ready first))
+  (:goal (ready second)))
+""");
+
+        Assert.Equal([":typing"], problem.Requirements);
+        IList<string> requirements = Assert.IsAssignableFrom<IList<string>>(problem.Requirements);
+        Assert.Throws<NotSupportedException>(() => requirements[0] = ":strips");
+        Assert.Equal(["first", "second"], problem.DeclaredObjects.Select(value => value.Name));
+        Assert.Equal(["home", "first", "second"], problem.AllObjects.Select(value => value.Name));
+        Assert.Same(problem.DeclaredObjects[0], problem.AllObjects[1]);
+        Assert.Same(problem.DeclaredObjects[1], problem.AllObjects[2]);
+    }
+
+    [Fact]
+    public void ExplicitInitialStaticsExcludeSemanticEqualityFacts()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain static-initial-facts)
+  (:requirements :strips :equality)
+  (:predicates (linked ?left ?right)))
+""");
+        Problem problem = Problem.FromText(domain, """
+(define (problem static-initial-problem)
+  (:domain static-initial-facts)
+  (:objects a b)
+  (:init (linked a b))
+  (:goal (linked a b)))
+""");
+
+        Fact<Static> explicitFact = Assert.Single(problem._initialStaticFacts);
+        Assert.Equal("linked", explicitFact.Predicate.Name);
+
+        Mimir.Core.Schemas.Predicate<Static> equality =
+            Assert.IsType<Mimir.Core.Schemas.Predicate<Static>>(problem.AllPredicates["="]);
+        Constant a = problem.ObjectLookup["a"];
+        Fact<Static> reflexiveEquality = problem.Context.RegisterFact(equality, [a, a]);
+
+        Assert.True(problem.InitialState.Expand().IsTrue(reflexiveEquality));
+        Assert.Single(problem._initialStaticFacts);
+        Assert.DoesNotContain(problem._initialStaticFacts, fact => ReferenceEquals(fact, reflexiveEquality));
+    }
+
+    [Fact]
     public void BlocksWorldProblemGrounding()
     {
         var domainPath = Path.Combine(BasePath, "blocks_4", "domain.pddl");
@@ -23,7 +80,7 @@ public class ProblemTests
         var problem = Problem.FromFile(domain, problemPath);
 
         Assert.Equal("blocksworld-300", problem.Name);
-        Assert.Equal(3, problem.Objects.Count); // b1, b2, b3
+        Assert.Equal(3, problem.AllObjects.Count); // b1, b2, b3
         
         // Initial State
         // (arm-empty)
@@ -115,7 +172,7 @@ public class ProblemTests
 """);
 
         Assert.Equal("test-problem", problem.Name);
-        Assert.Equal(["a"], problem.Objects.Select(obj => obj.Name).ToArray());
+        Assert.Equal(["a"], problem.AllObjects.Select(obj => obj.Name).ToArray());
         Assert.Single(problem.Goal);
     }
 

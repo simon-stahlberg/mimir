@@ -396,6 +396,128 @@ public sealed class ExtendedStateTests
         Assert.Throws<ArgumentException>(() => localState.IsTrue(foreignFact));
     }
 
+    [Fact]
+    public void TrueAcyclicFactsAreEnumeratedWithoutPriorRegistration()
+    {
+        Problem problem =
+            CreateProblemForOldInterleavedStatesGrowForLateAcyclicSlotsWithoutLosingTruth();
+        ExtendedState state = problem.InitialState.Expand();
+
+        Assert.Empty(problem.Context.Derived);
+
+        IReadOnlyList<Fact<Derived>> facts = state.GetTrueDerivedFacts();
+
+        Assert.Equal(
+            ["true-a", "true-b", "true-c"],
+            facts
+                .Select(fact => Assert.Single(fact.Arguments).Name)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+        Assert.Equal(3, problem.Context.Derived.Count);
+        DerivedPredicate ready = problem.Domain.Derived.Single();
+        Fact<Derived> registered = problem.Context.RegisterFact(
+            ready,
+            [problem.ObjectLookup["true-a"]]);
+        Assert.Contains(facts, fact => ReferenceEquals(fact, registered));
+    }
+
+    [Fact]
+    public void RecursiveClosureFactsAreEnumeratedWithoutReevaluationQueries()
+    {
+        Problem problem =
+            CreateProblemForRecursiveTruthSupportsFactsRegisteredAfterExpansion();
+        ExtendedState state = problem.InitialState.Expand();
+
+        Assert.Empty(problem.Context.Derived);
+
+        IReadOnlyList<Fact<Derived>> facts = state.GetTrueDerivedFacts();
+        DerivedPredicate reachable = problem.Domain.Derived
+            .Single(predicate => predicate.Name == "reachable");
+
+        Assert.Equal(
+            ["a", "b"],
+            facts
+                .Where(fact => ReferenceEquals(fact.Predicate, reachable))
+                .Select(fact => Assert.Single(fact.Arguments).Name)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+        Assert.Equal(3, facts.Count);
+        Assert.Equal(3, problem.Context.Derived.Count);
+        Assert.All(facts, fact => Assert.True(state.IsTrue(fact)));
+    }
+
+    [Fact]
+    public void StaticDerivedFactsAreEnumeratedWithoutStateEvaluation()
+    {
+        Domain domain = new DomainBuilder("static-enumeration")
+            .Requirements().Add(":adl").Close()
+            .Predicates().Add("seed").Add("done").Add("ready").Close()
+            .Actions().Add("finish").AddEffect("done").Close().Close()
+            .DerivedPredicates().Define("ready", Logic.Atom("seed")).Close()
+            .Build();
+        Problem problem = new ProblemBuilder(domain, "static-enumeration-problem")
+            .InitialState().AddFact("seed").Close()
+            .Goal().Add("done").Close()
+            .Build();
+        ExtendedState state = problem.InitialState.Expand();
+
+        Assert.Empty(problem.Context.Derived);
+
+        Fact<Derived> fact = Assert.Single(state.GetTrueDerivedFacts());
+
+        Assert.Equal("ready", fact.Predicate.Name);
+        Assert.Empty(fact.Arguments);
+        Assert.Same(fact, Assert.Single(problem.Context.Derived));
+    }
+
+    [Fact]
+    public void DerivedEnumerationReflectsSuccessorStateChanges()
+    {
+        Problem problem =
+            CreateProblemForOldInterleavedStatesGrowForLateAcyclicSlotsWithoutLosingTruth();
+        Constant trueA = problem.ObjectLookup["true-a"];
+        GroundAction clearTrueA = new RpgGrounder()
+            .Ground(problem, problem.InitialState)
+            .Single(action => action.Schema.Name == "clear"
+                && ReferenceEquals(action.Arguments[0], trueA));
+        ExtendedState initial = problem.InitialState.Expand();
+        ExtendedState successor = initial.Apply(clearTrueA).Expand();
+
+        Assert.Equal(
+            ["true-a", "true-b", "true-c"],
+            initial.GetTrueDerivedFacts()
+                .Select(fact => Assert.Single(fact.Arguments).Name)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+        Assert.Equal(
+            ["true-b", "true-c"],
+            successor.GetTrueDerivedFacts()
+                .Select(fact => Assert.Single(fact.Arguments).Name)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+    }
+
+    [Fact]
+    public void RepeatedDerivedEnumerationReturnsTheSameSnapshot()
+    {
+        Problem problem =
+            CreateProblemForRecursiveTruthSupportsFactsRegisteredAfterExpansion();
+        ExtendedState state = problem.InitialState.Expand();
+
+        IReadOnlyList<Fact<Derived>> first = state.GetTrueDerivedFacts();
+        int registeredFactCount = problem.Context.Derived.Count;
+        DerivedPredicate reachable = problem.Domain.Derived
+            .Single(predicate => predicate.Name == "reachable");
+        Fact<Derived> falseFact = problem.Context.RegisterFact(
+            reachable,
+            [problem.ObjectLookup["c"]]);
+
+        Assert.False(state.IsTrue(falseFact));
+        Assert.Same(first, state.GetTrueDerivedFacts());
+        Assert.Equal(registeredFactCount + 1, problem.Context.Derived.Count);
+        Assert.DoesNotContain(first, fact => ReferenceEquals(fact, falseFact));
+    }
+
     private static Problem CreateStateDependentReadyProblem()
     {
         Domain domain = new DomainBuilder("state-dependent-ready")

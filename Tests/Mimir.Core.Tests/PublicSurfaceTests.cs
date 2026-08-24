@@ -89,7 +89,7 @@ public class PublicSurfaceTests
         InstanceContext context = problem.Context;
         FluentPredicate predicate = Assert.Single(domain.Fluents);
         DerivedPredicate derivedPredicate = Assert.Single(domain.Derived);
-        Constant constant = Assert.Single(problem.Objects);
+        Constant constant = Assert.Single(problem.AllObjects);
         var arguments = new List<Constant> { constant };
         Fact<Fluent> fact = context.RegisterFact(predicate, arguments);
         Fact<Derived> derivedFact = context.RegisterFact(derivedPredicate, arguments);

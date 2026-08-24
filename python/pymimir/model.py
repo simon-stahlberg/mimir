@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import ctypes
 import os
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from enum import Enum
+from functools import cached_property
+from types import MappingProxyType
 from typing import Literal as TypingLiteral, TypeAlias, TypeVar
 import weakref
 
@@ -77,7 +79,7 @@ class _Handle(_NativeOwner):
 
     _handle: int
     _owner: Domain | Problem | None
-    _finalizer: weakref.finalize[..., object] | None
+    _finalizer: weakref.finalize | None
 
     def __init__(self) -> None:
         raise TypeError(f"{type(self).__name__} values are created by Domain or Problem")
@@ -282,12 +284,12 @@ class Atom(_Handle):
 class GroundAtom(_Handle):
     """A ground atom: a predicate applied to objects."""
 
-    @property
+    @cached_property
     def predicate(self) -> Predicate:
         owner = self._owner.domain if isinstance(self._owner, Problem) else self._owner
         return Predicate._from_handle(lib.mimir_ground_atom_get_predicate(self._handle), owner)
 
-    @property
+    @cached_property
     def objects(self) -> tuple[Object, ...]:
         n = lib.mimir_ground_atom_get_argument_count(self._handle)
         return tuple(
@@ -791,7 +793,7 @@ class GroundAction(_Handle):
     def cost(self) -> float:
         return float(lib.mimir_ground_action_get_cost(self._handle))
 
-    @property
+    @cached_property
     def schema(self) -> Action:
         return Action._from_handle(lib.mimir_ground_action_get_schema(self._handle), self._problem.domain)
 
@@ -799,20 +801,20 @@ class GroundAction(_Handle):
     def problem(self) -> "Problem":
         return self._problem
 
-    @property
+    @cached_property
     def objects(self) -> tuple[Object, ...]:
         n = lib.mimir_ground_action_get_argument_count(self._handle)
         return tuple(Object._from_handle(lib.mimir_ground_action_get_argument(self._handle, i), self._problem) for i in range(n))
 
-    @property
+    @cached_property
     def precondition(self) -> "GroundConjunctiveCondition":
         return GroundConjunctiveCondition._from_ground_action(self, self._problem)
 
-    @property
+    @cached_property
     def effect(self) -> GroundEffect:
         return GroundEffect._from_parts(self._problem, action=self)
 
-    @property
+    @cached_property
     def conditional_effects(self) -> tuple[GroundConditionalEffect, ...]:
         n = lib.mimir_ground_action_get_conditional_effect_count(self._handle)
         return tuple(GroundConditionalEffect._from_handle(lib.mimir_ground_action_get_conditional_effect(self._handle, i), self._problem) for i in range(n))
@@ -882,36 +884,86 @@ class Domain(_Handle):
     def name(self) -> str:
         return _required_string(lib.mimir_domain_get_name(self._handle), "Domain.name")
 
-    @property
+    @cached_property
     def requirements(self) -> tuple[str, ...]:
         n = lib.mimir_domain_get_requirement_count(self._handle)
         return tuple(_required_string(lib.mimir_domain_get_requirement(self._handle, i), "Domain.requirement") for i in range(n))
 
-    @property
+    @cached_property
+    def expanded_requirements(self) -> tuple[str, ...]:
+        n = lib.mimir_domain_get_expanded_requirement_count(self._handle)
+        return tuple(
+            _required_string(
+                lib.mimir_domain_get_expanded_requirement(self._handle, i),
+                "Domain.expanded_requirement",
+            )
+            for i in range(n)
+        )
+
+    @cached_property
+    def type_hierarchy(self) -> Mapping[str, str | None]:
+        n = lib.mimir_domain_get_type_count(self._handle)
+        hierarchy: dict[str, str | None] = {}
+        for index in range(n):
+            name = _required_string(
+                lib.mimir_domain_get_type_name(self._handle, index),
+                "Domain.type_hierarchy key",
+            )
+            parent = take_string(lib.mimir_domain_get_type_parent(self._handle, index))
+            if index == 0:
+                if name != "object" or parent is not None:
+                    raise RuntimeError("native type hierarchy must start with the object root")
+            elif parent is None:
+                raise RuntimeError(f"native type {name!r} has no parent")
+            hierarchy[name] = parent
+        return MappingProxyType(hierarchy)
+
+    @cached_property
+    def uses_typing(self) -> bool:
+        return relationship_value(
+            lib.mimir_domain_uses_typing(self._handle),
+            "cannot query typing support on an invalid domain",
+        )
+
+    @cached_property
+    def uses_equality(self) -> bool:
+        return relationship_value(
+            lib.mimir_domain_uses_equality(self._handle),
+            "cannot query equality support on an invalid domain",
+        )
+
+    @cached_property
+    def uses_conditional_effects(self) -> bool:
+        return relationship_value(
+            lib.mimir_domain_uses_conditional_effects(self._handle),
+            "cannot query conditional-effect support on an invalid domain",
+        )
+
+    @cached_property
     def predicates(self) -> tuple[Predicate, ...]:
         return self.static_predicates + self.fluent_predicates + self.derived_predicates
 
-    @property
+    @cached_property
     def static_predicates(self) -> tuple[Predicate, ...]:
         n = lib.mimir_domain_get_static_predicate_count(self._handle)
         return tuple(Predicate._from_handle(lib.mimir_domain_get_static_predicate(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def fluent_predicates(self) -> tuple[Predicate, ...]:
         n = lib.mimir_domain_get_fluent_predicate_count(self._handle)
         return tuple(Predicate._from_handle(lib.mimir_domain_get_fluent_predicate(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def derived_predicates(self) -> tuple[Predicate, ...]:
         n = lib.mimir_domain_get_derived_predicate_count(self._handle)
         return tuple(Predicate._from_handle(lib.mimir_domain_get_derived_predicate(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def actions(self) -> tuple[Action, ...]:
         n = lib.mimir_domain_get_action_count(self._handle)
         return tuple(Action._from_handle(lib.mimir_domain_get_action(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def constants(self) -> tuple[Object, ...]:
         n = lib.mimir_domain_get_constant_count(self._handle)
         return tuple(Object._from_handle(lib.mimir_domain_get_constant(self._handle, i), self) for i in range(n))
@@ -1071,10 +1123,34 @@ class Problem(_Handle):
         )
         return _validate_generator(value)
 
-    @property
-    def objects(self) -> tuple[Object, ...]:
-        n = lib.mimir_problem_get_object_count(self._handle)
-        return tuple(Object._from_handle(lib.mimir_problem_get_object(self._handle, i), self) for i in range(n))
+    @cached_property
+    def requirements(self) -> tuple[str, ...]:
+        n = lib.mimir_problem_get_requirement_count(self._handle)
+        return tuple(
+            _required_string(
+                lib.mimir_problem_get_requirement(self._handle, i),
+                "Problem.requirement",
+            )
+            for i in range(n)
+        )
+
+    @cached_property
+    def declared_objects(self) -> tuple[Object, ...]:
+        n = lib.mimir_problem_get_declared_object_count(self._handle)
+        return tuple(
+            Object._from_handle(
+                lib.mimir_problem_get_declared_object(self._handle, i), self
+            )
+            for i in range(n)
+        )
+
+    @cached_property
+    def all_objects(self) -> tuple[Object, ...]:
+        n = lib.mimir_problem_get_all_object_count(self._handle)
+        return tuple(
+            Object._from_handle(lib.mimir_problem_get_all_object(self._handle, i), self)
+            for i in range(n)
+        )
 
     @property
     def initial_state(self) -> "State":
@@ -1083,17 +1159,17 @@ class Problem(_Handle):
             raise RuntimeError("Failed to retrieve initial state")
         return State._from_handle(handle, self)
 
-    @property
+    @cached_property
     def initial_static_atoms(self) -> tuple[GroundAtom, ...]:
         n = lib.mimir_problem_get_static_initial_atom_count(self._handle)
         return tuple(GroundAtom._from_handle(lib.mimir_problem_get_static_initial_atom(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def initial_fluent_atoms(self) -> tuple[GroundAtom, ...]:
         n = lib.mimir_problem_get_fluent_initial_atom_count(self._handle)
         return tuple(GroundAtom._from_handle(lib.mimir_problem_get_fluent_initial_atom(self._handle, i), self) for i in range(n))
 
-    @property
+    @cached_property
     def initial_atoms(self) -> tuple[GroundAtom, ...]:
         return self.initial_static_atoms + self.initial_fluent_atoms
 
@@ -1290,12 +1366,13 @@ def _handle_array(handles: Sequence[int]) -> tuple[ctypes.c_void_p, object | Non
 
 
 class State(_Handle):
-    """A state with materialized derived truth and fluent-only iteration."""
+    """A state with complete static, fluent, and derived atom views."""
 
     def __init__(self) -> None:
         raise TypeError("use Problem.state(), Problem.initial_state, or search results")
 
     _problem: Problem
+    _applicable_actions: tuple[GroundAction, ...] | None
 
     @classmethod
     def _from_handle(
@@ -1308,6 +1385,7 @@ class State(_Handle):
             if not isinstance(owner, Problem):
                 raise TypeError("states require a problem owner")
             value._problem = owner
+            value._applicable_actions = None
         except BaseException:
             free_handle(handle)
             raise
@@ -1318,13 +1396,31 @@ class State(_Handle):
     def problem(self) -> Problem:
         return self._problem
 
-    @property
+    @cached_property
+    def static_atoms(self) -> tuple[GroundAtom, ...]:
+        return self._problem.initial_static_atoms
+
+    @cached_property
     def fluent_atoms(self) -> tuple[GroundAtom, ...]:
         count = lib.mimir_state_get_fluent_atom_count(self._handle)
         return tuple(
             GroundAtom._from_handle(lib.mimir_state_get_fluent_atom(self._handle, index), self._problem)
             for index in range(count)
         )
+
+    @cached_property
+    def derived_atoms(self) -> tuple[GroundAtom, ...]:
+        count = lib.mimir_state_get_derived_atom_count(self._handle)
+        return tuple(
+            GroundAtom._from_handle(
+                lib.mimir_state_get_derived_atom(self._handle, index), self._problem
+            )
+            for index in range(count)
+        )
+
+    @cached_property
+    def atoms(self) -> tuple[GroundAtom, ...]:
+        return self.static_atoms + self.fluent_atoms + self.derived_atoms
 
     def contains(self, ground_atom: GroundAtom) -> bool:
         if not isinstance(ground_atom, GroundAtom):
@@ -1378,13 +1474,15 @@ class State(_Handle):
     def applicable_actions(
         self,
     ) -> tuple[GroundAction, ...]:
+        if self._applicable_actions is not None:
+            return self._applicable_actions
         list_handle = lib.mimir_state_generate_applicable_actions(
             self._handle, self._problem._handle
         )
         if list_handle == 0:
             raise ValueError("state does not belong to this problem")
         try:
-            return tuple(
+            actions = tuple(
                 GroundAction._from_handle(
                     lib.mimir_action_list_get(list_handle, index), self._problem
                 )
@@ -1392,12 +1490,14 @@ class State(_Handle):
             )
         finally:
             free_handle(list_handle)
+        self._applicable_actions = actions
+        return actions
 
     def __iter__(self) -> Iterator[GroundAtom]:
-        return iter(self.fluent_atoms)
+        return iter(self.atoms)
 
     def __len__(self) -> int:
-        return int(lib.mimir_state_get_fluent_atom_count(self._handle))
+        return len(self.atoms)
 
     def __contains__(self, atom: object) -> bool:
         return isinstance(atom, GroundAtom) and self.contains(atom)
@@ -1581,7 +1681,7 @@ class GroundConjunctiveCondition(_NativeOwner):
     _literals: list[GroundLiteral]
     _problem: Problem
     _handle: int
-    _finalizer: weakref.finalize[..., object]
+    _finalizer: weakref.finalize
 
     def __init__(self) -> None:
         raise TypeError("use Problem.ground_condition()")
@@ -1672,7 +1772,7 @@ class GroundConjunctiveCondition(_NativeOwner):
             lifted_literals.append(problem.literal(lifted_atom, positive=polarity))
 
         variables = list(variable_map.values())
-        if add_inequalities and ":equality" in problem.domain.requirements:
+        if add_inequalities and problem.domain.uses_equality:
             equals = problem.domain.predicate("=")
             variables = list(variable_map.values())
             for i in range(len(variables)):
