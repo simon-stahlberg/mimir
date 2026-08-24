@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from mimir import LiftedFFHeuristic, Problem, astar
+from pymimir import LiftedFFHeuristic, Problem, astar
 
 
 parser = ArgumentParser()

@@ -6,7 +6,7 @@ PDDL.
 Load models with :class:`Problem.from_files`, construct prototype values through
 problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 :func:`astar`, :func:`gbfs`, or :func:`iw`. Low-level ctypes signatures under
-:mod:`mimir.advanced` are explicitly unstable.
+:mod:`pymimir.advanced` are explicitly unstable.
 """
 
 from . import heuristics, model, search, state_space
@@ -38,7 +38,7 @@ from .heuristics import (
 from .state_space import StateLabel, StateSpace
 from .errors import MimirError, PddlError
 
-__version__: str = "0.4.0"
+__version__: str = "0.14.0b1"
 
 __all__ = [
     # Model

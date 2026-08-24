@@ -1,10 +1,10 @@
 # Mimir Python API
 
-Mimir 0.4 provides a typed, semantic API for loading PDDL and prototyping
+Mimir 0.14.0b1 provides a typed, semantic API for loading PDDL and prototyping
 search algorithms.
 
 ```python
-from mimir import LiftedFFHeuristic, Problem, SearchStatus, astar
+from pymimir import LiftedFFHeuristic, Problem, SearchStatus, astar
 
 problem = Problem.from_files("domain.pddl", "problem.pddl")
 heuristic = LiftedFFHeuristic(problem)
@@ -17,7 +17,7 @@ if result.solution is not None:
 
 Use `problem.fact("at", "robot", "room")`, `problem.action(...)`, and
 `problem.state(...)` to construct values without editing PDDL files. Search
-callbacks receive immutable `Transition` records. The `mimir.advanced`
+callbacks receive immutable `Transition` records. The `pymimir.advanced`
 module is an unstable implementation detail.
 
 Run the complete example with:

@@ -16,7 +16,7 @@ import weakref
 
 import pytest
 
-import mimir
+import pymimir
 
 
 EXAMPLES = Path(__file__).resolve().parents[2] / "Tests" / "Examples"
@@ -25,7 +25,7 @@ EXAMPLES = Path(__file__).resolve().parents[2] / "Tests" / "Examples"
 @pytest.fixture
 def blocks():
     base = EXAMPLES / "blocks_3"
-    return mimir.Problem.from_files(
+    return pymimir.Problem.from_files(
         base / "domain.pddl",
         base / "p01.pddl",
         generator="grounded",
@@ -33,25 +33,25 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert mimir.advanced.lib.mimir_abi_version() == 12
-    assert mimir.__version__ == "0.4.0"
-    assert not hasattr(mimir, "brfs")
-    assert not hasattr(mimir, "astar_eager")
-    assert not hasattr(mimir, "gbfs_lazy")
-    assert not hasattr(mimir, "StateSpaceSampler")
-    assert inspect.signature(mimir.astar).parameters["heuristic"].default is inspect.Parameter.empty
-    assert inspect.signature(mimir.bfs).parameters["timeout_seconds"].kind is inspect.Parameter.KEYWORD_ONLY
+    assert pymimir.advanced.lib.mimir_abi_version() == 12
+    assert pymimir.__version__ == "0.14.0b1"
+    assert not hasattr(pymimir, "brfs")
+    assert not hasattr(pymimir, "astar_eager")
+    assert not hasattr(pymimir, "gbfs_lazy")
+    assert not hasattr(pymimir, "StateSpaceSampler")
+    assert inspect.signature(pymimir.astar).parameters["heuristic"].default is inspect.Parameter.empty
+    assert inspect.signature(pymimir.bfs).parameters["timeout_seconds"].kind is inspect.Parameter.KEYWORD_ONLY
 
 
 def test_root_exports_only_core_model_and_concrete_heuristic_types():
     root_model_types = {"Domain", "Problem", "State", "GroundAction"}
-    assert all(getattr(mimir, name) is getattr(mimir.model, name)
+    assert all(getattr(pymimir, name) is getattr(pymimir.model, name)
                for name in root_model_types)
-    assert all(not hasattr(mimir, name)
-               for name in set(mimir.model.__all__) - root_model_types)
-    assert not hasattr(mimir, "Heuristic")
-    assert mimir.BlindHeuristic is mimir.heuristics.BlindHeuristic
-    assert mimir.heuristics.Heuristic.__abstractmethods__ == {"evaluate"}
+    assert all(not hasattr(pymimir, name)
+               for name in set(pymimir.model.__all__) - root_model_types)
+    assert not hasattr(pymimir, "Heuristic")
+    assert pymimir.BlindHeuristic is pymimir.heuristics.BlindHeuristic
+    assert pymimir.heuristics.Heuristic.__abstractmethods__ == {"evaluate"}
 
 
 def test_every_search_has_a_complete_runtime_signature():
@@ -73,39 +73,39 @@ def test_every_search_has_a_complete_runtime_signature():
                "on_generate", "on_discover"},
     }
     for name, expected in expected_parameters.items():
-        function = getattr(mimir, name)
+        function = getattr(pymimir, name)
         signature = inspect.signature(function)
         assert set(signature.parameters) == expected
         assert all(
             parameter.kind is not inspect.Parameter.VAR_KEYWORD
             for parameter in signature.parameters.values()
         )
-        assert get_type_hints(function)["return"] is mimir.SearchResult
+        assert get_type_hints(function)["return"] is pymimir.SearchResult
 
 
 def test_result_conveniences_are_properties():
-    assert isinstance(mimir.SearchStatistics.elapsed_seconds, property)
-    assert isinstance(mimir.SearchResult.is_solved, property)
-    assert mimir.Solution is mimir.search.Solution
+    assert isinstance(pymimir.SearchStatistics.elapsed_seconds, property)
+    assert isinstance(pymimir.SearchResult.is_solved, property)
+    assert pymimir.Solution is pymimir.search.Solution
 
 
 def test_public_modules_are_implementations_and_legacy_modules_are_gone():
-    assert mimir.model.Problem is mimir.Problem
-    assert mimir.search.SearchResult is mimir.SearchResult
-    assert mimir.state_space.StateSpace is mimir.StateSpace
+    assert pymimir.model.Problem is pymimir.Problem
+    assert pymimir.search.SearchResult is pymimir.SearchResult
+    assert pymimir.state_space.StateSpace is pymimir.StateSpace
     for name in (
-        "mimir.wrapper_formalism",
-        "mimir.wrapper_search",
-        "mimir.heuristics_api",
-        "mimir.search_api",
-        "mimir.state_space_api",
+        "pymimir.wrapper_formalism",
+        "pymimir.wrapper_search",
+        "pymimir.heuristics_api",
+        "pymimir.search_api",
+        "pymimir.state_space_api",
     ):
         assert importlib.util.find_spec(name) is None
 
 
 @pytest.mark.parametrize("generator", ["grounded", "lifted"])
 def test_equality_is_an_ordinary_static_predicate(generator):
-    domain = mimir.Domain.from_pddl("""
+    domain = pymimir.Domain.from_pddl("""
         (define (domain equality-api)
           (:requirements :strips :equality :negative-preconditions)
           (:predicates (done ?x))
@@ -114,7 +114,7 @@ def test_equality_is_an_ordinary_static_predicate(generator):
             :precondition (not (= ?x ?y))
             :effect (done ?x)))
     """)
-    problem = mimir.Problem.from_pddl(domain, """
+    problem = pymimir.Problem.from_pddl(domain, """
         (define (problem equality-problem)
           (:domain equality-api)
           (:objects a b)
@@ -125,7 +125,7 @@ def test_equality_is_an_ordinary_static_predicate(generator):
     assert equals.name == "="
     assert equals.arity == 2
     assert tuple(parameter.type_name for parameter in equals.parameters) == ("object", "object")
-    assert equals.predicate_type is mimir.model.PredicateType.STATIC
+    assert equals.predicate_type is pymimir.model.PredicateType.STATIC
 
     x = problem.variable("?x")
     y = problem.variable("?y")
@@ -155,13 +155,13 @@ def test_equality_is_an_ordinary_static_predicate(generator):
 
 
 def test_derived_equality_uses_the_ordinary_predicate_truth():
-    domain = mimir.Domain.from_pddl("""
+    domain = pymimir.Domain.from_pddl("""
         (define (domain derived-equality)
           (:requirements :strips :equality :derived-predicates :negative-preconditions)
           (:predicates (unused))
           (:derived (same ?x ?y) (= ?x ?y)))
     """)
-    problem = mimir.Problem.from_pddl(domain, """
+    problem = pymimir.Problem.from_pddl(domain, """
         (define (problem derived-equality-problem)
           (:domain derived-equality)
           (:objects a b)
@@ -173,7 +173,7 @@ def test_derived_equality_uses_the_ordinary_predicate_truth():
 
 @pytest.fixture
 def extended_state_problem():
-    domain = mimir.Domain.from_pddl('''
+    domain = pymimir.Domain.from_pddl('''
         (define (domain extended-state-api)
           (:requirements :strips :derived-predicates :negative-preconditions
                          :conditional-effects)
@@ -192,7 +192,7 @@ def extended_state_problem():
             :precondition ()
             :effect (when (ready) (done))))
     ''')
-    return mimir.Problem.from_pddl(domain, '''
+    return pymimir.Problem.from_pddl(domain, '''
         (define (problem extended-state-problem)
           (:domain extended-state-api)
           (:init)
@@ -234,11 +234,11 @@ def test_every_python_state_producer_exposes_derived_truth(extended_state_proble
     assert ready_condition.bindings(initial) == ()
     assert ready_condition.bindings(successor) == ({},)
     ready_goal = problem.ground_condition(ready)
-    goal_count = mimir.GoalCountHeuristic(problem)
+    goal_count = pymimir.GoalCountHeuristic(problem)
     assert goal_count.evaluate(initial, ready_goal) == 1.0
     assert goal_count.evaluate(successor, ready_goal) == 0.0
 
-    space = mimir.StateSpace(problem, max_states=32)
+    space = pymimir.StateSpace(problem, max_states=32)
     assert space.initial_state == initial
     assert not space.initial_state.holds(ready)
     indexed = next(
@@ -280,7 +280,7 @@ def test_search_and_heuristic_callbacks_receive_extended_states(extended_state_p
             assert transition.action.apply(transition.source) == transition.target
         return callback
 
-    result = mimir.bfs(
+    result = pymimir.bfs(
         problem,
         on_expand=observe_state('expand'),
         on_goal=observe_state('goal'),
@@ -293,7 +293,7 @@ def test_search_and_heuristic_callbacks_receive_extended_states(extended_state_p
     assert result.solution is not None
     assert result.solution.goal_state.holds(ready)
 
-    class DerivedHeuristic(mimir.heuristics.Heuristic):
+    class DerivedHeuristic(pymimir.heuristics.Heuristic):
         def __init__(self, heuristic_problem):
             super().__init__(heuristic_problem)
             self.evaluations = []
@@ -308,13 +308,13 @@ def test_search_and_heuristic_callbacks_receive_extended_states(extended_state_p
             return False
 
     heuristic = DerivedHeuristic(problem)
-    assert mimir.gbfs(problem, heuristic).is_solved
+    assert pymimir.gbfs(problem, heuristic).is_solved
     assert heuristic.evaluations
     assert heuristic.preferences
 
 
 def test_equality_is_requirement_gated():
-    domain = mimir.Domain.from_pddl(
+    domain = pymimir.Domain.from_pddl(
         "(define (domain no-equality) (:requirements :strips) (:predicates (p)))")
     assert not domain.has_predicate("=")
     with pytest.raises(KeyError):
@@ -323,36 +323,36 @@ def test_equality_is_requirement_gated():
 
 @pytest.mark.parametrize("generator", ["grounded", "lifted"])
 def test_problem_owns_action_generation_and_search(blocks, generator):
-    problem = mimir.Problem.from_files(
+    problem = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
         generator=generator,
     )
     assert problem.generator == generator
     assert problem.initial_state.applicable_actions()
-    assert mimir.bfs(problem).is_solved
-    assert len(mimir.StateSpace(problem, max_states=1000)) > 1
+    assert pymimir.bfs(problem).is_solved
+    assert len(pymimir.StateSpace(problem, max_states=1000)) > 1
     custom_state = problem.state()
     assert isinstance(custom_state.applicable_actions(), tuple)
-    assert mimir.bfs(problem, start_state=custom_state).status in {
-        mimir.SearchStatus.SOLVED,
-        mimir.SearchStatus.EXHAUSTED,
+    assert pymimir.bfs(problem, start_state=custom_state).status in {
+        pymimir.SearchStatus.SOLVED,
+        pymimir.SearchStatus.EXHAUSTED,
     }
-    goal_count = mimir.GoalCountHeuristic(problem)
+    goal_count = pymimir.GoalCountHeuristic(problem)
     assert isinstance(goal_count.preferred_actions(problem.initial_state), tuple)
-    assert mimir.PerfectHeuristic(problem).evaluate(problem.initial_state) >= 0.0
+    assert pymimir.PerfectHeuristic(problem).evaluate(problem.initial_state) >= 0.0
 
 
 def test_problem_defaults_to_lifted_generator():
     base = EXAMPLES / "blocks_3"
     for loader in (
-        mimir.Problem.from_file,
-        mimir.Problem.from_pddl,
-        mimir.Problem.from_files,
+        pymimir.Problem.from_file,
+        pymimir.Problem.from_pddl,
+        pymimir.Problem.from_files,
     ):
         assert inspect.signature(loader).parameters["generator"].default == "lifted"
 
-    problem = mimir.Problem.from_files(
+    problem = pymimir.Problem.from_files(
         base / "domain.pddl",
         base / "p01.pddl",
     )
@@ -360,7 +360,7 @@ def test_problem_defaults_to_lifted_generator():
     assert problem.generator == "lifted"
 
     with pytest.raises(ValueError, match="grounded.*lifted"):
-        mimir.Problem.from_files(
+        pymimir.Problem.from_files(
             base / "domain.pddl",
             base / "p01.pddl",
             generator="clique",
@@ -368,13 +368,13 @@ def test_problem_defaults_to_lifted_generator():
 
 
 def test_grounded_rpg_heuristic_rejects_lifted_problem(blocks):
-    problem = mimir.Problem.from_files(
+    problem = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
         generator="lifted",
     )
     with pytest.raises(ValueError, match="grounded"):
-        mimir.FFHeuristic(problem)
+        pymimir.FFHeuristic(problem)
 
 
 def test_explicit_loaders_and_raw_constructors(blocks):
@@ -382,13 +382,13 @@ def test_explicit_loaders_and_raw_constructors(blocks):
     assert blocks.domain.name == "blocksworld"
     assert isinstance(blocks.objects, tuple)
     with pytest.raises(TypeError):
-        mimir.Domain(EXAMPLES / "blocks_3" / "domain.pddl")
+        pymimir.Domain(EXAMPLES / "blocks_3" / "domain.pddl")
     with pytest.raises(TypeError):
-        mimir.Problem()
+        pymimir.Problem()
     with pytest.raises(TypeError):
-        mimir.State(123, blocks)
+        pymimir.State(123, blocks)
     with pytest.raises(TypeError):
-        mimir.GroundAction(123, blocks)
+        pymimir.GroundAction(123, blocks)
 
 
 def test_legacy_getters_and_factories_are_not_public(blocks):
@@ -405,9 +405,9 @@ def test_legacy_getters_and_factories_are_not_public(blocks):
         assert not any(name.startswith("get_") for name in dir(value))
         assert not any(name.startswith("new_") for name in dir(value))
 
-    assert not hasattr(mimir.GroundAction, "get_cost")
-    assert not hasattr(mimir.GroundAction, "new")
-    assert not hasattr(mimir.model.Atom, "new")
+    assert not hasattr(pymimir.GroundAction, "get_cost")
+    assert not hasattr(pymimir.GroundAction, "new")
+    assert not hasattr(pymimir.model.Atom, "new")
 
 
 def test_effect_views_are_typed_read_only_values(blocks):
@@ -428,18 +428,18 @@ def test_effect_views_are_typed_read_only_values(blocks):
     assert isinstance(ground_effect.delete_atoms, tuple)
 
     for effect_type in (
-        mimir.model.Effect,
-        mimir.model.ConditionalEffect,
-        mimir.model.GroundEffect,
-        mimir.model.GroundConditionalEffect,
+        pymimir.model.Effect,
+        pymimir.model.ConditionalEffect,
+        pymimir.model.GroundEffect,
+        pymimir.model.GroundConditionalEffect,
     ):
         with pytest.raises(TypeError):
             effect_type()
 
 
 def test_pddl_errors_are_structured():
-    with pytest.raises(mimir.PddlError) as captured:
-        mimir.Domain.from_pddl("(define (domain broken) (:predicates (p))")
+    with pytest.raises(pymimir.PddlError) as captured:
+        pymimir.Domain.from_pddl("(define (domain broken) (:predicates (p))")
     assert captured.value.document_type == "domain"
     assert captured.value.error_code in {"lexical", "syntax"}
     assert captured.value.line is not None
@@ -448,7 +448,7 @@ def test_pddl_errors_are_structured():
 def test_properties_factories_and_state_construction(blocks):
     clear = blocks.domain.predicate("clear")
     assert clear.name == "clear"
-    assert clear.predicate_type is mimir.model.PredicateType.FLUENT
+    assert clear.predicate_type is pymimir.model.PredicateType.FLUENT
     assert clear.is_fluent
     fact = blocks.fact("clear", "b1")
     assert fact.predicate == clear
@@ -466,7 +466,7 @@ def test_properties_factories_and_state_construction(blocks):
 
 @pytest.mark.parametrize("kind", ["atom", "ground_atom"])
 def test_atom_predicates_retain_the_domain_without_retaining_the_problem(kind):
-    problem = mimir.Problem.from_files(
+    problem = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
@@ -492,7 +492,7 @@ def test_atom_predicates_retain_the_domain_without_retaining_the_problem(kind):
 
     assert problem_reference() is None
     with pytest.raises(ValueError, match="invalid native value"):
-        mimir.advanced.value_hash(problem_handle)
+        pymimir.advanced.value_hash(problem_handle)
     assert predicate.name == predicate_name
 
 
@@ -507,7 +507,7 @@ def test_variadic_state_contract(blocks):
 
 
 def test_state_rejects_non_fluent_facts():
-    domain = mimir.Domain.from_pddl("""
+    domain = pymimir.Domain.from_pddl("""
         (define (domain state-test)
           (:requirements :strips)
           (:predicates (fixed) (changed))
@@ -516,7 +516,7 @@ def test_state_rejects_non_fluent_facts():
             :precondition (fixed)
             :effect (changed)))
     """)
-    problem = mimir.Problem.from_pddl(domain, """
+    problem = pymimir.Problem.from_pddl(domain, """
         (define (problem state-test-problem)
           (:domain state-test)
           (:init (fixed))
@@ -543,7 +543,7 @@ def test_variadic_ground_condition_contract(blocks):
 
 
 def test_ground_condition_rejects_foreign_values(blocks):
-    other = mimir.Problem.from_files(
+    other = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
@@ -555,7 +555,7 @@ def test_ground_condition_rejects_foreign_values(blocks):
 
 
 def test_factory_ownership_errors_are_values(blocks):
-    other = mimir.Problem.from_files(
+    other = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
@@ -566,26 +566,26 @@ def test_factory_ownership_errors_are_values(blocks):
 
 
 def test_search_result_field_invariants(blocks):
-    statistics = mimir.SearchStatistics(0, 0, 0, 0.0, 0.0)
-    solution = mimir.Solution((), 0.0, blocks.initial_state)
-    solved = mimir.SearchResult(mimir.SearchStatus.SOLVED, solution, statistics)
+    statistics = pymimir.SearchStatistics(0, 0, 0, 0.0, 0.0)
+    solution = pymimir.Solution((), 0.0, blocks.initial_state)
+    solved = pymimir.SearchResult(pymimir.SearchStatus.SOLVED, solution, statistics)
     assert solved.is_solved
 
     with pytest.raises(ValueError, match="solved search results"):
-        mimir.SearchResult(mimir.SearchStatus.SOLVED, None, statistics)
+        pymimir.SearchResult(pymimir.SearchStatus.SOLVED, None, statistics)
 
-    for status in set(mimir.SearchStatus) - {mimir.SearchStatus.SOLVED}:
-        result = mimir.SearchResult(status, None, statistics)
+    for status in set(pymimir.SearchStatus) - {pymimir.SearchStatus.SOLVED}:
+        result = pymimir.SearchResult(status, None, statistics)
         assert not result.is_solved
         with pytest.raises(ValueError, match="unsolved search results"):
-            mimir.SearchResult(status, solution, statistics)
+            pymimir.SearchResult(status, solution, statistics)
 
 
 def test_named_action_cost_and_checked_apply(blocks):
     state = blocks.initial_state
     action = next(iter(state.applicable_actions()))
     successor = action.apply(state)
-    assert isinstance(successor, mimir.State)
+    assert isinstance(successor, pymimir.State)
     assert action.cost >= 0.0
     assert state != successor
     assert inspect.signature(action.apply).parameters.keys() == {"state"}
@@ -602,8 +602,8 @@ def test_named_action_cost_and_checked_apply(blocks):
 
 @pytest.mark.parametrize("search_name", ["bfs", "ucs"])
 def test_uninformed_searches_return_typed_results(blocks, search_name):
-    result = getattr(mimir, search_name)(blocks)
-    assert result.status is mimir.SearchStatus.SOLVED
+    result = getattr(pymimir, search_name)(blocks)
+    assert result.status is pymimir.SearchStatus.SOLVED
     assert result.solution is not None
     assert isinstance(result.solution.plan, tuple)
     assert result.solution.cost == sum(action.cost for action in result.solution.plan)
@@ -613,36 +613,36 @@ def test_uninformed_searches_return_typed_results(blocks, search_name):
 
 @pytest.mark.parametrize("search_name", ["astar", "gbfs"])
 def test_informed_searches_require_and_use_heuristics(blocks, search_name):
-    heuristic = mimir.GoalCountHeuristic(blocks)
-    result = getattr(mimir, search_name)(blocks, heuristic)
+    heuristic = pymimir.GoalCountHeuristic(blocks)
+    result = getattr(pymimir, search_name)(blocks, heuristic)
     assert result.is_solved
     assert heuristic.evaluate(blocks.initial_state) > 0
 
 
 def test_iw_and_expansion_limits(blocks):
-    result = mimir.iw(blocks, max_width=3)
-    assert result.status in {mimir.SearchStatus.SOLVED, mimir.SearchStatus.EXHAUSTED}
-    limited = mimir.bfs(blocks, max_expanded_states=0)
-    assert limited.status is mimir.SearchStatus.EXPANSION_LIMIT_REACHED
+    result = pymimir.iw(blocks, max_width=3)
+    assert result.status in {pymimir.SearchStatus.SOLVED, pymimir.SearchStatus.EXHAUSTED}
+    limited = pymimir.bfs(blocks, max_expanded_states=0)
+    assert limited.status is pymimir.SearchStatus.EXPANSION_LIMIT_REACHED
     assert limited.solution is None
     assert limited.statistics.expanded_states == 0
 
 
 def test_zero_timeout_is_distinct(blocks):
-    result = mimir.bfs(blocks, timeout_seconds=0)
-    assert result.status is mimir.SearchStatus.TIMED_OUT
+    result = pymimir.bfs(blocks, timeout_seconds=0)
+    assert result.status is pymimir.SearchStatus.TIMED_OUT
 
 
 def test_initial_goal_is_tested_but_not_expanded(blocks):
     expanded = []
     goals = []
-    result = mimir.bfs(
+    result = pymimir.bfs(
         blocks,
         goal=blocks.ground_condition(),
         on_expand=expanded.append,
         on_goal=goals.append,
     )
-    assert result.status is mimir.SearchStatus.SOLVED
+    assert result.status is pymimir.SearchStatus.SOLVED
     assert expanded == []
     assert goals == [blocks.initial_state]
     assert result.statistics.expanded_states == 0
@@ -654,25 +654,25 @@ def test_exact_and_insufficient_expansion_budgets(blocks, search_name):
     def run(limit):
         keywords = {"max_expanded_states": limit}
         if search_name in {"astar", "gbfs"}:
-            return getattr(mimir, search_name)(blocks, mimir.BlindHeuristic(blocks), **keywords)
+            return getattr(pymimir, search_name)(blocks, pymimir.BlindHeuristic(blocks), **keywords)
         if search_name == "iw":
-            return mimir.iw(blocks, max_width=3, **keywords)
-        return getattr(mimir, search_name)(blocks, **keywords)
+            return pymimir.iw(blocks, max_width=3, **keywords)
+        return getattr(pymimir, search_name)(blocks, **keywords)
 
     complete = run(None)
     exact = run(complete.statistics.expanded_states)
     insufficient = run(complete.statistics.expanded_states - 1)
     one = run(1)
 
-    assert exact.status is mimir.SearchStatus.SOLVED
+    assert exact.status is pymimir.SearchStatus.SOLVED
     assert exact.statistics.expanded_states == complete.statistics.expanded_states
-    assert insufficient.status is mimir.SearchStatus.EXPANSION_LIMIT_REACHED
-    assert one.status is mimir.SearchStatus.EXPANSION_LIMIT_REACHED
+    assert insufficient.status is pymimir.SearchStatus.EXPANSION_LIMIT_REACHED
+    assert one.status is pymimir.SearchStatus.EXPANSION_LIMIT_REACHED
     assert one.statistics.expanded_states == 1
 
 
 def test_custom_python_heuristic_drives_native_search(blocks):
-    class CountingHeuristic(mimir.heuristics.Heuristic):
+    class CountingHeuristic(pymimir.heuristics.Heuristic):
         def __init__(self, problem):
             super().__init__(problem)
             self.calls = 0
@@ -682,12 +682,12 @@ def test_custom_python_heuristic_drives_native_search(blocks):
             return 0.0
 
     heuristic = CountingHeuristic(blocks)
-    assert mimir.astar(blocks, heuristic).is_solved
+    assert pymimir.astar(blocks, heuristic).is_solved
     assert heuristic.calls > 1
 
 
 def test_custom_preferred_actions_are_used_by_gbfs(blocks):
-    class PreferredHeuristic(mimir.heuristics.Heuristic):
+    class PreferredHeuristic(pymimir.heuristics.Heuristic):
         def __init__(self, problem):
             super().__init__(problem)
             self.preferred_calls = 0
@@ -700,27 +700,27 @@ def test_custom_preferred_actions_are_used_by_gbfs(blocks):
             return False
 
     heuristic = PreferredHeuristic(blocks)
-    assert mimir.gbfs(blocks, heuristic).is_solved
+    assert pymimir.gbfs(blocks, heuristic).is_solved
     assert heuristic.preferred_calls > 0
 
 
 def test_custom_heuristic_exception_is_rethrown(blocks):
-    class BrokenHeuristic(mimir.heuristics.Heuristic):
+    class BrokenHeuristic(pymimir.heuristics.Heuristic):
         def evaluate(self, state, goal=None):
             raise LookupError("heuristic failed")
 
     with pytest.raises(LookupError, match="heuristic failed"):
-        mimir.astar(blocks, BrokenHeuristic(blocks))
-    assert mimir.bfs(blocks).is_solved
+        pymimir.astar(blocks, BrokenHeuristic(blocks))
+    assert pymimir.bfs(blocks).is_solved
 
 
 def test_transition_callbacks_and_exceptions(blocks):
     transitions = []
-    result = mimir.bfs(blocks, on_generate=transitions.append)
+    result = pymimir.bfs(blocks, on_generate=transitions.append)
     assert result.is_solved
     assert transitions
     transition = transitions[0]
-    assert isinstance(transition, mimir.Transition)
+    assert isinstance(transition, pymimir.Transition)
     assert transition.action.apply(transition.source) == transition.target
     assert not hasattr(transition, "cost")
 
@@ -728,22 +728,22 @@ def test_transition_callbacks_and_exceptions(blocks):
         raise RuntimeError("callback failed")
 
     with pytest.raises(RuntimeError, match="callback failed"):
-        mimir.bfs(blocks, on_expand=fail)
+        pymimir.bfs(blocks, on_expand=fail)
 
 
 @pytest.mark.parametrize(
     "run",
     [
-        lambda problem, fail: mimir.bfs(problem, on_expand=fail),
-        lambda problem, fail: mimir.bfs(problem, on_goal=fail),
-        lambda problem, fail: mimir.bfs(problem, on_generate=fail),
-        lambda problem, fail: mimir.bfs(problem, on_discover=fail),
-        lambda problem, fail: mimir.bfs(problem, on_prune=fail),
-        lambda problem, fail: mimir.bfs(problem, on_finish_depth=fail),
-        lambda problem, fail: mimir.astar(
-            problem, mimir.BlindHeuristic(problem), on_finish_f_layer=fail),
-        lambda problem, fail: mimir.gbfs(
-            problem, mimir.GoalCountHeuristic(problem), on_new_best_h=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_expand=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_goal=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_generate=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_discover=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_prune=fail),
+        lambda problem, fail: pymimir.bfs(problem, on_finish_depth=fail),
+        lambda problem, fail: pymimir.astar(
+            problem, pymimir.BlindHeuristic(problem), on_finish_f_layer=fail),
+        lambda problem, fail: pymimir.gbfs(
+            problem, pymimir.GoalCountHeuristic(problem), on_new_best_h=fail),
     ],
 )
 def test_every_callback_trampoline_rethrows_and_search_recovers(blocks, run):
@@ -752,20 +752,20 @@ def test_every_callback_trampoline_rethrows_and_search_recovers(blocks, run):
 
     with pytest.raises(LookupError, match="callback trampoline failed"):
         run(blocks, fail)
-    assert mimir.bfs(blocks).is_solved
+    assert pymimir.bfs(blocks).is_solved
 
 
 def test_alternate_goal_controls_evaluation_and_search(blocks):
     alternate = blocks.ground_condition()
-    heuristic = mimir.GoalCountHeuristic(blocks)
+    heuristic = pymimir.GoalCountHeuristic(blocks)
     assert heuristic.evaluate(blocks.initial_state, alternate) == 0.0
-    result = mimir.astar(
+    result = pymimir.astar(
         blocks,
         heuristic,
         goal=alternate,
         max_expanded_states=0,
     )
-    assert result.status is mimir.SearchStatus.SOLVED
+    assert result.status is pymimir.SearchStatus.SOLVED
     assert result.solution is not None
     assert result.solution.plan == ()
 
@@ -795,7 +795,7 @@ def test_variadic_condition_and_binding_validation(blocks, monkeypatch):
     with pytest.raises(TypeError, match="state must be a State"):
         empty.bindings("not a state")
 
-    other = mimir.Problem.from_files(
+    other = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
@@ -804,7 +804,7 @@ def test_variadic_condition_and_binding_validation(blocks, monkeypatch):
 
     one_parameter = blocks.condition(variables=(variable,))
     monkeypatch.setattr(
-        mimir.model.lib,
+        pymimir.model.lib,
         "mimir_binding_list_get_binding_size",
         lambda _handle, _index: 2,
     )
@@ -813,7 +813,7 @@ def test_variadic_condition_and_binding_validation(blocks, monkeypatch):
 
 
 def test_public_relationships_validate_types_and_ownership(blocks):
-    other = mimir.Problem.from_files(
+    other = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
@@ -841,21 +841,21 @@ def test_public_relationships_validate_types_and_ownership(blocks):
 def test_every_builtin_heuristic_honors_an_alternate_goal(blocks):
     alternate = blocks.ground_condition()
     heuristic_types = (
-        mimir.BlindHeuristic,
-        mimir.GoalCountHeuristic,
-        mimir.FFHeuristic,
-        mimir.LiftedFFHeuristic,
-        mimir.AddHeuristic,
-        mimir.MaxHeuristic,
-        mimir.H2Heuristic,
-        mimir.SetAddHeuristic,
-        mimir.PerfectHeuristic,
+        pymimir.BlindHeuristic,
+        pymimir.GoalCountHeuristic,
+        pymimir.FFHeuristic,
+        pymimir.LiftedFFHeuristic,
+        pymimir.AddHeuristic,
+        pymimir.MaxHeuristic,
+        pymimir.H2Heuristic,
+        pymimir.SetAddHeuristic,
+        pymimir.PerfectHeuristic,
     )
     for heuristic_type in heuristic_types:
         heuristic = heuristic_type(blocks)
         assert heuristic.evaluate(blocks.initial_state, alternate) == 0.0
 
-    perfect = mimir.PerfectHeuristic(blocks)
+    perfect = pymimir.PerfectHeuristic(blocks)
     alternate_handle = perfect._handle_for(alternate)
     assert perfect._handle_for(alternate) == alternate_handle
     equal_alternate = blocks.ground_condition()
@@ -865,7 +865,7 @@ def test_every_builtin_heuristic_honors_an_alternate_goal(blocks):
 
 def test_perfect_heuristic_releases_collected_alternate_goal(blocks):
     state = blocks.initial_state
-    heuristic = mimir.PerfectHeuristic(blocks)
+    heuristic = pymimir.PerfectHeuristic(blocks)
     default_value = heuristic.evaluate(state)
     alternate = blocks.ground_condition()
     alternate_handle = heuristic._handle_for(alternate)
@@ -877,12 +877,12 @@ def test_perfect_heuristic_releases_collected_alternate_goal(blocks):
 
     assert alternate_reference() is None
     with pytest.raises(ValueError, match="invalid native value"):
-        mimir.advanced.value_hash(alternate_handle)
+        pymimir.advanced.value_hash(alternate_handle)
     assert heuristic.evaluate(state) == default_value
 
 
 def test_perfect_heuristic_cache_is_identity_copied(blocks):
-    heuristic = mimir.PerfectHeuristic(blocks)
+    heuristic = pymimir.PerfectHeuristic(blocks)
     cache = heuristic._alternate_handles
 
     assert copy.copy(cache) is cache
@@ -892,7 +892,7 @@ def test_perfect_heuristic_cache_is_identity_copied(blocks):
 
 
 def test_perfect_heuristic_cache_allows_reentrant_gc(blocks):
-    heuristic = mimir.PerfectHeuristic(blocks)
+    heuristic = pymimir.PerfectHeuristic(blocks)
     cache = heuristic._alternate_handles
     alternate = blocks.ground_condition()
     alternate._literals.append(alternate)
@@ -918,13 +918,13 @@ def test_perfect_heuristic_cache_allows_reentrant_gc(blocks):
     finally:
         if completed.is_set():
             cache.close()
-        mimir.advanced.free_handle(heuristic._handle)
+        pymimir.advanced.free_handle(heuristic._handle)
 
 
 def test_perfect_heuristic_same_goal_cache_is_thread_safe(blocks, monkeypatch):
-    heuristic = mimir.PerfectHeuristic(blocks)
+    heuristic = pymimir.PerfectHeuristic(blocks)
     goal = blocks.ground_condition()
-    original_factory = mimir.advanced.lib.mimir_heuristic_perfect
+    original_factory = pymimir.advanced.lib.mimir_heuristic_perfect
     start = threading.Barrier(8)
     counter_lock = threading.Lock()
     native_lock = threading.Lock()
@@ -940,7 +940,7 @@ def test_perfect_heuristic_same_goal_cache_is_thread_safe(blocks, monkeypatch):
             created_handles.append(handle)
             return handle
 
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_heuristic_perfect", create)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_heuristic_perfect", create)
 
     def get_handle(_index):
         start.wait()
@@ -954,15 +954,15 @@ def test_perfect_heuristic_same_goal_cache_is_thread_safe(blocks, monkeypatch):
     finally:
         heuristic._finalizer()
         for handle in set(created_handles):
-            mimir.advanced.free_handle(handle)
+            pymimir.advanced.free_handle(handle)
 
 
 def test_native_heuristics_validate_state_and_action_ownership(blocks):
-    other = mimir.Problem.from_files(
+    other = pymimir.Problem.from_files(
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
-    heuristic = mimir.GoalCountHeuristic(blocks)
+    heuristic = pymimir.GoalCountHeuristic(blocks)
     action = next(iter(blocks.initial_state.applicable_actions()))
     foreign_action = next(iter(other.initial_state.applicable_actions()))
 
@@ -979,20 +979,20 @@ def test_native_heuristics_validate_state_and_action_ownership(blocks):
 
 
 def test_blind_heuristic_rejects_a_null_native_handle(blocks, monkeypatch):
-    import mimir.heuristics as heuristics_api
+    import pymimir.heuristics as heuristics_api
 
     monkeypatch.setattr(heuristics_api.lib, "mimir_heuristic_blind", lambda: 0)
     with pytest.raises(ValueError, match="could not create BlindHeuristic"):
-        mimir.BlindHeuristic(blocks)
+        pymimir.BlindHeuristic(blocks)
 
 
 def test_failed_finalizer_registration_releases_the_new_native_handle(blocks, monkeypatch):
-    from mimir.advanced import _native
+    from pymimir.advanced import _native
 
     created_handles = []
     released_handles = []
-    original_create = mimir.advanced.lib.mimir_goal_create
-    original_free = mimir.advanced.lib.mimir_free_handle
+    original_create = pymimir.advanced.lib.mimir_goal_create
+    original_free = pymimir.advanced.lib.mimir_free_handle
 
     def create(*args):
         handle = int(original_create(*args))
@@ -1006,8 +1006,8 @@ def test_failed_finalizer_registration_releases_the_new_native_handle(blocks, mo
     def reject_finalizer(*_args, **_kwargs):
         raise RuntimeError("finalizer registration failed")
 
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_goal_create", create)
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_free_handle", free)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_goal_create", create)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_free_handle", free)
     monkeypatch.setattr(_native.weakref, "finalize", reject_finalizer)
 
     with pytest.raises(RuntimeError, match="finalizer registration failed"):
@@ -1016,27 +1016,27 @@ def test_failed_finalizer_registration_releases_the_new_native_handle(blocks, mo
     assert len(created_handles) == 1
     assert released_handles.count(created_handles[0]) == 1
     with pytest.raises(ValueError, match="invalid native value"):
-        mimir.advanced.value_hash(created_handles[0])
+        pymimir.advanced.value_hash(created_handles[0])
 
 
 def test_failures_before_finalizer_registration_release_native_handles_once(blocks, monkeypatch):
     created_handles = []
     failed_handles = []
     released_handles = []
-    original_load_domain = mimir.advanced.lib.mimir_load_domain_from_string
-    original_free = mimir.advanced.lib.mimir_free_handle
+    original_load_domain = pymimir.advanced.lib.mimir_load_domain_from_string
+    original_free = pymimir.advanced.lib.mimir_free_handle
 
-    class AbstractDomain(mimir.Domain, ABC):
+    class AbstractDomain(pymimir.Domain, ABC):
         @abstractmethod
         def missing_method(self):
             pass
 
-    class AbstractState(mimir.State, ABC):
+    class AbstractState(pymimir.State, ABC):
         @abstractmethod
         def missing_method(self):
             pass
 
-    class RejectProblemAssignment(mimir.State):
+    class RejectProblemAssignment(pymimir.State):
         def __setattr__(self, name, value):
             if name == "_problem":
                 raise RuntimeError("problem assignment failed")
@@ -1051,8 +1051,8 @@ def test_failures_before_finalizer_registration_release_native_handles_once(bloc
         released_handles.append(int(handle))
         original_free(handle)
 
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_load_domain_from_string", load_domain)
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_free_handle", free)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_load_domain_from_string", load_domain)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_free_handle", free)
 
     release_count = len(released_handles)
     with pytest.raises(TypeError, match="abstract"):
@@ -1061,25 +1061,25 @@ def test_failures_before_finalizer_registration_release_native_handles_once(bloc
     failed_handles.append(domain_handle)
     assert released_handles[release_count:].count(domain_handle) == 1
     with pytest.raises(ValueError, match="invalid native value"):
-        mimir.advanced.value_hash(domain_handle)
+        pymimir.advanced.value_hash(domain_handle)
 
-    state_handle = int(mimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
+    state_handle = int(pymimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
     failed_handles.append(state_handle)
     release_count = len(released_handles)
     with pytest.raises(TypeError, match="abstract"):
         AbstractState._from_handle(state_handle, blocks)
     assert released_handles[release_count:].count(state_handle) == 1
     with pytest.raises(ValueError, match="invalid native value"):
-        mimir.advanced.value_hash(state_handle)
+        pymimir.advanced.value_hash(state_handle)
 
-    state_handle = int(mimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
+    state_handle = int(pymimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
     failed_handles.append(state_handle)
     release_count = len(released_handles)
     with pytest.raises(TypeError, match="states require a problem owner"):
-        mimir.State._from_handle(state_handle, None)
+        pymimir.State._from_handle(state_handle, None)
     assert released_handles[release_count:].count(state_handle) == 1
 
-    state_handle = int(mimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
+    state_handle = int(pymimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle))
     failed_handles.append(state_handle)
     release_count = len(released_handles)
     with pytest.raises(RuntimeError, match="problem assignment failed"):
@@ -1093,7 +1093,7 @@ def test_failures_before_finalizer_registration_release_native_handles_once(bloc
 def test_failure_after_finalizer_registration_releases_native_handles_once(blocks, monkeypatch):
     allocated_handles = []
     released_handles = []
-    original_free = mimir.advanced.lib.mimir_free_handle
+    original_free = pymimir.advanced.lib.mimir_free_handle
 
     class RejectHandleAssignment:
         def __setattr__(self, name, value):
@@ -1102,41 +1102,41 @@ def test_failure_after_finalizer_registration_releases_native_handles_once(block
                 raise RuntimeError("handle assignment failed")
             super().__setattr__(name, value)
 
-    class RejectingDomain(RejectHandleAssignment, mimir.Domain):
+    class RejectingDomain(RejectHandleAssignment, pymimir.Domain):
         pass
 
-    class RejectingState(RejectHandleAssignment, mimir.State):
+    class RejectingState(RejectHandleAssignment, pymimir.State):
         pass
 
-    class RejectingGoalCount(RejectHandleAssignment, mimir.GoalCountHeuristic):
+    class RejectingGoalCount(RejectHandleAssignment, pymimir.GoalCountHeuristic):
         pass
 
-    class RejectingBlind(RejectHandleAssignment, mimir.BlindHeuristic):
+    class RejectingBlind(RejectHandleAssignment, pymimir.BlindHeuristic):
         pass
 
     class RejectingGroundCondition(
         RejectHandleAssignment,
-        mimir.model.GroundConjunctiveCondition,
+        pymimir.model.GroundConjunctiveCondition,
     ):
         pass
 
-    class RejectingPerfect(RejectHandleAssignment, mimir.PerfectHeuristic):
+    class RejectingPerfect(RejectHandleAssignment, pymimir.PerfectHeuristic):
         pass
 
-    class RejectingStateSpace(RejectHandleAssignment, mimir.StateSpace):
+    class RejectingStateSpace(RejectHandleAssignment, pymimir.StateSpace):
         pass
 
     def free(handle):
         released_handles.append(int(handle))
         original_free(handle)
 
-    monkeypatch.setattr(mimir.advanced.lib, "mimir_free_handle", free)
+    monkeypatch.setattr(pymimir.advanced.lib, "mimir_free_handle", free)
     constructors = (
         lambda: RejectingDomain.from_pddl(
             "(define (domain assignment-test) (:predicates (p)))"
         ),
         lambda: RejectingState._from_handle(
-            mimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle),
+            pymimir.advanced.lib.mimir_problem_get_initial_state(blocks._handle),
             blocks,
         ),
         lambda: RejectingGoalCount(blocks),
@@ -1156,14 +1156,14 @@ def test_failure_after_finalizer_registration_releases_native_handles_once(block
         handle = allocated_handles[-1]
         assert released_handles[release_count:].count(handle) == 1
         with pytest.raises(ValueError, match="invalid native value"):
-            mimir.advanced.value_hash(handle)
+            pymimir.advanced.value_hash(handle)
 
     gc.collect()
     assert all(released_handles.count(handle) == 1 for handle in allocated_handles)
 
 
 def test_state_space_sequence_labels_transitions_and_sampling(blocks):
-    space = mimir.StateSpace(blocks, max_states=1000, seed=7)
+    space = pymimir.StateSpace(blocks, max_states=1000, seed=7)
     assert len(space) > 1
     assert space[0] == space.initial_state
     assert space[-1] in tuple(space)
@@ -1180,19 +1180,19 @@ def test_state_space_sequence_labels_transitions_and_sampling(blocks):
 
 
 def test_state_space_queries_do_not_scan_the_sequence(blocks, monkeypatch):
-    space = mimir.StateSpace(blocks, max_states=1000, seed=7)
+    space = pymimir.StateSpace(blocks, max_states=1000, seed=7)
     state = space.initial_state
 
     def fail_iteration(_space):
         raise AssertionError("state-space query scanned the full sequence")
 
-    monkeypatch.setattr(mimir.StateSpace, "__iter__", fail_iteration)
+    monkeypatch.setattr(pymimir.StateSpace, "__iter__", fail_iteration)
     assert space.label(state).depth == 0
     assert space.successors(state)
 
 
 def test_state_space_sampling_indices_are_cached(blocks):
-    space = mimir.StateSpace(blocks, max_states=1000, seed=7)
+    space = pymimir.StateSpace(blocks, max_states=1000, seed=7)
     first_dead_ends, first_distances = space._sampling_indices()
     second_dead_ends, second_distances = space._sampling_indices()
     assert first_dead_ends is second_dead_ends
@@ -1208,12 +1208,12 @@ def test_state_space_sampling_indices_are_cached(blocks):
 
 
 def test_package_contains_typing_marker():
-    assert (Path(mimir.__file__).with_name("py.typed")).is_file()
-    assert not Path(mimir.__file__).with_name("__init__.pyi").exists()
+    assert (Path(pymimir.__file__).with_name("py.typed")).is_file()
+    assert not Path(pymimir.__file__).with_name("__init__.pyi").exists()
 
 
 def test_native_loader_does_not_search_the_legacy_parent_layout(monkeypatch):
-    from mimir.advanced import _native
+    from pymimir.advanced import _native
 
     parent = os.path.normpath(os.path.join(
         os.path.dirname(os.path.abspath(_native.__file__)),
@@ -1236,7 +1236,7 @@ def test_native_loader_does_not_search_the_legacy_parent_layout(monkeypatch):
 def test_python_package_type_contract(tmp_path):
     cache = tmp_path / "mypy-cache"
     cache.mkdir()
-    package = Path(__file__).resolve().parents[1] / "mimir"
+    package = Path(__file__).resolve().parents[1] / "pymimir"
     usage = Path(__file__).with_name("typing") / "api_usage.py"
     completed = subprocess.run(
         [
@@ -1260,9 +1260,9 @@ def test_python_package_type_contract(tmp_path):
 def test_native_owners_are_identity_copied_and_cannot_be_pickled(blocks, kind):
     factories = {
         "state": lambda: blocks.initial_state,
-        "heuristic": lambda: mimir.GoalCountHeuristic(blocks),
+        "heuristic": lambda: pymimir.GoalCountHeuristic(blocks),
         "goal": lambda: blocks.goal,
-        "state_space": lambda: mimir.StateSpace(blocks, max_states=32),
+        "state_space": lambda: pymimir.StateSpace(blocks, max_states=32),
     }
     value = factories[kind]()
 
@@ -1274,7 +1274,7 @@ def test_native_owners_are_identity_copied_and_cannot_be_pickled(blocks, kind):
 
 def test_deepcopy_of_search_values_preserves_native_owner_identity(blocks):
     transitions = []
-    result = mimir.bfs(blocks, on_generate=transitions.append)
+    result = pymimir.bfs(blocks, on_generate=transitions.append)
     transition = transitions[0]
 
     copied_result, copied_transition = copy.deepcopy((result, transition))
@@ -1298,7 +1298,7 @@ def test_deepcopy_of_search_values_preserves_native_owner_identity(blocks):
 
 
 def test_stale_numeric_accessor_raises_instead_of_terminating(blocks):
-    from mimir.advanced import free_handle
+    from pymimir.advanced import free_handle
 
     action = next(iter(blocks.initial_state.applicable_actions()))
     free_handle(action._handle)
@@ -1309,11 +1309,11 @@ def test_stale_numeric_accessor_raises_instead_of_terminating(blocks):
 def test_native_failures_do_not_terminate_a_python_subprocess():
     code = textwrap.dedent(f"""
         from pathlib import Path
-        import mimir
-        from mimir.advanced import free_handle
+        import pymimir
+        from pymimir.advanced import free_handle
 
         base = Path({str(EXAMPLES / 'blocks_3')!r})
-        problem = mimir.Problem.from_files(base / 'domain.pddl', base / 'p01.pddl')
+        problem = pymimir.Problem.from_files(base / 'domain.pddl', base / 'p01.pddl')
         action = next(iter(problem.initial_state.applicable_actions()))
         free_handle(action._handle)
         action._finalizer.detach()
@@ -1325,8 +1325,8 @@ def test_native_failures_do_not_terminate_a_python_subprocess():
             raise AssertionError('stale handle did not raise ReferenceError')
 
         try:
-            mimir.Domain.from_pddl('(define (domain broken) (:predicates (p))')
-        except mimir.PddlError as error:
+            pymimir.Domain.from_pddl('(define (domain broken) (:predicates (p))')
+        except pymimir.PddlError as error:
             assert error.line is not None
             assert error.column is not None
         else:
@@ -1349,12 +1349,12 @@ def test_callback_abort_becomes_a_python_error_instead_of_terminating():
     code = textwrap.dedent(f"""
         import ctypes
         from pathlib import Path
-        import mimir
-        from mimir.advanced import free_handle, lib
-        from mimir.advanced.heuristics import HEURISTIC_CALLBACK
+        import pymimir
+        from pymimir.advanced import free_handle, lib
+        from pymimir.advanced.heuristics import HEURISTIC_CALLBACK
 
         base = Path({str(EXAMPLES / 'blocks_3')!r})
-        problem = mimir.Problem.from_files(base / 'domain.pddl', base / 'p01.pddl')
+        problem = pymimir.Problem.from_files(base / 'domain.pddl', base / 'p01.pddl')
         state = problem.initial_state
         goal = problem.goal
 
@@ -1375,7 +1375,7 @@ def test_callback_abort_becomes_a_python_error_instead_of_terminating():
                     state._handle,
                     goal._handle,
                 )
-            except mimir.MimirError as error:
+            except pymimir.MimirError as error:
                 assert 'callback aborted' in str(error).lower()
             else:
                 raise AssertionError('callback abort did not become a Python error')

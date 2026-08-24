@@ -8,7 +8,7 @@ Importing this module configures ``argtypes`` / ``restype`` for every
 
 Handle return values are :class:`int` (0 == null). Strings returned from the
 native side are raw UTF-8 ``c_void_p`` pointers; callers must hand them to
-``mimir.advanced.take_string`` to decode and free in one step.
+``pymimir.advanced.take_string`` to decode and free in one step.
 """
 
 from __future__ import annotations

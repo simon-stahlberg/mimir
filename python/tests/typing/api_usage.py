@@ -1,40 +1,40 @@
 from collections.abc import Iterable
 
-import mimir
+import pymimir
 
 
 def use_public_api(
-    problem: mimir.Problem,
-    heuristic: mimir.heuristics.Heuristic,
+    problem: pymimir.Problem,
+    heuristic: pymimir.heuristics.Heuristic,
 ) -> None:
-    state: mimir.State = problem.initial_state
-    predicate: mimir.model.Predicate = problem.domain.predicates[0]
-    variable: mimir.model.Variable = problem.variable("?value")
-    atom: mimir.model.Atom = problem.atom(predicate, variable)
-    literal: mimir.model.Literal = problem.literal(atom)
-    condition: mimir.model.ConjunctiveCondition = problem.condition(
+    state: pymimir.State = problem.initial_state
+    predicate: pymimir.model.Predicate = problem.domain.predicates[0]
+    variable: pymimir.model.Variable = problem.variable("?value")
+    atom: pymimir.model.Atom = problem.atom(predicate, variable)
+    literal: pymimir.model.Literal = problem.literal(atom)
+    condition: pymimir.model.ConjunctiveCondition = problem.condition(
         literal, variables=[variable]
     )
-    bindings: tuple[dict[mimir.model.Variable, mimir.model.Object], ...] = (
+    bindings: tuple[dict[pymimir.model.Variable, pymimir.model.Object], ...] = (
         condition.bindings(state)
     )
-    ground_atom: mimir.model.GroundAtom = problem.fact(
+    ground_atom: pymimir.model.GroundAtom = problem.fact(
         predicate.name, *(obj.name for obj in problem.objects[:predicate.arity])
     )
-    ground_literal: mimir.model.GroundLiteral = problem.ground_literal(ground_atom)
-    ground_condition: mimir.model.GroundConjunctiveCondition = problem.ground_condition(
+    ground_literal: pymimir.model.GroundLiteral = problem.ground_literal(ground_atom)
+    ground_condition: pymimir.model.GroundConjunctiveCondition = problem.ground_condition(
         ground_literal
     )
-    custom_state: mimir.State = problem.state(
+    custom_state: pymimir.State = problem.state(
         *(ground_atom,) if ground_atom.is_fluent else ()
     )
     held: bool = custom_state.holds(ground_condition)
-    actions: tuple[mimir.GroundAction, ...] = state.applicable_actions()
+    actions: tuple[pymimir.GroundAction, ...] = state.applicable_actions()
 
-    def visit_state(value: mimir.State) -> None:
+    def visit_state(value: pymimir.State) -> None:
         pass
 
-    def visit_transition(value: mimir.Transition) -> None:
+    def visit_transition(value: pymimir.Transition) -> None:
         pass
 
     def visit_depth(value: int) -> None:
@@ -43,8 +43,8 @@ def use_public_api(
     def visit_value(value: float) -> None:
         pass
 
-    results: Iterable[mimir.SearchResult] = (
-        mimir.bfs(
+    results: Iterable[pymimir.SearchResult] = (
+        pymimir.bfs(
             problem,
             start_state=state,
             goal=problem.goal,
@@ -57,54 +57,54 @@ def use_public_api(
             on_prune=visit_transition,
             on_finish_depth=visit_depth,
         ),
-        mimir.ucs(problem, on_expand=visit_state, on_prune=visit_transition),
-        mimir.astar(problem, heuristic, on_finish_f_layer=visit_value),
-        mimir.gbfs(problem, heuristic, on_new_best_h=visit_value),
-        mimir.iw(problem, max_width=2, on_discover=visit_transition),
+        pymimir.ucs(problem, on_expand=visit_state, on_prune=visit_transition),
+        pymimir.astar(problem, heuristic, on_finish_f_layer=visit_value),
+        pymimir.gbfs(problem, heuristic, on_new_best_h=visit_value),
+        pymimir.iw(problem, max_width=2, on_discover=visit_transition),
     )
     for result in results:
         solved: bool = result.is_solved
         elapsed: float = result.statistics.elapsed_seconds
         if result.solution is not None:
-            plan: tuple[mimir.GroundAction, ...] = result.solution.plan
+            plan: tuple[pymimir.GroundAction, ...] = result.solution.plan
             cost: float = result.solution.cost
-            goal_state: mimir.State = result.solution.goal_state
+            goal_state: pymimir.State = result.solution.goal_state
             _ = plan, cost, goal_state
         _ = solved, elapsed
 
     for schema in problem.domain.actions:
-        static: tuple[mimir.model.Literal, ...] = schema.static_preconditions
-        fluent: tuple[mimir.model.Literal, ...] = schema.fluent_preconditions
-        derived: tuple[mimir.model.Literal, ...] = schema.derived_preconditions
+        static: tuple[pymimir.model.Literal, ...] = schema.static_preconditions
+        fluent: tuple[pymimir.model.Literal, ...] = schema.fluent_preconditions
+        derived: tuple[pymimir.model.Literal, ...] = schema.derived_preconditions
         for conditional in schema.conditional_effects:
-            effect: mimir.model.Effect = conditional.effect
-            effect_literals: tuple[mimir.model.Literal, ...] = effect.literals
+            effect: pymimir.model.Effect = conditional.effect
+            effect_literals: tuple[pymimir.model.Literal, ...] = effect.literals
             _ = static, fluent, derived, effect_literals
 
     for action_value in actions:
-        effect_value: mimir.model.GroundEffect = action_value.effect
-        added: tuple[mimir.model.GroundAtom, ...] = effect_value.add_atoms
-        deleted: tuple[mimir.model.GroundAtom, ...] = effect_value.delete_atoms
+        effect_value: pymimir.model.GroundEffect = action_value.effect
+        added: tuple[pymimir.model.GroundAtom, ...] = effect_value.add_atoms
+        deleted: tuple[pymimir.model.GroundAtom, ...] = effect_value.delete_atoms
         for ground_conditional in action_value.conditional_effects:
             satisfied: bool = ground_conditional.is_satisfied(state)
             _ = satisfied
         _ = added, deleted, bindings, held
 
-    space = mimir.StateSpace(problem, max_states=100, seed=1)
-    indexed_state: mimir.State = space[0]
-    state_slice: tuple[mimir.State, ...] = space[:2]
-    label: mimir.StateLabel = space.label(space.initial_state)
-    transitions: tuple[mimir.Transition, ...] = space.successors(space.initial_state)
-    samples: tuple[mimir.State, ...] = space.sample_states(2)
+    space = pymimir.StateSpace(problem, max_states=100, seed=1)
+    indexed_state: pymimir.State = space[0]
+    state_slice: tuple[pymimir.State, ...] = space[:2]
+    label: pymimir.StateLabel = space.label(space.initial_state)
+    transitions: tuple[pymimir.Transition, ...] = space.successors(space.initial_state)
+    samples: tuple[pymimir.State, ...] = space.sample_states(2)
     _ = label, transitions, samples, indexed_state, state_slice
 
 
 def reject_invalid_search_calls(
-    problem: mimir.Problem,
-    heuristic: mimir.heuristics.Heuristic,
+    problem: pymimir.Problem,
+    heuristic: pymimir.heuristics.Heuristic,
 ) -> None:
-    mimir.ucs(problem, unknown_keyword=True)  # type: ignore[call-arg]
-    mimir.astar(
+    pymimir.ucs(problem, unknown_keyword=True)  # type: ignore[call-arg]
+    pymimir.astar(
         problem,
         heuristic,
         on_finish_f_layer=lambda _value: "not None",  # type: ignore[arg-type]

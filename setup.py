@@ -64,7 +64,7 @@ def _publish_native():
 class build_py_with_native(build_py):
     def run(self):
         native_lib = _publish_native()
-        package_dir = (Path(self.build_lib) / "mimir").resolve()
+        package_dir = (Path(self.build_lib) / "pymimir").resolve()
         build_dir = (ROOT / "build").resolve()
         if not package_dir.is_relative_to(build_dir):
             raise RuntimeError(f"Refusing to clean unexpected build path: {package_dir}")
@@ -88,21 +88,31 @@ class bdist_wheel_with_native(bdist_wheel):
         super().finalize_options()
         self.root_is_pure = False
 
+    def get_tag(self):
+        _, _, platform_tag = super().get_tag()
+        # The bundled library is loaded through ctypes and does not use the CPython ABI.
+        return "py3", "none", platform_tag
+
 
 setup(
-    name="mimir",
-    version="0.4.0",
+    name="pymimir",
+    version="0.14.0b1",
+    long_description=(ROOT / "README.md").read_text(encoding="utf-8"),
+    long_description_content_type="text/markdown",
     packages=find_packages(where="python"),
     package_dir={"": "python"},
     package_data={
-        "mimir": ["py.typed"],
-        "mimir.advanced": ["Mimir.Interop.dll", "Mimir.Interop.so", "Mimir.Interop.dylib"],
+        "pymimir": ["py.typed"],
+        "pymimir.advanced": ["Mimir.Interop.dll", "Mimir.Interop.so", "Mimir.Interop.dylib"],
     },
     python_requires=">=3.10",
     install_requires=[],
     extras_require={
         "test": ["pytest>=8", "mypy>=1.11"],
     },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+    ],
     zip_safe=False,
     cmdclass={
         "build_py": build_py_with_native,
