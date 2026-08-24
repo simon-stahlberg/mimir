@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import Distribution, find_packages, setup
 from setuptools.command.build_py import build_py
 from setuptools.command.editable_wheel import editable_wheel
 
@@ -83,11 +83,12 @@ class editable_wheel_with_native(editable_wheel):
         super().run()
 
 
-class bdist_wheel_with_native(bdist_wheel):
-    def finalize_options(self):
-        super().finalize_options()
-        self.root_is_pure = False
+class BinaryDistribution(Distribution):
+    def has_ext_modules(self):
+        return True
 
+
+class bdist_wheel_with_native(bdist_wheel):
     def get_tag(self):
         _, _, platform_tag = super().get_tag()
         # The bundled library is loaded through ctypes and does not use the CPython ABI.
@@ -97,6 +98,7 @@ class bdist_wheel_with_native(bdist_wheel):
 setup(
     name="pymimir",
     version="0.14.0b1",
+    distclass=BinaryDistribution,
     long_description=(ROOT / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
     packages=find_packages(where="python"),
