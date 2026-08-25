@@ -9,7 +9,6 @@ from enum import Enum
 from functools import cached_property
 from types import MappingProxyType
 from typing import Literal as TypingLiteral, TypeAlias, TypeVar
-import weakref
 
 from .advanced import (
     free_handle,
@@ -19,7 +18,7 @@ from .advanced import (
     value_equals,
     value_hash,
 )
-from .advanced._native import _NativeOwner, _create_finalizer, raise_last_error
+from .advanced._native import _Finalizer, _NativeOwner, _create_finalizer, raise_last_error
 
 
 def _required_string(ptr: int, what: str) -> str:
@@ -79,7 +78,7 @@ class _Handle(_NativeOwner):
 
     _handle: int
     _owner: Domain | Problem | None
-    _finalizer: weakref.finalize | None
+    _finalizer: _Finalizer | None
 
     def __init__(self) -> None:
         raise TypeError(f"{type(self).__name__} values are created by Domain or Problem")
@@ -1681,7 +1680,7 @@ class GroundConjunctiveCondition(_NativeOwner):
     _literals: list[GroundLiteral]
     _problem: Problem
     _handle: int
-    _finalizer: weakref.finalize
+    _finalizer: _Finalizer
 
     def __init__(self) -> None:
         raise TypeError("use Problem.ground_condition()")

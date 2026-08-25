@@ -13,10 +13,21 @@ import platform
 import sys
 import weakref
 from collections.abc import Sequence
-from typing import Callable, List, NoReturn, Optional, SupportsIndex, Tuple, TypeVar
+from typing import Callable, List, NoReturn, Optional, Protocol, SupportsIndex, Tuple, TypeVar, cast
 
 
 _NativeOwnerT = TypeVar("_NativeOwnerT", bound="_NativeOwner")
+
+
+class _Finalizer(Protocol):
+    """Stable local view of ``weakref.finalize`` across typeshed versions."""
+
+    @property
+    def alive(self) -> bool: ...
+
+    def __call__(self, _ignored: object = None) -> object | None: ...
+
+    def detach(self) -> object | None: ...
 
 
 class _NativeOwner:
@@ -176,9 +187,9 @@ def _create_finalizer(
     owner: object,
     callback: Callable[..., object],
     *args: object,
-) -> weakref.finalize:
+) -> _Finalizer:
     try:
-        return weakref.finalize(owner, callback, *args)
+        return cast(_Finalizer, weakref.finalize(owner, callback, *args))
     except BaseException:
         callback(*args)
         raise

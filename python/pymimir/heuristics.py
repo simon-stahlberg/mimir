@@ -10,7 +10,7 @@ from typing import ClassVar
 import weakref
 
 from .advanced import free_handle, lib
-from .advanced._native import _NativeOwner, _create_finalizer, raise_last_error
+from .advanced._native import _Finalizer, _NativeOwner, _create_finalizer, raise_last_error
 from .model import (
     GroundAction,
     GroundConjunctiveCondition,
@@ -73,7 +73,7 @@ class Heuristic(ABC):
 class _NativeHeuristic(_NativeOwner, Heuristic):
     _factory_name: ClassVar[str]
     _handle: int
-    _finalizer: weakref.finalize
+    _finalizer: _Finalizer
 
     def __init__(self, problem: Problem) -> None:
         super().__init__(problem)
