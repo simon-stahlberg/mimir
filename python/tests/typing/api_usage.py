@@ -3,6 +3,79 @@ from collections.abc import Iterable, Mapping
 import pymimir
 
 
+def build_with_public_api() -> pymimir.Problem:
+    domain_builder: pymimir.DomainBuilder = pymimir.DomainBuilder("built")
+    requirements: pymimir.RequirementListBuilder = domain_builder.requirements()
+    requirements.add(":adl").add(":typing").add(":action-costs").add(
+        ":derived-predicates"
+    ).close()
+    types: pymimir.TypeListBuilder = domain_builder.types()
+    types.add("item").close()
+    constants: pymimir.ConstantListBuilder = domain_builder.constants()
+    constants.add("home", "item").close()
+    predicates: pymimir.PredicateListBuilder = domain_builder.predicates()
+    predicates.add("ready", ("?item", "item"))
+    predicates.add("done", ("?item", "item"))
+    predicates.add("eligible", ("?item", "item")).close()
+    functions: pymimir.NumericFunctionListBuilder = domain_builder.functions()
+    functions.add("price", ("?item", "item")).close()
+
+    actions: pymimir.ActionListBuilder = domain_builder.actions()
+    action: pymimir.ActionSchemaBuilder = actions.add("finish")
+    action.add_parameter("?item", "item")
+    action.add_precondition("ready", "?item")
+    action.add_precondition("done", "?item", positive=False)
+    conditional: pymimir.ConditionalEffectBuilder = action.add_conditional_effect()
+    conditional.add_condition("eligible", "?item")
+    conditional.add_effect("done", "?item").close()
+    cost: pymimir.ActionCostSpec = pymimir.ActionCost.add(
+        pymimir.ActionCost.function("price", "?item"),
+        pymimir.ActionCost.constant(0.5),
+    )
+    action.with_cost(cost).close().close()
+
+    derived: pymimir.DerivedPredicateListBuilder = (
+        domain_builder.derived_predicates()
+    )
+    body: pymimir.LogicalExpressionSpec = pymimir.Logic.or_(
+        pymimir.Logic.atom("ready", "?item"),
+        pymimir.Logic.exists(
+            [("?other", "item")],
+            pymimir.Logic.and_(
+                pymimir.Logic.atom("ready", "?other"),
+                pymimir.Logic.not_(pymimir.Logic.equal("?item", "?other")),
+            ),
+        ),
+    )
+    derived.define("eligible", body).close()
+    domain: pymimir.Domain = domain_builder.build()
+
+    problem_builder: pymimir.ProblemBuilder = pymimir.ProblemBuilder(
+        domain, "built-problem", generator="grounded"
+    )
+    objects: pymimir.ProblemObjectListBuilder = problem_builder.objects()
+    objects.add("a", "item").close()
+    initial: pymimir.InitialStateBuilder = problem_builder.initial_state()
+    initial.add_fact("ready", "a")
+    initial.add_numeric_initialization("price", 2.5, "a").close()
+    goal: pymimir.GoalBuilder = problem_builder.goal()
+    goal.add("done", "a").add("done", "home", positive=False).close()
+
+    unused_logic: tuple[pymimir.LogicalExpressionSpec, ...] = (
+        pymimir.Logic.true(),
+        pymimir.Logic.false(),
+        pymimir.Logic.imply(pymimir.Logic.true(), pymimir.Logic.true()),
+        pymimir.Logic.forall([], pymimir.Logic.true()),
+    )
+    unused_costs: tuple[pymimir.ActionCostSpec, ...] = (
+        pymimir.ActionCost.subtract(cost, pymimir.ActionCost.constant(1)),
+        pymimir.ActionCost.multiply(cost, pymimir.ActionCost.constant(2)),
+        pymimir.ActionCost.divide(cost, pymimir.ActionCost.constant(2)),
+    )
+    _ = unused_logic, unused_costs
+    return problem_builder.build()
+
+
 def use_public_api(
     problem: pymimir.Problem,
     heuristic: pymimir.heuristics.Heuristic,
@@ -18,6 +91,13 @@ def use_public_api(
     bindings: tuple[dict[pymimir.Variable, pymimir.Object], ...] = (
         condition.bindings(state)
     )
+    groundings: tuple[pymimir.GroundConjunctiveCondition, ...] = (
+        condition.groundings(
+            state,
+            limit=1,
+            omit_predicates=(predicate,),
+        )
+    )
     ground_atom: pymimir.GroundAtom = problem.fact(
         predicate.name, *(obj.name for obj in problem.all_objects[:predicate.arity])
     )
@@ -30,6 +110,62 @@ def use_public_api(
     )
     held: bool = custom_state.holds(ground_condition)
     actions: tuple[pymimir.GroundAction, ...] = state.applicable_actions()
+    context: pymimir.learning.EncodingContext = pymimir.EncodingContext()
+    context.begin_instance(problem)
+    object_to_id: dict[pymimir.Object, int] = context.object_to_id
+    object_id: int = context.get_object_id(problem.all_objects[0])
+    action_id: int = context.new_action_id()
+    virtual_id: int = context.new_virtual_id()
+    existing_virtual_id: int = context.new_or_existing_virtual_id()
+    auxiliary_id: int = context.new_or_existing_auxiliary_id("typing")
+    same_auxiliary_id: int = context.get_auxiliary_id("typing")
+    context_object_ids: list[int] = context.get_object_ids()
+    context_action_ids: list[int] = context.get_action_ids()
+    context_virtual_ids: list[int] = context.get_virtual_ids()
+    context_auxiliary_ids: list[int] = context.get_auxiliary_ids()
+    context_node_count: int = context.get_node_count()
+    pymimir.learning.encode_state(
+        context,
+        state,
+    )
+    pymimir.encode_goal(
+        context,
+        state,
+        problem.goal,
+    )
+    pymimir.encode_action_list(
+        context,
+        state,
+        actions,
+    )
+    pymimir.encode_transition_effects(
+        context,
+        state,
+        [state],
+        [],
+        problem.goal,
+    )
+    pymimir.encode_virtual_node(context)
+    pymimir.encode_expressive_state(context, state)
+    pymimir.encode_expressive_goal(context, state, problem.goal)
+    context.end_instance()
+    relation_buffer: pymimir.RelationBuffer = context.to_relation_buffer()
+    relation_values: memoryview = relation_buffer.values
+    relation_descriptors: tuple[pymimir.RelationDescriptor, ...] = (
+        relation_buffer.descriptors
+    )
+    buffered_relations: dict[str, list[int]] = relation_buffer.to_relations()
+    relations: dict[str, list[int]] = context.to_relations()
+    node_sizes: list[int] = context.node_sizes
+    object_indices: list[int] = context.object_indices
+    action_indices: list[int] = context.action_indices
+    virtual_indices: list[int] = context.virtual_indices
+    auxiliary_indices: list[int] = context.auxiliary_indices
+    context.close()
+    with pymimir.EncodingContext() as managed_context:
+        managed_context.begin_instance(problem)
+        managed_context.end_instance()
+    managed_context.close()
     hierarchy: Mapping[str, str | None] = problem.domain.type_hierarchy
     requirements: tuple[str, ...] = problem.requirements
     declared_objects: tuple[pymimir.Object, ...] = problem.declared_objects
@@ -39,6 +175,12 @@ def use_public_api(
     derived_atoms: tuple[pymimir.GroundAtom, ...] = state.derived_atoms
     atoms: tuple[pymimir.GroundAtom, ...] = state.atoms
     _ = hierarchy, requirements, declared_objects, all_objects
+    _ = object_to_id, object_id, action_id, virtual_id, existing_virtual_id
+    _ = auxiliary_id, same_auxiliary_id, context_object_ids, context_action_ids
+    _ = context_virtual_ids, context_auxiliary_ids, context_node_count
+    _ = relations, node_sizes, object_indices, action_indices
+    _ = relation_values, relation_descriptors, buffered_relations
+    _ = virtual_indices, auxiliary_indices
     _ = static_atoms, fluent_atoms, derived_atoms, atoms
 
     def visit_state(value: pymimir.State) -> None:

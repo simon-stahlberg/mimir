@@ -12,7 +12,10 @@ mypy_path = "python"
 build = "cp310-*"
 skip = "*-musllinux_*"
 test-requires = ["pytest>=8", "mypy>=1.11"]
-test-command = "pytest {project}/python/tests/test_python_api.py"
+test-command = [
+    "pytest {project}/python/tests",
+    "mypy --config-file {project}/pyproject.toml {project}/python/pymimir {project}/python/tests/typing/api_usage.py",
+]
 
 [tool.cibuildwheel.linux]
 before-all = [

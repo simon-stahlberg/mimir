@@ -9,7 +9,27 @@ problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 :mod:`pymimir.advanced` are explicitly unstable.
 """
 
-from . import heuristics, model, search, state_space
+from . import builders, heuristics, learning, model, search, state_space
+from .builders import (
+    ActionCost,
+    ActionCostSpec,
+    ActionListBuilder,
+    ActionSchemaBuilder,
+    ConditionalEffectBuilder,
+    ConstantListBuilder,
+    DerivedPredicateListBuilder,
+    DomainBuilder,
+    GoalBuilder,
+    InitialStateBuilder,
+    Logic,
+    LogicalExpressionSpec,
+    NumericFunctionListBuilder,
+    PredicateListBuilder,
+    ProblemBuilder,
+    ProblemObjectListBuilder,
+    RequirementListBuilder,
+    TypeListBuilder,
+)
 from .model import (
     Action,
     ActionGenerator,
@@ -53,9 +73,21 @@ from .heuristics import (
     SetAddHeuristic,
 )
 from .state_space import StateLabel, StateSpace
-from .errors import MimirError, PddlError
+from .errors import MimirError, PddlError, StateSpaceLimitExceeded
+from .learning import (
+    EncodingContext,
+    RelationBuffer,
+    RelationDescriptor,
+    encode_action_list,
+    encode_expressive_goal,
+    encode_expressive_state,
+    encode_goal,
+    encode_state,
+    encode_transition_effects,
+    encode_virtual_node,
+)
 
-__version__: str = "0.14.0b2"
+__version__: str = "0.14.0b3"
 
 __all__ = [
     # Model
@@ -63,6 +95,13 @@ __all__ = [
     "Literal", "GroundLiteral", "Effect", "ConditionalEffect", "GroundEffect",
     "GroundConditionalEffect", "Action", "GroundAction", "Domain", "Problem", "State",
     "ConjunctiveCondition", "GroundConjunctiveCondition", "PredicateType", "ActionGenerator",
+    # Builders
+    "builders", "DomainBuilder", "RequirementListBuilder", "TypeListBuilder",
+    "ConstantListBuilder", "PredicateListBuilder", "NumericFunctionListBuilder",
+    "ActionListBuilder", "ActionSchemaBuilder", "ConditionalEffectBuilder",
+    "DerivedPredicateListBuilder", "ProblemBuilder", "ProblemObjectListBuilder",
+    "InitialStateBuilder", "GoalBuilder", "Logic", "LogicalExpressionSpec",
+    "ActionCost", "ActionCostSpec",
     # Search
     "search", "Solution", "SearchResult", "SearchStatistics", "SearchStatus", "Transition",
     "bfs", "ucs", "astar", "gbfs", "iw",
@@ -71,6 +110,11 @@ __all__ = [
     "AddHeuristic", "MaxHeuristic", "H2Heuristic", "SetAddHeuristic", "PerfectHeuristic",
     # Datasets
     "state_space", "StateLabel", "StateSpace",
+    # Learning
+    "learning", "EncodingContext", "RelationBuffer", "RelationDescriptor",
+    "encode_state", "encode_goal",
+    "encode_action_list", "encode_transition_effects", "encode_virtual_node",
+    "encode_expressive_state", "encode_expressive_goal",
     # Errors
-    "MimirError", "PddlError",
+    "MimirError", "PddlError", "StateSpaceLimitExceeded",
 ]

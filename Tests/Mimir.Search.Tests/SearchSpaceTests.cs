@@ -568,7 +568,7 @@ public class SearchSpaceTests
     }
 
     [Fact]
-    public void Builder_MaxStatesBelowReachableStateCount_Throws()
+    public void Builder_MaxStatesBelowReachableStateCount_ThrowsStateSpaceLimitExceeded()
     {
         var problem = SearchTestHelpers.LoadProblem("ferry");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
@@ -585,7 +585,11 @@ public class SearchSpaceTests
             .WithActionGenerator(generator)
             .WithMaxStates(completeSpace.TotalStates - 1);
 
-        Assert.Throws<InvalidOperationException>(() => builder.Build());
+        StateSpaceLimitExceededException exception =
+            Assert.Throws<StateSpaceLimitExceededException>(() => builder.Build());
+        Assert.Equal(
+            $"Search-space expansion exceeded the maximum of {completeSpace.TotalStates - 1} states.",
+            exception.Message);
     }
 
     [Theory]

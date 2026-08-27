@@ -96,6 +96,7 @@ public static partial class Exports
         PddlLoad = 4,
         CallbackAborted = 5,
         Unexpected = 6,
+        StateSpaceLimitExceeded = 7,
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -123,11 +124,19 @@ public static partial class Exports
         int Column = -1,
         string? SourcePath = null);
 
+    private sealed class InvalidNativeHandleException : Exception
+    {
+        internal InvalidNativeHandleException(string typeName, int handle)
+            : base($"invalid {typeName} handle: {handle}")
+        {
+        }
+    }
+
     [ThreadStatic]
     private static NativeErrorData? _lastError;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_abi_version")]
-    public static int AbiVersion() => 13;
+    public static int AbiVersion() => 15;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_take_last_error")]
     public static unsafe byte TakeLastError(IntPtr errorPtr)
@@ -236,6 +245,9 @@ public static partial class Exports
     {
         _lastError = exception switch
         {
+            InvalidNativeHandleException invalidHandle => new NativeErrorData(
+                NativeErrorCode.InvalidHandle,
+                invalidHandle.Message),
             Mimir.Core.Schemas.PddlLoadException pddl => new NativeErrorData(
                 NativeErrorCode.PddlLoad,
                 pddl.Message,
@@ -246,6 +258,9 @@ public static partial class Exports
                 pddl.Span?.Line ?? -1,
                 pddl.Span?.Column ?? -1,
                 pddl.SourcePath),
+            Mimir.Search.Space.StateSpaceLimitExceededException => new NativeErrorData(
+                NativeErrorCode.StateSpaceLimitExceeded,
+                exception.Message),
             ArgumentException => new NativeErrorData(
                 NativeErrorCode.InvalidArgument,
                 exception.Message),
@@ -260,6 +275,11 @@ public static partial class Exports
                 exception.Message),
         };
     }
+
+    internal static T RequireHandle<T>(int handle)
+        where T : class
+        => ObjectRegistry.Get<T>(handle)
+            ?? throw new InvalidNativeHandleException(typeof(T).Name, handle);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_value_equals")]
     public static int ValueEquals(int leftHandle, int rightHandle)

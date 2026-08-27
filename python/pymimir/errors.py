@@ -7,6 +7,10 @@ class MimirError(RuntimeError):
     """A native Mimir operation failed."""
 
 
+class StateSpaceLimitExceeded(MimirError):
+    """State-space expansion exceeded its configured state limit."""
+
+
 class PddlError(MimirError):
     """A PDDL document could not be loaded."""
 

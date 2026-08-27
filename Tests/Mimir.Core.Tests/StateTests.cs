@@ -415,6 +415,17 @@ public class StateTests
     }
 
     [Fact]
+    public void EqualStatesWithTrailingZeroWords_HaveEqualHashCodes()
+    {
+        TestProblemFixture fixture = TestProblemFixture.Create(["p"]);
+        State compact = new(fixture.Context, [1UL]);
+        State padded = new(fixture.Context, [1UL, 0UL, 0UL]);
+
+        Assert.Equal(compact, padded);
+        Assert.Equal(compact.GetHashCode(), padded.GetHashCode());
+    }
+
+    [Fact]
     public void IsTrue_StaticFact_ReturnsItsStaticState()
     {
         TestProblemFixture fixture = TestProblemFixture.Create(staticNames: ["s"]);

@@ -177,8 +177,7 @@ public class SearchSpace
                 {
                     if (_maxStates.HasValue && _nodes.Count >= _maxStates.Value)
                     {
-                        throw new InvalidOperationException(
-                            $"Search-space expansion exceeded the maximum of {_maxStates.Value} states.");
+                        throw new StateSpaceLimitExceededException(_maxStates.Value);
                     }
 
                     var newNode = CreateNode(nextState, nextDepth);

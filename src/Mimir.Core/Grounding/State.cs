@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 public class State : IEquatable<State>
 {
     private readonly ulong[] _bitboard;
+    private readonly int _hashCode;
 
     public InstanceContext Context { get; }
     internal ReadOnlySpan<ulong> Bitboard => _bitboard;
@@ -17,18 +18,21 @@ public class State : IEquatable<State>
 
         Context = context;
         _bitboard = bitboard.ToArray();
+        _hashCode = ComputeHashCode(context, _bitboard);
     }
 
     internal State(InstanceContext context, ulong[] bitboard, bool takeOwnership)
     {
         Context = context;
         _bitboard = bitboard;
+        _hashCode = ComputeHashCode(context, _bitboard);
     }
 
     internal State(InstanceContext context)
     {
         Context = context ?? throw new ArgumentNullException(nameof(context));
         _bitboard = Array.Empty<ulong>();
+        _hashCode = ComputeHashCode(Context, _bitboard);
     }
 
     internal bool IsTrue(FluentIndex factIndex)
@@ -168,7 +172,13 @@ public class State : IEquatable<State>
 
     public bool Equals(State? other)
     {
-        if (other is null || other.Context != Context) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null
+            || !ReferenceEquals(other.Context, Context)
+            || other._hashCode != _hashCode)
+        {
+            return false;
+        }
 
         int commonLength = Math.Min(_bitboard.Length, other._bitboard.Length);
         for (int i = 0; i < commonLength; i++)
@@ -191,20 +201,24 @@ public class State : IEquatable<State>
 
     public override bool Equals(object? obj) => Equals(obj as State);
 
-    public override int GetHashCode()
+    public override int GetHashCode() => _hashCode;
+
+    private static int ComputeHashCode(
+        InstanceContext context,
+        ReadOnlySpan<ulong> bitboard)
     {
         var hash = new HashCode();
-        hash.Add(RuntimeHelpers.GetHashCode(Context));
+        hash.Add(RuntimeHelpers.GetHashCode(context));
 
-        int lastNonZero = _bitboard.Length - 1;
-        while (lastNonZero >= 0 && _bitboard[lastNonZero] == 0)
+        int lastNonZero = bitboard.Length - 1;
+        while (lastNonZero >= 0 && bitboard[lastNonZero] == 0)
         {
             lastNonZero--;
         }
 
         for (int i = 0; i <= lastNonZero; i++)
         {
-            hash.Add(_bitboard[i]);
+            hash.Add(bitboard[i]);
         }
 
         return hash.ToHashCode();

@@ -33,14 +33,40 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert pymimir.advanced.lib.mimir_abi_version() == 13
-    assert pymimir.__version__ == "0.14.0b2"
+    assert pymimir.advanced.lib.mimir_abi_version() == 15
+    assert pymimir.__version__ == "0.14.0b3"
     assert not hasattr(pymimir, "brfs")
     assert not hasattr(pymimir, "astar_eager")
     assert not hasattr(pymimir, "gbfs_lazy")
     assert not hasattr(pymimir, "StateSpaceSampler")
     assert inspect.signature(pymimir.astar).parameters["heuristic"].default is inspect.Parameter.empty
     assert inspect.signature(pymimir.bfs).parameters["timeout_seconds"].kind is inspect.Parameter.KEYWORD_ONLY
+
+
+def test_state_hash_is_cached_in_python(blocks, monkeypatch):
+    import pymimir.model as model
+
+    state = blocks.initial_state
+    native_value_hash = model.value_hash
+    calls = 0
+
+    def counting_value_hash(handle: int) -> int:
+        nonlocal calls
+        calls += 1
+        return native_value_hash(handle)
+
+    monkeypatch.setattr(model, "value_hash", counting_value_hash)
+
+    first = hash(state)
+
+    assert hash(state) == first
+    assert calls == 1
+
+
+def test_problem_goal_is_cached(blocks):
+    goal = blocks.goal
+
+    assert blocks.goal is goal
 
 
 def test_root_exports_complete_model_and_concrete_heuristic_types():
@@ -134,8 +160,19 @@ def test_equality_is_an_ordinary_static_predicate(generator):
     assert negative.atom.predicate == equals
     assert not negative.is_positive
 
-    bindings = problem.condition(negative, variables=(x, y)).bindings(problem.initial_state)
-    assert {(binding[x].name, binding[y].name) for binding in bindings} == {("a", "b"), ("b", "a")}
+    condition = problem.condition(negative, variables=(x, y))
+    bindings = condition.bindings(problem.initial_state)
+    assert {(binding[x].name, binding[y].name) for binding in bindings} == {
+        ("a", "b"),
+        ("b", "a"),
+    }
+    groundings = condition.groundings(
+        problem.initial_state,
+        omit_predicates=(equals,),
+    )
+    assert len(groundings) == 2
+    assert all(grounding.problem == problem for grounding in groundings)
+    assert all(len(grounding) == 0 for grounding in groundings)
 
     a = problem.object("a")
     variable_object = problem.literal(problem.atom(equals, x, a), positive=False)
@@ -969,6 +1006,49 @@ def test_condition_binding_limit_contract(blocks):
             condition.bindings(blocks.initial_state, limit=invalid)
 
 
+def test_condition_groundings_substitute_and_omit_predicates(blocks):
+    state = blocks.initial_state
+    condition = blocks.domain.actions[0].precondition
+    binding = condition.bindings(state, limit=1)[0]
+    clear = blocks.domain.predicate("clear")
+
+    unfiltered = condition.groundings(state, limit=1)[0]
+    assert len(unfiltered) == len(condition)
+    assert unfiltered.literals[0] == unfiltered.literals[1]
+
+    groundings = condition.groundings(
+        state,
+        limit=1,
+        omit_predicates=(clear,),
+    )
+
+    assert len(groundings) == 1
+    grounding = groundings[0]
+    assert grounding.problem == blocks
+    assert grounding.holds(state)
+    assert len(grounding) == 1
+    literal = grounding.literals[0]
+    assert literal.atom.predicate == blocks.domain.predicate("on")
+    assert literal.atom.objects == (
+        binding[condition.parameters[0]],
+        binding[condition.parameters[1]],
+    )
+    assert condition.groundings(state, limit=0) == ()
+
+    with pytest.raises(TypeError, match="Predicate"):
+        condition.groundings(state, omit_predicates=("clear",))
+
+    other = pymimir.Problem.from_files(
+        EXAMPLES / "blocks_3" / "domain.pddl",
+        EXAMPLES / "blocks_3" / "p01.pddl",
+    )
+    with pytest.raises(ValueError, match="different domain"):
+        condition.groundings(
+            state,
+            omit_predicates=(other.domain.predicate("clear"),),
+        )
+
+
 def test_variadic_condition_and_binding_validation(blocks, monkeypatch):
     variable = blocks.variable("?value")
     empty = blocks.condition()
@@ -1362,6 +1442,15 @@ def test_state_space_sequence_labels_transitions_and_sampling(blocks):
     space.reseed(7)
     assert first == space.sample_states(4)
     assert space.sample_states(0) == ()
+
+
+def test_state_space_limit_raises_dedicated_error(blocks):
+    assert issubclass(pymimir.StateSpaceLimitExceeded, pymimir.MimirError)
+    with pytest.raises(
+        pymimir.StateSpaceLimitExceeded,
+        match="maximum of 1 states",
+    ):
+        pymimir.StateSpace(blocks, max_states=1)
 
 
 def test_state_space_queries_do_not_scan_the_sequence(blocks, monkeypatch):

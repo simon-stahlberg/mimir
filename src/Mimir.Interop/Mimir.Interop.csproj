@@ -13,6 +13,7 @@
          once InternalsVisibleTo("Mimir.Interop") is enabled. -->
     <ProjectReference Include="..\Mimir.Pddl\Mimir.Pddl.csproj" />
     <ProjectReference Include="..\Mimir.Core\Mimir.Core.csproj" />
+    <ProjectReference Include="..\Mimir.Learning\Mimir.Learning.csproj" />
     <ProjectReference Include="..\Mimir.Search\Mimir.Search.csproj" />
   </ItemGroup>
 

@@ -1172,7 +1172,7 @@ class Problem(_Handle):
     def initial_atoms(self) -> tuple[GroundAtom, ...]:
         return self.initial_static_atoms + self.initial_fluent_atoms
 
-    @property
+    @cached_property
     def goal(self) -> "GroundConjunctiveCondition":
         n = lib.mimir_problem_get_goal_literal_count(self._handle)
         literals = [GroundLiteral._from_handle(lib.mimir_problem_get_goal_literal(self._handle, i), self) for i in range(n)]
@@ -1372,6 +1372,7 @@ class State(_Handle):
 
     _problem: Problem
     _applicable_actions: tuple[GroundAction, ...] | None
+    _hash_code: int | None
 
     @classmethod
     def _from_handle(
@@ -1385,6 +1386,7 @@ class State(_Handle):
                 raise TypeError("states require a problem owner")
             value._problem = owner
             value._applicable_actions = None
+            value._hash_code = None
         except BaseException:
             free_handle(handle)
             raise
@@ -1491,6 +1493,11 @@ class State(_Handle):
             free_handle(list_handle)
         self._applicable_actions = actions
         return actions
+
+    def __hash__(self) -> int:
+        if self._hash_code is None:
+            self._hash_code = value_hash(self._handle)
+        return self._hash_code
 
     def __iter__(self) -> Iterator[GroundAtom]:
         return iter(self.atoms)
@@ -1636,6 +1643,50 @@ class ConjunctiveCondition(_Handle):
             return tuple(results)
         finally:
             free_handle(list_handle)
+
+    def groundings(
+        self,
+        state: State,
+        *,
+        limit: int | None = None,
+        omit_predicates: Iterable[Predicate] = (),
+    ) -> tuple[GroundConjunctiveCondition, ...]:
+        """Return satisfying ground instances of this condition in ``state``.
+
+        Omitted predicates still constrain the enumerated bindings, but their
+        literals are not included in the returned conditions.
+        """
+        if not isinstance(state, State):
+            raise TypeError("state must be a State")
+        omitted = tuple(omit_predicates)
+        if any(not isinstance(predicate, Predicate) for predicate in omitted):
+            raise TypeError("omit_predicates must contain Predicate values")
+        if any(predicate._owner != state.problem.domain for predicate in omitted):
+            raise ValueError(
+                "omit_predicates contains a predicate from a different domain"
+            )
+
+        problem = state.problem
+        results: list[GroundConjunctiveCondition] = []
+        for binding in self.bindings(state, limit=limit):
+            literals: list[GroundLiteral] = []
+            for literal in self._literals:
+                atom = literal.atom
+                if atom.predicate in omitted:
+                    continue
+                objects = tuple(
+                    binding[term] if isinstance(term, Variable) else term
+                    for term in atom.terms
+                )
+                ground_atom = problem.ground_atom(atom.predicate, *objects)
+                literals.append(
+                    problem.ground_literal(
+                        ground_atom,
+                        positive=literal.is_positive,
+                    )
+                )
+            results.append(problem.ground_condition(*literals))
+        return tuple(results)
 
     def __iter__(self) -> Iterator[Literal]:
         return iter(self._literals)

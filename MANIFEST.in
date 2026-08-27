@@ -1,9 +1,11 @@
 include README.md
 recursive-include src/Mimir.Pddl *.cs *.csproj
 recursive-include src/Mimir.Core *.cs *.csproj
+recursive-include src/Mimir.Learning *.cs *.csproj
 recursive-include src/Mimir.Search *.cs *.csproj
 recursive-include src/Mimir.Interop *.cs *.csproj
 prune src/Mimir.Pddl/obj
 prune src/Mimir.Core/obj
+prune src/Mimir.Learning/obj
 prune src/Mimir.Search/obj
 prune src/Mimir.Interop/obj
