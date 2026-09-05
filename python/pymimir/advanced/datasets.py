@@ -7,6 +7,7 @@ import ctypes
 from ._native import bind_function as _bind
 
 _int = ctypes.c_int
+_ptr = ctypes.c_void_p
 _byte = ctypes.c_byte
 _dbl = ctypes.c_double
 
@@ -31,5 +32,6 @@ _bind("mimir_state_space_get_successors", [_int, _int], _int)
 _bind("mimir_state_space_get_predecessors", [_int, _int], _int)
 
 _bind("mimir_transition_list_count", [_int], _int)
+_bind("mimir_transition_list_copy_handles", [_int, _ptr, _ptr, _int], _int)
 _bind("mimir_transition_list_get_action", [_int, _int], _int)
 _bind("mimir_transition_list_get_state", [_int, _int], _int)

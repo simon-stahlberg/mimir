@@ -61,7 +61,10 @@ from .search import (
     Transition,
 )
 from .search import astar, bfs, gbfs, iw, ucs
+from .q_search import qgbfs
+from .beam_search import beam, qbeam
 from .heuristics import (
+    QHeuristic,
     AddHeuristic,
     BlindHeuristic,
     FFHeuristic,
@@ -87,7 +90,7 @@ from .learning import (
     encode_virtual_node,
 )
 
-__version__: str = "0.14.0b3"
+__version__: str = "0.14.0b4"
 
 __all__ = [
     # Model
@@ -104,9 +107,9 @@ __all__ = [
     "ActionCost", "ActionCostSpec",
     # Search
     "search", "Solution", "SearchResult", "SearchStatistics", "SearchStatus", "Transition",
-    "bfs", "ucs", "astar", "gbfs", "iw",
+    "bfs", "ucs", "astar", "gbfs", "qgbfs", "beam", "qbeam", "iw",
     # Heuristics
-    "heuristics", "BlindHeuristic", "GoalCountHeuristic", "FFHeuristic", "LiftedFFHeuristic",
+    "heuristics", "QHeuristic", "BlindHeuristic", "GoalCountHeuristic", "FFHeuristic", "LiftedFFHeuristic",
     "AddHeuristic", "MaxHeuristic", "H2Heuristic", "SetAddHeuristic", "PerfectHeuristic",
     # Datasets
     "state_space", "StateLabel", "StateSpace",

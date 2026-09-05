@@ -40,6 +40,11 @@ public static partial class Exports
         return CreateHandle(() => GoalCondition.FromLiterals(problem, literals));
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_goal_is_satisfied")]
+    public static int GoalIsSatisfied(int goalHandle, int stateHandle)
+        => ReadValue(goalHandle, -1, (GoalCondition goal) =>
+            goal.IsSatisfied(RequireHandle<ExtendedState>(stateHandle)) ? 1 : 0);
+
     [UnmanagedCallersOnly(EntryPoint = "mimir_goal_literal_count")]
     public static int GoalLiteralCount(int goalHandle)
         => ReadValue(goalHandle, -1, (GoalCondition goal) => goal.GoalLiterals.Count);

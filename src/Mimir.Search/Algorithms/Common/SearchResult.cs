@@ -9,14 +9,19 @@ public enum SearchStatus
     Failed = 0,
     Succeeded = 1,
     Canceled = 2,
-    ExpansionLimitReached = 3
+    ExpansionLimitReached = 3,
+    DepthLimitReached = 4,
+    DeadEnd = 5
 }
 
 public record SearchStatistics(
     int NodesExpanded,
     int NodesGenerated,
     TimeSpan TimeTaken,
-    int MaxDepth
+    int MaxDepth,
+    int? VisitedStates = null,
+    int? GeneratedTransitions = null,
+    int? EvaluatedCandidates = null
 );
 
 public class SearchResult
@@ -27,6 +32,9 @@ public class SearchResult
     public bool IsExpansionLimitReached => Status == SearchStatus.ExpansionLimitReached;
     public IReadOnlyList<Action> Plan { get; }
     public SearchStatistics Statistics { get; }
+    public IReadOnlyList<Action> PartialPlan { get; init; } = [];
+    public IReadOnlyList<double?> ActionValues { get; init; } = [];
+    public State? EndState { get; init; }
     public int PlanLength => Plan.Count;
     public double PlanCost { get; }
 

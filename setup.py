@@ -97,7 +97,7 @@ class bdist_wheel_with_native(bdist_wheel):
 
 setup(
     name="pymimir",
-    version="0.14.0b3",
+    version="0.14.0b4",
     distclass=BinaryDistribution,
     long_description=(ROOT / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",

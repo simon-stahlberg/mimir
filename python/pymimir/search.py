@@ -12,7 +12,7 @@ from typing import Callable, TypeAlias
 
 from .advanced import free_handle, lib
 from .advanced._native import raise_last_error
-from .advanced.heuristics import HEURISTIC_CALLBACK, PREFERRED_CALLBACK
+from .advanced.heuristics import HEURISTIC_CALLBACK, HEURISTIC_BATCH_CALLBACK, PREFERRED_CALLBACK
 from .advanced.search import DOUBLE_CALLBACK, STATE_CALLBACK, TRANSITION_CALLBACK
 from .errors import MimirError
 from .heuristics import Heuristic, PerfectHeuristic, _NativeHeuristic, _validate_value
@@ -24,6 +24,9 @@ class SearchStatus(str, Enum):
     EXHAUSTED = "exhausted"
     TIMED_OUT = "timed_out"
     EXPANSION_LIMIT_REACHED = "expansion_limit_reached"
+    STOPPED = "stopped"
+    DEPTH_LIMIT_REACHED = "depth_limit_reached"
+    DEAD_END = "dead_end"
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +43,9 @@ class SearchStatistics:
     max_depth: int
     setup_seconds: float
     search_seconds: float
+    visited_states: int | None = None
+    generated_transitions: int | None = None
+    evaluated_candidates: int | None = None
 
     @property
     def elapsed_seconds(self) -> float:
@@ -58,6 +64,8 @@ class SearchResult:
     status: SearchStatus
     solution: Solution | None
     statistics: SearchStatistics
+    partial_plan: tuple[GroundAction, ...] = ()
+    action_values: tuple[float | None, ...] = ()
 
     def __post_init__(self) -> None:
         if self.status is SearchStatus.SOLVED and self.solution is None:
@@ -215,6 +223,29 @@ def _heuristic_handle(
             errors.capture(error)
             return 0
 
+    def evaluate_batch(
+        handles: _Pointer[ctypes.c_int],
+        count: int,
+        output: _Pointer[ctypes.c_double],
+    ) -> int:
+        if errors.error is not None:
+            return 0
+        try:
+            states = []
+            for index in range(count):
+                handle = handles[index]
+                handles[index] = 0
+                states.append(State._from_handle(handle, heuristic.problem))
+            values = heuristic.evaluate_batch(states, goal)
+            if len(values) != count:
+                raise ValueError("Heuristic score count must match the number of states")
+            for index, value in enumerate(values):
+                output[index] = _validate_value(value)
+            return 1
+        except BaseException as error:
+            errors.capture(error)
+            return 0
+
     def is_preferred(
         state_handle: int,
         action_handle: int,
@@ -237,12 +268,14 @@ def _heuristic_handle(
             return 0
 
     native_evaluate = HEURISTIC_CALLBACK(evaluate)
+    native_evaluate_batch = HEURISTIC_BATCH_CALLBACK(evaluate_batch)
     native_is_preferred = PREFERRED_CALLBACK(is_preferred)
-    keepalive.extend((native_evaluate, native_is_preferred))
+    keepalive.extend((native_evaluate, native_is_preferred, native_evaluate_batch))
     handle = int(lib.mimir_heuristic_callback(
         heuristic.problem._handle,
         ctypes.cast(native_evaluate, ctypes.c_void_p),
         ctypes.cast(native_is_preferred, ctypes.c_void_p),
+        ctypes.cast(native_evaluate_batch, ctypes.c_void_p),
     ))
     if handle == 0:
         raise_last_error("could not create Python heuristic adapter")

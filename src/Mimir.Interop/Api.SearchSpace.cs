@@ -171,6 +171,51 @@ public static partial class Exports
         return 0;
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_transition_list_copy_handles")]
+    public static unsafe int TransitionListCopyHandles(
+        int handle,
+        IntPtr actionHandles,
+        IntPtr stateHandles,
+        int capacity)
+    {
+        return ReadValue(handle, -1, (IReadOnlyList<(State, GroundAction)> transitions) =>
+        {
+            int count = transitions.Count;
+            if (capacity < count)
+                throw new ArgumentException("Insufficient transition buffer capacity.", nameof(capacity));
+            if (count > 0 && stateHandles == IntPtr.Zero)
+                throw new ArgumentNullException(nameof(stateHandles));
+
+            var states = new Span<int>((void*)stateHandles, count);
+            // A caller that already owns the action wrappers only needs state handles.
+            var actions = actionHandles == IntPtr.Zero
+                ? Span<int>.Empty
+                : new Span<int>((void*)actionHandles, count);
+            states.Clear();
+            actions.Clear();
+            try
+            {
+                for (int index = 0; index < count; index++)
+                {
+                    if (!actions.IsEmpty)
+                        actions[index] = ObjectRegistry.Store(transitions[index].Item2);
+                    states[index] = ExpandAndStoreState(transitions[index].Item1);
+                }
+                return count;
+            }
+            catch
+            {
+                foreach (int action in actions)
+                    ObjectRegistry.Release(action);
+                foreach (int state in states)
+                    ObjectRegistry.Release(state);
+                actions.Clear();
+                states.Clear();
+                throw;
+            }
+        });
+    }
+
     [UnmanagedCallersOnly(EntryPoint = "mimir_transition_list_get_action")]
     public static int TransitionListGetAction(int handle, int index)
     {

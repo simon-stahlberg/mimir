@@ -17,6 +17,7 @@ public class SearchNode
     public int Depth { get; }
     public Action? Action { get; }
     public SearchNode? Parent { get; }
+    public double? ActionValue { get; init; }
 
     public SearchNode(State state, Action? action = null, SearchNode? parent = null, double cost = 0, int depth = 0)
     {

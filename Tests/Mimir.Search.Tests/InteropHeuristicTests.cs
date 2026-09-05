@@ -56,8 +56,8 @@ public unsafe class InteropHeuristicTests
         try
         {
             delegate* unmanaged<int, double*, byte> abort = &AbortEvaluation;
-            delegate* unmanaged<int, IntPtr, IntPtr, int> create = &Exports.HeuristicCallback;
-            heuristicHandle = create(problemHandle, (IntPtr)abort, IntPtr.Zero);
+            delegate* unmanaged<int, IntPtr, IntPtr, IntPtr, int> create = &Exports.HeuristicCallback;
+            heuristicHandle = create(problemHandle, (IntPtr)abort, IntPtr.Zero, IntPtr.Zero);
             Assert.NotEqual(0, heuristicHandle);
 
             delegate* unmanaged<int, int, int, double> evaluate = &Exports.HeuristicEvaluate;
@@ -79,6 +79,71 @@ public unsafe class InteropHeuristicTests
             ObjectRegistry.Release(stateHandle);
             ObjectRegistry.Release(problemHandle);
         }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CallbackBatchPreservesPreferredActionsAndSupportsScalarDefault(bool batchOverride)
+    {
+        Problem problem = SearchTestHelpers.LoadProblem("blocks_3");
+        ExtendedState state = problem.InitialState.Expand();
+        IApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
+        Mimir.Core.Grounding.Action action = generator.GetApplicableActions(state).First();
+        int problemHandle = ObjectRegistry.Store(problem);
+        int heuristicHandle = 0;
+        try
+        {
+            delegate* unmanaged<int, double*, byte> scalar = &ScalarEvaluation;
+            delegate* unmanaged<int*, int, double*, byte> batch = &BatchEvaluation;
+            delegate* unmanaged<int, int, byte*, byte> preferred = &PreferredAction;
+            delegate* unmanaged<int, IntPtr, IntPtr, IntPtr, int> create = &Exports.HeuristicCallback;
+            heuristicHandle = create(problemHandle, (IntPtr)scalar, (IntPtr)preferred,
+                batchOverride ? (IntPtr)batch : IntPtr.Zero);
+            IHeuristic heuristic = ObjectRegistry.Get<IHeuristic>(heuristicHandle)!;
+            IReadOnlyList<HeuristicEvaluation> results = heuristic.Evaluate(new[] { state, state }, GoalCondition.FromProblem(problem));
+            Assert.Equal(batchOverride ? new[] { 1d, 2d } : new[] { 7d, 7d }, results.Select(result => result.Value));
+            foreach (HeuristicEvaluation result in results)
+            {
+                Assert.NotNull(result.IsPreferredAction);
+                Assert.True(result.IsPreferredAction(action));
+            }
+            Assert.Equal(7d, heuristic.Evaluate(state).Value);
+        }
+        finally
+        {
+            ObjectRegistry.Release(heuristicHandle);
+            ObjectRegistry.Release(problemHandle);
+        }
+    }
+
+    [UnmanagedCallersOnly]
+    private static byte ScalarEvaluation(int stateHandle, double* result)
+    {
+        ObjectRegistry.Release(stateHandle);
+        *result = 7;
+        return 1;
+    }
+
+    [UnmanagedCallersOnly]
+    private static byte BatchEvaluation(int* stateHandles, int count, double* result)
+    {
+        for (int index = 0; index < count; index++)
+        {
+            ObjectRegistry.Release(stateHandles[index]);
+            stateHandles[index] = 0;
+            result[index] = index + 1;
+        }
+        return 1;
+    }
+
+    [UnmanagedCallersOnly]
+    private static byte PreferredAction(int stateHandle, int actionHandle, byte* result)
+    {
+        ObjectRegistry.Release(stateHandle);
+        ObjectRegistry.Release(actionHandle);
+        *result = 1;
+        return 1;
     }
 
     [UnmanagedCallersOnly]

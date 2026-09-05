@@ -1494,6 +1494,67 @@ class State(_Handle):
         self._applicable_actions = actions
         return actions
 
+    def successor_states(self) -> tuple[tuple[GroundAction, State], ...]:
+        """Expand all applicable actions in native code and return ordered pairs.
+
+        Action order matches ``applicable_actions()``, regardless of which
+        method is called first. Equal successor states are retained for each
+        action. Actions are cached; successor states are not.
+        """
+        cached_actions = self._applicable_actions
+        if cached_actions == ():
+            return ()
+        action_ptr, action_array = _handle_array(
+            [action._handle for action in cached_actions]
+            if cached_actions is not None else []
+        )
+        list_handle = lib.mimir_state_generate_successors(
+            self._handle,
+            self._problem._handle,
+            action_ptr,
+            len(cached_actions) if cached_actions is not None else -1,
+        )
+        if list_handle == 0:
+            raise_last_error("could not generate successor states")
+        try:
+            count = lib.mimir_transition_list_count(list_handle)
+            action_handles = (ctypes.c_int * count)()
+            state_handles = (ctypes.c_int * count)()
+            try:
+                copied = lib.mimir_transition_list_copy_handles(
+                    list_handle,
+                    action_handles if cached_actions is None else None,
+                    state_handles,
+                    count,
+                )
+                if copied != count:
+                    raise RuntimeError("native successor count changed during transfer")
+                transitions = []
+                for index in range(count):
+                    if cached_actions is None:
+                        handle = action_handles[index]
+                        action_handles[index] = 0
+                        action = GroundAction._from_handle(handle, self._problem)
+                    else:
+                        action = cached_actions[index]
+                    # _from_handle adopts the handle even when construction fails.
+                    handle = state_handles[index]
+                    state_handles[index] = 0
+                    successor = State._from_handle(handle, self._problem)
+                    transitions.append((action, successor))
+                result = tuple(transitions)
+                if cached_actions is None:
+                    self._applicable_actions = tuple(action for action, _ in result)
+                return result
+            except BaseException:
+                for handle in action_handles:
+                    free_handle(handle)
+                for handle in state_handles:
+                    free_handle(handle)
+                raise
+        finally:
+            free_handle(list_handle)
+
     def __hash__(self) -> int:
         if self._hash_code is None:
             self._hash_code = value_hash(self._handle)

@@ -8,6 +8,9 @@ public sealed class PlanResult
     public bool IsExpansionLimitReached => Status == SearchStatus.ExpansionLimitReached;
     public IReadOnlyList<Mimir.Core.Grounding.Action> Plan { get; }
     public SearchStatistics Statistics { get; }
+    public IReadOnlyList<Mimir.Core.Grounding.Action> PartialPlan { get; init; } = [];
+    public IReadOnlyList<double?> ActionValues { get; init; } = [];
+    public Mimir.Core.Grounding.State? EndState { get; init; }
     public TimeSpan SetupTime { get; }
     public TimeSpan SearchTime { get; }
     public TimeSpan ElapsedTime { get; }

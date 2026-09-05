@@ -3,6 +3,7 @@ using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
 using Mimir.Search.Heuristics;
+using Mimir.Search.Algorithms.Beam;
 using Mimir.Search.Algorithms.BreadthFirst;
 using Mimir.Search.Algorithms.AStar;
 using Mimir.Search.Algorithms.GreedyBestFirst;
@@ -19,6 +20,7 @@ public class SearchBuilder
     private GoalCondition? _goalCondition;
     private IApplicableActionGenerator? _actionGenerator;
     private IHeuristic? _heuristic;
+    private IQHeuristic? _qHeuristic;
     private readonly List<Action<SearchNode>> _onNodeExpanded = new();
     private readonly List<Action<SearchNode>> _onNodeGenerated = new();
     private readonly List<Action<SearchNode>> _onGoalNodeExpanded = new();
@@ -76,6 +78,55 @@ public class SearchBuilder
     {
         _onNodeGenerated.Add(callback);
         return this;
+    }
+
+    public SearchBuilder WithQHeuristic(IQHeuristic heuristic)
+    {
+        ArgumentNullException.ThrowIfNull(heuristic);
+        _qHeuristic = heuristic;
+        return this;
+    }
+
+    public ISearchAlgorithm BuildQGbfs(int batchTarget = 1, bool maximize = true, Func<int, bool>? shouldStop = null)
+    {
+        Validate();
+        var search = new QGbfsSearch(
+            _initialState!, _goalCondition!, _actionGenerator!,
+            _qHeuristic ?? throw new InvalidOperationException("Q-heuristic not set."),
+            batchTarget, maximize, shouldStop);
+        foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
+        foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
+        foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
+        return search;
+    }
+
+    public ISearchAlgorithm BuildBeam(int beamSize = 1, int maxDepth = int.MaxValue, Func<int, bool>? shouldStop = null)
+    {
+        Validate();
+        ValidateHeuristicActionGenerator();
+        var search = new BeamSearch(_initialState!, _goalCondition!, _actionGenerator!,
+            _heuristic ?? BlindHeuristic.Instance, null, beamSize, maxDepth, false, shouldStop);
+        foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
+        foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
+        foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
+        foreach (var callback in _onStateGeneratedInSearchTree) search.TransitionDiscovered += callback;
+        foreach (var callback in _onStateGeneratedNotInSearchTree) search.TransitionPruned += callback;
+        return search;
+    }
+
+    public ISearchAlgorithm BuildQBeam(int beamSize = 1, int maxDepth = int.MaxValue,
+        bool maximize = true, Func<int, bool>? shouldStop = null)
+    {
+        Validate();
+        var search = new BeamSearch(_initialState!, _goalCondition!, _actionGenerator!, null,
+            _qHeuristic ?? throw new InvalidOperationException("Q-heuristic not set."),
+            beamSize, maxDepth, maximize, shouldStop);
+        foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
+        foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
+        foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
+        foreach (var callback in _onStateGeneratedInSearchTree) search.TransitionDiscovered += callback;
+        foreach (var callback in _onStateGeneratedNotInSearchTree) search.TransitionPruned += callback;
+        return search;
     }
 
     public SearchBuilder OnGoalNodeExpanded(Action<SearchNode> callback)

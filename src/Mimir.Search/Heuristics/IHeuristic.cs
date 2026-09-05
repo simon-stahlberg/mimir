@@ -10,6 +10,14 @@ public readonly record struct HeuristicEvaluation(double Value, Func<Action, boo
 public interface IHeuristic
 {
     HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null);
+
+    IReadOnlyList<HeuristicEvaluation> Evaluate(IReadOnlyList<ExtendedState> states, GoalCondition? goal = null)
+    {
+        var evaluations = new HeuristicEvaluation[states.Count];
+        for (int index = 0; index < states.Count; index++)
+            evaluations[index] = Evaluate(states[index], goal);
+        return evaluations;
+    }
 }
 
 internal interface IGroundedRpgHeuristic

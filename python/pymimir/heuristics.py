@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
+import ctypes
 import math
 from numbers import Real
 import threading
-from typing import ClassVar
+from typing import ClassVar, TypeAlias
 import weakref
 
 from .advanced import free_handle, lib
@@ -16,7 +18,11 @@ from .model import (
     GroundConjunctiveCondition,
     Problem,
     State,
+    _handle_array,
 )
+
+Successors: TypeAlias = Sequence[tuple[GroundAction, State]]
+Expansions: TypeAlias = Sequence[tuple[State, Successors]]
 
 
 def _validate_value(value: object) -> float:
@@ -57,6 +63,13 @@ class Heuristic(ABC):
         goal: GroundConjunctiveCondition | None = None,
     ) -> bool:
         return False
+
+    def evaluate_batch(
+        self,
+        states: Sequence[State],
+        goal: GroundConjunctiveCondition | None = None,
+    ) -> Sequence[float]:
+        return [self.evaluate(state, goal) for state in states]
 
     def preferred_actions(
         self,
@@ -147,6 +160,26 @@ class _NativeHeuristic(_NativeOwner, Heuristic):
         finally:
             free_handle(list_handle)
 
+    def evaluate_batch(
+        self,
+        states: Sequence[State],
+        goal: GroundConjunctiveCondition | None = None,
+    ) -> tuple[float, ...]:
+        states = tuple(states)
+        for state in states:
+            if not isinstance(state, State):
+                raise TypeError("states must contain only State values")
+            if state.problem is not self.problem and state.problem != self.problem:
+                raise ValueError("state and heuristic belong to different problems")
+        effective_goal = self._effective_goal(goal)
+        pointer, handles = _handle_array([state._handle for state in states])
+        values = (ctypes.c_double * len(states))()
+        if not lib.mimir_heuristic_evaluate_batch(
+            self._handle_for(effective_goal), pointer, len(states), effective_goal._handle, values
+        ):
+            raise_last_error("could not evaluate heuristic batch")
+        return tuple(_validate_value(value) for value in values)
+
     def is_preferred(
         self,
         state: State,
@@ -158,6 +191,35 @@ class _NativeHeuristic(_NativeOwner, Heuristic):
         if action.problem != self.problem:
             raise ValueError("action and heuristic belong to different problems")
         return action in self.preferred_actions(state, goal)
+
+
+class QHeuristic(ABC):
+    """Score complete, ordered successor rows for a planning problem."""
+
+    def __init__(self, problem: Problem) -> None:
+        if not isinstance(problem, Problem):
+            raise TypeError("problem must be a Problem")
+        self._problem = problem
+
+    @property
+    def problem(self) -> Problem:
+        return self._problem
+
+    @abstractmethod
+    def evaluate(
+        self,
+        state: State,
+        successors: Successors,
+        goal: GroundConjunctiveCondition | None = None,
+    ) -> Sequence[float]:
+        ...
+
+    def evaluate_batch(
+        self,
+        expansions: Expansions,
+        goal: GroundConjunctiveCondition | None = None,
+    ) -> Sequence[Sequence[float]]:
+        return [self.evaluate(state, successors, goal) for state, successors in expansions]
 
 
 class BlindHeuristic(_NativeHeuristic):
@@ -324,6 +386,9 @@ def _free_perfect_handles(
 
 
 __all__ = [
+    "QHeuristic",
+    "Successors",
+    "Expansions",
     "Heuristic",
     "BlindHeuristic",
     "GoalCountHeuristic",

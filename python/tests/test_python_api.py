@@ -33,8 +33,8 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert pymimir.advanced.lib.mimir_abi_version() == 15
-    assert pymimir.__version__ == "0.14.0b3"
+    assert pymimir.advanced.lib.mimir_abi_version() == 20
+    assert pymimir.__version__ == "0.14.0b4"
     assert not hasattr(pymimir, "brfs")
     assert not hasattr(pymimir, "astar_eager")
     assert not hasattr(pymimir, "gbfs_lazy")
@@ -1640,6 +1640,7 @@ def test_callback_abort_becomes_a_python_error_instead_of_terminating():
         heuristic_handle = int(lib.mimir_heuristic_callback(
             problem._handle,
             ctypes.cast(abort, ctypes.c_void_p),
+            ctypes.c_void_p(),
             ctypes.c_void_p(),
         ))
         try:

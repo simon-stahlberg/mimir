@@ -116,6 +116,45 @@ public static partial class Exports
             new List<GroundAction>(p.GetApplicableActionGenerator(s.State).GetApplicableActions(s)));
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_state_generate_successors")]
+    public static unsafe int StateGenerateSuccessors(
+        int stateHandle,
+        int problemHandle,
+        IntPtr actionHandles,
+        int actionCount)
+    {
+        return CreateHandle(() =>
+        {
+            ExtendedState state = RequireHandle<ExtendedState>(stateHandle);
+            Problem problem = RequireHandle<Problem>(problemHandle);
+            if (!ReferenceEquals(state.State.Context, problem.Context))
+                throw new ArgumentException("State belongs to a different problem.");
+            if (actionCount < -1)
+                throw new ArgumentOutOfRangeException(nameof(actionCount));
+
+            IEnumerable<GroundAction> actions;
+            if (actionCount == -1)
+            {
+                actions = problem.GetApplicableActionGenerator(state.State).GetApplicableActions(state);
+            }
+            else
+            {
+                if (actionCount > 0 && actionHandles == IntPtr.Zero)
+                    throw new ArgumentNullException(nameof(actionHandles));
+                var cachedActions = new List<GroundAction>(actionCount);
+                int* handles = (int*)actionHandles;
+                for (int index = 0; index < actionCount; index++)
+                    cachedActions.Add(RequireHandle<GroundAction>(handles[index]));
+                actions = cachedActions;
+            }
+
+            var transitions = new List<(State, GroundAction)>();
+            foreach (GroundAction action in actions)
+                transitions.Add((state.Apply(action), action));
+            return transitions;
+        });
+    }
+
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_list_count")]
     public static int ActionListCount(int handle)
         => ReadValue(handle, -1, (List<GroundAction> actions) => actions.Count);

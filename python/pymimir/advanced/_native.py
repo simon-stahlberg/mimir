@@ -121,7 +121,7 @@ except AttributeError as exc:
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"
     ) from exc
 
-if lib.mimir_abi_version() != 15:
+if lib.mimir_abi_version() != 20:
     raise RuntimeError(
         "Loaded Mimir native library has an incompatible ABI. "
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"

@@ -110,6 +110,7 @@ def use_public_api(
     )
     held: bool = custom_state.holds(ground_condition)
     actions: tuple[pymimir.GroundAction, ...] = state.applicable_actions()
+    successors: tuple[tuple[pymimir.GroundAction, pymimir.State], ...] = state.successor_states()
     context: pymimir.learning.EncodingContext = pymimir.EncodingContext()
     context.begin_instance(problem)
     object_to_id: dict[pymimir.Object, int] = context.object_to_id
@@ -261,3 +262,31 @@ def reject_invalid_search_calls(
         heuristic,
         on_finish_f_layer=lambda _value: "not None",  # type: ignore[arg-type]
     )
+
+
+def use_batched_heuristics(
+    problem: pymimir.Problem,
+    heuristic: pymimir.heuristics.Heuristic,
+    q_heuristic: pymimir.QHeuristic,
+) -> None:
+    state = problem.initial_state
+    successors = state.successor_states()
+    heuristic.evaluate_batch([state], problem.goal)
+    q_heuristic.evaluate(state, successors, problem.goal)
+    q_heuristic.evaluate_batch([(state, successors)], problem.goal)
+    result: pymimir.SearchResult = pymimir.qgbfs(
+        problem, q_heuristic, batch_target=4, maximize=True,
+        should_stop=lambda expanded: expanded >= 10,
+    )
+    partial: tuple[pymimir.GroundAction, ...] = result.partial_plan
+    scores: tuple[float | None, ...] = result.action_values
+    generated: int | None = result.statistics.generated_transitions
+    _ = partial, scores, generated
+
+    beam_result: pymimir.SearchResult = pymimir.beam(problem, heuristic, beam_size=4, max_depth=10)
+    qbeam_result: pymimir.SearchResult = pymimir.qbeam(
+        problem, q_heuristic, beam_size=4, max_depth=10, maximize=False,
+        start_state=state, goal=problem.goal, timeout_seconds=1, max_expanded_states=100,
+        should_stop=lambda expanded: expanded > 10,
+    )
+    _ = beam_result, qbeam_result
