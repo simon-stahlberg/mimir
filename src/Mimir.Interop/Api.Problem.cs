@@ -19,7 +19,7 @@ public static partial class Exports
         ArgumentNullException.ThrowIfNull(state);
         return problem.GetApplicableActionGenerator(state) as GroundedApplicableActionGenerator
             ?? throw new ArgumentException(
-                "A grounded RPG heuristic requires a problem configured with the grounded applicable-action generator.",
+                "A grounded heuristic requires a problem configured with the grounded applicable-action generator.",
                 nameof(problem));
     }
 

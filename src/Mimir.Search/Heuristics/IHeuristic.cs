@@ -20,7 +20,7 @@ public interface IHeuristic
     }
 }
 
-internal interface IGroundedRpgHeuristic
+internal interface IGroundedHeuristic
 {
     GroundedApplicableActionGenerator ActionGenerator { get; }
 }

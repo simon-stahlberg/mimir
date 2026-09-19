@@ -8,6 +8,7 @@
     <InternalsVisibleTo Include="Mimir.Core.Tests" />
     <InternalsVisibleTo Include="Mimir.Learning" />
     <InternalsVisibleTo Include="Mimir.Search" />
+    <InternalsVisibleTo Include="Mimir.Search.Tests" />
     <InternalsVisibleTo Include="Mimir.Interop" />
   </ItemGroup>
 

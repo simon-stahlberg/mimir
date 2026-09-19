@@ -286,11 +286,11 @@ public class SearchBuilder
 
     private void ValidateHeuristicActionGenerator()
     {
-        if (_heuristic is IGroundedRpgHeuristic groundedHeuristic
+        if (_heuristic is IGroundedHeuristic groundedHeuristic
             && !ReferenceEquals(groundedHeuristic.ActionGenerator, _actionGenerator))
         {
             throw new InvalidOperationException(
-                "A grounded RPG heuristic and the search must use the same " +
+                "A grounded heuristic and the search must use the same " +
                 "GroundedApplicableActionGenerator instance.");
         }
     }

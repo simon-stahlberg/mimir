@@ -15,7 +15,7 @@ namespace Mimir.Search.Heuristics;
 /// cost" used by h^FF, but extracted incrementally during forward propagation
 /// rather than via backward chaining.
 /// </summary>
-public sealed class SetAddHeuristic : IHeuristic, IGroundedRpgHeuristic
+public sealed class SetAddHeuristic : IHeuristic, IGroundedHeuristic
 {
     private readonly GroundedApplicableActionGenerator _actionGenerator;
     private readonly GroundedRelaxedPlanningGraph _rpg;
@@ -32,7 +32,7 @@ public sealed class SetAddHeuristic : IHeuristic, IGroundedRpgHeuristic
         _rpg.EnsureSupportedGoal(_defaultGoal);
     }
 
-    GroundedApplicableActionGenerator IGroundedRpgHeuristic.ActionGenerator => _actionGenerator;
+    GroundedApplicableActionGenerator IGroundedHeuristic.ActionGenerator => _actionGenerator;
 
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {

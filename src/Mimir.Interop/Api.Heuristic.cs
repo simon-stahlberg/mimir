@@ -98,7 +98,7 @@ public static partial class Exports
         try
         {
             IHeuristic effectiveHeuristic = heuristic;
-            if (heuristic is IGroundedRpgHeuristic)
+            if (heuristic is IGroundedHeuristic)
             {
                 Problem problem = state.State.Context.Problem;
                 GroundedApplicableActionGenerator generator = GetGroundedGenerator(problem, state.State);
@@ -148,7 +148,7 @@ public static partial class Exports
         {
             GroundedApplicableActionGenerator? generator = null;
             IHeuristic effectiveHeuristic = heuristic;
-            if (heuristic is IGroundedRpgHeuristic)
+            if (heuristic is IGroundedHeuristic)
             {
                 generator = GetGroundedGenerator(problem, state.State);
                 effectiveHeuristic = BindHeuristicToGenerator(
@@ -181,7 +181,7 @@ public static partial class Exports
         ArgumentNullException.ThrowIfNull(goal);
         ArgumentNullException.ThrowIfNull(actionGenerator);
 
-        if (heuristic is not IGroundedRpgHeuristic groundedHeuristic)
+        if (heuristic is not IGroundedHeuristic groundedHeuristic)
             return heuristic;
 
         if (!ReferenceEquals(groundedHeuristic.ActionGenerator.Problem, actionGenerator.Problem))
@@ -193,7 +193,7 @@ public static partial class Exports
         if (actionGenerator is not GroundedApplicableActionGenerator groundedGenerator)
         {
             throw new InvalidOperationException(
-                "A grounded RPG heuristic requires a grounded applicable-action generator.");
+                "A grounded heuristic requires a grounded applicable-action generator.");
         }
 
         return heuristic switch
@@ -204,7 +204,7 @@ public static partial class Exports
             SetAddHeuristic => new SetAddHeuristic(groundedGenerator, goal),
             H2Heuristic => new H2Heuristic(groundedGenerator, goal),
             _ => throw new InvalidOperationException(
-                $"Unsupported grounded RPG heuristic type '{heuristic.GetType().Name}'.")
+                $"Unsupported grounded heuristic type '{heuristic.GetType().Name}'.")
         };
     }
 
@@ -345,7 +345,7 @@ public static partial class Exports
                 if (!ReferenceEquals(state.State.Context.Problem, goal.Problem))
                     throw new ArgumentException("State and goal belong to different problems.");
 
-            if (heuristic is IGroundedRpgHeuristic)
+            if (heuristic is IGroundedHeuristic)
             {
                 // Grounding is relative to each query state, just as for scalar evaluation.
                 for (int index = 0; index < count; index++)

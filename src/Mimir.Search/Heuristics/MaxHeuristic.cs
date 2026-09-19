@@ -12,7 +12,7 @@ namespace Mimir.Search.Heuristics;
 ///
 /// Admissible for the supported grounded RPG fragment.
 /// </summary>
-public sealed class MaxHeuristic : IHeuristic, IGroundedRpgHeuristic
+public sealed class MaxHeuristic : IHeuristic, IGroundedHeuristic
 {
     private readonly GroundedApplicableActionGenerator _actionGenerator;
     private readonly GroundedRelaxedPlanningGraph _rpg;
@@ -29,7 +29,7 @@ public sealed class MaxHeuristic : IHeuristic, IGroundedRpgHeuristic
         _rpg.EnsureSupportedGoal(_defaultGoal);
     }
 
-    GroundedApplicableActionGenerator IGroundedRpgHeuristic.ActionGenerator => _actionGenerator;
+    GroundedApplicableActionGenerator IGroundedHeuristic.ActionGenerator => _actionGenerator;
 
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {

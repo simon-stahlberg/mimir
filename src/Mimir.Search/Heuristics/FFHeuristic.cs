@@ -15,7 +15,7 @@ namespace Mimir.Search.Heuristics;
 /// small grounded problems but uses more memory upfront. It also exposes
 /// preferred actions (the actions chosen at the first relaxed-plan layer).
 /// </summary>
-public sealed class FFHeuristic : IHeuristic, IGroundedRpgHeuristic
+public sealed class FFHeuristic : IHeuristic, IGroundedHeuristic
 {
     private readonly GroundedApplicableActionGenerator _actionGenerator;
     private readonly GroundedRelaxedPlanningGraph _rpg;
@@ -32,7 +32,7 @@ public sealed class FFHeuristic : IHeuristic, IGroundedRpgHeuristic
         _rpg.EnsureSupportedGoal(_defaultGoal);
     }
 
-    GroundedApplicableActionGenerator IGroundedRpgHeuristic.ActionGenerator => _actionGenerator;
+    GroundedApplicableActionGenerator IGroundedHeuristic.ActionGenerator => _actionGenerator;
 
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {

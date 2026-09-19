@@ -100,7 +100,8 @@ public class GroundedRpgHeuristicTests
     {
         Problem problem = CreateProblemForNegativeFluentPrecondition_IsIgnoredByDeleteRelaxation();
 
-        AssertValues(problem, problem.InitialState, new HeuristicValues(1d, 1d, 1d, 1d, 1d));
+        // Nothing deletes 'blocked', so 'finish' can never apply and the task is unsolvable.
+        AssertValues(problem, problem.InitialState, new HeuristicValues(1d, 1d, 1d, 1d, double.PositiveInfinity));
     }
 
     [Fact]
@@ -108,7 +109,8 @@ public class GroundedRpgHeuristicTests
     {
         Problem problem = CreateProblemForWeightedChain_ReturnsExactValuesAtEachState0();
 
-        AssertValues(problem, problem.InitialState, new HeuristicValues(2d, 2d, 2d, 2d, 2d));
+        // Reaching 'mid' deletes 'start', so 'reach-goal' can never apply.
+        AssertValues(problem, problem.InitialState, new HeuristicValues(2d, 2d, 2d, 2d, double.PositiveInfinity));
     }
 
     [Fact]
@@ -226,7 +228,8 @@ public class GroundedRpgHeuristicTests
     {
         Problem problem = CreateProblemForWeightedChain_ReturnsExactValuesAtEachState9();
 
-        AssertValues(problem, problem.InitialState, new HeuristicValues(10d, 8d, 10d, 10d, 10d));
+        // Both achievers delete 'start', so 'p' and 'q' can never hold together.
+        AssertValues(problem, problem.InitialState, new HeuristicValues(10d, 8d, 10d, 10d, double.PositiveInfinity));
     }
 
     [Fact]
@@ -562,7 +565,8 @@ public class GroundedRpgHeuristicTests
     {
         Problem problem = CreateProblemForSetAdd_SelectsSharedSupportThatAddAndFfRejectLocally9();
 
-        AssertValues(problem, problem.InitialState, new HeuristicValues(2d, 2d, 2d, 2d, 2d));
+        // Nothing deletes 'blocked', so the conditional effect never fires.
+        AssertValues(problem, problem.InitialState, new HeuristicValues(2d, 2d, 2d, 2d, double.PositiveInfinity));
     }
 
     [Fact]

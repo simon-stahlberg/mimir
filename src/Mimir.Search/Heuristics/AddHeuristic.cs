@@ -12,7 +12,7 @@ namespace Mimir.Search.Heuristics;
 ///
 /// Inadmissible but informative.
 /// </summary>
-public sealed class AddHeuristic : IHeuristic, IGroundedRpgHeuristic
+public sealed class AddHeuristic : IHeuristic, IGroundedHeuristic
 {
     private readonly GroundedApplicableActionGenerator _actionGenerator;
     private readonly GroundedRelaxedPlanningGraph _rpg;
@@ -29,7 +29,7 @@ public sealed class AddHeuristic : IHeuristic, IGroundedRpgHeuristic
         _rpg.EnsureSupportedGoal(_defaultGoal);
     }
 
-    GroundedApplicableActionGenerator IGroundedRpgHeuristic.ActionGenerator => _actionGenerator;
+    GroundedApplicableActionGenerator IGroundedHeuristic.ActionGenerator => _actionGenerator;
 
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {
