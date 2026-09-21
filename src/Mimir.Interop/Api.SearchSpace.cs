@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
@@ -21,11 +20,9 @@ public static partial class Exports
         if (problem == null || goal == null || maxStates < 0) return 0;
         return CreateHandle(() =>
         {
-            IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(problem.InitialState);
             var builder = new SearchSpaceBuilder()
                 .WithInitialState(problem.InitialState)
-                .WithGoal(goal)
-                .WithActionGenerator(generator);
+                .WithGoal(goal);
             if (maxStates > 0) builder.WithMaxStates(maxStates);
             return builder.Build();
         });

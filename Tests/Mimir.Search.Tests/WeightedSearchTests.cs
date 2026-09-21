@@ -16,7 +16,6 @@ public class WeightedSearchTests
         var bfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildBfs();
 
         var result = bfs.Search();
@@ -34,7 +33,6 @@ public class WeightedSearchTests
         var ucs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs();
 
         var result = ucs.Search();
@@ -52,13 +50,11 @@ public class WeightedSearchTests
         var ucs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs();
 
         var astar = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildAStar();
 
@@ -78,7 +74,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
@@ -94,7 +89,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
@@ -111,7 +105,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
@@ -129,7 +122,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
@@ -146,7 +138,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
@@ -164,14 +155,12 @@ public class WeightedSearchTests
         var ucsResult = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildUcs()
             .Search();
 
         var astarResult = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildAStar()
             .Search();
@@ -194,7 +183,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state =>
             {
                 if (state.IsTrue(viaId)) return 2;
@@ -224,7 +212,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state =>
             {
                 if (state.IsTrue(bId)) return 9;
@@ -248,7 +235,6 @@ public class WeightedSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildAStar()
             .Search();
@@ -268,14 +254,12 @@ public class WeightedSearchTests
         var bfsResult = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildBfs()
             .Search();
 
         var astarResult = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new GoalCountHeuristic(problem))
             .BuildAStar()
             .Search();

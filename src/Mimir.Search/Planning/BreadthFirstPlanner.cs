@@ -8,18 +8,12 @@ namespace Mimir.Search.Planning;
 
 public class BreadthFirstPlanner : IPlanner
 {
-    private readonly Func<Problem, State, IApplicableActionGenerator> _generatorFactory;
-
-    public BreadthFirstPlanner(Func<Problem, State, IApplicableActionGenerator> generatorFactory)
-    {
-        _generatorFactory = generatorFactory ?? throw new ArgumentNullException(nameof(generatorFactory));
-    }
-
     public PlanResult Solve(
         Problem problem,
         State? startState = null,
         GoalCondition? goal = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        IDeadEndDetector? deadEndDetector = null)
     {
         var setupStopwatch = Stopwatch.StartNew();
         PlannerInputs inputs = PlannerExecution.ResolveInputs(problem, startState, goal);
@@ -29,13 +23,10 @@ public class BreadthFirstPlanner : IPlanner
             return PlannerExecution.Canceled(setupStopwatch.Elapsed);
         }
 
-        IApplicableActionGenerator generator = _generatorFactory(problem, inputs.StartState);
-        PlannerExecution.ValidateGenerator(problem, inputs.StartState, generator);
-
         var bfs = new SearchBuilder()
             .WithInitialState(inputs.StartState)
             .WithGoal(inputs.Goal)
-            .WithActionGenerator(generator)
+            .WithDeadEndDetector(deadEndDetector)
             .BuildBfs();
 
         setupStopwatch.Stop();

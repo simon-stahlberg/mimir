@@ -12,13 +12,14 @@ internal static class SearchTestHelpers
 {
     public static string BasePath => Path.Combine(AppContext.BaseDirectory, "../../../../../Tests/Examples");
 
-    public static Problem LoadProblem(string domainDir, string problemFile = "p01.pddl")
+    public static Problem LoadProblem(string domainDir, string problemFile = "p01.pddl",
+        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
     {
         var domainPath = Path.Combine(BasePath, domainDir, "domain.pddl");
         var problemPath = Path.Combine(BasePath, domainDir, problemFile);
 
         var domain = Domain.FromFile(domainPath);
-        return Problem.FromFile(domain, problemPath);
+        return Problem.FromFile(domain, problemPath, generatorType);
     }
 
     public static Problem LoadUnsolvableProblem(string problemPrefix)
@@ -31,17 +32,18 @@ internal static class SearchTestHelpers
         return Problem.FromFile(domain, problemPath);
     }
 
-    public static Problem CreateProblemFromText(string domainText, string problemText)
+    public static Problem CreateProblemFromText(string domainText, string problemText,
+        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
     {
         Domain domain = Domain.FromText(domainText);
-        return Problem.FromText(domain, problemText);
+        return Problem.FromText(domain, problemText, generatorType);
     }
 
     public static GroundedApplicableActionGenerator CreateGroundedGenerator(Problem problem) =>
         CreateGroundedGenerator(problem, problem.InitialState);
 
     public static GroundedApplicableActionGenerator CreateGroundedGenerator(Problem problem, State startState) =>
-        new GroundedApplicableActionGenerator(problem, startState, new RpgGrounder());
+        (GroundedApplicableActionGenerator)problem.GetApplicableActionGenerator(startState);
 
     public static State ApplyPlan(State state, IReadOnlyList<Action> plan)
     {

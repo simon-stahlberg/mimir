@@ -270,6 +270,11 @@ def use_batched_heuristics(
     q_heuristic: pymimir.QHeuristic,
 ) -> None:
     state = problem.initial_state
+    detector: pymimir.DeadEndDetector = pymimir.DisjunctiveDeadEndDetector(
+        [pymimir.H2DeadEndDetector(problem)]
+    )
+    is_dead_end: bool = detector.is_dead_end(state, problem.goal)
+    _ = is_dead_end
     successors = state.successor_states()
     heuristic.evaluate_batch([state], problem.goal)
     q_heuristic.evaluate(state, successors, problem.goal)
@@ -277,13 +282,16 @@ def use_batched_heuristics(
     result: pymimir.SearchResult = pymimir.qgbfs(
         problem, q_heuristic, batch_target=4, maximize=True,
         should_stop=lambda expanded: expanded >= 10,
+        dead_end_detector=detector,
     )
     partial: tuple[pymimir.GroundAction, ...] = result.partial_plan
     scores: tuple[float | None, ...] = result.action_values
     generated: int | None = result.statistics.generated_transitions
     _ = partial, scores, generated
 
-    beam_result: pymimir.SearchResult = pymimir.beam(problem, heuristic, beam_size=4, max_depth=10)
+    beam_result: pymimir.SearchResult = pymimir.beam(
+        problem, heuristic, beam_size=4, max_depth=10, dead_end_detector=detector,
+    )
     qbeam_result: pymimir.SearchResult = pymimir.qbeam(
         problem, q_heuristic, beam_size=4, max_depth=10, maximize=False,
         start_state=state, goal=problem.goal, timeout_seconds=1, max_expanded_states=100,

@@ -20,7 +20,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("blocks_4");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -48,7 +48,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("ferry");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -75,7 +75,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("gripper");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -105,7 +105,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("transport");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new UniformCostPlanner((_, _) => generator);
+        var planner = new UniformCostPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -137,7 +137,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("logistics");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new AStarPlanner((_, _) => generator, (p, g, actionGenerator) => BlindHeuristic.Instance);
+        var planner = new AStarPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -171,7 +171,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadUnsolvableProblem(problemPrefix);
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
 
         // Act
         var result = planner.Solve(problem);
@@ -192,7 +192,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("reward");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act
@@ -223,7 +223,7 @@ public class IntegrationTests
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("rovers");
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        var planner = new BreadthFirstPlanner((_, _) => generator);
+        var planner = new BreadthFirstPlanner();
         var goalCondition = GoalCondition.FromProblem(problem);
 
         // Act

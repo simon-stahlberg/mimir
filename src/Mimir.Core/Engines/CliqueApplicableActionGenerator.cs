@@ -141,7 +141,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
     private readonly ApplicableActionCollector _actionCollector;
     private int _observedGen0Collections;
 
-    public CliqueApplicableActionGenerator(Problem problem)
+    internal CliqueApplicableActionGenerator(Problem problem)
     {
         Problem = problem ?? throw new ArgumentNullException(nameof(problem));
         // One reusable reference callback avoids cold generic-specialization allocations

@@ -16,6 +16,9 @@ public class Problem
     internal readonly Dictionary<NumericFunctionKey, double> _numericFunctionValues = new();
     private readonly ConditionalWeakTable<Variable, object> _dynamicVariables = new();
     private readonly Lazy<IApplicableActionGenerator> _initialActionGenerator;
+    internal const int StateGeneratorCacheCapacity = 16;
+    private readonly ConditionalWeakTable<State, IApplicableActionGenerator> _stateGenerators = new();
+    private readonly Queue<WeakReference<State>> _stateGeneratorOrder = new();
 
     public string Name { get; }
     public Domain Domain { get; }
@@ -175,7 +178,20 @@ public class Problem
         if (GeneratorType == ApplicableActionGeneratorType.Lifted || startState.Equals(InitialState))
             return _initialActionGenerator.Value;
 
-        return new GroundedApplicableActionGenerator(this, startState, new RpgGrounder());
+        if (_stateGenerators.TryGetValue(startState, out IApplicableActionGenerator? cached))
+            return cached;
+
+        var generator = new GroundedApplicableActionGenerator(this, startState, new RpgGrounder());
+        while (_stateGeneratorOrder.Count >= StateGeneratorCacheCapacity)
+        {
+            if (_stateGeneratorOrder.Dequeue().TryGetTarget(out State? oldest))
+                _stateGenerators.Remove(oldest);
+        }
+
+        // Both the keys and FIFO bookkeeping must allow unused states to be collected.
+        _stateGenerators.Add(startState, generator);
+        _stateGeneratorOrder.Enqueue(new WeakReference<State>(startState));
+        return generator;
     }
 
     private IApplicableActionGenerator CreateInitialActionGenerator()

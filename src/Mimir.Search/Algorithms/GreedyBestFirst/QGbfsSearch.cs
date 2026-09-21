@@ -12,6 +12,7 @@ namespace Mimir.Search.Algorithms.GreedyBestFirst;
 internal sealed class QGbfsSearch : ISearchAlgorithm
 {
     private readonly State _initialState;
+    private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goal;
     private readonly IApplicableActionGenerator _generator;
     private readonly IQHeuristic _heuristic;
@@ -25,14 +26,15 @@ internal sealed class QGbfsSearch : ISearchAlgorithm
     public event Action<SearchTransition>? TransitionDiscovered;
     public event Action<SearchTransition>? TransitionPruned;
 
-    public QGbfsSearch(State initialState, GoalCondition goal, IApplicableActionGenerator generator,
-        IQHeuristic heuristic, int batchTarget, bool maximize, Func<int, bool>? shouldStop)
+    public QGbfsSearch(State initialState, GoalCondition goal,
+        IQHeuristic heuristic, int batchTarget, bool maximize, Func<int, bool>? shouldStop, IDeadEndDetector? deadEndDetector)
     {
         if (batchTarget <= 0)
             throw new ArgumentOutOfRangeException(nameof(batchTarget));
         _initialState = initialState;
+        _deadEndDetector = deadEndDetector;
         _goal = goal;
-        _generator = generator;
+        _generator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
         _heuristic = heuristic;
         _batchTarget = batchTarget;
         _maximize = maximize;
@@ -84,6 +86,11 @@ internal sealed class QGbfsSearch : ISearchAlgorithm
 
         if (_goal.IsSatisfied(initial))
             return Finish(SearchStatus.Succeeded, root);
+
+        if (cancellationToken.IsCancellationRequested)
+            return Finish(SearchStatus.Canceled, root);
+        if (_deadEndDetector?.IsDeadEnd(initial, _goal) ?? false)
+            return Finish(SearchStatus.DeadEnd, root);
 
         while (open.Count > 0)
         {
@@ -170,7 +177,8 @@ internal sealed class QGbfsSearch : ISearchAlgorithm
                     for (int index = 0; index < successors.Count; index++)
                     {
                         var (action, successor) = successors[index];
-                        if (closed.Contains(successor.State))
+                        if (closed.Contains(successor.State)
+                            || (_deadEndDetector?.IsDeadEnd(successor, _goal) ?? false))
                         {
                             TransitionPruned?.Invoke(new SearchTransition(parent.State, action, action.Cost, successor.State));
                             continue;

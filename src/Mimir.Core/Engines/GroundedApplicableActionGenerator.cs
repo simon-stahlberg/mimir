@@ -11,7 +11,6 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
     private readonly PriorityQueue<TraversalItem, int> _orderedFrontier = new();
     private readonly Stack<SuccessorGeneratorNode> _satisfiedNodes = new();
     private readonly uint[] _emittedTransitionGroups;
-    private bool _preSearchCompactionClaimed;
 
     public Problem Problem { get; }
     public State GroundingStartState { get; }
@@ -68,7 +67,7 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
 
     private readonly record struct TraversalItem(SuccessorGeneratorNode Node, int NextActionIndex);
 
-    public GroundedApplicableActionGenerator(Problem problem, State startState, IGrounder grounder)
+    internal GroundedApplicableActionGenerator(Problem problem, State startState, IGrounder grounder)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(startState);
@@ -121,15 +120,6 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
         }
 
         _root.Freeze();
-    }
-
-    internal bool TryClaimPreSearchCompaction(int minimumActionCount)
-    {
-        if (GroundActions.Count < minimumActionCount || _preSearchCompactionClaimed)
-            return false;
-
-        _preSearchCompactionClaimed = true;
-        return true;
     }
 
     internal void CollectApplicableActions(

@@ -44,7 +44,7 @@ public sealed class CrossLayerIntegrationTests
         Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new FFHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new SetAddHeuristic(generator));
-        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator.Problem));
     }
 
     [Fact]
@@ -95,7 +95,6 @@ public sealed class CrossLayerIntegrationTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state =>
             {
                 if (state.IsTrue(goalId)) return 100d;
@@ -117,8 +116,10 @@ public sealed class CrossLayerIntegrationTests
         Assert.Equal(new[] { "(start-to-b)", "(b-to-x)", "(x-to-goal)" }, SearchTestHelpers.PlanSteps(result.Plan));
     }
 
-    [Fact]
-    public void GeneratorsCostsAxiomsAndPlannersAgreeOnAdlProblem()
+    [Theory]
+    [InlineData(ApplicableActionGeneratorType.Grounded)]
+    [InlineData(ApplicableActionGeneratorType.Lifted)]
+    public void GeneratorsCostsAxiomsAndPlannersAgreeOnAdlProblem(ApplicableActionGeneratorType generatorType)
     {
         Problem problem = SearchTestHelpers.CreateProblemFromText(
             """
@@ -148,14 +149,12 @@ public sealed class CrossLayerIntegrationTests
   (:init (start) (enabled) (= (total-cost) 0))
   (:goal (goal))
   (:metric minimize (total-cost)))
-""");
+""", generatorType);
 
         var cases = new[]
         {
-            PlannerFactory.Create("grounded", "ucs"),
-            PlannerFactory.Create("lifted", "ucs"),
-            PlannerFactory.Create("grounded", "astar", "goal-count"),
-            PlannerFactory.Create("lifted", "astar", "goal-count")
+            PlannerFactory.Create("ucs"),
+            PlannerFactory.Create("astar", "goal-count")
         };
 
         foreach (IPlanner planner in cases)

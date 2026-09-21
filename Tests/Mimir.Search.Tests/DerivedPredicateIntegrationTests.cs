@@ -17,7 +17,7 @@ public class DerivedPredicateIntegrationTests
         Problem problem = CreateProblemForDerivedGoalSatisfiedInInitialState_ReturnsZeroLengthPlan();
         var goal = GoalCondition.FromProblem(problem);
 
-        var result = new BreadthFirstPlanner(SearchTestHelpers.CreateGroundedGenerator).Solve(problem);
+        var result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.True(goal.IsSatisfied(problem.InitialState.Expand()));
         Assert.True(result.IsSuccess);
@@ -31,7 +31,7 @@ public class DerivedPredicateIntegrationTests
         Problem problem = CreateProblemForDerivedGoalBecomesTrueAfterFluentEffect_SearchFindsOneStepPlan();
         var goal = GoalCondition.FromProblem(problem);
 
-        var result = new BreadthFirstPlanner(SearchTestHelpers.CreateGroundedGenerator).Solve(problem);
+        var result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(new[] { "(make-base)" }, SearchTestHelpers.PlanSteps(result.Plan));
@@ -84,7 +84,7 @@ public class DerivedPredicateIntegrationTests
         Problem problem = CreateProblemForQuantifiedDerivedPrecondition_SurvivesGroundingAndSearch();
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
-        var result = new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        var result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.Empty(ApplicableActions(generator, problem.InitialState, "finish"));
         Assert.True(result.IsSuccess);
@@ -99,7 +99,7 @@ public class DerivedPredicateIntegrationTests
         Problem problem = CreateProblemForMergedDerivedDefinitions_EnableAlternativeActionBranches();
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
-        var result = new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        var result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.Equal(new[] { "left", "right" }, ApplicableActionArguments(generator, problem.InitialState, "collect"));
         Assert.True(result.IsSuccess);
@@ -132,7 +132,7 @@ public class DerivedPredicateIntegrationTests
         Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new FFHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new SetAddHeuristic(generator));
-        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator.Problem));
     }
 
     [Fact]
@@ -141,10 +141,8 @@ public class DerivedPredicateIntegrationTests
         Problem problem = CreateProblemForGbfsWithGroundedFf_RejectsDerivedPreconditionGate();
 
         Assert.Throws<NotSupportedException>(() =>
-            new GreedyBestFirstPlanner(
-                SearchTestHelpers.CreateGroundedGenerator,
-                (_, goal, generator) =>
-                    new FFHeuristic((GroundedApplicableActionGenerator)generator, goal)).Solve(problem));
+            new GreedyBestFirstPlanner((start, goal) =>
+                    new FFHeuristic(SearchTestHelpers.CreateGroundedGenerator(start.Context.Problem, start), goal)).Solve(problem));
     }
 
     [Fact]
@@ -226,7 +224,7 @@ public class DerivedPredicateIntegrationTests
     {
         Problem problem = CreateProblemForSearch_DoesNotSolveThroughShortcutWithFalseDerivedPrecondition();
 
-        var result = new BreadthFirstPlanner(SearchTestHelpers.CreateGroundedGenerator).Solve(problem);
+        var result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(new[] { "(advance)", "(finish)" }, SearchTestHelpers.PlanSteps(result.Plan));
@@ -1117,7 +1115,7 @@ public class DerivedPredicateIntegrationTests
             new MaxHeuristic(generator).Evaluate(state.Expand()).Value,
             new FFHeuristic(generator).Evaluate(state.Expand()).Value,
             new SetAddHeuristic(generator).Evaluate(state.Expand()).Value,
-            new H2Heuristic(generator).Evaluate(state.Expand()).Value);
+            new H2Heuristic(generator.Problem).Evaluate(state.Expand()).Value);
     }
 
     private static HeuristicValues InfiniteHeuristicValues { get; } = new(

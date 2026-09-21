@@ -16,9 +16,7 @@ public class PerfectHeuristicTests
         Problem problem = CreateProblem();
         GoalCondition customGoal = CreateCustomGoal(problem);
         var heuristic = new PerfectHeuristic(problem, customGoal);
-        var planner = new GreedyBestFirstPlanner(
-            SearchTestHelpers.CreateGroundedGenerator,
-            (_, _, _) => heuristic);
+        var planner = new GreedyBestFirstPlanner((_, _) => heuristic);
 
         PlanResult result = planner.Solve(problem, goal: customGoal);
 
@@ -71,7 +69,6 @@ public class PerfectHeuristicTests
         SearchSpace searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(customGoal)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .Build();
         var heuristic = new PerfectHeuristic(searchSpace);
 

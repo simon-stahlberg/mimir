@@ -9,6 +9,7 @@ namespace Mimir.Search.Algorithms.UniformCost;
 internal sealed class UcsSearch : ISearchAlgorithm
 {
     private readonly State _initialState;
+    private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
     private readonly IApplicableActionGenerator _actionGenerator;
 
@@ -21,11 +22,12 @@ internal sealed class UcsSearch : ISearchAlgorithm
     public UcsSearch(
         State initialState,
         GoalCondition goalCondition,
-        IApplicableActionGenerator actionGenerator)
+        IDeadEndDetector? deadEndDetector)
     {
         _initialState = initialState;
+        _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
-        _actionGenerator = actionGenerator;
+        _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
     }
 
     public SearchResult Search(
@@ -38,6 +40,16 @@ internal sealed class UcsSearch : ISearchAlgorithm
         var stopwatch = Stopwatch.StartNew();
         if (cancellationToken.IsCancellationRequested)
             return SearchResult.Canceled(new SearchStatistics(0, 0, stopwatch.Elapsed, 0));
+
+        if (_deadEndDetector is not null)
+        {
+            ExtendedState initial = _initialState.Expand();
+            if (!_goalCondition.IsSatisfied(initial) && _deadEndDetector.IsDeadEnd(initial, _goalCondition))
+            {
+                NodeGenerated?.Invoke(new SearchNode(_initialState));
+                return SearchResult.Failure(new SearchStatistics(0, 1, stopwatch.Elapsed, 0));
+            }
+        }
 
         var open = new PriorityQueue<SearchNode, (double PathCost, long Sequence)>();
         var bestCosts = new Dictionary<State, double>();
@@ -90,6 +102,16 @@ internal sealed class UcsSearch : ISearchAlgorithm
                 {
                     TransitionPruned?.Invoke(transition);
                     continue;
+                }
+
+                if (_deadEndDetector is not null)
+                {
+                    ExtendedState next = nextState.Expand();
+                    if (!_goalCondition.IsSatisfied(next) && _deadEndDetector.IsDeadEnd(next, _goalCondition))
+                    {
+                        TransitionPruned?.Invoke(transition);
+                        continue;
+                    }
                 }
 
                 bestCosts[nextState] = nextCost;

@@ -26,7 +26,6 @@ public class IwSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .OnWidthStarted(_ => widths++)
             .OnNodeGenerated(_ => generated++)
             .OnNodeExpanded(_ => expanded++)
@@ -51,7 +50,6 @@ public class IwSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(SearchTestHelpers.ContradictoryGoal(problem))
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .OnNodeGenerated(node =>
             {
                 if (node.Depth == 1)
@@ -67,7 +65,7 @@ public class IwSearchTests
         Assert.Equal(0, result.Statistics.MaxDepth);
     }
 
-    private static Problem CreateOneStepProblem(bool alreadyDone = false)
+    private static Problem CreateOneStepProblem(bool alreadyDone = false, string generatorType = "grounded")
     {
         Domain domain = new DomainBuilder("one-step")
             .Requirements().Add(":strips").Close()
@@ -76,31 +74,32 @@ public class IwSearchTests
                 .AddEffect("start", Polarity.Negative).AddEffect("done").Close().Close().Build();
         InitialStateBuilder initialState = new ProblemBuilder(
             domain,
-            alreadyDone ? "already-done" : "one-step-p1").InitialState();
+            alreadyDone ? "already-done" : "one-step-p1",
+            Enum.Parse<ApplicableActionGeneratorType>(generatorType, true)).InitialState();
         initialState.AddFact(alreadyDone ? "done" : "start");
         return initialState.Close().Goal().Add("done").Close().Build();
     }
 
-    private static Problem CreateTwoStepProblem()
+    private static Problem CreateTwoStepProblem(string generatorType = "grounded")
     {
         DomainBuilder builder = CreateTransitionDomain("two-step", ["start", "middle", "done"]);
         ActionListBuilder actions = builder.Actions();
         AddTransition(actions, "step1", "start", "middle");
         AddTransition(actions, "step2", "middle", "done");
-        return CreateProblem(actions.Close().Build(), "two-step-p1", "start", "done");
+        return CreateProblem(actions.Close().Build(), "two-step-p1", "start", "done", generatorType);
     }
 
-    private static Problem CreateLateEffectProblem()
+    private static Problem CreateLateEffectProblem(string generatorType = "grounded")
     {
         DomainBuilder builder = CreateTransitionDomain("late-effect", ["start", "ready", "done", "junk"]);
         ActionListBuilder actions = builder.Actions();
         AddTransition(actions, "prepare", "start", "ready");
         actions.Add("finish").AddPrecondition("ready").AddEffect("ready", Polarity.Negative)
             .AddEffect("done").AddEffect("junk").Close();
-        return CreateProblem(actions.Close().Build(), "late-effect-p1", "start", "done");
+        return CreateProblem(actions.Close().Build(), "late-effect-p1", "start", "done", generatorType);
     }
 
-    private static Problem CreateNonNovelNegativeGoalProblem()
+    private static Problem CreateNonNovelNegativeGoalProblem(string generatorType = "grounded")
     {
         DomainBuilder builder = new DomainBuilder("non-novel-negative-goal")
             .Requirements().Add(":strips").Add(":negative-preconditions").Close()
@@ -110,19 +109,19 @@ public class IwSearchTests
         actions.Add("delete-p").AddPrecondition("p").AddPrecondition("q")
             .AddEffect("p", Polarity.Negative).Close();
         Domain domain = actions.Close().Build();
-        return new ProblemBuilder(domain, "non-novel-negative-goal-p1")
+        return new ProblemBuilder(domain, "non-novel-negative-goal-p1", Enum.Parse<ApplicableActionGeneratorType>(generatorType, true))
             .InitialState().AddFact("p").Close()
             .Goal().Add("q").Add("p", Polarity.Negative).Close().Build();
     }
 
-    private static Problem CreateWidthTwoProblem()
+    private static Problem CreateWidthTwoProblem(string generatorType = "grounded")
     {
         DomainBuilder builder = CreateTransitionDomain("width-two", ["start", "a", "b", "c"]);
         ActionListBuilder actions = builder.Actions();
         actions.Add("see-a").AddPrecondition("start").AddEffect("a").Close();
         actions.Add("see-b").AddPrecondition("start").AddEffect("b").Close();
         actions.Add("achieve").AddPrecondition("a").AddPrecondition("b").AddEffect("c").Close();
-        return CreateProblem(actions.Close().Build(), "width-two-p1", "start", "c");
+        return CreateProblem(actions.Close().Build(), "width-two-p1", "start", "c", generatorType);
     }
 
     private static DomainBuilder CreateTransitionDomain(string name, IReadOnlyList<string> predicates)
@@ -142,8 +141,9 @@ public class IwSearchTests
         Domain domain,
         string name,
         string initialFact,
-        string goal)
-        => new ProblemBuilder(domain, name)
+        string goal,
+        string generatorType = "grounded")
+        => new ProblemBuilder(domain, name, Enum.Parse<ApplicableActionGeneratorType>(generatorType, true))
             .InitialState().AddFact(initialFact).Close()
             .Goal().Add(goal).Close().Build();
 
@@ -160,7 +160,6 @@ public class IwSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildIw(0)
             .Search();
 
@@ -181,7 +180,6 @@ public class IwSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildIw(0)
             .Search();
 
@@ -203,7 +201,6 @@ public class IwSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildIw(0)
             .Search();
 
@@ -226,13 +223,12 @@ public class IwSearchTests
     [InlineData("lifted")]
     public void IW1_FindsValidPlan_GoalIsReached(string generatorType)
     {
-        Problem problem = CreateTwoStepProblem();
+        Problem problem = CreateTwoStepProblem(generatorType);
         var goalCondition = GoalCondition.FromProblem(problem);
 
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(CreateGenerator(problem, generatorType))
             .BuildIw(1)
             .Search();
 
@@ -253,13 +249,12 @@ public class IwSearchTests
     [InlineData("lifted")]
     public void IW1_LateRegisteredEffectFact_FindsRequiredActions(string generatorType)
     {
-        Problem problem = CreateLateEffectProblem();
+        Problem problem = CreateLateEffectProblem(generatorType);
         var goalCondition = GoalCondition.FromProblem(problem);
 
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(CreateGenerator(problem, generatorType))
             .BuildIw(1)
             .Search();
 
@@ -277,13 +272,12 @@ public class IwSearchTests
     [InlineData(3, "lifted")]
     public void IWk_NonNovelNegativeGoal_IsNotPruned(int k, string generatorType)
     {
-        Problem problem = CreateNonNovelNegativeGoalProblem();
+        Problem problem = CreateNonNovelNegativeGoalProblem(generatorType);
         GoalCondition goalCondition = GoalCondition.FromProblem(problem);
 
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(CreateGenerator(problem, generatorType))
             .BuildIw(k)
             .Search();
 
@@ -301,21 +295,18 @@ public class IwSearchTests
     [InlineData("lifted")]
     public void IW2_SolvesWidth2ProblemThatIW1CannotSolve(string generatorType)
     {
-        Problem problem = CreateWidthTwoProblem();
+        Problem problem = CreateWidthTwoProblem(generatorType);
         var goalCondition = GoalCondition.FromProblem(problem);
-        IApplicableActionGenerator generator = CreateGenerator(problem, generatorType);
 
         var iw1Result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(generator)
             .BuildIw(1)
             .Search();
 
         var iw2Result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(generator)
             .BuildIw(2)
             .Search();
 
@@ -344,13 +335,13 @@ public class IwSearchTests
         int k,
         string generatorType)
     {
-        var problem = SearchTestHelpers.LoadProblem(domainDir);
+        var problem = SearchTestHelpers.LoadProblem(domainDir,
+            generatorType: Enum.Parse<ApplicableActionGeneratorType>(generatorType, true));
         var goalCondition = GoalCondition.FromProblem(problem);
 
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(CreateGenerator(problem, generatorType))
             .BuildIw(k)
             .Search();
 
@@ -379,7 +370,6 @@ public class IwSearchTests
         var result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildIw(k)
             .Search();
 
@@ -393,18 +383,18 @@ public class IwSearchTests
     // =========================================================================
 
     [Theory]
-    [InlineData("grounded:iw0")]
-    [InlineData("grounded:iw1")]
-    [InlineData("grounded:iw2")]
-    [InlineData("grounded:iw3")]
-    [InlineData("lifted:iw0")]
-    [InlineData("lifted:iw1")]
-    [InlineData("lifted:iw2")]
-    [InlineData("lifted:iw3")]
-    public void PlannerFactory_IwSpec_CreatesWorkingPlanner(string spec)
+    [InlineData("iw0", "grounded")]
+    [InlineData("iw1", "grounded")]
+    [InlineData("iw2", "grounded")]
+    [InlineData("iw3", "grounded")]
+    [InlineData("iw0", "lifted")]
+    [InlineData("iw1", "lifted")]
+    [InlineData("iw2", "lifted")]
+    [InlineData("iw3", "lifted")]
+    public void PlannerFactory_IwSpec_CreatesWorkingPlanner(string spec, string generatorType)
     {
         // One-step domain is solvable by every IW(k) including k=0.
-        Problem problem = CreateOneStepProblem();
+        Problem problem = CreateOneStepProblem(generatorType: generatorType);
 
         var result = PlannerFactory.CreateFromSpec(spec).Solve(problem);
 
@@ -412,13 +402,4 @@ public class IwSearchTests
         Assert.Single(result.Plan);
     }
 
-    private static IApplicableActionGenerator CreateGenerator(Problem problem, string generatorType)
-    {
-        return generatorType switch
-        {
-            "grounded" => SearchTestHelpers.CreateGroundedGenerator(problem),
-            "lifted" => new CliqueApplicableActionGenerator(problem),
-            _ => throw new ArgumentOutOfRangeException(nameof(generatorType))
-        };
-    }
 }

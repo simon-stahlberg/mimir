@@ -14,6 +14,7 @@ namespace Mimir.Search.Algorithms.Beam;
 internal sealed class BeamSearch : ISearchAlgorithm
 {
     private readonly State _initialState;
+    private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goal;
     private readonly IApplicableActionGenerator _generator;
     private readonly IHeuristic? _heuristic;
@@ -29,18 +30,19 @@ internal sealed class BeamSearch : ISearchAlgorithm
     public event Action<SearchTransition>? TransitionDiscovered;
     public event Action<SearchTransition>? TransitionPruned;
 
-    public BeamSearch(State initialState, GoalCondition goal, IApplicableActionGenerator generator,
+    public BeamSearch(State initialState, GoalCondition goal,
         IHeuristic? heuristic, IQHeuristic? qHeuristic, int beamSize, int maxDepth,
-        bool maximize, Func<int, bool>? shouldStop)
+        bool maximize, Func<int, bool>? shouldStop, IDeadEndDetector? deadEndDetector)
     {
         if ((heuristic == null) == (qHeuristic == null))
             throw new ArgumentException("Exactly one heuristic must be provided.");
         if (beamSize <= 0) throw new ArgumentOutOfRangeException(nameof(beamSize));
         if (maxDepth < 0) throw new ArgumentOutOfRangeException(nameof(maxDepth));
         _initialState = initialState;
+        _deadEndDetector = deadEndDetector;
         _goal = goal;
-        _generator = generator;
-        _heuristic = heuristic;
+        _generator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
+        _heuristic = heuristic is null ? null : HeuristicBinding.Bind(heuristic, goal, _generator);
         _qHeuristic = qHeuristic;
         _beamSize = beamSize;
         _maxDepth = maxDepth;
@@ -80,6 +82,11 @@ internal sealed class BeamSearch : ISearchAlgorithm
         }
 
         if (_goal.IsSatisfied(beam[0].State)) return Finish(SearchStatus.Succeeded, root);
+
+        if (cancellationToken.IsCancellationRequested)
+            return Finish(SearchStatus.Canceled, root);
+        if (_deadEndDetector?.IsDeadEnd(beam[0].State, _goal) ?? false)
+            return Finish(SearchStatus.DeadEnd, root);
 
         while (true)
         {
@@ -223,7 +230,9 @@ internal sealed class BeamSearch : ISearchAlgorithm
                 double priority = _maximize ? -value : value;
                 int candidateOrder = order++;
                 bool replacing = bestByState.TryGetValue(successor.State, out Candidate previous);
-                if (closed.Contains(successor.State) || (replacing && priority >= previous.Priority))
+                if (closed.Contains(successor.State)
+                    || (_deadEndDetector?.IsDeadEnd(successor, _goal) ?? false)
+                    || (replacing && priority >= previous.Priority))
                 {
                     TransitionPruned?.Invoke(new SearchTransition(parent.State, action, action.Cost, successor.State));
                     continue;
@@ -250,7 +259,7 @@ internal sealed class BeamSearch : ISearchAlgorithm
             double value = evaluations[index].Value;
             if (double.IsNaN(value) || value < 0)
                 throw new InvalidOperationException("Heuristic values must be non-negative and not NaN.");
-            if (double.IsPositiveInfinity(value))
+            if (double.IsPositiveInfinity(value) || (_deadEndDetector?.IsDeadEnd(state, _goal) ?? false))
             {
                 TransitionPruned?.Invoke(new SearchTransition(parent.State, action, action.Cost, state.State));
                 continue;

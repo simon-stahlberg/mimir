@@ -23,7 +23,6 @@ public class MimirAStarParityTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new MaxHeuristic(generator))
             .BuildAStar()
             .Search();

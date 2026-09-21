@@ -25,12 +25,9 @@ public sealed class PerfectHeuristic : IHeuristic
         if (!ReferenceEquals(_goal.Problem, problem))
             throw new ArgumentException("The goal condition belongs to a different problem instance.", nameof(goal));
 
-        IApplicableActionGenerator generator =
-            problem.GetApplicableActionGenerator(problem.InitialState);
         _space = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(_goal)
-            .WithActionGenerator(generator)
             .Build();
     }
 

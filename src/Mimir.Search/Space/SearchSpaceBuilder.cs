@@ -12,7 +12,6 @@ public class SearchSpaceBuilder
 {
     private State? _initialState;
     private GoalCondition? _goalCondition;
-    private IApplicableActionGenerator? _actionGenerator;
     private int? _maxStates;
 
     /// <summary>
@@ -46,16 +45,6 @@ public class SearchSpaceBuilder
     }
 
     /// <summary>
-    /// Sets the action generator for state transitions.
-    /// </summary>
-    public SearchSpaceBuilder WithActionGenerator(IApplicableActionGenerator generator)
-    {
-        ArgumentNullException.ThrowIfNull(generator);
-        _actionGenerator = generator;
-        return this;
-    }
-
-    /// <summary>
     /// Sets a maximum number of states to expand (safety limit).
     /// Use int.MaxValue or omit for no limit.
     /// </summary>
@@ -77,8 +66,6 @@ public class SearchSpaceBuilder
             throw new InvalidOperationException("Initial state must be set via WithInitialState().");
         if (_goalCondition == null)
             throw new InvalidOperationException("Goal condition must be set via WithGoal().");
-        if (_actionGenerator == null)
-            throw new InvalidOperationException("Action generator must be set via WithActionGenerator().");
 
         Problem problem = _initialState.Context.Problem;
         if (!ReferenceEquals(_goalCondition.Problem, problem))
@@ -87,23 +74,9 @@ public class SearchSpaceBuilder
                 "The initial state and goal condition belong to different problem instances.");
         }
 
-        if (!ReferenceEquals(_actionGenerator.Problem, problem))
-        {
-            throw new InvalidOperationException(
-                "The initial state and action generator belong to different problem instances.");
-        }
-
-        if (_actionGenerator is GroundedApplicableActionGenerator groundedGenerator
-            && !groundedGenerator.GroundingStartState.Equals(_initialState))
-        {
-            throw new InvalidOperationException(
-                "The initial state and grounded applicable-action generator use different grounding start states.");
-        }
-
         return new SearchSpace(
             _initialState,
             _goalCondition,
-            _actionGenerator,
             _maxStates,
             cancellationToken);
     }

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Mimir.Interop" />
+    <InternalsVisibleTo Include="Mimir.Search.Tests" />
   </ItemGroup>
 
 </Project>

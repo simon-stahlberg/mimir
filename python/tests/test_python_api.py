@@ -100,7 +100,7 @@ def test_every_search_has_a_complete_runtime_signature():
     for name, expected in expected_parameters.items():
         function = getattr(pymimir, name)
         signature = inspect.signature(function)
-        assert set(signature.parameters) == expected
+        assert set(signature.parameters) == expected | {"dead_end_detector"}
         assert all(
             parameter.kind is not inspect.Parameter.VAR_KEYWORD
             for parameter in signature.parameters.values()

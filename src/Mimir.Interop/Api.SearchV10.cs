@@ -68,7 +68,8 @@ public static partial class Exports
         State? startState,
         GoalCondition goal,
         Action<double>? onFinishLayer,
-        Action<double>? onNewBestH)
+        Action<double>? onNewBestH,
+        IDeadEndDetector? deadEndDetector)
     {
         State effectiveStart = startState ?? problem.InitialState;
         if (!ReferenceEquals(effectiveStart.Context, problem.Context))
@@ -76,11 +77,10 @@ public static partial class Exports
         if (!ReferenceEquals(goal.Problem, problem))
             throw new ArgumentException("Goal belongs to a different problem.", nameof(goal));
 
-        IApplicableActionGenerator actionGenerator = problem.GetApplicableActionGenerator(effectiveStart);
         var builder = new SearchBuilder()
             .WithInitialState(effectiveStart)
             .WithGoal(goal)
-            .WithActionGenerator(actionGenerator);
+            .WithDeadEndDetector(deadEndDetector);
         string normalized = algorithm.ToLowerInvariant();
         if (onFinishLayer != null && normalized == "bfs") builder.OnGLayerFinished(onFinishLayer);
         if (onFinishLayer != null && normalized == "astar") builder.OnFLayerFinished(onFinishLayer);
@@ -90,30 +90,11 @@ public static partial class Exports
         {
             "bfs" => builder.BuildBfs(),
             "ucs" => builder.BuildUcs(),
-            "astar" => builder.WithHeuristic(BindHeuristicV10(
-                heuristic ?? throw new ArgumentNullException(nameof(heuristic)),
-                goal,
-                actionGenerator)).BuildAStar(),
-            "gbfs" => builder.WithHeuristic(BindHeuristicV10(
-                heuristic ?? throw new ArgumentNullException(nameof(heuristic)),
-                goal,
-                actionGenerator)).BuildGbfs(),
+            "astar" => builder.WithHeuristic(heuristic ?? throw new ArgumentNullException(nameof(heuristic))).BuildAStar(),
+            "gbfs" => builder.WithHeuristic(heuristic ?? throw new ArgumentNullException(nameof(heuristic))).BuildGbfs(),
             var iw when iw.StartsWith("iw", StringComparison.Ordinal) => builder.BuildIw(int.Parse(iw[2..])),
             _ => throw new ArgumentException($"Unknown algorithm '{algorithm}'."),
         };
-    }
-
-    internal static IHeuristic BindHeuristicV10(
-        IHeuristic heuristic,
-        GoalCondition goal,
-        IApplicableActionGenerator actionGenerator)
-    {
-        if (heuristic is PerfectHeuristic perfectHeuristic)
-        {
-            if (perfectHeuristic.IsBoundTo(goal)) return perfectHeuristic;
-            return new PerfectHeuristic(actionGenerator.Problem, goal);
-        }
-        return BindHeuristicToGenerator(heuristic, goal, actionGenerator);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_search")]
@@ -131,7 +112,8 @@ public static partial class Exports
         IntPtr onDiscover,
         IntPtr onPrune,
         IntPtr onFinishLayer,
-        IntPtr onNewBestH)
+        IntPtr onNewBestH,
+        int deadEndDetectorHandle)
     {
         string? algorithm = ReadUtf8(algorithmPtr);
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
@@ -172,7 +154,8 @@ public static partial class Exports
                 startState,
                 goal,
                 onFinishLayer == IntPtr.Zero ? null : bridge.FireOnFinishLayer,
-                onNewBestH == IntPtr.Zero ? null : bridge.FireOnNewBestH);
+                onNewBestH == IntPtr.Zero ? null : bridge.FireOnNewBestH,
+                deadEndDetectorHandle == 0 ? null : RequireHandle<IDeadEndDetector>(deadEndDetectorHandle));
             if (onExpand != IntPtr.Zero || onGoal != IntPtr.Zero)
                 search.NodeExpanded += bridge.FireOnExpanded;
             if (onGenerate != IntPtr.Zero) search.TransitionGenerated += bridge.FireOnGenerate;

@@ -24,8 +24,7 @@ public class BeamSearchTests
         """);
 
     private static SearchBuilder Builder(Problem problem) => new SearchBuilder()
-        .WithInitialState(problem.InitialState).WithGoal(problem)
-        .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem));
+        .WithInitialState(problem.InitialState).WithGoal(problem);
 
     private sealed class BatchHeuristic : IHeuristic
     {

@@ -6,6 +6,7 @@ from typing import Callable
 
 from .advanced import lib
 from .heuristics import Heuristic, QHeuristic
+from .dead_ends import DeadEndDetector
 from .model import GroundConjunctiveCondition, Problem, State
 from .q_search import _run_search, _validate_integer
 from .search import SearchResult
@@ -19,6 +20,7 @@ def beam(
     max_depth: int = 2**31 - 1,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     should_stop: Callable[[int], bool] | None = None,
@@ -42,7 +44,7 @@ def beam(
     _validate_integer("max_depth", max_depth, minimum=0)
     return _run_search(
         problem, heuristic, native_search=lib.mimir_beam_search,
-        search_options=(beam_size, max_depth), start_state=start_state, goal=goal,
+        search_options=(beam_size, max_depth), start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds, max_expanded_states=max_expanded_states,
         should_stop=should_stop,
     )
@@ -57,6 +59,7 @@ def qbeam(
     maximize: bool = True,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     should_stop: Callable[[int], bool] | None = None,
@@ -76,7 +79,7 @@ def qbeam(
     _validate_integer("max_depth", max_depth, minimum=0)
     return _run_search(
         problem, heuristic, native_search=lib.mimir_qbeam_search,
-        search_options=(beam_size, max_depth, maximize), start_state=start_state, goal=goal,
+        search_options=(beam_size, max_depth, maximize), start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds, max_expanded_states=max_expanded_states,
         should_stop=should_stop,
     )

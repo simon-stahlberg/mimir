@@ -21,7 +21,12 @@ public sealed class FFHeuristic : IHeuristic, IGroundedHeuristic
     private readonly GroundedRelaxedPlanningGraph _rpg;
     private readonly GoalCondition _defaultGoal;
 
-    public FFHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
+    public FFHeuristic(Problem problem, GoalCondition? goal = null)
+        : this(HeuristicBinding.GetInitialGenerator(problem), goal)
+    {
+    }
+
+    internal FFHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(actionGenerator);
 

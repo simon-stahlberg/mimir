@@ -17,7 +17,8 @@ public interface IPlanner
         Problem problem,
         State? startState = null,
         GoalCondition? goal = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        IDeadEndDetector? deadEndDetector = null);
 }
 
 internal readonly record struct PlannerInputs(State StartState, GoalCondition Goal);
@@ -37,28 +38,6 @@ internal static class PlannerExecution
             throw new ArgumentException("Goal belongs to a different problem instance.", nameof(goal));
 
         return new PlannerInputs(effectiveStart, effectiveGoal);
-    }
-
-    internal static void ValidateGenerator(
-        Problem problem,
-        State startState,
-        IApplicableActionGenerator? generator)
-    {
-        if (generator is null)
-            throw new InvalidOperationException("Applicable-action generator factory returned null.");
-
-        if (!ReferenceEquals(generator.Problem, problem))
-        {
-            throw new InvalidOperationException(
-                "Applicable-action generator factory returned a generator for a different problem instance.");
-        }
-
-        if (generator is GroundedApplicableActionGenerator groundedGenerator
-            && !groundedGenerator.GroundingStartState.Equals(startState))
-        {
-            throw new InvalidOperationException(
-                "Applicable-action generator factory returned a grounded generator for a different start state.");
-        }
     }
 
     internal static PlanResult Canceled(TimeSpan setupTime)

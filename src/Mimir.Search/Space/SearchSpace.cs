@@ -100,13 +100,12 @@ public class SearchSpace
     internal SearchSpace(
         State initialState,
         GoalCondition goalCondition,
-        IApplicableActionGenerator actionGenerator,
         int? maxStates,
         CancellationToken cancellationToken)
     {
         _initialState = initialState;
         _goalCondition = goalCondition;
-        _actionGenerator = actionGenerator;
+        _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
         _maxStates = maxStates;
         _stateToNode = new Dictionary<State, SearchSpaceNode>(StateEqualityComparer.Instance);
         _nodes = new List<SearchSpaceNode>();

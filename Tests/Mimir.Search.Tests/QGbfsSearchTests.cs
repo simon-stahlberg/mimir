@@ -49,7 +49,7 @@ public class QGbfsSearchTests
 
     private static SearchBuilder Builder(Problem problem, IQHeuristic heuristic) => new SearchBuilder()
         .WithInitialState(problem.InitialState).WithGoal(problem)
-        .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem)).WithQHeuristic(heuristic);
+        .WithQHeuristic(heuristic);
 
     [Fact]
     public void DefaultOverloadsPreserveScalarEvaluations()
@@ -148,8 +148,7 @@ public class QGbfsSearchTests
     {
         Problem problem = Problem();
         Assert.Throws<ArgumentOutOfRangeException>(() => Builder(problem, new ScalarQ()).BuildQGbfs(0));
-        var builder = new SearchBuilder().WithInitialState(problem.InitialState).WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem));
+        var builder = new SearchBuilder().WithInitialState(problem.InitialState).WithGoal(problem);
         Assert.Throws<InvalidOperationException>(() => builder.BuildQGbfs());
     }
 }

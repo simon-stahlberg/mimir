@@ -26,33 +26,22 @@ public sealed class PlannerExecutionTests
         Problem problem = CreateCustomStartProblem();
         Fact<Fluent> enabled = SearchTestHelpers.GetFluentFact(problem, "enabled");
         State customStart = problem.InitialState.WithAdditionalFluentFacts([enabled]);
-        State? factoryStart = null;
-        IPlanner planner = CreatePlanner(algorithm, (factoryProblem, startState) =>
-        {
-            factoryStart = startState;
-            return SearchTestHelpers.CreateGroundedGenerator(factoryProblem, startState);
-        });
+        IPlanner planner = PlannerFactory.Create(algorithm);
 
         PlanResult result = planner.Solve(problem, customStart);
 
         Assert.Equal(SearchStatus.Succeeded, result.Status);
-        Assert.Equal(customStart, factoryStart);
         Assert.Single(result.Plan);
         Assert.True(GoalCondition.FromProblem(problem).IsSatisfied(customStart.Expand().Apply(result.Plan[0]).Expand()));
     }
 
     [Theory]
     [MemberData(nameof(Algorithms))]
-    public void Solve_RejectsForeignInputsBeforeInvokingGeneratorFactory(string algorithm)
+    public void Solve_RejectsForeignInputs(string algorithm)
     {
         Problem problem = CreateCustomStartProblem();
         Problem foreignProblem = CreateCustomStartProblem();
-        int factoryCalls = 0;
-        IPlanner planner = CreatePlanner(algorithm, (factoryProblem, startState) =>
-        {
-            factoryCalls++;
-            return SearchTestHelpers.CreateGroundedGenerator(factoryProblem, startState);
-        });
+        IPlanner planner = PlannerFactory.Create(algorithm);
 
         ArgumentException startError = Assert.Throws<ArgumentException>(
             () => planner.Solve(problem, foreignProblem.InitialState));
@@ -73,59 +62,13 @@ public sealed class PlannerExecutionTests
 
         Assert.Equal("startState", startError.ParamName);
         Assert.Equal("goal", goalError.ParamName);
-        Assert.Equal(0, factoryCalls);
     }
-
-    [Theory]
-    [MemberData(nameof(Algorithms))]
-    public void Solve_RejectsNullGeneratorFactoryResult(string algorithm)
-    {
-        Problem problem = CreateCustomStartProblem();
-        IPlanner planner = CreatePlanner(algorithm, (_, _) => null!);
-
-        InvalidOperationException error = Assert.Throws<InvalidOperationException>(() => planner.Solve(problem));
-
-        Assert.Contains("returned null", error.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Theory]
-    [MemberData(nameof(Algorithms))]
-    public void Solve_RejectsGeneratorForForeignProblem(string algorithm)
-    {
-        Problem problem = CreateCustomStartProblem();
-        Problem foreignProblem = CreateCustomStartProblem();
-        IPlanner planner = CreatePlanner(
-            algorithm,
-            (_, _) => SearchTestHelpers.CreateGroundedGenerator(foreignProblem, foreignProblem.InitialState));
-
-        InvalidOperationException error = Assert.Throws<InvalidOperationException>(() => planner.Solve(problem));
-
-        Assert.Contains("different problem", error.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Theory]
-    [MemberData(nameof(Algorithms))]
-    public void Solve_RejectsGroundedGeneratorForDifferentStart(string algorithm)
-    {
-        Problem problem = CreateCustomStartProblem();
-        Fact<Fluent> enabled = SearchTestHelpers.GetFluentFact(problem, "enabled");
-        State customStart = problem.InitialState.WithAdditionalFluentFacts([enabled]);
-        IPlanner planner = CreatePlanner(
-            algorithm,
-            (factoryProblem, _) => SearchTestHelpers.CreateGroundedGenerator(factoryProblem));
-
-        InvalidOperationException error = Assert.Throws<InvalidOperationException>(
-            () => planner.Solve(problem, customStart));
-
-        Assert.Contains("different start state", error.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
     [Theory]
     [MemberData(nameof(Algorithms))]
     public void Solve_ExhaustedSearchReturnsFailedStatus(string algorithm)
     {
         Problem problem = CreateCustomStartProblem();
-        IPlanner planner = CreatePlanner(algorithm, SearchTestHelpers.CreateGroundedGenerator);
+        IPlanner planner = PlannerFactory.Create(algorithm);
 
         PlanResult result = planner.Solve(problem);
 
@@ -137,15 +80,10 @@ public sealed class PlannerExecutionTests
 
     [Theory]
     [MemberData(nameof(Algorithms))]
-    public void Solve_PreCanceledTokenSkipsFactoriesAndReturnsCanceledStatus(string algorithm)
+    public void Solve_PreCanceledTokenReturnsCanceledStatus(string algorithm)
     {
         Problem problem = CreateCustomStartProblem();
-        int factoryCalls = 0;
-        IPlanner planner = CreatePlanner(algorithm, (factoryProblem, startState) =>
-        {
-            factoryCalls++;
-            return SearchTestHelpers.CreateGroundedGenerator(factoryProblem, startState);
-        });
+        IPlanner planner = PlannerFactory.Create(algorithm);
         using var cancellationSource = new CancellationTokenSource();
         cancellationSource.Cancel();
 
@@ -154,7 +92,6 @@ public sealed class PlannerExecutionTests
         Assert.Equal(SearchStatus.Canceled, result.Status);
         Assert.True(result.IsCanceled);
         Assert.False(result.IsSuccess);
-        Assert.Equal(0, factoryCalls);
         Assert.Empty(result.Plan);
         Assert.Equal(TimeSpan.Zero, result.SearchTime);
         Assert.Equal(result.SetupTime, result.ElapsedTime);
@@ -169,7 +106,6 @@ public sealed class PlannerExecutionTests
         var builder = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .OnNodeGenerated(_ => generated++);
         ISearchAlgorithm search = algorithm switch
         {
@@ -201,7 +137,6 @@ public sealed class PlannerExecutionTests
         var builder = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(SearchTestHelpers.ContradictoryGoal(problem))
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .OnNodeGenerated(node =>
             {
                 if (node.Depth == 1)
@@ -222,21 +157,6 @@ public sealed class PlannerExecutionTests
         Assert.Equal(SearchStatus.Canceled, result.Status);
         Assert.Equal(1, result.Statistics.NodesExpanded);
         Assert.Equal(2, result.Statistics.NodesGenerated);
-    }
-
-    private static IPlanner CreatePlanner(
-        string algorithm,
-        Func<Problem, State, IApplicableActionGenerator> generatorFactory)
-    {
-        return algorithm switch
-        {
-            "bfs" => new BreadthFirstPlanner(generatorFactory),
-            "ucs" => new UniformCostPlanner(generatorFactory),
-            "astar" => new AStarPlanner(generatorFactory, (_, _, _) => BlindHeuristic.Instance),
-            "gbfs" => new GreedyBestFirstPlanner(generatorFactory, (_, _, _) => BlindHeuristic.Instance),
-            "iw1" => new IteratedWidthPlanner(1, generatorFactory),
-            _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, "Unknown planner algorithm.")
-        };
     }
 
     private static Problem CreateCustomStartProblem()

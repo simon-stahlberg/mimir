@@ -50,7 +50,7 @@ public static partial class Exports
     {
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
         if (problem == null) return 0;
-        return CreateHandle(() => new AddHeuristic(GetGroundedGenerator(problem, problem.InitialState)));
+        return CreateHandle(() => new AddHeuristic(problem));
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_heuristic_max")]
@@ -58,7 +58,7 @@ public static partial class Exports
     {
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
         if (problem == null) return 0;
-        return CreateHandle(() => new MaxHeuristic(GetGroundedGenerator(problem, problem.InitialState)));
+        return CreateHandle(() => new MaxHeuristic(problem));
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_heuristic_ff_grounded")]
@@ -66,7 +66,7 @@ public static partial class Exports
     {
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
         if (problem == null) return 0;
-        return CreateHandle(() => new FFHeuristic(GetGroundedGenerator(problem, problem.InitialState)));
+        return CreateHandle(() => new FFHeuristic(problem));
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_heuristic_set_add")]
@@ -74,7 +74,7 @@ public static partial class Exports
     {
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
         if (problem == null) return 0;
-        return CreateHandle(() => new SetAddHeuristic(GetGroundedGenerator(problem, problem.InitialState)));
+        return CreateHandle(() => new SetAddHeuristic(problem));
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_heuristic_h2")]
@@ -82,7 +82,7 @@ public static partial class Exports
     {
         var problem = ObjectRegistry.Get<Problem>(problemHandle);
         if (problem == null) return 0;
-        return CreateHandle(() => new H2Heuristic(GetGroundedGenerator(problem, problem.InitialState)));
+        return CreateHandle(() => new H2Heuristic(problem));
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_heuristic_evaluate")]
@@ -98,11 +98,11 @@ public static partial class Exports
         try
         {
             IHeuristic effectiveHeuristic = heuristic;
-            if (heuristic is IGroundedHeuristic)
+            if (heuristic is IGroundedHeuristic && heuristic is not H2Heuristic)
             {
                 Problem problem = state.State.Context.Problem;
                 GroundedApplicableActionGenerator generator = GetGroundedGenerator(problem, state.State);
-                effectiveHeuristic = BindHeuristicToGenerator(
+                effectiveHeuristic = HeuristicBinding.Bind(
                     heuristic,
                     goal,
                     generator);
@@ -148,10 +148,10 @@ public static partial class Exports
         {
             GroundedApplicableActionGenerator? generator = null;
             IHeuristic effectiveHeuristic = heuristic;
-            if (heuristic is IGroundedHeuristic)
+            if (heuristic is IGroundedHeuristic && heuristic is not H2Heuristic)
             {
                 generator = GetGroundedGenerator(problem, state.State);
-                effectiveHeuristic = BindHeuristicToGenerator(
+                effectiveHeuristic = HeuristicBinding.Bind(
                     heuristic,
                     goal,
                     generator);
@@ -170,42 +170,6 @@ public static partial class Exports
             }
             return preferred;
         });
-    }
-
-    internal static IHeuristic BindHeuristicToGenerator(
-        IHeuristic heuristic,
-        GoalCondition goal,
-        IApplicableActionGenerator actionGenerator)
-    {
-        ArgumentNullException.ThrowIfNull(heuristic);
-        ArgumentNullException.ThrowIfNull(goal);
-        ArgumentNullException.ThrowIfNull(actionGenerator);
-
-        if (heuristic is not IGroundedHeuristic groundedHeuristic)
-            return heuristic;
-
-        if (!ReferenceEquals(groundedHeuristic.ActionGenerator.Problem, actionGenerator.Problem))
-        {
-            throw new InvalidOperationException(
-                "Heuristic and applicable-action generator belong to different problems.");
-        }
-
-        if (actionGenerator is not GroundedApplicableActionGenerator groundedGenerator)
-        {
-            throw new InvalidOperationException(
-                "A grounded heuristic requires a grounded applicable-action generator.");
-        }
-
-        return heuristic switch
-        {
-            AddHeuristic => new AddHeuristic(groundedGenerator, goal),
-            MaxHeuristic => new MaxHeuristic(groundedGenerator, goal),
-            FFHeuristic => new FFHeuristic(groundedGenerator, goal),
-            SetAddHeuristic => new SetAddHeuristic(groundedGenerator, goal),
-            H2Heuristic => new H2Heuristic(groundedGenerator, goal),
-            _ => throw new InvalidOperationException(
-                $"Unsupported grounded heuristic type '{heuristic.GetType().Name}'.")
-        };
     }
 
     private sealed class CallbackAbortedException : Exception
@@ -345,12 +309,12 @@ public static partial class Exports
                 if (!ReferenceEquals(state.State.Context.Problem, goal.Problem))
                     throw new ArgumentException("State and goal belong to different problems.");
 
-            if (heuristic is IGroundedHeuristic)
+            if (heuristic is IGroundedHeuristic && heuristic is not H2Heuristic)
             {
                 // Grounding is relative to each query state, just as for scalar evaluation.
                 for (int index = 0; index < count; index++)
                 {
-                    IHeuristic bound = BindHeuristicToGenerator(heuristic, goal,
+                    IHeuristic bound = HeuristicBinding.Bind(heuristic, goal,
                         GetGroundedGenerator(goal.Problem, states[index].State));
                     ((double*)values)[index] = bound.Evaluate(states[index], goal).Value;
                 }

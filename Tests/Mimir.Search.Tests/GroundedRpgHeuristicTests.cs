@@ -2523,7 +2523,7 @@ public class GroundedRpgHeuristicTests
         Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator).Evaluate(state.Expand()));
         Assert.Throws<NotSupportedException>(() => new FFHeuristic(generator).Evaluate(state.Expand()));
         Assert.Throws<NotSupportedException>(() => new SetAddHeuristic(generator).Evaluate(state.Expand()));
-        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator).Evaluate(state.Expand()));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator.Problem).Evaluate(state.Expand()));
     }
 
     private static void AssertValuesWithConstructorGoal(
@@ -2544,35 +2544,32 @@ public class GroundedRpgHeuristicTests
 
     private static HeuristicValues Evaluate(Problem problem, State state)
     {
-        GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
         return new HeuristicValues(
-            new AddHeuristic(generator).Evaluate(state.Expand()).Value,
-            new MaxHeuristic(generator).Evaluate(state.Expand()).Value,
-            new FFHeuristic(generator).Evaluate(state.Expand()).Value,
-            new SetAddHeuristic(generator).Evaluate(state.Expand()).Value,
-            new H2Heuristic(generator).Evaluate(state.Expand()).Value);
+            new AddHeuristic(problem).Evaluate(state.Expand()).Value,
+            new MaxHeuristic(problem).Evaluate(state.Expand()).Value,
+            new FFHeuristic(problem).Evaluate(state.Expand()).Value,
+            new SetAddHeuristic(problem).Evaluate(state.Expand()).Value,
+            new H2Heuristic(problem).Evaluate(state.Expand()).Value);
     }
 
     private static HeuristicValues Evaluate(Problem problem, State state, GoalCondition goal)
     {
-        GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
         return new HeuristicValues(
-            new AddHeuristic(generator).Evaluate(state.Expand(), goal).Value,
-            new MaxHeuristic(generator).Evaluate(state.Expand(), goal).Value,
-            new FFHeuristic(generator).Evaluate(state.Expand(), goal).Value,
-            new SetAddHeuristic(generator).Evaluate(state.Expand(), goal).Value,
-            new H2Heuristic(generator).Evaluate(state.Expand(), goal).Value);
+            new AddHeuristic(problem).Evaluate(state.Expand(), goal).Value,
+            new MaxHeuristic(problem).Evaluate(state.Expand(), goal).Value,
+            new FFHeuristic(problem).Evaluate(state.Expand(), goal).Value,
+            new SetAddHeuristic(problem).Evaluate(state.Expand(), goal).Value,
+            new H2Heuristic(problem).Evaluate(state.Expand(), goal).Value);
     }
 
     private static Heuristics CreateHeuristics(Problem problem)
     {
-        GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
         return new Heuristics(
-            new AddHeuristic(generator),
-            new MaxHeuristic(generator),
-            new FFHeuristic(generator),
-            new SetAddHeuristic(generator),
-            new H2Heuristic(generator));
+            new AddHeuristic(problem),
+            new MaxHeuristic(problem),
+            new FFHeuristic(problem),
+            new SetAddHeuristic(problem),
+            new H2Heuristic(problem));
     }
 
     private static HeuristicValues Evaluate(Heuristics heuristics, State state, GoalCondition goal)
@@ -2591,13 +2588,12 @@ public class GroundedRpgHeuristicTests
         GoalCondition constructorGoal,
         GoalCondition? evaluationGoal)
     {
-        GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
         return new HeuristicValues(
-            new AddHeuristic(generator, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
-            new MaxHeuristic(generator, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
-            new FFHeuristic(generator, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
-            new SetAddHeuristic(generator, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
-            new H2Heuristic(generator, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value);
+            new AddHeuristic(problem, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
+            new MaxHeuristic(problem, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
+            new FFHeuristic(problem, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
+            new SetAddHeuristic(problem, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value,
+            new H2Heuristic(problem, constructorGoal).Evaluate(state.Expand(), evaluationGoal).Value);
     }
 
     private sealed record HeuristicValues(double Add, double Max, double FF, double SetAdd, double H2);

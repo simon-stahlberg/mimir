@@ -14,36 +14,36 @@ public static partial class Exports
 {
     [UnmanagedCallersOnly(EntryPoint = "mimir_qgbfs_search")]
     public static int QGbfsSearch(int problemHandle, int startStateHandle, int goalHandle,
-        IntPtr evaluate, int batchTarget, byte maximize, double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop)
+        IntPtr evaluate, int batchTarget, byte maximize, double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop, int deadEndDetectorHandle)
         => RunBatchedSearch(problemHandle, startStateHandle, goalHandle, timeoutSeconds, maxExpandedStates, shouldStop,
             (problem, start, goal, stop) => new SearchBuilder()
                 .WithInitialState(start).WithGoal(goal)
-                .WithActionGenerator(problem.GetApplicableActionGenerator(start))
+                .WithDeadEndDetector(deadEndDetectorHandle == 0 ? null : RequireHandle<IDeadEndDetector>(deadEndDetectorHandle))
                 .WithQHeuristic(new CallbackQHeuristic(problem, evaluate))
                 .BuildQGbfs(batchTarget, maximize != 0, stop));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_qbeam_search")]
     public static int QBeamSearch(int problemHandle, int startStateHandle, int goalHandle,
         IntPtr evaluate, int beamSize, int maxDepth, byte maximize,
-        double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop)
+        double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop, int deadEndDetectorHandle)
         => RunBatchedSearch(problemHandle, startStateHandle, goalHandle, timeoutSeconds, maxExpandedStates, shouldStop,
             (problem, start, goal, stop) => new SearchBuilder()
                 .WithInitialState(start).WithGoal(goal)
-                .WithActionGenerator(problem.GetApplicableActionGenerator(start))
+                .WithDeadEndDetector(deadEndDetectorHandle == 0 ? null : RequireHandle<IDeadEndDetector>(deadEndDetectorHandle))
                 .WithQHeuristic(new CallbackQHeuristic(problem, evaluate))
                 .BuildQBeam(beamSize, maxDepth, maximize != 0, stop));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_beam_search")]
     public static int BeamSearch(int problemHandle, int startStateHandle, int goalHandle,
         int heuristicHandle, int beamSize, int maxDepth,
-        double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop)
+        double timeoutSeconds, int maxExpandedStates, IntPtr shouldStop, int deadEndDetectorHandle)
         => RunBatchedSearch(problemHandle, startStateHandle, goalHandle, timeoutSeconds, maxExpandedStates, shouldStop,
             (problem, start, goal, stop) =>
             {
-                IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(start);
-                IHeuristic heuristic = BindHeuristicV10(RequireHandle<IHeuristic>(heuristicHandle), goal, generator);
+                IHeuristic heuristic = RequireHandle<IHeuristic>(heuristicHandle);
                 return new SearchBuilder().WithInitialState(start).WithGoal(goal)
-                    .WithActionGenerator(generator).WithHeuristic(heuristic)
+                    .WithDeadEndDetector(deadEndDetectorHandle == 0 ? null : RequireHandle<IDeadEndDetector>(deadEndDetectorHandle))
+                    .WithHeuristic(heuristic)
                     .BuildBeam(beamSize, maxDepth, stop);
             });
 

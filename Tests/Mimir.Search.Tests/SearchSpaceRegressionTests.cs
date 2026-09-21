@@ -57,7 +57,6 @@ public class SearchSpaceRegressionTests
         return new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
     }
 

@@ -126,7 +126,7 @@ public sealed class GroundedRpgRegressionTests
         Problem problem = CreateProblemForConservativeGrounding_KeepsPlanEnabledByLaterNegativeDerivedGuard();
         GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
-        PlanResult result = new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        PlanResult result = new BreadthFirstPlanner().Solve(problem);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(
@@ -147,7 +147,7 @@ public sealed class GroundedRpgRegressionTests
             new MaxHeuristic(generator),
             new FFHeuristic(generator),
             new SetAddHeuristic(generator),
-            new H2Heuristic(generator),
+            new H2Heuristic(generator.Problem),
         ];
 
         foreach (IHeuristic heuristic in heuristics)
@@ -187,7 +187,6 @@ public sealed class GroundedRpgRegressionTests
         SearchBuilder builder = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new FFHeuristic(generator));
 
         var search = buildAStar ? builder.BuildAStar() : builder.BuildGbfs();
@@ -198,11 +197,12 @@ public sealed class GroundedRpgRegressionTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void SearchBuilder_RejectsGroundedRpgHeuristicsUsingAnotherGroundedGenerator(bool buildAStar)
+    public void SearchBuilder_RebindsGroundedRpgHeuristicsToItsGenerator(bool buildAStar)
     {
         Problem problem = CreateSingleStepProblem();
-        GroundedApplicableActionGenerator heuristicGenerator = SearchTestHelpers.CreateGroundedGenerator(problem);
+        GroundedApplicableActionGenerator heuristicGenerator = new(problem, problem.InitialState, new RpgGrounder());
         GroundedApplicableActionGenerator searchGenerator = SearchTestHelpers.CreateGroundedGenerator(problem);
+        Assert.NotSame(heuristicGenerator, searchGenerator);
         IHeuristic[] heuristics =
         [
             new AddHeuristic(heuristicGenerator),
@@ -217,21 +217,10 @@ public sealed class GroundedRpgRegressionTests
             SearchBuilder builder = new SearchBuilder()
                 .WithInitialState(problem.InitialState)
                 .WithGoal(problem)
-                .WithActionGenerator(searchGenerator)
                 .WithHeuristic(heuristic);
 
-            InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() =>
-            {
-                if (buildAStar)
-                {
-                    builder.BuildAStar();
-                    return;
-                }
-
-                builder.BuildGbfs();
-            });
-
-            Assert.Contains("same GroundedApplicableActionGenerator instance", exception.Message);
+            ISearchAlgorithm search = buildAStar ? builder.BuildAStar() : builder.BuildGbfs();
+            Assert.True(search.Search().IsSuccess);
         }
     }
 
@@ -240,12 +229,11 @@ public sealed class GroundedRpgRegressionTests
     [InlineData(false)]
     public void SearchBuilder_RejectsGroundedRpgHeuristicWithCliqueGenerator(bool buildAStar)
     {
-        Problem problem = CreateSingleStepProblem();
-        GroundedApplicableActionGenerator groundedGenerator = SearchTestHelpers.CreateGroundedGenerator(problem);
+        Problem problem = CreateSingleStepProblem(ApplicableActionGeneratorType.Lifted);
+        GroundedApplicableActionGenerator groundedGenerator = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder());
         SearchBuilder builder = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(new CliqueApplicableActionGenerator(problem))
             .WithHeuristic(new FFHeuristic(groundedGenerator));
 
         InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() =>
@@ -259,7 +247,7 @@ public sealed class GroundedRpgRegressionTests
             builder.BuildGbfs();
         });
 
-        Assert.Contains("same GroundedApplicableActionGenerator instance", exception.Message);
+        Assert.Contains("grounded applicable-action generator", exception.Message);
     }
 
     [XunitFact]
@@ -310,7 +298,6 @@ public sealed class GroundedRpgRegressionTests
         SearchSpace searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
         MaxHeuristic heuristic = new(generator);
 
@@ -811,17 +798,17 @@ public sealed class GroundedRpgRegressionTests
         return SearchTestHelpers.CreateProblemFromText(domainText, problemText);
     }
 
-    private static Problem CreateSingleStepProblem()
-        => CreateSingleStepProblem("single-step");
+    private static Problem CreateSingleStepProblem(ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
+        => CreateSingleStepProblem("single-step", generatorType);
 
-    private static Problem CreateSingleStepProblem(string domainName)
+    private static Problem CreateSingleStepProblem(string domainName, ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
     {
         Domain domain = new DomainBuilder(domainName)
             .Requirements().Add(":strips").Close()
             .Predicates().Add("seed").Add("goal").Close()
             .Actions().Add("finish").AddPrecondition("seed").AddEffect("goal")
                 .Close().Close().Build();
-        return new ProblemBuilder(domain, $"{domainName}-problem")
+        return new ProblemBuilder(domain, $"{domainName}-problem", generatorType)
             .InitialState().AddFact("seed").Close()
             .Goal().Add("goal").Close().Build();
     }
@@ -860,7 +847,7 @@ public sealed class GroundedRpgRegressionTests
             new MaxHeuristic(generator).Evaluate(state.Expand(), goal).Value,
             new FFHeuristic(generator).Evaluate(state.Expand(), goal).Value,
             new SetAddHeuristic(generator).Evaluate(state.Expand(), goal).Value,
-            new H2Heuristic(generator).Evaluate(state.Expand(), goal).Value);
+            new H2Heuristic(generator.Problem).Evaluate(state.Expand(), goal).Value);
 
         Assert.Equal(expected, actual);
     }
@@ -872,7 +859,7 @@ public sealed class GroundedRpgRegressionTests
         Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new FFHeuristic(generator));
         Assert.Throws<NotSupportedException>(() => new SetAddHeuristic(generator));
-        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator.Problem));
     }
 
     private static void AssertOverridesThrow(Problem problem, GoalCondition goal)
@@ -882,7 +869,7 @@ public sealed class GroundedRpgRegressionTests
         Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator).Evaluate(problem.InitialState.Expand(), goal));
         Assert.Throws<NotSupportedException>(() => new FFHeuristic(generator).Evaluate(problem.InitialState.Expand(), goal));
         Assert.Throws<NotSupportedException>(() => new SetAddHeuristic(generator).Evaluate(problem.InitialState.Expand(), goal));
-        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator).Evaluate(problem.InitialState.Expand(), goal));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(generator.Problem).Evaluate(problem.InitialState.Expand(), goal));
     }
 
     private sealed record HeuristicValues(double Add, double Max, double FF, double SetAdd, double H2);

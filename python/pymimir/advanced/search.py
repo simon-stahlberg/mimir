@@ -31,7 +31,7 @@ _bind("mimir_plan_result_get_ground_action", [_int, _int], _int)
 _bind(
     "mimir_search",
     [_cstr, _int, _int, _int, _int, _dbl, _int,
-     _ptr, _ptr, _ptr, _ptr, _ptr, _ptr, _ptr],
+     _ptr, _ptr, _ptr, _ptr, _ptr, _ptr, _ptr, _int],
     _int,
 )
 
@@ -42,12 +42,16 @@ TRANSITION_CALLBACK = ctypes.CFUNCTYPE(_byte, _int, _int, _int)
 DOUBLE_CALLBACK = ctypes.CFUNCTYPE(_byte, _dbl)
 STOP_CALLBACK = ctypes.CFUNCTYPE(_byte, _int)
 
-_bind("mimir_qgbfs_search", [_int, _int, _int, _ptr, _int, _byte, _dbl, _int, _ptr], _int)
+_bind("mimir_qgbfs_search", [_int, _int, _int, _ptr, _int, _byte, _dbl, _int, _ptr, _int], _int)
 _bind("mimir_plan_result_get_visited_states", [_int], _int)
 _bind("mimir_plan_result_get_generated_transitions", [_int], _int)
 _bind("mimir_plan_result_get_evaluated_candidates", [_int], _int)
 _bind("mimir_plan_result_get_partial_plan_length", [_int], _int)
 _bind("mimir_plan_result_copy_scored_path", [_int, _ptr, _ptr, _ptr, _int], _int)
 
-_bind("mimir_qbeam_search", [_int, _int, _int, _ptr, _int, _int, _byte, _dbl, _int, _ptr], _int)
-_bind("mimir_beam_search", [_int, _int, _int, _int, _int, _int, _dbl, _int, _ptr], _int)
+_bind("mimir_qbeam_search", [_int, _int, _int, _ptr, _int, _int, _byte, _dbl, _int, _ptr, _int], _int)
+_bind("mimir_beam_search", [_int, _int, _int, _int, _int, _int, _dbl, _int, _ptr, _int], _int)
+
+_bind("mimir_dead_end_detector_h2", [_int], _int)
+_bind("mimir_dead_end_detector_disjunction", [_ptr, _int], _int)
+_bind("mimir_dead_end_detector_evaluate", [_int, _int, _int], _int)

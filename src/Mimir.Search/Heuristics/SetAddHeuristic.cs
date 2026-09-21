@@ -21,7 +21,12 @@ public sealed class SetAddHeuristic : IHeuristic, IGroundedHeuristic
     private readonly GroundedRelaxedPlanningGraph _rpg;
     private readonly GoalCondition _defaultGoal;
 
-    public SetAddHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
+    public SetAddHeuristic(Problem problem, GoalCondition? goal = null)
+        : this(HeuristicBinding.GetInitialGenerator(problem), goal)
+    {
+    }
+
+    internal SetAddHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(actionGenerator);
 

@@ -10,6 +10,7 @@ internal sealed class IwSearch : ISearchAlgorithm
 {
     private readonly int _k;
     private readonly State _initialState;
+    private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
     private readonly IApplicableActionGenerator _actionGenerator;
 
@@ -25,15 +26,16 @@ internal sealed class IwSearch : ISearchAlgorithm
         int k,
         State initialState,
         GoalCondition goalCondition,
-        IApplicableActionGenerator actionGenerator)
+        IDeadEndDetector? deadEndDetector)
     {
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
 
         _k = k;
         _initialState = initialState;
+        _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
-        _actionGenerator = actionGenerator;
+        _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
     }
 
     public SearchResult Search(
@@ -46,6 +48,16 @@ internal sealed class IwSearch : ISearchAlgorithm
         var stopwatch = Stopwatch.StartNew();
         if (cancellationToken.IsCancellationRequested)
             return SearchResult.Canceled(new SearchStatistics(0, 0, stopwatch.Elapsed, 0));
+
+        if (_deadEndDetector is not null)
+        {
+            ExtendedState initial = _initialState.Expand();
+            if (!_goalCondition.IsSatisfied(initial) && _deadEndDetector.IsDeadEnd(initial, _goalCondition))
+            {
+                NodeGenerated?.Invoke(new SearchNode(_initialState));
+                return SearchResult.Failure(new SearchStatistics(0, 1, stopwatch.Elapsed, 0));
+            }
+        }
 
         int totalExpanded = 0;
         int totalGenerated = 0;
@@ -135,6 +147,12 @@ internal sealed class IwSearch : ISearchAlgorithm
             var nextState = extendedInitialState.Apply(action);
             var transition = new SearchTransition(_initialState, action, action.Cost, nextState);
             TransitionGenerated?.Invoke(transition);
+            ExtendedState next = nextState.Expand();
+            if (!_goalCondition.IsSatisfied(next) && (_deadEndDetector?.IsDeadEnd(next, _goalCondition) ?? false))
+            {
+                TransitionPruned?.Invoke(transition);
+                continue;
+            }
             var child = new SearchNode(nextState, action, root, action.Cost, 1);
             generated++;
             NodeGenerated?.Invoke(child);
@@ -238,6 +256,11 @@ internal sealed class IwSearch : ISearchAlgorithm
 
                 ExtendedState extendedNextState = nextState.Expand();
                 bool isGoal = _goalCondition.IsSatisfied(extendedNextState);
+                if (!isGoal && (_deadEndDetector?.IsDeadEnd(extendedNextState, _goalCondition) ?? false))
+                {
+                    TransitionPruned?.Invoke(transition);
+                    continue;
+                }
                 bool isNovel = tracker.IsNovel(child.State);
                 if (isGoal || isNovel)
                 {

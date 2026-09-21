@@ -1,3 +1,4 @@
+using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
@@ -12,11 +13,11 @@ public class PlannerGeneratorParityTests
     [Fact]
     public void TransportP02_BfsParity_PreservesDepthOptimalCostlyRoute()
     {
-        var problem = SearchTestHelpers.LoadProblem("transport", "p02.pddl");
+        Problem CreateProblem(ApplicableActionGeneratorType type) => SearchTestHelpers.LoadProblem("transport", "p02.pddl", generatorType: type);
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         Assert.Equal(3, grounded.PlanLength);
         Assert.Equal(3, clique.PlanLength);
         Assert.Equal(102d, grounded.PlanCost);
@@ -26,11 +27,11 @@ public class PlannerGeneratorParityTests
     [Fact]
     public void TransportP02_UcsParity_FindsCheaperLongerRoute()
     {
-        var problem = SearchTestHelpers.LoadProblem("transport", "p02.pddl");
+        Problem CreateProblem(ApplicableActionGeneratorType type) => SearchTestHelpers.LoadProblem("transport", "p02.pddl", generatorType: type);
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "ucs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "ucs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         Assert.Equal(5, grounded.PlanLength);
         Assert.Equal(5, clique.PlanLength);
         Assert.Equal(32d, grounded.PlanCost);
@@ -40,11 +41,11 @@ public class PlannerGeneratorParityTests
     [Fact]
     public void TransportP02_AStarBlindParity_MatchesUcsCostOptimalRoute()
     {
-        var problem = SearchTestHelpers.LoadProblem("transport", "p02.pddl");
+        Problem CreateProblem(ApplicableActionGeneratorType type) => SearchTestHelpers.LoadProblem("transport", "p02.pddl", generatorType: type);
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "astar", "blind");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "astar", "blind");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         Assert.Equal(5, grounded.PlanLength);
         Assert.Equal(5, clique.PlanLength);
         Assert.Equal(32d, grounded.PlanCost);
@@ -54,21 +55,21 @@ public class PlannerGeneratorParityTests
     [Fact]
     public void WoodworkingP01_UcsParity_UsesObjectSpecificNumericCosts()
     {
-        var problem = SearchTestHelpers.LoadProblem("woodworking");
+        Problem CreateProblem(ApplicableActionGeneratorType type) => SearchTestHelpers.LoadProblem("woodworking", generatorType: type);
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "ucs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "ucs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
     }
 
     [Fact]
     public void MiconicSimpleAdl_BfsParity_StaticAboveAndConditionalStopEffects()
     {
-        var problem = SearchTestHelpers.LoadProblem("miconic-simpleadl");
+        Problem CreateProblem(ApplicableActionGeneratorType type) => SearchTestHelpers.LoadProblem("miconic-simpleadl", generatorType: type);
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
     }
 
     [Fact]
@@ -88,13 +89,13 @@ public class PlannerGeneratorParityTests
         actions.Close();
         Domain domain = domainBuilder.DerivedPredicates()
             .Define("shortcut-open", Logic.Atom("missing")).Close().Build();
-        Problem problem = new ProblemBuilder(domain, "false-derived-shortcut-parity-problem")
+        Problem CreateProblem(ApplicableActionGeneratorType type) => new ProblemBuilder(domain, "false-derived-shortcut-parity-problem", type)
             .InitialState().AddFact("start").Close()
             .Goal().Add("done").Close().Build();
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         AssertPlanSteps(new[] { "(advance)", "(finish)" }, grounded);
         AssertPlanSteps(new[] { "(advance)", "(finish)" }, clique);
     }
@@ -117,13 +118,13 @@ public class PlannerGeneratorParityTests
                 new[] { ("?x", "item") },
                 Logic.Atom("checked", "?x")))
             .Close().Build();
-        Problem problem = new ProblemBuilder(domain, "quantified-derived-gate-parity-problem")
+        Problem CreateProblem(ApplicableActionGeneratorType type) => new ProblemBuilder(domain, "quantified-derived-gate-parity-problem", type)
             .Objects().Add("i1", "item").Add("i2", "item").Close()
             .Goal().Add("done").Close().Build();
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         Assert.Equal(3, grounded.PlanLength);
         Assert.Equal(3, clique.PlanLength);
         Assert.Equal("finish", grounded.Plan[^1].Schema.Name);
@@ -145,12 +146,12 @@ public class PlannerGeneratorParityTests
         actions.Close();
         Domain domain = domainBuilder.DerivedPredicates()
             .Define("enabled-derived", Logic.Atom("base")).Close().Build();
-        Problem problem = new ProblemBuilder(domain, "derived-conditional-effect-parity-problem")
+        Problem CreateProblem(ApplicableActionGeneratorType type) => new ProblemBuilder(domain, "derived-conditional-effect-parity-problem", type)
             .Goal().Add("goal").Close().Build();
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         AssertPlanSteps(new[] { "(make-base)", "(trigger)" }, grounded);
         AssertPlanSteps(new[] { "(make-base)", "(trigger)" }, clique);
     }
@@ -173,7 +174,7 @@ public class PlannerGeneratorParityTests
                     .AddEffect("at", Polarity.Negative, "?from")
                     .AddEffect("at", "?to").AddEffect("visited", "?to").Close()
                 .Close().Build();
-        Problem problem = new ProblemBuilder(domain, "static-pruning-maze-parity-problem")
+        Problem CreateProblem(ApplicableActionGeneratorType type) => new ProblemBuilder(domain, "static-pruning-maze-parity-problem", type)
             .Objects()
                 .Add("start", "location").Add("mid", "location").Add("goal", "location")
                 .Add("trap-a", "location").Add("trap-b", "location").Close()
@@ -184,9 +185,9 @@ public class PlannerGeneratorParityTests
                 .Close()
             .Goal().Add("at", "goal").Add("visited", "goal").Close().Build();
 
-        var (grounded, clique) = SolveWithBothGenerators(problem, "bfs");
+        var (grounded, clique) = SolveWithBothGenerators(CreateProblem, "bfs");
 
-        AssertPlannerParity(problem, grounded, clique);
+        AssertPlannerParity( grounded, clique);
         Assert.Equal(2, grounded.PlanLength);
         Assert.Equal(2, clique.PlanLength);
         AssertPlanSteps(new[] { "(move start mid)", "(move mid goal)" }, grounded);
@@ -194,16 +195,16 @@ public class PlannerGeneratorParityTests
     }
 
     private static (PlanResult Grounded, PlanResult Clique) SolveWithBothGenerators(
-        Problem problem,
+        Func<ApplicableActionGeneratorType, Problem> createProblem,
         string algorithm,
         string heuristic = "blind")
     {
-        var grounded = PlannerFactory.Create("grounded", algorithm, heuristic).Solve(problem);
-        var clique = PlannerFactory.Create("lifted", algorithm, heuristic).Solve(problem);
+        var grounded = PlannerFactory.Create(algorithm, heuristic).Solve(createProblem(ApplicableActionGeneratorType.Grounded));
+        var clique = PlannerFactory.Create(algorithm, heuristic).Solve(createProblem(ApplicableActionGeneratorType.Lifted));
         return (grounded, clique);
     }
 
-    private static void AssertPlannerParity(Problem problem, PlanResult grounded, PlanResult clique)
+    private static void AssertPlannerParity(PlanResult grounded, PlanResult clique)
     {
         Assert.Equal(grounded.IsSuccess, clique.IsSuccess);
         Assert.Equal(grounded.PlanLength, clique.PlanLength);
@@ -216,8 +217,8 @@ public class PlannerGeneratorParityTests
             return;
         }
 
-        AssertPlanReachesGoal(problem, grounded.Plan);
-        AssertPlanReachesGoal(problem, clique.Plan);
+        AssertPlanReachesGoal(grounded.Plan[0].Context.Problem, grounded.Plan);
+        AssertPlanReachesGoal(clique.Plan[0].Context.Problem, clique.Plan);
     }
 
     private static void AssertPlanSteps(string[] expected, PlanResult result)

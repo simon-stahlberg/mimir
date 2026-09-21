@@ -13,6 +13,7 @@ from .advanced._native import raise_last_error
 from .advanced.heuristics import QHEURISTIC_CALLBACK
 from .advanced.search import STOP_CALLBACK
 from .heuristics import Heuristic, QHeuristic, Successors
+from .dead_ends import DeadEndDetector, _detector_handle
 from .model import GroundAction, GroundConjunctiveCondition, Problem, State
 from .search import SearchResult, SearchStatistics, SearchStatus, Solution, _CallbackErrors, _heuristic_handle, _validate_limits
 
@@ -23,6 +24,7 @@ def qgbfs(
     *,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     maximize: bool = True,
     batch_target: int = 1,
     timeout_seconds: float | None = None,
@@ -43,7 +45,7 @@ def qgbfs(
     _validate_integer("batch_target", batch_target, minimum=1)
     return _run_search(
         problem, heuristic, native_search=lib.mimir_qgbfs_search,
-        search_options=(batch_target, maximize), start_state=start_state, goal=goal,
+        search_options=(batch_target, maximize), start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds, max_expanded_states=max_expanded_states,
         should_stop=should_stop,
     )
@@ -64,6 +66,7 @@ def _run_search(
     search_options: tuple[int, ...],
     start_state: State | None,
     goal: GroundConjunctiveCondition | None,
+    dead_end_detector: DeadEndDetector | None,
     timeout_seconds: float | None,
     max_expanded_states: int | None,
     should_stop: Callable[[int], bool] | None,
@@ -84,6 +87,7 @@ def _run_search(
         raise ValueError("start_state belongs to a different problem")
     if effective_goal.problem is not problem and effective_goal.problem != problem:
         raise ValueError("goal belongs to a different problem")
+    detector_handle = _detector_handle(dead_end_detector, problem)
     native_timeout, native_limit = _validate_limits(timeout_seconds, max_expanded_states)
     if max_expanded_states is not None:
         _validate_integer("max_expanded_states", max_expanded_states, minimum=0)
@@ -124,6 +128,7 @@ def _run_search(
             problem._handle, start._handle, effective_goal._handle,
             native_heuristic, *search_options, native_timeout, native_limit,
             ctypes.cast(native_stop, ctypes.c_void_p) if native_stop is not None else None,
+            detector_handle,
         ))
         errors.raise_if_set()
         if result == 0:

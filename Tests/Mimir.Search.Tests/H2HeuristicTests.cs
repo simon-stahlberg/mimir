@@ -144,7 +144,7 @@ public sealed class H2HeuristicTests
         GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
         Assert.Throws<NotSupportedException>(
-            () => new H2Heuristic(generator).Evaluate(problem.InitialState.Expand(), goal));
+            () => new H2Heuristic(generator.Problem).Evaluate(problem.InitialState.Expand(), goal));
     }
 
     /// <summary>
@@ -223,11 +223,10 @@ public sealed class H2HeuristicTests
         SearchSpace space = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(GoalCondition.FromProblem(problem))
-            .WithActionGenerator(generator)
             .Build();
         MaxHeuristic max = new(generator);
         FFHeuristic ff = new(generator);
-        H2Heuristic h2 = new(generator);
+        H2Heuristic h2 = new(generator.Problem);
         PerfectHeuristic perfect = new(space);
 
         foreach (State state in space.AllStates)
@@ -265,9 +264,8 @@ public sealed class H2HeuristicTests
         SearchSpace space = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(GoalCondition.FromProblem(problem))
-            .WithActionGenerator(generator)
             .Build();
-        H2Heuristic h2 = new(generator);
+        H2Heuristic h2 = new(generator.Problem);
         NaiveH2 naive = new(generator);
         int[] goalFluents = problem.Goal
             .Select(literal => literal.Value is Fact<Fluent> fluent
@@ -293,7 +291,7 @@ public sealed class H2HeuristicTests
         => SearchTestHelpers.CreateProblemFromText(domainText, problemText);
 
     private static double H2Value(Problem problem)
-        => new H2Heuristic(SearchTestHelpers.CreateGroundedGenerator(problem))
+        => new H2Heuristic(problem)
             .Evaluate(problem.InitialState.Expand())
             .Value;
 
@@ -313,7 +311,6 @@ public sealed class H2HeuristicTests
 
     private static PlanResult Solve(Problem problem)
     {
-        GroundedApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
-        return new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        return new BreadthFirstPlanner().Solve(problem);
     }
 }

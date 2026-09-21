@@ -10,6 +10,7 @@ namespace Mimir.Search.Algorithms.GreedyBestFirst;
 internal sealed class GbfsSearch : ISearchAlgorithm
 {
     private readonly State _initialState;
+    private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
     private readonly IApplicableActionGenerator _actionGenerator;
     private readonly IHeuristic _heuristic;
@@ -27,13 +28,14 @@ internal sealed class GbfsSearch : ISearchAlgorithm
     public GbfsSearch(
         State initialState,
         GoalCondition goalCondition,
-        IApplicableActionGenerator actionGenerator,
-        IHeuristic heuristic)
+        IHeuristic heuristic,
+        IDeadEndDetector? deadEndDetector)
     {
         _initialState = initialState;
+        _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
-        _actionGenerator = actionGenerator;
-        _heuristic = heuristic;
+        _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
+        _heuristic = HeuristicBinding.Bind(heuristic, goalCondition, _actionGenerator);
     }
 
     public SearchResult Search(
@@ -46,6 +48,17 @@ internal sealed class GbfsSearch : ISearchAlgorithm
         var stopwatch = Stopwatch.StartNew();
         if (cancellationToken.IsCancellationRequested)
             return SearchResult.Canceled(new SearchStatistics(0, 0, stopwatch.Elapsed, 0));
+
+        if (_deadEndDetector is not null)
+        {
+            ExtendedState initial = _initialState.Expand();
+            if (!_goalCondition.IsSatisfied(initial) && _deadEndDetector.IsDeadEnd(initial, _goalCondition))
+            {
+                NodeGenerated?.Invoke(new SearchNode(_initialState));
+                StatePruned?.Invoke(_initialState);
+                return SearchResult.Failure(new SearchStatistics(0, 1, stopwatch.Elapsed, 0));
+            }
+        }
 
         var open = new PriorityQueue<
             (SearchNode Node, ExtendedState ExtendedState, HeuristicEvaluation Evaluation),
@@ -118,7 +131,8 @@ internal sealed class GbfsSearch : ISearchAlgorithm
                 bool successorIsGoal = _goalCondition.IsSatisfied(extendedNextState);
                 HeuristicEvaluation nextEvaluation = EvaluateHeuristic(extendedNextState);
 
-                if (!successorIsGoal && double.IsPositiveInfinity(nextEvaluation.Value))
+                if (!successorIsGoal && (double.IsPositiveInfinity(nextEvaluation.Value)
+                    || (_deadEndDetector?.IsDeadEnd(extendedNextState, _goalCondition) ?? false)))
                 {
                     StatePruned?.Invoke(nextState);
                     TransitionPruned?.Invoke(transition);

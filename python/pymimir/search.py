@@ -16,6 +16,7 @@ from .advanced.heuristics import HEURISTIC_CALLBACK, HEURISTIC_BATCH_CALLBACK, P
 from .advanced.search import DOUBLE_CALLBACK, STATE_CALLBACK, TRANSITION_CALLBACK
 from .errors import MimirError
 from .heuristics import Heuristic, PerfectHeuristic, _NativeHeuristic, _validate_value
+from .dead_ends import DeadEndDetector, _detector_handle
 from .model import GroundAction, GroundConjunctiveCondition, Problem, State
 
 
@@ -313,6 +314,7 @@ def _search(
     heuristic: Heuristic | None,
     start_state: State | None,
     goal: GroundConjunctiveCondition | None,
+    dead_end_detector: DeadEndDetector | None,
     timeout_seconds: float | None,
     max_expanded_states: int | None,
     on_expand: StateCallback | None,
@@ -340,6 +342,7 @@ def _search(
         raise TypeError("goal must be a GroundConjunctiveCondition")
     if effective_goal.problem != problem:
         raise ValueError("goal belongs to a different problem")
+    detector_handle = _detector_handle(dead_end_detector, problem)
     effective_start = problem.initial_state if start_state is None else start_state
     native_timeout, native_limit = _validate_limits(timeout_seconds, max_expanded_states)
 
@@ -382,6 +385,7 @@ def _search(
                 native_timeout,
                 native_limit,
                 *callbacks,
+                detector_handle,
             ))
         except MimirError:
             errors.raise_if_set()
@@ -443,6 +447,7 @@ def bfs(
     *,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     on_expand: StateCallback | None = None,
@@ -452,7 +457,7 @@ def bfs(
     on_prune: TransitionCallback | None = None,
     on_finish_depth: DepthCallback | None = None,
 ) -> SearchResult:
-    return _search("bfs", problem, heuristic=None, start_state=start_state, goal=goal,
+    return _search("bfs", problem, heuristic=None, start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds,
         max_expanded_states=max_expanded_states, on_expand=on_expand, on_goal=on_goal,
         on_generate=on_generate, on_discover=on_discover, on_prune=on_prune,
@@ -464,6 +469,7 @@ def ucs(
     *,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     on_expand: StateCallback | None = None,
@@ -472,7 +478,7 @@ def ucs(
     on_discover: TransitionCallback | None = None,
     on_prune: TransitionCallback | None = None,
 ) -> SearchResult:
-    return _search("ucs", problem, heuristic=None, start_state=start_state, goal=goal,
+    return _search("ucs", problem, heuristic=None, start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds,
         max_expanded_states=max_expanded_states, on_expand=on_expand, on_goal=on_goal,
         on_generate=on_generate, on_discover=on_discover, on_prune=on_prune,
@@ -485,6 +491,7 @@ def astar(
     *,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     on_expand: StateCallback | None = None,
@@ -494,7 +501,7 @@ def astar(
     on_prune: TransitionCallback | None = None,
     on_finish_f_layer: ValueCallback | None = None,
 ) -> SearchResult:
-    return _search("astar", problem, heuristic=heuristic, start_state=start_state, goal=goal,
+    return _search("astar", problem, heuristic=heuristic, start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds,
         max_expanded_states=max_expanded_states, on_expand=on_expand, on_goal=on_goal,
         on_generate=on_generate, on_discover=on_discover, on_prune=on_prune,
@@ -507,6 +514,7 @@ def gbfs(
     *,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     on_expand: StateCallback | None = None,
@@ -516,7 +524,7 @@ def gbfs(
     on_prune: TransitionCallback | None = None,
     on_new_best_h: ValueCallback | None = None,
 ) -> SearchResult:
-    return _search("gbfs", problem, heuristic=heuristic, start_state=start_state, goal=goal,
+    return _search("gbfs", problem, heuristic=heuristic, start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds,
         max_expanded_states=max_expanded_states, on_expand=on_expand, on_goal=on_goal,
         on_generate=on_generate, on_discover=on_discover, on_prune=on_prune,
@@ -529,6 +537,7 @@ def iw(
     max_width: int = 1,
     start_state: State | None = None,
     goal: GroundConjunctiveCondition | None = None,
+    dead_end_detector: DeadEndDetector | None = None,
     timeout_seconds: float | None = None,
     max_expanded_states: int | None = None,
     on_expand: StateCallback | None = None,
@@ -540,7 +549,7 @@ def iw(
         raise TypeError("max_width must be int")
     if max_width < 0 or max_width > 3:
         raise ValueError("max_width must be in 0..3")
-    return _search(f"iw{max_width}", problem, heuristic=None, start_state=start_state, goal=goal,
+    return _search(f"iw{max_width}", problem, heuristic=None, start_state=start_state, goal=goal, dead_end_detector=dead_end_detector,
         timeout_seconds=timeout_seconds,
         max_expanded_states=max_expanded_states, on_expand=on_expand, on_goal=on_goal,
         on_generate=on_generate, on_discover=on_discover, on_prune=None,

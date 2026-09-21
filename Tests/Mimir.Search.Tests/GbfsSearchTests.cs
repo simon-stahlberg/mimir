@@ -22,7 +22,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildGbfs();
 
@@ -41,7 +40,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new LiftedFfHeuristic(problem))
             .BuildGbfs();
 
@@ -67,7 +65,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .OnGoalNodeExpanded(goalNodes.Add)
             .BuildGbfs();
@@ -90,7 +87,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new LiftedFfHeuristic(problem))
             .BuildGbfs();
 
@@ -115,7 +111,6 @@ public class GbfsSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .OnStateGenerated(_ =>
             {
@@ -139,7 +134,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .OnGoalNodeExpanded(expandedGoalStates.Add)
             .BuildGbfs();
@@ -163,7 +157,6 @@ public class GbfsSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state => state.IsTrue(b) ? 1d : 2d))
             .OnNewBestHValue(bestHeuristicValues.Add)
             .BuildGbfs()
@@ -185,7 +178,6 @@ public class GbfsSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(SearchTestHelpers.ContradictoryGoal(problem))
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state => state.IsTrue(a) ? double.PositiveInfinity : 0d))
             .OnStatePruned(pruned.Add)
             .BuildGbfs()
@@ -209,7 +201,6 @@ public class GbfsSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state => state.IsTrue(a) ? double.PositiveInfinity : 0d))
             .OnStatePruned(pruned.Add)
             .BuildGbfs()
@@ -231,7 +222,6 @@ public class GbfsSearchTests
         ISearchAlgorithm gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new DelegateHeuristic(_ => value))
             .BuildGbfs();
 
@@ -252,7 +242,6 @@ public class GbfsSearchTests
         var gbfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(SearchTestHelpers.ContradictoryGoal(problem))
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new DelegateHeuristic(state =>
             {
                 if (state.IsTrue(startId))

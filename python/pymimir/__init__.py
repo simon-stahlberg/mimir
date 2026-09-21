@@ -75,6 +75,7 @@ from .heuristics import (
     PerfectHeuristic,
     SetAddHeuristic,
 )
+from .dead_ends import DeadEndDetector, H2DeadEndDetector, DisjunctiveDeadEndDetector
 from .state_space import StateLabel, StateSpace
 from .errors import MimirError, PddlError, StateSpaceLimitExceeded
 from .learning import (
@@ -111,6 +112,8 @@ __all__ = [
     # Heuristics
     "heuristics", "QHeuristic", "BlindHeuristic", "GoalCountHeuristic", "FFHeuristic", "LiftedFFHeuristic",
     "AddHeuristic", "MaxHeuristic", "H2Heuristic", "SetAddHeuristic", "PerfectHeuristic",
+    # Dead-end detection
+    "DeadEndDetector", "H2DeadEndDetector", "DisjunctiveDeadEndDetector",
     # Datasets
     "state_space", "StateLabel", "StateSpace",
     # Learning

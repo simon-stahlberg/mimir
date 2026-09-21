@@ -19,13 +19,11 @@ public class AStarSearchTests
         var bfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildBfs();
 
         var astar = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildAStar();
 
@@ -53,7 +51,6 @@ public class AStarSearchTests
         var astar = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(BlindHeuristic.Instance)
             .BuildAStar();
 
@@ -72,7 +69,6 @@ public class AStarSearchTests
         var astar = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new GoalCountHeuristic(problem))
             .BuildAStar();
 
@@ -96,7 +92,6 @@ public class AStarSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(BlindHeuristic.Instance)
             .OnFLayerFinished(completedFLayers.Add)
             .OnStateGenerated(generatedTransitions.Add)
@@ -122,7 +117,6 @@ public class AStarSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(SearchTestHelpers.ContradictoryGoal(problem))
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state => state.IsTrue(a) ? double.PositiveInfinity : 0d))
             .OnStatePruned(pruned.Add)
             .BuildAStar()
@@ -146,7 +140,6 @@ public class AStarSearchTests
         SearchResult result = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithHeuristic(new DelegateHeuristic(state => state.IsTrue(target) ? double.PositiveInfinity : 0d))
             .OnStatePruned(pruned.Add)
             .BuildAStar()
@@ -167,7 +160,6 @@ public class AStarSearchTests
         ISearchAlgorithm astar = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .WithHeuristic(new DelegateHeuristic(_ => value))
             .BuildAStar();
 

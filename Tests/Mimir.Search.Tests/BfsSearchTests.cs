@@ -1,3 +1,5 @@
+using Mimir.Search.Algorithms.BreadthFirst;
+using Mimir.Search.Evaluation;
 using Mimir.Core.Grounding;
 using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
@@ -21,13 +23,10 @@ public class BfsSearchTests
 
         var domain = Domain.FromFile(domainPath);
         var problem = Problem.FromFile(domain, problemPath);
-        var grounder = new RpgGrounder();
-        var generator = new GroundedApplicableActionGenerator(problem, problem.InitialState, grounder);
 
         var bfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .BuildBfs();
 
         var result = bfs.Search();
@@ -66,7 +65,6 @@ public class BfsSearchTests
         var bfs = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .OnStateGenerated(generated.Add)
             .OnStateGeneratedInSearchTree(generatedNew.Add)
             .OnStateGeneratedNotInSearchTree(pruned.Add)
@@ -82,36 +80,30 @@ public class BfsSearchTests
         Assert.Equal([0d, 0d, 1d, 2d, 3d], finishedGLayers);
     }
 
-    [Fact]
-    public void GroundedFastPath_MatchesFallbackDuringReentrantCallbacks()
+    [Theory]
+    [InlineData(ApplicableActionGeneratorType.Grounded)]
+    [InlineData(ApplicableActionGeneratorType.Lifted)]
+    public void ReentrantGenerationPreservesSearchAndCallbacks(ApplicableActionGeneratorType generatorType)
     {
-        Problem problem = SearchTestHelpers.LoadProblem("childsnack");
-        GroundedApplicableActionGenerator grounded =
-            SearchTestHelpers.CreateGroundedGenerator(problem);
+        Problem problem = SearchTestHelpers.LoadProblem("childsnack", generatorType: generatorType);
+        IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(problem.InitialState);
 
         (SearchResult Result,
             List<(string EventType, State State, GroundAction Action, State Successor)> Events,
-            List<double> GLayers) Run(IApplicableActionGenerator generator)
+            List<double> GLayers) Run(bool generateDuringCallback)
         {
             var events = new List<(string, State, GroundAction, State)>();
             var gLayers = new List<double>();
-            var search = new SearchBuilder()
-                .WithInitialState(problem.InitialState)
-                .WithGoal(problem)
-                .WithActionGenerator(generator)
-                .OnStateGenerated(transition =>
-                {
-                    events.Add(("all", transition.State, transition.Action, transition.SuccessorState));
-                    _ = grounded
-                        .GetApplicableActions(transition.SuccessorState.Expand())
-                        .ToArray();
-                })
-                .OnStateGeneratedInSearchTree(transition =>
-                    events.Add(("new", transition.State, transition.Action, transition.SuccessorState)))
-                .OnStateGeneratedNotInSearchTree(transition =>
-                    events.Add(("pruned", transition.State, transition.Action, transition.SuccessorState)))
-                .OnGLayerFinished(gLayers.Add)
-                .BuildBfs();
+            var search = new BfsSearch(problem.InitialState, GoalCondition.FromProblem(problem), null);
+            search.StateGenerated += transition =>
+            {
+                events.Add(("all", transition.State, transition.Action, transition.SuccessorState));
+                if (generateDuringCallback)
+                    _ = generator.GetApplicableActions(transition.SuccessorState.Expand()).ToArray();
+            };
+            search.StateGeneratedInSearchTree += transition => events.Add(("new", transition.State, transition.Action, transition.SuccessorState));
+            search.StateGeneratedNotInSearchTree += transition => events.Add(("pruned", transition.State, transition.Action, transition.SuccessorState));
+            search.GLayerFinished += gLayers.Add;
             search.TransitionGenerated += transition =>
                 events.Add(("transition-all", transition.State, transition.Action, transition.SuccessorState));
             search.TransitionDiscovered += transition =>
@@ -122,85 +114,23 @@ public class BfsSearchTests
             return (search.Search(), events, gLayers);
         }
 
-        var fastPath = Run(grounded);
-        var fallback = Run(new DelegatingActionGenerator(grounded));
+        var reentrant = Run(true);
+        var baseline = Run(false);
 
-        Assert.Equal(fallback.Result.Status, fastPath.Result.Status);
-        Assert.Equal(fallback.Result.Plan.ToArray(), fastPath.Result.Plan.ToArray());
-        Assert.Equal(fallback.Result.PlanCost, fastPath.Result.PlanCost);
+        Assert.Equal(baseline.Result.Status, reentrant.Result.Status);
+        Assert.Equal(baseline.Result.Plan.ToArray(), reentrant.Result.Plan.ToArray());
+        Assert.Equal(baseline.Result.PlanCost, reentrant.Result.PlanCost);
         Assert.Equal(
-            fallback.Result.Statistics.NodesExpanded,
-            fastPath.Result.Statistics.NodesExpanded);
+            baseline.Result.Statistics.NodesExpanded,
+            reentrant.Result.Statistics.NodesExpanded);
         Assert.Equal(
-            fallback.Result.Statistics.NodesGenerated,
-            fastPath.Result.Statistics.NodesGenerated);
+            baseline.Result.Statistics.NodesGenerated,
+            reentrant.Result.Statistics.NodesGenerated);
         Assert.Equal(
-            fallback.Result.Statistics.MaxDepth,
-            fastPath.Result.Statistics.MaxDepth);
-        Assert.Equal(fallback.Events, fastPath.Events);
-        Assert.Equal(fallback.GLayers, fastPath.GLayers);
+            baseline.Result.Statistics.MaxDepth,
+            reentrant.Result.Statistics.MaxDepth);
+        Assert.Equal(baseline.Events, reentrant.Events);
+        Assert.Equal(baseline.GLayers, reentrant.GLayers);
     }
 
-    [Fact]
-    public void GroundedSubclass_UsesItsInterfaceImplementation()
-    {
-        Domain domain = new DomainBuilder("d")
-            .Requirements().Add(":strips").Close()
-            .Predicates().Add("ready").Add("done").Close()
-            .Actions()
-                .Add("finish")
-                    .AddPrecondition("ready")
-                    .AddEffect("done")
-                    .Close()
-                .Close()
-            .Build();
-        Problem problem = new ProblemBuilder(domain, "p")
-            .InitialState().AddFact("ready").Close()
-            .Goal().Add("done").Close()
-            .Build();
-        var generator = new EmptyGroundedGenerator(problem);
-        IApplicableActionGenerator interfaceGenerator = generator;
-
-        Assert.Single(generator.GetApplicableActions(problem.InitialState.Expand()));
-        Assert.Empty(interfaceGenerator.GetApplicableActions(problem.InitialState.Expand()));
-
-        var search = new SearchBuilder()
-            .WithInitialState(problem.InitialState)
-            .WithGoal(problem)
-            .WithActionGenerator(interfaceGenerator)
-            .BuildBfs();
-
-        Assert.Equal(SearchStatus.Failed, search.Search().Status);
-    }
-
-    private sealed class DelegatingActionGenerator(IApplicableActionGenerator inner)
-        : IApplicableActionGenerator
-    {
-        public Problem Problem => inner.Problem;
-
-        public IEnumerable<GroundAction> GetApplicableActions(ExtendedState state)
-            => inner.GetApplicableActions(state);
-
-        public IEnumerable<GroundAction> GetApplicableActions(
-            ExtendedState state,
-            int maxActions)
-            => inner.GetApplicableActions(state, maxActions);
-    }
-
-    private sealed class EmptyGroundedGenerator(Problem problem)
-        : GroundedApplicableActionGenerator(
-            problem,
-            problem.InitialState,
-            new RpgGrounder()),
-          IApplicableActionGenerator
-    {
-        IEnumerable<GroundAction> IApplicableActionGenerator.GetApplicableActions(
-            ExtendedState state)
-            => Array.Empty<GroundAction>();
-
-        IEnumerable<GroundAction> IApplicableActionGenerator.GetApplicableActions(
-            ExtendedState state,
-            int maxActions)
-            => Array.Empty<GroundAction>();
-    }
 }

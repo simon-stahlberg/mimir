@@ -64,7 +64,7 @@ static BenchmarkInstance[] DiscoverBenchmarks(string benchmarkRoot)
 static BenchmarkMeasurement RunBenchmark(BenchmarkInstance benchmark)
 {
     Domain domain = Domain.FromFile(benchmark.DomainPath);
-    Problem problem = Problem.FromFile(domain, benchmark.ProblemPath);
+    Problem problem = Problem.FromFile(domain, benchmark.ProblemPath, ApplicableActionGeneratorType.Lifted);
     State initialState = problem.InitialState;
     var layers = new List<LayerCounter>();
 
@@ -81,14 +81,13 @@ static BenchmarkMeasurement RunBenchmark(BenchmarkInstance benchmark)
 
     long generatorAllocatedBefore = GC.GetAllocatedBytesForCurrentThread();
     long generatorStarted = Stopwatch.GetTimestamp();
-    var generator = new CliqueApplicableActionGenerator(problem);
+    var generator = problem.GetApplicableActionGenerator(initialState);
     double generatorMilliseconds = Stopwatch.GetElapsedTime(generatorStarted).TotalMilliseconds;
     long generatorAllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - generatorAllocatedBefore;
 
     var search = new SearchBuilder()
         .WithInitialState(initialState)
         .WithGoal(CreateContradictoryGoal(problem))
-        .WithActionGenerator(generator)
         .OnNodeGenerated(node => GetLayer(layers, node.Depth).NodesGenerated++)
         .OnNodeExpanded(node => GetLayer(layers, node.Depth).NodesExpanded++)
         .BuildBfs();

@@ -12,7 +12,7 @@ namespace Mimir.Search.Tests;
 public unsafe class InteropHeuristicTests
 {
     [Fact]
-    public void BindHeuristicV10_GoalMatchedPerfect_ReusesInstance()
+    public void BindHeuristic_GoalMatchedPerfect_ReusesInstance()
     {
         Problem problem = SearchTestHelpers.LoadProblem("blocks_3");
         GoalCondition boundGoal = GoalCondition.FromProblem(problem);
@@ -20,13 +20,13 @@ public unsafe class InteropHeuristicTests
         var heuristic = new PerfectHeuristic(problem, boundGoal);
         IApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
-        IHeuristic result = Exports.BindHeuristicV10(heuristic, equivalentGoal, generator);
+        IHeuristic result = HeuristicBinding.Bind(heuristic, equivalentGoal, generator);
 
         Assert.Same(heuristic, result);
     }
 
     [Fact]
-    public void BindHeuristicV10_DifferentGoal_RebuildsPerfect()
+    public void BindHeuristic_DifferentGoal_RebuildsPerfect()
     {
         Problem problem = SearchTestHelpers.LoadProblem("blocks_3");
         GoalCondition boundGoal = GoalCondition.FromProblem(problem);
@@ -34,7 +34,7 @@ public unsafe class InteropHeuristicTests
         var heuristic = new PerfectHeuristic(problem, boundGoal);
         IApplicableActionGenerator generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
-        IHeuristic result = Exports.BindHeuristicV10(heuristic, differentGoal, generator);
+        IHeuristic result = HeuristicBinding.Bind(heuristic, differentGoal, generator);
 
         PerfectHeuristic rebound = Assert.IsType<PerfectHeuristic>(result);
         Assert.NotSame(heuristic, rebound);

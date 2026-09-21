@@ -18,7 +18,12 @@ public sealed class MaxHeuristic : IHeuristic, IGroundedHeuristic
     private readonly GroundedRelaxedPlanningGraph _rpg;
     private readonly GoalCondition _defaultGoal;
 
-    public MaxHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
+    public MaxHeuristic(Problem problem, GoalCondition? goal = null)
+        : this(HeuristicBinding.GetInitialGenerator(problem), goal)
+    {
+    }
+
+    internal MaxHeuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(actionGenerator);
 

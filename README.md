@@ -129,6 +129,76 @@ Beam statistics use `visited_states` for admitted states (including the root),
 and `evaluated_candidates` for Q entries or distinct state heuristic evaluations.
 `max_depth` records the deepest admitted node. Generation stops at the first goal.
 
+## Grounded heuristic construction
+
+In C#, `AddHeuristic`, `MaxHeuristic`, `FFHeuristic`, `SetAddHeuristic`, and
+`H2Heuristic` take `(Problem problem, GoalCondition? goal = null)`. They require a
+problem configured with `ApplicableActionGeneratorType.Grounded` and reuse its
+cached original initial-state generator. Lifted problems are rejected before
+creating a generator. Direct evaluations use that initial grounding; search
+algorithms internally bind heuristics to their start-state grounding when needed.
+
+```csharp
+var heuristic = new FFHeuristic(problem);
+```
+
+The grounded and lifted generator constructors are internal. Obtain a generator
+through `problem.GetApplicableActionGenerator(state)` when implementing a custom
+search. Python heuristic constructors already take a problem and are unchanged.
+
+## Dead-end detection
+
+`H2DeadEndDetector` proves dead ends relative to an explicit goal. `True` means
+the goal is unreachable; `False` means unknown. The detector is sound but
+incomplete and supports the same fragment as `H2Heuristic`: positive conjunctive
+fluent goals and no derived action preconditions or derived effect conditions.
+Unsupported inputs raise errors.
+
+```python
+from pymimir import Problem, H2DeadEndDetector, bfs
+
+problem = Problem.from_files("domain.pddl", "problem.pddl", generator="grounded")
+detector = H2DeadEndDetector(problem)
+dead = detector.is_dead_end(problem.initial_state, problem.goal)
+result = bfs(problem, dead_end_detector=detector)
+```
+
+Python defaults to lifted generation; h² requires `generator="grounded"`.
+Both `H2Heuristic(problem)` and `H2DeadEndDetector(problem)` reuse the problem's
+cached original initial-state grounding. Their public evaluation scope is states
+reachable from that initial state, including trajectories evaluated in arbitrary
+order and with different goals. Arbitrarily constructed states outside that
+reachable region are outside this guarantee. Each instance compiles its own h²
+tables once and reuses them for evaluations.
+
+`DisjunctiveDeadEndDetector([detector, ...])` returns `True` as soon as a child
+does; an empty list returns `False`. All eight searches accept the optional
+`dead_end_detector` argument. In C#, implement
+`IDeadEndDetector.IsDeadEnd(ExtendedState, GoalCondition)` or use the built-in
+detectors, and pass one to `SearchBuilder.WithDeadEndDetector(...)` or a
+planner's `Solve(...)` method.
+
+Dead-end detection preserves model inputs. Q models receive complete ordered
+action/successor rows, including dead ends, duplicates, and closed successors.
+State-heuristic beam search likewise scores its complete candidate batch before
+applying detection. Proven dead ends are discarded **after scoring**, before
+frontier or beam selection. Goals retain precedence over detection, and a proven
+dead-end root can terminate search without inference. Generation callbacks still
+observe pruned successors.
+
+Search algorithms and state-space construction obtain generators from the start
+state's problem; generator injection has been removed from their constructors
+and builders. Choose grounded or lifted
+generation when constructing the problem. C# planner specifications now use
+`algorithm[:heuristic]`, for example `astar:goal-count`.
+Planner heuristic factories receive `(startState, goal)`; the problem is available
+through `startState.Context.Problem`.
+The original initial-state generator stays cached. Other grounded generators
+are cached by live `State` object identity with a capacity of 16 and FIFO
+eviction; a cache hit does not refresh the eviction order. This bounds entry
+count, not bytes. Eviction does not invalidate generators still used by searches
+or heuristics. These caches and evaluators are intended for single-threaded use.
+
 ## Programmatic construction
 
 `DomainBuilder` and `ProblemBuilder` construct the same native models without

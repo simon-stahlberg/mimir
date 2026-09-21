@@ -1,5 +1,4 @@
 using Mimir.Core.Grounding;
-using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
 using Mimir.Search.Heuristics;
@@ -14,12 +13,10 @@ namespace Mimir.Search.Planning;
 
 public class SearchBuilder
 {
-    private const int GroundedActionCompactionThreshold = 1_000_000;
-
     private State? _initialState;
     private GoalCondition? _goalCondition;
-    private IApplicableActionGenerator? _actionGenerator;
     private IHeuristic? _heuristic;
+    private IDeadEndDetector? _deadEndDetector;
     private IQHeuristic? _qHeuristic;
     private readonly List<Action<SearchNode>> _onNodeExpanded = new();
     private readonly List<Action<SearchNode>> _onNodeGenerated = new();
@@ -54,10 +51,9 @@ public class SearchBuilder
         return this;
     }
 
-    public SearchBuilder WithActionGenerator(IApplicableActionGenerator generator)
+    public SearchBuilder WithDeadEndDetector(IDeadEndDetector? detector)
     {
-        ArgumentNullException.ThrowIfNull(generator);
-        _actionGenerator = generator;
+        _deadEndDetector = detector;
         return this;
     }
 
@@ -91,9 +87,9 @@ public class SearchBuilder
     {
         Validate();
         var search = new QGbfsSearch(
-            _initialState!, _goalCondition!, _actionGenerator!,
+            _initialState!, _goalCondition!,
             _qHeuristic ?? throw new InvalidOperationException("Q-heuristic not set."),
-            batchTarget, maximize, shouldStop);
+            batchTarget, maximize, shouldStop, _deadEndDetector);
         foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
         foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
         foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
@@ -103,9 +99,8 @@ public class SearchBuilder
     public ISearchAlgorithm BuildBeam(int beamSize = 1, int maxDepth = int.MaxValue, Func<int, bool>? shouldStop = null)
     {
         Validate();
-        ValidateHeuristicActionGenerator();
-        var search = new BeamSearch(_initialState!, _goalCondition!, _actionGenerator!,
-            _heuristic ?? BlindHeuristic.Instance, null, beamSize, maxDepth, false, shouldStop);
+        var search = new BeamSearch(_initialState!, _goalCondition!,
+            _heuristic ?? BlindHeuristic.Instance, null, beamSize, maxDepth, false, shouldStop, _deadEndDetector);
         foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
         foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
         foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
@@ -118,9 +113,9 @@ public class SearchBuilder
         bool maximize = true, Func<int, bool>? shouldStop = null)
     {
         Validate();
-        var search = new BeamSearch(_initialState!, _goalCondition!, _actionGenerator!, null,
+        var search = new BeamSearch(_initialState!, _goalCondition!, null,
             _qHeuristic ?? throw new InvalidOperationException("Q-heuristic not set."),
-            beamSize, maxDepth, maximize, shouldStop);
+            beamSize, maxDepth, maximize, shouldStop, _deadEndDetector);
         foreach (var callback in _onNodeExpanded) search.NodeExpanded += callback;
         foreach (var callback in _onNodeGenerated) search.NodeGenerated += callback;
         foreach (var callback in _onStateGenerated) search.TransitionGenerated += callback;
@@ -186,19 +181,7 @@ public class SearchBuilder
     public ISearchAlgorithm BuildBfs()
     {
         Validate();
-        if (_actionGenerator is GroundedApplicableActionGenerator groundedGenerator
-            && groundedGenerator.TryClaimPreSearchCompaction(GroundedActionCompactionThreshold))
-        {
-            // Reclaim large RPG-grounding temporaries once before BFS to avoid full
-            // collections in its hot loop.
-            GC.Collect(
-                GC.MaxGeneration,
-                GCCollectionMode.Forced,
-                blocking: true,
-                compacting: true);
-        }
-
-        var bfs = new BfsSearch(_initialState!, _goalCondition!, _actionGenerator!);
+        var bfs = new BfsSearch(_initialState!, _goalCondition!, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) bfs.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) bfs.NodeGenerated += cb;
         foreach (var cb in _onStateGenerated) bfs.StateGenerated += cb;
@@ -211,8 +194,7 @@ public class SearchBuilder
     public ISearchAlgorithm BuildAStar()
     {
         Validate();
-        ValidateHeuristicActionGenerator();
-        var astar = new AStarSearch(_initialState!, _goalCondition!, _actionGenerator!, _heuristic ?? BlindHeuristic.Instance);
+        var astar = new AStarSearch(_initialState!, _goalCondition!, _heuristic ?? BlindHeuristic.Instance, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) astar.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) astar.NodeGenerated += cb;
         foreach (var cb in _onStateGenerated) astar.StateGenerated += cb;
@@ -224,8 +206,7 @@ public class SearchBuilder
     public ISearchAlgorithm BuildGbfs()
     {
         Validate();
-        ValidateHeuristicActionGenerator();
-        var gbfs = new GbfsSearch(_initialState!, _goalCondition!, _actionGenerator!, _heuristic ?? BlindHeuristic.Instance);
+        var gbfs = new GbfsSearch(_initialState!, _goalCondition!, _heuristic ?? BlindHeuristic.Instance, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) gbfs.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) gbfs.NodeGenerated += cb;
         foreach (var cb in _onGoalNodeExpanded) gbfs.GoalNodeExpanded += cb;
@@ -238,7 +219,7 @@ public class SearchBuilder
     public ISearchAlgorithm BuildUcs()
     {
         Validate();
-        var ucs = new UcsSearch(_initialState!, _goalCondition!, _actionGenerator!);
+        var ucs = new UcsSearch(_initialState!, _goalCondition!, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) ucs.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) ucs.NodeGenerated += cb;
         return ucs;
@@ -249,7 +230,7 @@ public class SearchBuilder
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
         Validate();
-        var iw = new IwSearch(k, _initialState!, _goalCondition!, _actionGenerator!);
+        var iw = new IwSearch(k, _initialState!, _goalCondition!, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) iw.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) iw.NodeGenerated += cb;
         foreach (var cb in _onWidthStarted) iw.WidthStarted += cb;
@@ -260,7 +241,6 @@ public class SearchBuilder
     {
         if (_initialState == null) throw new InvalidOperationException("Initial state not set.");
         if (_goalCondition == null) throw new InvalidOperationException("Goal condition not set.");
-        if (_actionGenerator == null) throw new InvalidOperationException("Action generator not set.");
 
         Problem problem = _initialState.Context.Problem;
         GoalCondition goalCondition = _goalCondition;
@@ -268,30 +248,6 @@ public class SearchBuilder
         {
             throw new InvalidOperationException(
                 "The initial state and goal condition belong to different problem instances.");
-        }
-
-        if (!ReferenceEquals(_actionGenerator.Problem, problem))
-        {
-            throw new InvalidOperationException(
-                "The initial state and action generator belong to different problem instances.");
-        }
-
-        if (_actionGenerator is GroundedApplicableActionGenerator groundedGenerator
-            && !groundedGenerator.GroundingStartState.Equals(_initialState))
-        {
-            throw new InvalidOperationException(
-                "The initial state and grounded applicable-action generator use different grounding start states.");
-        }
-    }
-
-    private void ValidateHeuristicActionGenerator()
-    {
-        if (_heuristic is IGroundedHeuristic groundedHeuristic
-            && !ReferenceEquals(groundedHeuristic.ActionGenerator, _actionGenerator))
-        {
-            throw new InvalidOperationException(
-                "A grounded heuristic and the search must use the same " +
-                "GroundedApplicableActionGenerator instance.");
         }
     }
 

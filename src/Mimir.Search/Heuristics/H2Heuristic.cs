@@ -38,7 +38,12 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
     private readonly int[] _trueLiterals;
     private readonly int[] _mergedPreconditions;
 
-    public H2Heuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
+    public H2Heuristic(Problem problem, GoalCondition? goal = null)
+        : this(HeuristicBinding.GetInitialGenerator(problem), goal)
+    {
+    }
+
+    internal H2Heuristic(GroundedApplicableActionGenerator actionGenerator, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(actionGenerator);
 
@@ -68,6 +73,7 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
 
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {
+        ArgumentNullException.ThrowIfNull(state);
         State compactState = state.State;
         EnsureCompatibleState(compactState);
         GoalCondition effectiveGoal = goal ?? _defaultGoal;

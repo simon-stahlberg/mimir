@@ -18,12 +18,11 @@ public class SearchSpaceTests
         var second = SearchTestHelpers.LoadProblem("ferry");
         var builder = new SearchSpaceBuilder()
             .WithInitialState(first.InitialState)
-            .WithGoal(first)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(second));
+            .WithGoal(second);
 
         InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
 
-        Assert.Contains("action generator", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("goal condition", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -65,7 +64,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(generator)
             .Build();
 
         // Assert
@@ -82,8 +80,7 @@ public class SearchSpaceTests
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
         var builder = new SearchSpaceBuilder()
-            .WithGoal(GoalCondition.FromProblem(problem))
-            .WithActionGenerator(generator);
+            .WithGoal(GoalCondition.FromProblem(problem));
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => builder.Build());
@@ -97,15 +94,14 @@ public class SearchSpaceTests
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
 
         var builder = new SearchSpaceBuilder()
-            .WithInitialState(problem.InitialState)
-            .WithActionGenerator(generator);
+            .WithInitialState(problem.InitialState);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() => builder.Build());
     }
 
     [Fact]
-    public void Builder_MissingActionGenerator_ThrowsInvalidOperationException()
+    public void Builder_ObtainsActionGeneratorFromProblem()
     {
         // Arrange
         var problem = SearchTestHelpers.LoadProblem("ferry");
@@ -115,7 +111,7 @@ public class SearchSpaceTests
             .WithGoal(GoalCondition.FromProblem(problem));
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.NotEmpty(builder.Build().AllStates);
     }
 
     [Fact]
@@ -127,7 +123,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -150,11 +145,10 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(goalCondition)
-            .WithActionGenerator(generator)
             .Build();
 
         // Find a goal state by executing a valid plan
-        var planResult = new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        var planResult = new BreadthFirstPlanner().Solve(problem);
         Assert.True(planResult.IsSuccess);
         State goalState = problem.InitialState;
         foreach (var action in planResult.Plan)
@@ -177,7 +171,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -196,7 +189,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -215,7 +207,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // The initial state should not be a dead-end for a solvable problem
@@ -231,7 +222,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - Initial state should have depth 0
@@ -247,7 +237,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         var missingReverseEdges = new List<(State from, State to, Action action)>();
@@ -282,7 +271,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - Get distance result for initial state
@@ -302,7 +290,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         State unknownState = problem.InitialState.WithAdditionalFluentFacts(problem.Context.Fluents);
@@ -329,7 +316,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -361,7 +347,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -381,7 +366,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -401,7 +385,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - Get distances for all states
@@ -426,7 +409,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - Get costs for all states
@@ -451,7 +433,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - For every non-goal, non-dead-end state, at least one successor has strictly decreasing distance
@@ -484,7 +465,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - For every non-goal, non-dead-end state with finite cost, at least one successor has strictly decreasing cost
@@ -517,7 +497,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act - For every edge (s1 -> s2), depth(s2) <= depth(s1) + 1
@@ -552,11 +531,10 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Get optimal plan length
-        var planResult = new BreadthFirstPlanner((_, _) => generator).Solve(problem);
+        var planResult = new BreadthFirstPlanner().Solve(problem);
         Assert.True(planResult.IsSuccess);
         var planLength = planResult.Plan.Count;
 
@@ -575,14 +553,12 @@ public class SearchSpaceTests
         SearchSpace completeSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
         Assert.True(completeSpace.TotalStates > 1);
 
         var builder = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithMaxStates(completeSpace.TotalStates - 1);
 
         StateSpaceLimitExceededException exception =
@@ -610,13 +586,11 @@ public class SearchSpaceTests
         SearchSpace completeSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .WithMaxStates(completeSpace.TotalStates)
             .Build();
 
@@ -633,7 +607,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -715,7 +688,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -739,7 +711,6 @@ public class SearchSpaceTests
         var searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         // Act
@@ -760,7 +731,6 @@ public class SearchSpaceTests
         SearchSpace searchSpace = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(generator)
             .Build();
 
         Assert.Equal(searchSpace.TotalStates, searchSpace.AllStates.Count);
@@ -779,28 +749,16 @@ public class SearchSpaceTests
     }
 
     [Fact]
-    public void Builder_RequiresGroundedGeneratorToUseItsInitialState()
+    public void Builder_GroundsFromItsInitialState()
     {
         Problem problem = SearchTestHelpers.LoadProblem("ferry");
         GroundedApplicableActionGenerator initialGenerator = SearchTestHelpers.CreateGroundedGenerator(problem);
         Action action = initialGenerator.GetApplicableActions(problem.InitialState.Expand()).First();
         State customStart = problem.InitialState.Expand().Apply(action);
 
-        var invalidBuilder = new SearchSpaceBuilder()
-            .WithInitialState(customStart)
-            .WithGoal(problem)
-            .WithActionGenerator(initialGenerator);
-
-        Assert.Throws<InvalidOperationException>(() => invalidBuilder.Build());
-
-        var customGenerator = new GroundedApplicableActionGenerator(
-            problem,
-            customStart,
-            new RpgGrounder());
         SearchSpace searchSpace = new SearchSpaceBuilder()
             .WithInitialState(customStart)
             .WithGoal(problem)
-            .WithActionGenerator(customGenerator)
             .Build();
 
         Assert.Equal(customStart, searchSpace.InitialState);
@@ -812,55 +770,9 @@ public class SearchSpaceTests
         Problem problem = SearchTestHelpers.LoadProblem("ferry");
         var builder = new SearchSpaceBuilder()
             .WithInitialState(problem.InitialState)
-            .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem));
+            .WithGoal(problem);
 
         Assert.Throws<OperationCanceledException>(() => builder.Build(new CancellationToken(canceled: true)));
     }
 
-    [Fact]
-    public void Builder_CanceledDuringExpansion_ThrowsOperationCanceledException()
-    {
-        Problem problem = SearchTestHelpers.LoadProblem("ferry");
-        using var cancellation = new CancellationTokenSource();
-        var generator = new CancelAfterGenerationGenerator(
-            SearchTestHelpers.CreateGroundedGenerator(problem),
-            cancellation);
-        var builder = new SearchSpaceBuilder()
-            .WithInitialState(problem.InitialState)
-            .WithGoal(problem)
-            .WithActionGenerator(generator);
-
-        Assert.Throws<OperationCanceledException>(() => builder.Build(cancellation.Token));
-    }
-
-    private sealed class CancelAfterGenerationGenerator : IApplicableActionGenerator
-    {
-        private readonly IApplicableActionGenerator _inner;
-        private readonly CancellationTokenSource _cancellation;
-
-        public Problem Problem => _inner.Problem;
-
-        public CancelAfterGenerationGenerator(
-            IApplicableActionGenerator inner,
-            CancellationTokenSource cancellation)
-        {
-            _inner = inner;
-            _cancellation = cancellation;
-        }
-
-        public IEnumerable<Action> GetApplicableActions(ExtendedState state)
-        {
-            Action[] actions = _inner.GetApplicableActions(state).ToArray();
-            _cancellation.Cancel();
-            return actions;
-        }
-
-        public IEnumerable<Action> GetApplicableActions(ExtendedState state, int maxActions)
-        {
-            Action[] actions = _inner.GetApplicableActions(state, maxActions).ToArray();
-            _cancellation.Cancel();
-            return actions;
-        }
-    }
 }

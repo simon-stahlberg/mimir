@@ -52,12 +52,18 @@ class Program
 
         if (!options.JsonOutput)
             Console.WriteLine($"Loading problem: {options.ProblemPath}");
-        var problem = Problem.FromFile(domain, options.ProblemPath);
-
+        Problem problem;
         IPlanner planner;
         try
         {
-            planner = PlannerFactory.Create(options.GeneratorType, options.AlgorithmType, options.HeuristicType);
+            var generatorType = options.GeneratorType.Trim().ToLowerInvariant() switch
+            {
+                "grounded" => Mimir.Core.Engines.ApplicableActionGeneratorType.Grounded,
+                "lifted" => Mimir.Core.Engines.ApplicableActionGeneratorType.Lifted,
+                _ => throw new ArgumentException($"Unknown generator type '{options.GeneratorType}'.", "generatorType")
+            };
+            problem = Problem.FromFile(domain, options.ProblemPath, generatorType);
+            planner = PlannerFactory.Create(options.AlgorithmType, options.HeuristicType);
         }
         catch (ArgumentException ex)
         {

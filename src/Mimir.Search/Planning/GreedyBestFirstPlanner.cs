@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
@@ -9,22 +8,20 @@ namespace Mimir.Search.Planning;
 
 public class GreedyBestFirstPlanner : IPlanner
 {
-    private readonly Func<Problem, State, IApplicableActionGenerator> _generatorFactory;
-    private readonly Func<Problem, GoalCondition, IApplicableActionGenerator, IHeuristic> _heuristicFactory;
+    private readonly Func<State, GoalCondition, IHeuristic> _heuristicFactory;
 
     public GreedyBestFirstPlanner(
-        Func<Problem, State, IApplicableActionGenerator> generatorFactory,
-        Func<Problem, GoalCondition, IApplicableActionGenerator, IHeuristic>? heuristicFactory = null)
+        Func<State, GoalCondition, IHeuristic>? heuristicFactory = null)
     {
-        _generatorFactory = generatorFactory ?? throw new ArgumentNullException(nameof(generatorFactory));
-        _heuristicFactory = heuristicFactory ?? ((_, _, _) => BlindHeuristic.Instance);
+        _heuristicFactory = heuristicFactory ?? ((_, _) => BlindHeuristic.Instance);
     }
 
     public PlanResult Solve(
         Problem problem,
         State? startState = null,
         GoalCondition? goal = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        IDeadEndDetector? deadEndDetector = null)
     {
         var setupStopwatch = Stopwatch.StartNew();
         PlannerInputs inputs = PlannerExecution.ResolveInputs(problem, startState, goal);
@@ -34,16 +31,12 @@ public class GreedyBestFirstPlanner : IPlanner
             return PlannerExecution.Canceled(setupStopwatch.Elapsed);
         }
 
-        IApplicableActionGenerator generator = _generatorFactory(problem, inputs.StartState);
-        PlannerExecution.ValidateGenerator(problem, inputs.StartState, generator);
-
-        IHeuristic heuristic = _heuristicFactory(problem, inputs.Goal, generator)
+        IHeuristic heuristic = _heuristicFactory(inputs.StartState, inputs.Goal)
             ?? throw new InvalidOperationException("Heuristic factory returned null.");
-
         var gbfs = new SearchBuilder()
             .WithInitialState(inputs.StartState)
             .WithGoal(inputs.Goal)
-            .WithActionGenerator(generator)
+            .WithDeadEndDetector(deadEndDetector)
             .WithHeuristic(heuristic)
             .BuildGbfs();
 

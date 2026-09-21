@@ -31,8 +31,7 @@ public sealed class SearchLimitTests
 
         SearchBuilder NewBuilder() => new SearchBuilder()
             .WithInitialState(problem.InitialState)
-            .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem));
+            .WithGoal(problem);
     }
 
     [Fact]
@@ -42,7 +41,6 @@ public sealed class SearchLimitTests
         ISearchAlgorithm search = new SearchBuilder()
             .WithInitialState(problem.InitialState)
             .WithGoal(problem)
-            .WithActionGenerator(SearchTestHelpers.CreateGroundedGenerator(problem))
             .BuildIw(3);
 
         SearchResult result = search.Search(maxExpandedStates: 2);

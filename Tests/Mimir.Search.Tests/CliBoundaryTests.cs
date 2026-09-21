@@ -174,9 +174,9 @@ public sealed class CliBoundaryTests
     }
 
     [Theory]
-    [InlineData("grounded:astar:goal-count", "grounded", "astar", "goal-count")]
-    [InlineData("grounded:ucs", "grounded", "ucs", null)]
-    [InlineData("grounded", "grounded", "bfs", null)]
+    [InlineData("astar:goal-count", "grounded", "astar", "goal-count")]
+    [InlineData("ucs", "grounded", "ucs", null)]
+    [InlineData("bfs", "grounded", "bfs", null)]
     public void PlannerSpecAndCliPositionalParsing_ProduceSamePlanCost(
         string spec,
         string generator,
