@@ -74,7 +74,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddParameter("?x", "item");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Function("price", "?x"));
+        action.WithCost(Numeric.Function("price", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -180,7 +180,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddEffect("at", Polarity.Negative, "?from");
         action.AddEffect("at", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(ActionCost.Add(ActionCost.Constant(1d), ActionCost.Function("distance", "?from", "?to")));
+        action.WithCost(Numeric.Add(Numeric.Constant(1d), Numeric.Function("distance", "?from", "?to")));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -231,7 +231,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddEffect("at", Polarity.Negative, "depot");
         action.AddEffect("at", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(ActionCost.Add(ActionCost.Add(ActionCost.Function("entry-fee", "depot"), ActionCost.Multiply(ActionCost.Constant(2d), ActionCost.Constant(1.25d))), ActionCost.Divide(ActionCost.Function("distance", "depot", "?to"), ActionCost.Constant(2d))));
+        action.WithCost(Numeric.Add(Numeric.Add(Numeric.Function("entry-fee", "depot"), Numeric.Multiply(Numeric.Constant(2d), Numeric.Constant(1.25d))), Numeric.Divide(Numeric.Function("distance", "depot", "?to"), Numeric.Constant(2d))));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -284,7 +284,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?truck", "vehicle");
         action.AddPrecondition("ready", "?truck");
         action.AddEffect("done", "?truck");
-        action.WithCost(ActionCost.Add(ActionCost.Multiply(ActionCost.Constant(2d), ActionCost.Function("RaTe", "?truck", "home")), ActionCost.Divide(ActionCost.Function("FEE", "pkg1"), ActionCost.Constant(4d))));
+        action.WithCost(Numeric.Add(Numeric.Multiply(Numeric.Constant(2d), Numeric.Function("RaTe", "?truck", "home")), Numeric.Divide(Numeric.Function("FEE", "pkg1"), Numeric.Constant(4d))));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -326,7 +326,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?to", "location");
         action.AddPrecondition("ready");
         action.AddEffect("visited", "?to");
-        action.WithCost(ActionCost.Function("distance", "?to"));
+        action.WithCost(Numeric.Function("distance", "?to"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -376,7 +376,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddEffect("at", Polarity.Negative, "?from");
         action.AddEffect("at", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(ActionCost.Function("distance", "?from", "?to"));
+        action.WithCost(Numeric.Function("distance", "?from", "?to"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -420,7 +420,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddPrecondition("ready");
         action.AddPrecondition("allowed", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(ActionCost.Function("distance", "?to"));
+        action.WithCost(Numeric.Function("distance", "?to"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -463,7 +463,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?x", "item");
         action.AddPrecondition("enabled", "?x");
         action.AddEffect("done", "?x");
-        action.WithCost(ActionCost.Function("item-cost", "?x"));
+        action.WithCost(Numeric.Function("item-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -516,7 +516,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?x", "item");
         action.AddPrecondition("enabled", "?x");
         action.AddEffect("done", "?x");
-        action.WithCost(ActionCost.Function("item-cost", "?x"));
+        action.WithCost(Numeric.Function("item-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -571,7 +571,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?x", "item");
         action.AddPrecondition("enabled", "?x");
         action.AddEffect("done", "?x");
-        action.WithCost(ActionCost.Function("item-cost", "?x"));
+        action.WithCost(Numeric.Function("item-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -622,7 +622,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?x", "item");
         action.AddPrecondition("enabled", "?x");
         action.AddEffect("done", "?x");
-        action.WithCost(ActionCost.Function("item-cost", "?x"));
+        action.WithCost(Numeric.Function("item-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -657,7 +657,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Subtract(ActionCost.Constant(0d), ActionCost.Constant(1d)));
+        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(1d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -686,7 +686,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Subtract(ActionCost.Constant(0d), ActionCost.Constant(-5d)));
+        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(-5d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -715,7 +715,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Multiply(ActionCost.Constant(1e+28d), ActionCost.Constant(1e+28d)))))))))))));
+        action.WithCost(Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Constant(1e+28d)))))))))))));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -744,7 +744,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Divide(ActionCost.Constant(1d), ActionCost.Constant(0d)));
+        action.WithCost(Numeric.Divide(Numeric.Constant(1d), Numeric.Constant(0d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -774,13 +774,13 @@ public sealed class ActionCostTests : IDisposable
         action.AddPrecondition("start");
         action.AddEffect("start", Polarity.Negative);
         action.AddEffect("done");
-        action.WithCost(ActionCost.Constant(2d));
+        action.WithCost(Numeric.Constant(2d));
         action.Close();
         action = actions.Add("expensive");
         action.AddPrecondition("start");
         action.AddEffect("start", Polarity.Negative);
         action.AddEffect("done");
-        action.WithCost(ActionCost.Constant(9d));
+        action.WithCost(Numeric.Constant(9d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -1192,10 +1192,9 @@ public sealed class ActionCostTests : IDisposable
       (done)
       (increase (total-cost) (energy)))))
 """;
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => Domain.FromFile(WriteTempFile(domainPddl)));
 
-        Assert.Equal(PddlLoadErrorCode.UnsupportedFeature, exception.ErrorCode);
         Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -1217,10 +1216,9 @@ public sealed class ActionCostTests : IDisposable
       (increase (total-cost) (fuel)))))
 """;
 
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => Domain.FromFile(WriteTempFile(domainPddl)));
 
-        Assert.Equal(PddlLoadErrorCode.UnsupportedFeature, exception.ErrorCode);
         Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -1287,10 +1285,9 @@ public sealed class ActionCostTests : IDisposable
       (when (flag) (increase (battery) 1))
       (increase (total-cost) 1))))
 """;
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => Domain.FromFile(WriteTempFile(domainPddl)));
 
-        Assert.Equal(PddlLoadErrorCode.UnsupportedFeature, exception.ErrorCode);
         Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 

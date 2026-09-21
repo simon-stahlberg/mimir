@@ -15,7 +15,7 @@ if result.solution is not None:
         print(action, action.cost)
 ```
 
-Use `problem.fact("at", "robot", "room")`, `problem.action(...)`, and
+Use `problem.atom("at", "robot", "room")`, `problem.action(...)`, and
 `problem.state(...)` to construct values without editing PDDL files. Search
 callbacks receive immutable `Transition` records. The `pymimir.advanced`
 module is an unstable implementation detail.
@@ -227,6 +227,81 @@ problem = (
     .build()
 )
 ```
+
+
+## Boolean and numeric values
+
+Atoms and numeric function calls are immutable references. Both use
+`arguments` and can be evaluated through `state.value`:
+
+```python
+at_depot = problem.atom("at", "truck1", "depot")
+fuel = problem.function_call("fuel", "truck1")
+state = problem.initial_state
+
+is_at_depot = state.value(at_depot)  # bool
+remaining = state.value(fuel)       # float
+has_enough = state.holds(fuel.greater_than_or_equal(5))
+```
+
+Numeric expressions support `+`, `-`, `*`, `/`, unary minus, and named
+comparisons (`equal_to`, `less_than`, `less_than_or_equal`, `greater_than`,
+`greater_than_or_equal`). Equality and hashing compare expression values;
+use `state.holds` to evaluate a comparison. Ground references belong to a
+particular problem; foreign references and unresolved variables are rejected.
+Missing numeric initialization raises an error rather than returning zero.
+
+Use `domain.functions` / `domain.function(name)` for declarations and
+`problem.lifted_function_call(function, *arguments)` for calls containing
+variables. The equivalent propositional factory is
+`problem.lifted_atom(predicate, *arguments)`; `problem.atom(name, *names)` is
+the convenient grounded lookup. `Atom`, `GroundAtom`, `FunctionCall`,
+`GroundFunctionCall`, and `GroundAction` consistently expose `arguments`.
+
+Schemas and grounded actions share these inspection properties:
+
+| Property | Contents |
+| --- | --- |
+| `precondition.literals` | Boolean requirements |
+| `precondition.comparisons` | Numeric requirements |
+| `effect.literals` | Unconditional Boolean updates |
+| `effect.numeric_updates` | Unconditional numeric updates |
+| `conditional_effects` | Guarded or quantified clauses with `condition` and `effect` |
+| `cost_expression` | An inspectable numeric expression |
+
+Expression constants expose `value`; function calls expose `function` and
+`arguments`; binary expressions expose `operator`, `left`, and `right`.
+Numeric comparisons expose `left`, `operator`, and `right`; updates expose
+`target`, `operator`, and `expression`. Grounding substitutes objects without
+evaluating numeric expressions. Unconditional schema effects are under
+`effect`, not `conditional_effects`. Quantified schema clauses remain under
+`conditional_effects` until grounding.
+
+Builders use `Numeric` and `NumericExpressionSpec` for numeric expressions:
+
+```python
+price = Numeric.function("price", "?item")
+action.with_cost(price * 2 + 1)
+initial.set_value(Numeric.function("price", "item1"), 2.5)
+```
+
+Static numeric values, expression evaluation, and static action costs work.
+Numeric planning is not implemented: numeric action/goal conditions, numeric
+state updates (`assign`, `increase`, `decrease`), and custom numeric states
+raise `NotImplementedError`. Numeric comparisons can be evaluated directly
+against existing static values, but cannot yet be attached to search conditions.
+Supported loaded models therefore have empty `comparisons` and
+`numeric_updates` collections. Unsupported numeric PDDL also fails explicitly.
+
+C# exposes the same concepts using `State.Value`, `State.Holds`,
+`Problem.Atom`, `Problem.FunctionCall`, and PascalCase inspection properties.
+`Numeric.Function` creates builder references, arithmetic composes expressions,
+and unsupported planning operations throw `NotImplementedException`.
+
+This API replaces `ActionCost` / `ActionCostSpec` with `Numeric` /
+`NumericExpressionSpec`, `problem.fact` with `problem.atom`, and `.terms` /
+`.objects` with `.arguments`. The previous typed `problem.atom` factory is
+now `problem.lifted_atom`. Rebuild the native library for ABI version 21.
 
 ## Learning encodings
 

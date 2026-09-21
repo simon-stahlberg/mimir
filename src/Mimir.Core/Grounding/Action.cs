@@ -206,6 +206,16 @@ internal sealed class ActionEffects :
 
 public class Action : IEquatable<Action>
 {
+    public GroundConjunctiveCondition Precondition => new(Context.Problem,
+        GroundConditionLiterals.Read(Context, PositiveFluentPreconditions, NegativeFluentPreconditions,
+            PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions));
+
+    public GroundActionEffect Effect => new(GroundConditionLiterals.Read(Context,
+        AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()));
+
+    public NumericExpression CostExpression => Schema.CostExpression.Ground(Context.Problem,
+        Schema.Parameters.Zip(Arguments).ToDictionary(pair => pair.First, pair => pair.Second));
+
     private readonly ActionBinding _binding;
     private readonly ActionPreconditions _preconditions;
     private readonly ActionEffects _effects;

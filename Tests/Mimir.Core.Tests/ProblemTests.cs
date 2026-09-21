@@ -220,13 +220,12 @@ public class ProblemTests
         string domainPath = Path.Combine(BasePath, domainDir, "domain.pddl");
         string problemPath = Path.Combine(BasePath, domainDir, "p01.pddl");
 
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(() =>
+        Assert.Throws<NotImplementedException>(() =>
         {
             var domain = Domain.FromFile(domainPath);
             _ = Problem.FromFile(domain, problemPath);
         });
 
-        Assert.Equal(PddlLoadErrorCode.UnsupportedFeature, exception.ErrorCode);
     }
 
     [Fact]

@@ -376,13 +376,13 @@ public class WeightedSearchTests
         actions.Add("direct-to-x").AddParameter("?ticket", "ticket")
             .AddPrecondition("start").AddPrecondition("direct-ticket", "?ticket")
             .AddEffect("start", Polarity.Negative).AddEffect("x")
-            .WithCost(ActionCost.Function("price", "?ticket")).Close();
+            .WithCost(Numeric.Function("price", "?ticket")).Close();
         actions.Add("start-to-via").AddPrecondition("start")
             .AddEffect("start", Polarity.Negative).AddEffect("via").WithCost(1d).Close();
         actions.Add("via-to-x").AddParameter("?ticket", "ticket")
             .AddPrecondition("via").AddPrecondition("via-ticket", "?ticket")
             .AddEffect("via", Polarity.Negative).AddEffect("x")
-            .WithCost(ActionCost.Function("price", "?ticket")).Close();
+            .WithCost(Numeric.Function("price", "?ticket")).Close();
         actions.Add("x-to-goal").AddPrecondition("x")
             .AddEffect("x", Polarity.Negative).AddEffect("goal").WithCost(1d).Close();
         Domain domain = actions.Close().Build();

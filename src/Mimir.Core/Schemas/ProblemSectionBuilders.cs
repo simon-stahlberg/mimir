@@ -64,6 +64,13 @@ public sealed class InitialStateBuilder
         return this;
     }
 
+    public InitialStateBuilder SetValue(NumericFunctionSpec target, double value)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+        var call = (FunctionActionCostNode)target.Node;
+        return AddNumericInitialization(call.FunctionName, value, call.Arguments.ToArray());
+    }
+
     public InitialStateBuilder AddNumericInitialization(
         string functionName,
         double value,
@@ -117,6 +124,13 @@ public sealed class GoalBuilder
     internal GoalBuilder(ProblemBuilder parent)
     {
         _parent = parent;
+    }
+
+    public GoalBuilder Add(LogicalExpressionSpec condition)
+    {
+        EnsureOpen();
+        ArgumentNullException.ThrowIfNull(condition);
+        throw new NotImplementedException("Numeric goals are not implemented.");
     }
 
     public GoalBuilder Add(string predicateName, params string[] arguments)

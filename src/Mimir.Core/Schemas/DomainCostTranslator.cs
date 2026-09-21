@@ -5,7 +5,7 @@ namespace Mimir.Core.Schemas;
 
 internal static class DomainCostTranslator
 {
-    public static ActionCostExpression? ExtractActionCostExpression(
+    public static NumericExpression? ExtractActionCostExpression(
         IEffect? effect,
         Dictionary<string, Variable> variableScope,
         IReadOnlyDictionary<string, NumericFunction> functionLookup,
@@ -14,7 +14,7 @@ internal static class DomainCostTranslator
         if (effect == null)
             return null;
 
-        var expressions = new List<ActionCostExpression>();
+        var expressions = new List<NumericExpression>();
         CollectActionCostExpressions(effect, isConditional: false, isQuantified: false, variableScope, functionLookup, mapTerm, expressions);
         if (expressions.Count == 0)
             return null;
@@ -22,7 +22,7 @@ internal static class DomainCostTranslator
         var combined = expressions[0];
         for (int i = 1; i < expressions.Count; i++)
         {
-            combined = new BinaryActionCostExpression(ActionCostBinaryOperator.Add, combined, expressions[i]);
+            combined = new NumericBinaryExpression(NumericOperator.Add, combined, expressions[i]);
         }
 
         return combined;
@@ -35,7 +35,7 @@ internal static class DomainCostTranslator
         Dictionary<string, Variable> variableScope,
         IReadOnlyDictionary<string, NumericFunction> functionLookup,
         Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
-        List<ActionCostExpression> results)
+        List<NumericExpression> results)
     {
         switch (effect)
         {
@@ -86,7 +86,7 @@ internal static class DomainCostTranslator
         }
     }
 
-    private static ActionCostExpression TranslateActionCostExpression(
+    private static NumericExpression TranslateActionCostExpression(
         INumericExpression expression,
         Dictionary<string, Variable> variableScope,
         IReadOnlyDictionary<string, NumericFunction> functionLookup,
@@ -94,25 +94,25 @@ internal static class DomainCostTranslator
     {
         return expression switch
         {
-            NumberLiteral numberLiteral => new ConstantActionCostExpression((double)numberLiteral.Value),
-            Negate negate => new BinaryActionCostExpression(
-                ActionCostBinaryOperator.Subtract,
-                new ConstantActionCostExpression(0d),
+            NumberLiteral numberLiteral => new NumericConstant((double)numberLiteral.Value),
+            Negate negate => new NumericBinaryExpression(
+                NumericOperator.Subtract,
+                new NumericConstant(0d),
                 TranslateActionCostExpression(negate.Operand, variableScope, functionLookup, mapTerm)),
-            Add add => new BinaryActionCostExpression(
-                ActionCostBinaryOperator.Add,
+            Add add => new NumericBinaryExpression(
+                NumericOperator.Add,
                 TranslateActionCostExpression(add.Left, variableScope, functionLookup, mapTerm),
                 TranslateActionCostExpression(add.Right, variableScope, functionLookup, mapTerm)),
-            Subtract subtract => new BinaryActionCostExpression(
-                ActionCostBinaryOperator.Subtract,
+            Subtract subtract => new NumericBinaryExpression(
+                NumericOperator.Subtract,
                 TranslateActionCostExpression(subtract.Left, variableScope, functionLookup, mapTerm),
                 TranslateActionCostExpression(subtract.Right, variableScope, functionLookup, mapTerm)),
-            Multiply multiply => new BinaryActionCostExpression(
-                ActionCostBinaryOperator.Multiply,
+            Multiply multiply => new NumericBinaryExpression(
+                NumericOperator.Multiply,
                 TranslateActionCostExpression(multiply.Left, variableScope, functionLookup, mapTerm),
                 TranslateActionCostExpression(multiply.Right, variableScope, functionLookup, mapTerm)),
-            Divide divide => new BinaryActionCostExpression(
-                ActionCostBinaryOperator.Divide,
+            Divide divide => new NumericBinaryExpression(
+                NumericOperator.Divide,
                 TranslateActionCostExpression(divide.Left, variableScope, functionLookup, mapTerm),
                 TranslateActionCostExpression(divide.Right, variableScope, functionLookup, mapTerm)),
             FluentCall fluentCall => TranslateActionCostFunction(fluentCall, variableScope, functionLookup, mapTerm),
@@ -120,7 +120,7 @@ internal static class DomainCostTranslator
         };
     }
 
-    private static ActionCostExpression TranslateActionCostFunction(
+    private static NumericExpression TranslateActionCostFunction(
         FluentCall fluentCall,
         Dictionary<string, Variable> variableScope,
         IReadOnlyDictionary<string, NumericFunction> functionLookup,
@@ -132,7 +132,7 @@ internal static class DomainCostTranslator
         if (!functionLookup.TryGetValue(fluentCall.Name, out var function))
             throw new InvalidOperationException($"Numeric function '{fluentCall.Name}' is not declared in the domain.");
 
-        return new NumericFunctionActionCostExpression(
+        return new FunctionCall(
             function,
             fluentCall.Arguments.Select(term => mapTerm(term, variableScope)).ToList());
     }

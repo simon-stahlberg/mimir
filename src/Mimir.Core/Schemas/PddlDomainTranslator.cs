@@ -100,21 +100,21 @@ internal sealed class PddlDomainTranslator
             throw new InvalidOperationException($"Validated expression contains undeclared constant '{term.Name}'.");
         }
 
-        ActionCostExpression BuildProgrammaticActionCost(
+        NumericExpression BuildProgrammaticActionCost(
             ActionCostNode cost,
             IReadOnlyDictionary<string, Variable> variableScope)
         {
             return cost switch
             {
-                ConstantActionCostNode constant => new ConstantActionCostExpression(constant.Value),
-                FunctionActionCostNode function => new NumericFunctionActionCostExpression(
+                ConstantActionCostNode constant => new NumericConstant(constant.Value),
+                FunctionActionCostNode function => new FunctionCall(
                     allFunctions[function.FunctionName],
                     function.Arguments.Select(argument =>
                     {
                         if (argument.StartsWith('?')) return (ITerm)variableScope[argument];
                         return domainConstants[argument];
                     }).ToArray()),
-                BinaryActionCostNode binary => new BinaryActionCostExpression(
+                BinaryActionCostNode binary => new NumericBinaryExpression(
                     binary.Operator,
                     BuildProgrammaticActionCost(binary.Left, variableScope),
                     BuildProgrammaticActionCost(binary.Right, variableScope)),
@@ -244,7 +244,7 @@ internal sealed class PddlDomainTranslator
             IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions,
             IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions,
             IReadOnlyList<ConditionalEffect> Effects,
-            ActionCostExpression? ExplicitCostExpression)>();
+            NumericExpression? ExplicitCostExpression)>();
 
         if (programmaticInputs is not null
             && programmaticInputs.Actions.Count != astDomain.Actions.Length)
@@ -299,7 +299,7 @@ internal sealed class PddlDomainTranslator
                 }
             }
 
-            ActionCostExpression? explicitCostExpression;
+            NumericExpression? explicitCostExpression;
             if (programmaticInputs is null)
             {
                 explicitCostExpression = DomainCostTranslator.ExtractActionCostExpression(
@@ -330,7 +330,7 @@ internal sealed class PddlDomainTranslator
                 pendingAction.StaticPreconditions,
                 pendingAction.DerivedPreconditions,
                 pendingAction.Effects,
-                pendingAction.ExplicitCostExpression ?? new ConstantActionCostExpression(defaultActionCost)));
+                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost)));
         }
 
         Actions = actionsList;

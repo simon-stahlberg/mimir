@@ -11,8 +11,11 @@ public sealed class ActionSchema
     public IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions { get; }
     public IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions { get; }
 
-    public IReadOnlyList<ConditionalEffect> Effects { get; }
-    public ActionCostExpression CostExpression { get; }
+    internal IReadOnlyList<ConditionalEffect> Effects { get; }
+    public SchemaCondition Precondition => new(StaticPreconditions.Cast<Literal>().Concat(FluentPreconditions).Concat(DerivedPreconditions));
+    public ActionEffect Effect => new(Effects.Where(effect => effect.IsUnconditional).Select(effect => effect.EffectLiteral));
+    public IReadOnlyList<ConditionalEffect> ConditionalEffects => Array.AsReadOnly(Effects.Where(effect => !effect.IsUnconditional).ToArray());
+    public NumericExpression CostExpression { get; }
 
     public ActionSchema(
         string name,
@@ -21,7 +24,7 @@ public sealed class ActionSchema
         IReadOnlyList<Literal<Atom<Static>>> staticPreconditions,
         IReadOnlyList<Literal<Atom<Derived>>> derivedPreconditions,
         IReadOnlyList<ConditionalEffect> effects,
-        ActionCostExpression costExpression)
+        NumericExpression costExpression)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(costExpression);

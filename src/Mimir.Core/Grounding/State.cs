@@ -5,6 +5,34 @@ using System.Runtime.CompilerServices;
 
 public class State : IEquatable<State>
 {
+    public bool Value(Fact atom) => Expand().IsTrue(atom);
+    public double Value(NumericExpression expression) => NumericEvaluation.Evaluate(this, expression);
+    public bool Holds(Fact atom) => Value(atom);
+    public bool Holds(Literal<Fact> literal) => Value(literal.Value) == literal.IsPositive;
+    public bool Holds(GroundConjunctiveCondition condition)
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        if (!ReferenceEquals(condition.Problem, Context.Problem))
+            throw new ArgumentException("Condition belongs to a different problem.");
+        return condition.Literals.All(Holds) && condition.Comparisons.All(Holds);
+    }
+
+    public bool Holds(NumericComparison comparison)
+    {
+        ArgumentNullException.ThrowIfNull(comparison);
+        double left = Value(comparison.Left);
+        double right = Value(comparison.Right);
+        return comparison.Operator switch
+        {
+            ComparisonOperator.Equal => left == right,
+            ComparisonOperator.LessThan => left < right,
+            ComparisonOperator.LessThanOrEqual => left <= right,
+            ComparisonOperator.GreaterThan => left > right,
+            ComparisonOperator.GreaterThanOrEqual => left >= right,
+            _ => throw new ArgumentException("Unknown comparison operator.")
+        };
+    }
+
     private readonly ulong[] _bitboard;
     private readonly int _hashCode;
 

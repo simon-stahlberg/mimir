@@ -309,9 +309,9 @@ public class BuilderParityTests
                     .AddParameter("?item", "item")
                     .AddPrecondition("ready", "?item")
                     .AddEffect("done", "?item")
-                    .WithCost(ActionCost.Add(
-                        ActionCost.Function("price", "?item"),
-                        ActionCost.Constant(0.5d)))
+                    .WithCost(Numeric.Add(
+                        Numeric.Function("price", "?item"),
+                        Numeric.Constant(0.5d)))
                     .Close()
                 .Add("wait")
                     .WithCost(3d)
@@ -449,7 +449,7 @@ public class BuilderParityTests
             .Concat(effect.StaticConditions.Select(FormatLiteral))
             .Concat(effect.DerivedConditions.Select(FormatLiteral));
         return $"forall({FormatVariables(effect.QuantifiedVariables)})" +
-               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.Effect)}";
+               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.EffectLiteral)}";
     }
 
     private static string FormatExpression(IGroundedExpression expression)
@@ -469,13 +469,13 @@ public class BuilderParityTests
             _ => throw new InvalidOperationException($"Unsupported expression '{expression.GetType().Name}'."),
         };
 
-    private static string FormatCost(ActionCostExpression expression)
+    private static string FormatCost(NumericExpression expression)
         => expression switch
         {
-            ConstantActionCostExpression constant => constant.Value.ToString("R"),
-            NumericFunctionActionCostExpression function =>
+            NumericConstant constant => constant.Value.ToString("R"),
+            FunctionCall function =>
                 $"{function.Function.Name}({FormatTerms(function.Arguments)})",
-            BinaryActionCostExpression binary =>
+            NumericBinaryExpression binary =>
                 $"{binary.Operator}({FormatCost(binary.Left)},{FormatCost(binary.Right)})",
             _ => throw new InvalidOperationException($"Unsupported cost '{expression.GetType().Name}'."),
         };

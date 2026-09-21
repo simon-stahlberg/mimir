@@ -17,7 +17,7 @@ public class ActionGroundingPlanTests
             .Functions().Add("weight", ("?x", "item")).Close()
             .Actions()
                 .Add("use").AddParameter("?x", "item").AddPrecondition("ready", "?x")
-                    .AddEffect("done", "?x").WithCost(ActionCost.Function("weight", "?x")).Close()
+                    .AddEffect("done", "?x").WithCost(Numeric.Function("weight", "?x")).Close()
                 .Close().Build();
         Problem first = CreateSharedProblem(domain, "first", 2);
         Problem second = CreateSharedProblem(domain, "second", 7);
@@ -41,7 +41,7 @@ public class ActionGroundingPlanTests
             .Predicates().Add("bad-effect").Add("good-effect").Close()
             .Functions().Add("missing").Close();
         ActionListBuilder actions = builder.Actions();
-        actions.Add("bad").AddEffect("bad-effect").WithCost(ActionCost.Function("missing")).Close();
+        actions.Add("bad").AddEffect("bad-effect").WithCost(Numeric.Function("missing")).Close();
         actions.Add("good").AddEffect("good-effect").Close();
         Domain domain = actions.Close().Build();
         Problem problem = new ProblemBuilder(domain, "failed-cost-cleanup-problem").Build();

@@ -170,8 +170,8 @@ internal sealed class ActionGroundingPlan
         return new CompiledGroundingEffect(
             suppressed,
             quantifiedVariables,
-            CompileAtom(effect.Effect.Value, effectSlots, ref maximumArgumentCount),
-            effect.Effect.Polarity,
+            CompileAtom(effect.EffectLiteral.Value, effectSlots, ref maximumArgumentCount),
+            effect.EffectLiteral.Polarity,
             CompileLiterals(
                 effect.FluentConditions,
                 effectSlots,
@@ -330,14 +330,14 @@ internal sealed class CompiledGroundingEffect
 
 internal sealed class CompiledActionCost
 {
-    private readonly ActionCostExpression _source;
+    private readonly NumericExpression _source;
     private readonly CompiledActionCost? _left;
     private readonly CompiledActionCost? _right;
     private readonly NumericFunction? _function;
     private readonly CompiledGroundingTerm[]? _arguments;
 
     private CompiledActionCost(
-        ActionCostExpression source,
+        NumericExpression source,
         CompiledActionCost? left = null,
         CompiledActionCost? right = null,
         NumericFunction? function = null,
@@ -351,20 +351,20 @@ internal sealed class CompiledActionCost
     }
 
     public static CompiledActionCost Compile(
-        ActionCostExpression expression,
+        NumericExpression expression,
         IReadOnlyDictionary<Variable, int> slots,
         ref int maximumArgumentCount)
     {
         switch (expression)
         {
-            case ConstantActionCostExpression:
+            case NumericConstant:
                 return new CompiledActionCost(expression);
-            case BinaryActionCostExpression binary:
+            case NumericBinaryExpression binary:
                 return new CompiledActionCost(
                     expression,
                     Compile(binary.Left, slots, ref maximumArgumentCount),
                     Compile(binary.Right, slots, ref maximumArgumentCount));
-            case NumericFunctionActionCostExpression function:
+            case FunctionCall function:
             {
                 maximumArgumentCount = Math.Max(
                     maximumArgumentCount,
@@ -389,19 +389,19 @@ internal sealed class CompiledActionCost
         Constant?[] bindings,
         ActionGroundingWorkspace workspace)
     {
-        if (_source is ConstantActionCostExpression constant)
+        if (_source is NumericConstant constant)
             return constant.Value;
 
-        if (_source is BinaryActionCostExpression binary)
+        if (_source is NumericBinaryExpression binary)
         {
             double left = _left!.Evaluate(problem, bindings, workspace);
             double right = _right!.Evaluate(problem, bindings, workspace);
             return binary.Operator switch
             {
-                ActionCostBinaryOperator.Add => left + right,
-                ActionCostBinaryOperator.Subtract => left - right,
-                ActionCostBinaryOperator.Multiply => left * right,
-                ActionCostBinaryOperator.Divide => right == 0d
+                NumericOperator.Add => left + right,
+                NumericOperator.Subtract => left - right,
+                NumericOperator.Multiply => left * right,
+                NumericOperator.Divide => right == 0d
                     ? throw new InvalidOperationException(
                         "Action cost division by zero is not supported.")
                     : left / right,

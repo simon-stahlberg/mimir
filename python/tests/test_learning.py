@@ -178,7 +178,7 @@ def test_standard_encoders_accumulate_until_to_relations(
     action = state.applicable_actions()[0]
     context = pymimir.EncodingContext()
     context.begin_instance(rich_problem)
-    flag = rich_problem.ground_literal(rich_problem.fact("flag"))
+    flag = rich_problem.ground_literal(rich_problem.atom("flag"))
     duplicate_flag_goal = rich_problem.ground_condition(flag, flag)
 
     assert pymimir.encode_state(context, state, suffix="_state") is None
@@ -540,7 +540,7 @@ def test_goal_preserves_python_literal_duplicates(
     rich_problem: pymimir.Problem,
 ) -> None:
     state = rich_problem.initial_state
-    literal = rich_problem.ground_literal(rich_problem.fact("ready", "a"))
+    literal = rich_problem.ground_literal(rich_problem.atom("ready", "a"))
     duplicate_goal = rich_problem.ground_condition(literal, literal)
     assert len(duplicate_goal.literals) == 2
 
@@ -601,7 +601,7 @@ def test_expressive_encoders_share_ordered_pair_ids() -> None:
     constant = problem.object("c")
     declared = problem.object("a")
     false_goal = problem.ground_condition(
-        problem.ground_literal(problem.fact("edge", "a", "c"))
+        problem.ground_literal(problem.atom("edge", "a", "c"))
     )
     context = pymimir.EncodingContext()
     context.begin_instance(problem)
@@ -842,7 +842,7 @@ def test_context_rejects_invalid_lifecycle_ownership_and_literals(
     rich_context.begin_instance(rich_problem)
     negative = rich_problem.ground_condition(
         rich_problem.ground_literal(
-            rich_problem.fact("ready", "a"),
+            rich_problem.atom("ready", "a"),
             positive=False,
         )
     )

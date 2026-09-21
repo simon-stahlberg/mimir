@@ -67,7 +67,7 @@ public class RpgGrounder : IGrounder
 
             foreach (GroundConditionalEffect conditionalEffect in action.ConditionalEffects)
             {
-                if (conditionalEffect.Effect.Polarity != Polarity.Positive)
+                if (conditionalEffect.EffectLiteral.Polarity != Polarity.Positive)
                     continue;
 
                 if (!BitboardOps.StaticPreconditionHolds(
@@ -83,7 +83,7 @@ public class RpgGrounder : IGrounder
                 {
                     AddFact(
                         _relaxedState,
-                        conditionalEffect.Effect.Value,
+                        conditionalEffect.EffectLiteral.Value,
                         _additionalFactSet,
                         _additionalFacts,
                         _addedPredicates);
@@ -215,7 +215,7 @@ public class RpgGrounder : IGrounder
                 // relaxed state, so they cannot soundly rule out the effect's reachability.
                 AddFact(
                     relaxedState,
-                    conditionalEffect.Effect.Value,
+                    conditionalEffect.EffectLiteral.Value,
                     additionalFactSet,
                     additionalFacts,
                     addedPredicates);

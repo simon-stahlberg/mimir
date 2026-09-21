@@ -71,18 +71,18 @@ public class ValueEqualityTests
         Variable second = new("?second");
         var function = new NumericFunction("cost", [first, second]);
         var foreignFunction = new NumericFunction("cost", [first, second]);
-        NumericFunctionActionCostExpression expression = new(function, new ITerm[] { first, second });
-        NumericFunctionActionCostExpression equalExpression = new(
+        FunctionCall expression = new(function, new ITerm[] { first, second });
+        FunctionCall equalExpression = new(
             function,
             new List<ITerm> { first, second });
 
         AssertEqualAndHashCompatible(expression, equalExpression);
         Assert.NotEqual(
             expression,
-            new NumericFunctionActionCostExpression(function, new ITerm[] { second, first }));
+            new FunctionCall(function, new ITerm[] { second, first }));
         Assert.NotEqual(
             expression,
-            new NumericFunctionActionCostExpression(foreignFunction, new ITerm[] { first, second }));
+            new FunctionCall(foreignFunction, new ITerm[] { first, second }));
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class ValueEqualityTests
         Assert.True(first.Equals(second));
         Assert.NotEqual(new GroundedAtom(predicate, [first]), new GroundedAtom(predicate, [second]));
         Assert.NotEqual(
-            new NumericFunctionActionCostExpression(function, [first]),
-            new NumericFunctionActionCostExpression(function, [second]));
+            new FunctionCall(function, [first]),
+            new FunctionCall(function, [second]));
     }
 
     private static void AssertEqualAndHashCompatible<T>(T left, T right)

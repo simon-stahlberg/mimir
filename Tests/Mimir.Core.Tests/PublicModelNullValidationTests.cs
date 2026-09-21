@@ -164,25 +164,25 @@ public class PublicModelNullValidationTests
     [Fact]
     public void ActionCostRecords_RejectNullMembersOnConstructionAndReplacement()
     {
-        var constant = new ConstantActionCostExpression(1d);
-        var binary = new BinaryActionCostExpression(ActionCostBinaryOperator.Add, constant, constant);
+        var constant = new NumericConstant(1d);
+        var binary = new NumericBinaryExpression(NumericOperator.Add, constant, constant);
         var function = new NumericFunction("cost", Array.Empty<Variable>());
         var argument = new Constant("value", "object");
-        var functionCost = new NumericFunctionActionCostExpression(function, [argument]);
+        var functionCost = new FunctionCall(function, [argument]);
 
         AssertParam<ArgumentNullException>("Left", () =>
-            new BinaryActionCostExpression(ActionCostBinaryOperator.Add, null!, constant));
+            new NumericBinaryExpression(NumericOperator.Add, null!, constant));
         AssertParam<ArgumentNullException>("Right", () =>
-            new BinaryActionCostExpression(ActionCostBinaryOperator.Add, constant, null!));
+            new NumericBinaryExpression(NumericOperator.Add, constant, null!));
         AssertParam<ArgumentNullException>("Left", () => _ = binary with { Left = null! });
         AssertParam<ArgumentNullException>("Right", () => _ = binary with { Right = null! });
 
         AssertParam<ArgumentNullException>("Function", () =>
-            new NumericFunctionActionCostExpression(null!, [argument]));
+            new FunctionCall(null!, [argument]));
         AssertParam<ArgumentNullException>("Arguments", () =>
-            new NumericFunctionActionCostExpression(function, null!));
+            new FunctionCall(function, null!));
         AssertParam<ArgumentException>("Arguments", () =>
-            new NumericFunctionActionCostExpression(function, new ITerm[] { null! }));
+            new FunctionCall(function, new ITerm[] { null! }));
         AssertParam<ArgumentNullException>("Function", () =>
             _ = functionCost with { Function = null! });
         AssertParam<ArgumentNullException>("Arguments", () =>
@@ -338,7 +338,7 @@ public class PublicModelNullValidationTests
             [staticLiteral],
             [derivedLiteral],
             [effect],
-            new ConstantActionCostExpression(1d));
+            new NumericConstant(1d));
     }
 
     private static Domain CreateEmptyDomain(
@@ -369,5 +369,5 @@ public class PublicModelNullValidationTests
         IReadOnlyList<Literal<Atom<Static>>> StaticLiterals,
         IReadOnlyList<Literal<Atom<Derived>>> DerivedLiterals,
         IReadOnlyList<ConditionalEffect> Effects,
-        ActionCostExpression Cost);
+        NumericExpression Cost);
 }

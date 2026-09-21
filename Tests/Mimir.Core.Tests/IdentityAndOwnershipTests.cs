@@ -255,7 +255,7 @@ public class IdentityAndOwnershipTests
                 .AddParameter("?x", "thing")
                 .AddPrecondition("present", "?x")
                 .AddEffect("present", "?x")
-                .WithCost(ActionCost.Function("weight", "?x"))
+                .WithCost(Numeric.Function("weight", "?x"))
                 .Close()
             .Close()
             .Build();

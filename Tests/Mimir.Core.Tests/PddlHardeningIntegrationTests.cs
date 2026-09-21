@@ -91,14 +91,13 @@ public class PddlHardeningIntegrationTests
   (:functions (left-value) (right-value)))
 """);
 
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(() => Problem.FromText(domain, """
+        Assert.Throws<NotImplementedException>(() => Problem.FromText(domain, """
 (define (problem numeric-equality-problem)
   (:domain numeric-equality)
   (:init)
   (:goal (= left-value right-value)))
 """));
 
-        Assert.Equal(PddlLoadErrorCode.UnsupportedFeature, exception.ErrorCode);
     }
 
     [Fact]

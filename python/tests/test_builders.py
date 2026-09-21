@@ -31,9 +31,9 @@ def test_builder_exports_are_public_and_complete():
         pymimir.InitialStateBuilder,
         pymimir.GoalBuilder,
         pymimir.LogicalExpressionSpec,
-        pymimir.ActionCostSpec,
+        pymimir.NumericExpressionSpec,
         pymimir.Logic,
-        pymimir.ActionCost,
+        pymimir.Numeric,
     )
     for value_type in internal_construction_only:
         with pytest.raises(TypeError):
@@ -103,16 +103,16 @@ def _build_complete_domain() -> pymimir.Domain:
         "done", "?other"
     ).close()
     finish.with_cost(
-        pymimir.ActionCost.add(
-            pymimir.ActionCost.function("price", "?item"),
-            pymimir.ActionCost.divide(
-                pymimir.ActionCost.multiply(
-                    pymimir.ActionCost.constant(1),
-                    pymimir.ActionCost.constant(1),
+        pymimir.Numeric.add(
+            pymimir.Numeric.function("price", "?item"),
+            pymimir.Numeric.divide(
+                pymimir.Numeric.multiply(
+                    pymimir.Numeric.constant(1),
+                    pymimir.Numeric.constant(1),
                 ),
-                pymimir.ActionCost.subtract(
-                    pymimir.ActionCost.constant(2),
-                    pymimir.ActionCost.constant(1),
+                pymimir.Numeric.subtract(
+                    pymimir.Numeric.constant(2),
+                    pymimir.Numeric.constant(1),
                 ),
             ),
         )
@@ -175,8 +175,8 @@ def test_complete_builder_surface_produces_working_problem(generator):
     finish = next(action for action in actions if action.schema.name == "finish")
     assert finish.cost == pytest.approx(3.5)
     successor = finish.apply(problem.initial_state)
-    assert successor.holds(problem.fact("done", "a"))
-    assert successor.holds(problem.fact("done", "b"))
+    assert successor.holds(problem.atom("done", "a"))
+    assert successor.holds(problem.atom("done", "b"))
     assert successor.holds(problem.goal)
 
 
@@ -298,7 +298,7 @@ def test_builder_rejects_invalid_bindings_requirements_and_numbers():
         action.close()
 
     with pytest.raises(ValueError):
-        pymimir.ActionCost.constant(float("inf"))
+        pymimir.Numeric.constant(float("inf"))
 
 
 def test_builder_owners_and_completed_values_have_independent_lifetimes():
@@ -337,7 +337,7 @@ def test_native_builders_retain_added_expression_values():
 
     actions = builder.actions()
     action = actions.add("act")
-    cost = pymimir.ActionCost.constant(2)
+    cost = pymimir.Numeric.constant(2)
     cost_reference = weakref.ref(cost)
     action.with_cost(cost)
     del cost
@@ -366,8 +366,8 @@ def test_builder_python_type_guards():
     with pytest.raises(TypeError):
         pymimir.Logic.and_(pymimir.Logic.true(), "not an expression")
     with pytest.raises(TypeError):
-        pymimir.ActionCost.add(
-            pymimir.ActionCost.constant(1), "not a cost"
+        pymimir.Numeric.add(
+            pymimir.Numeric.constant(1), "not a cost"
         )
 
     builder = pymimir.DomainBuilder("guards")

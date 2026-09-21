@@ -9,7 +9,7 @@ using Mimir.Pddl.Parsing;
 
 namespace Mimir.Core.Schemas;
 
-public class Problem
+public partial class Problem
 {
     private static readonly object DynamicVariableRegistration = new();
 
@@ -374,7 +374,7 @@ public class Problem
         ValidateConditionAtom(literal.Value, parameters, parameterName);
     }
 
-    private void ValidateNumericFunctionArguments(
+    internal void ValidateNumericFunctionArguments(
         NumericFunction function,
         IReadOnlyList<Constant> arguments)
     {

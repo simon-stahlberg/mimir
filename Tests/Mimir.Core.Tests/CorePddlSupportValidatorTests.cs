@@ -29,7 +29,7 @@ public sealed class CorePddlSupportValidatorTests
     :effect ({{operation}} (fuel) 1)))
 """);
 
-        NotSupportedException exception = Assert.Throws<NotSupportedException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => CorePddlSupportValidator.ValidateDomain(domain));
 
         Assert.Contains("Numeric mutation", exception.Message);
@@ -65,7 +65,7 @@ public sealed class CorePddlSupportValidatorTests
     :effect {{effect}}))
 """);
 
-        NotSupportedException exception = Assert.Throws<NotSupportedException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => CorePddlSupportValidator.ValidateDomain(domain));
 
         Assert.Contains("Numeric mutation", exception.Message);
@@ -192,7 +192,7 @@ public sealed class CorePddlSupportValidatorTests
         CorePddlSupportValidator.ValidateDomain(domainDefinition);
         Domain domain = new(domainDefinition);
 
-        ConstantActionCostExpression cost = Assert.IsType<ConstantActionCostExpression>(
+        NumericConstant cost = Assert.IsType<NumericConstant>(
             Assert.Single(domain.Actions).CostExpression);
         Assert.Equal(3d, cost.Value);
     }
@@ -229,7 +229,7 @@ public sealed class CorePddlSupportValidatorTests
   (:action act :parameters () {{actionBody}}))
 """);
 
-        NotSupportedException exception = Assert.Throws<NotSupportedException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => CorePddlSupportValidator.ValidateDomain(domain));
 
         Assert.Contains("Numeric comparisons", exception.Message);
@@ -245,7 +245,7 @@ public sealed class CorePddlSupportValidatorTests
   (:derived (has-fuel) (> (fuel) 0)))
 """);
 
-        NotSupportedException exception = Assert.Throws<NotSupportedException>(
+        NotImplementedException exception = Assert.Throws<NotImplementedException>(
             () => CorePddlSupportValidator.ValidateDomain(domain));
 
         Assert.Contains("Numeric comparisons", exception.Message);
@@ -274,8 +274,12 @@ public sealed class CorePddlSupportValidatorTests
   (:goal {{goal}}))
 """);
 
-        Assert.Throws<NotSupportedException>(
-            () => CorePddlSupportValidator.ValidateProblem(domain, problem));
+        if (goal == "(> (fuel) 0)")
+        {
+            Assert.Throws<NotImplementedException>(() => CorePddlSupportValidator.ValidateProblem(domain, problem));
+            return;
+        }
+        Assert.Throws<NotSupportedException>(() => CorePddlSupportValidator.ValidateProblem(domain, problem));
     }
 
     [Theory]

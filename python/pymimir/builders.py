@@ -10,6 +10,7 @@ from typing import TypeVar, cast
 from .advanced import free_handle, lib
 from .advanced._native import _Finalizer, _NativeOwner, _create_finalizer
 from .model import ActionGenerator, Domain, Problem, _validate_generator
+from .numeric import ComparisonOperator
 
 
 _BuilderHandleT = TypeVar("_BuilderHandleT", bound="_BuilderHandle")
@@ -148,9 +149,62 @@ class LogicalExpressionSpec(_BuilderHandle):
     __slots__ = ()
 
 
-class ActionCostSpec(_BuilderHandle):
-    """An immutable action-cost expression created through :class:`ActionCost`."""
+class NumericExpressionSpec(_BuilderHandle):
+    __slots__ = ()
 
+    @staticmethod
+    def _coerce(value: NumericExpressionSpec | float) -> NumericExpressionSpec:
+        return value if isinstance(value, NumericExpressionSpec) else Numeric.constant(value)
+
+    def __add__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
+        return Numeric.add(self, self._coerce(other))
+
+    def __sub__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
+        return Numeric.subtract(self, self._coerce(other))
+
+    def __mul__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
+        return Numeric.multiply(self, self._coerce(other))
+
+    def __truediv__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
+        return Numeric.divide(self, self._coerce(other))
+
+    def __radd__(self, other: float) -> NumericExpressionSpec:
+        return self._coerce(other) + self
+
+    def __rsub__(self, other: float) -> NumericExpressionSpec:
+        return self._coerce(other) - self
+
+    def __rmul__(self, other: float) -> NumericExpressionSpec:
+        return self._coerce(other) * self
+
+    def __rtruediv__(self, other: float) -> NumericExpressionSpec:
+        return self._coerce(other) / self
+
+    def __neg__(self) -> NumericExpressionSpec:
+        return Numeric.constant(0) - self
+
+    def _compare(self, operation: ComparisonOperator, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        right = self._coerce(other)
+        handle = int(lib.mimir_numeric_spec_comparison(self._handle, operation, right._handle))
+        return LogicalExpressionSpec._from_handle(_require_handle(handle, "Numeric comparison"))
+
+    def equal_to(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        return self._compare(ComparisonOperator.EQUAL, other)
+
+    def less_than(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        return self._compare(ComparisonOperator.LESS_THAN, other)
+
+    def less_than_or_equal(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        return self._compare(ComparisonOperator.LESS_THAN_OR_EQUAL, other)
+
+    def greater_than(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        return self._compare(ComparisonOperator.GREATER_THAN, other)
+
+    def greater_than_or_equal(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
+        return self._compare(ComparisonOperator.GREATER_THAN_OR_EQUAL, other)
+
+
+class NumericFunctionSpec(NumericExpressionSpec):
     __slots__ = ()
 
 
@@ -298,21 +352,21 @@ class Logic:
         )
 
 
-class ActionCost:
-    """Factories for action-cost expressions."""
+class Numeric:
+    """Factories for numeric expressions."""
 
-    def __new__(cls) -> "ActionCost":
-        raise TypeError("ActionCost is a factory namespace and cannot be instantiated")
+    def __new__(cls) -> "Numeric":
+        raise TypeError("Numeric is a factory namespace and cannot be instantiated")
 
     @staticmethod
-    def constant(value: float) -> ActionCostSpec:
+    def constant(value: float) -> NumericExpressionSpec:
         handle = int(lib.mimir_action_cost_constant(_number(value, "value")))
-        return ActionCostSpec._from_handle(
-            _require_handle(handle, "ActionCost.constant")
+        return NumericExpressionSpec._from_handle(
+            _require_handle(handle, "Numeric.constant")
         )
 
     @staticmethod
-    def function(function_name: str, *arguments: str) -> ActionCostSpec:
+    def function(function_name: str, *arguments: str) -> NumericFunctionSpec:
         pointer, _array = _string_array(arguments, "argument")
         handle = int(
             lib.mimir_action_cost_function(
@@ -321,40 +375,40 @@ class ActionCost:
                 len(arguments),
             )
         )
-        return ActionCostSpec._from_handle(
-            _require_handle(handle, "ActionCost.function")
+        return NumericFunctionSpec._from_handle(
+            _require_handle(handle, "Numeric.function")
         )
 
     @staticmethod
-    def add(left: ActionCostSpec, right: ActionCostSpec) -> ActionCostSpec:
-        return ActionCost._binary("add", left, right)
+    def add(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
+        return Numeric._binary("add", left, right)
 
     @staticmethod
-    def subtract(left: ActionCostSpec, right: ActionCostSpec) -> ActionCostSpec:
-        return ActionCost._binary("subtract", left, right)
+    def subtract(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
+        return Numeric._binary("subtract", left, right)
 
     @staticmethod
-    def multiply(left: ActionCostSpec, right: ActionCostSpec) -> ActionCostSpec:
-        return ActionCost._binary("multiply", left, right)
+    def multiply(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
+        return Numeric._binary("multiply", left, right)
 
     @staticmethod
-    def divide(left: ActionCostSpec, right: ActionCostSpec) -> ActionCostSpec:
-        return ActionCost._binary("divide", left, right)
+    def divide(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
+        return Numeric._binary("divide", left, right)
 
     @staticmethod
     def _binary(
         operation: str,
-        left: ActionCostSpec,
-        right: ActionCostSpec,
-    ) -> ActionCostSpec:
-        if not isinstance(left, ActionCostSpec) or not isinstance(
-            right, ActionCostSpec
+        left: NumericExpressionSpec,
+        right: NumericExpressionSpec,
+    ) -> NumericExpressionSpec:
+        if not isinstance(left, NumericExpressionSpec) or not isinstance(
+            right, NumericExpressionSpec
         ):
-            raise TypeError("left and right must be ActionCostSpec values")
+            raise TypeError("left and right must be NumericExpressionSpec values")
         function = getattr(lib, f"mimir_action_cost_{operation}")
         handle = int(function(left._handle, right._handle))
-        return ActionCostSpec._from_handle(
-            _require_handle(handle, f"ActionCost.{operation}")
+        return NumericExpressionSpec._from_handle(
+            _require_handle(handle, f"Numeric.{operation}")
         )
 
 
@@ -563,10 +617,12 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
 
     def add_precondition(
         self,
-        predicate_name: str,
+        predicate_name: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "ActionSchemaBuilder":
+        if isinstance(predicate_name, LogicalExpressionSpec):
+            raise NotImplementedError("Numeric planning conditions are not implemented")
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_action_schema_builder_add_precondition(
             self._handle,
@@ -608,9 +664,9 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
 
     def with_cost(
         self,
-        cost: float | ActionCostSpec,
+        cost: float | NumericExpressionSpec,
     ) -> "ActionSchemaBuilder":
-        if isinstance(cost, ActionCostSpec):
+        if isinstance(cost, NumericExpressionSpec):
             result = lib.mimir_action_schema_builder_with_cost(
                 self._handle, cost._handle
             )
@@ -620,6 +676,24 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
             )
         _require_success(result, "ActionSchemaBuilder.with_cost")
         return self
+
+    def assign(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
+
+    def increase(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
+
+    def decrease(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
 
     def close(self) -> ActionListBuilder:
         result = lib.mimir_action_schema_builder_close(self._handle)
@@ -645,10 +719,12 @@ class ConditionalEffectBuilder(_ChildBuilderHandle):
 
     def add_condition(
         self,
-        predicate_name: str,
+        predicate_name: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "ConditionalEffectBuilder":
+        if isinstance(predicate_name, LogicalExpressionSpec):
+            raise NotImplementedError("Numeric planning conditions are not implemented")
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_conditional_effect_builder_add_condition(
             self._handle,
@@ -676,6 +752,24 @@ class ConditionalEffectBuilder(_ChildBuilderHandle):
         )
         _require_success(result, "ConditionalEffectBuilder.add_effect")
         return self
+
+    def assign(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
+
+    def increase(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
+
+    def decrease(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("numeric update targets must be function references")
+        NumericExpressionSpec._coerce(expression)
+        raise NotImplementedError("Numeric state updates are not implemented")
 
     def close(self) -> ActionSchemaBuilder:
         result = lib.mimir_conditional_effect_builder_close(self._handle)
@@ -737,7 +831,7 @@ class ProblemBuilder(_BuilderHandle):
     def objects(self) -> "ProblemObjectListBuilder":
         handle = int(lib.mimir_problem_builder_objects(self._handle))
         return ProblemObjectListBuilder._from_parent(
-            _require_handle(handle, "ProblemBuilder.objects"), self
+            _require_handle(handle, "ProblemBuilder.arguments"), self
         )
 
     def initial_state(self) -> "InitialStateBuilder":
@@ -799,6 +893,13 @@ class InitialStateBuilder(_ChildBuilderHandle):
         _require_success(result, "InitialStateBuilder.add_fact")
         return self
 
+    def set_value(self, target: NumericFunctionSpec, value: float) -> InitialStateBuilder:
+        if not isinstance(target, NumericFunctionSpec):
+            raise TypeError("initialization targets must be function references")
+        result = lib.mimir_initial_state_set_value(self._handle, target._handle, _number(value, "value"))
+        _require_success(result, "InitialStateBuilder.set_value")
+        return self
+
     def add_numeric_initialization(
         self,
         function_name: str,
@@ -827,10 +928,12 @@ class GoalBuilder(_ChildBuilderHandle):
 
     def add(
         self,
-        predicate_name: str,
+        predicate_name: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "GoalBuilder":
+        if isinstance(predicate_name, LogicalExpressionSpec):
+            raise NotImplementedError("Numeric planning conditions are not implemented")
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_goal_builder_add(
             self._handle,
@@ -865,6 +968,7 @@ __all__ = [
     "GoalBuilder",
     "Logic",
     "LogicalExpressionSpec",
-    "ActionCost",
-    "ActionCostSpec",
+    "Numeric",
+    "NumericExpressionSpec",
+    "NumericFunctionSpec",
 ]

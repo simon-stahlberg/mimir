@@ -139,7 +139,7 @@ public sealed class ProgrammaticDomainValidationTests
         var foreignFunction = new NumericFunction("foreign-cost", Array.Empty<Variable>());
         ActionSchema action = CreateAction(
             "costly",
-            costExpression: new NumericFunctionActionCostExpression(
+            costExpression: new FunctionCall(
                 foreignFunction,
                 Array.Empty<ITerm>()));
         ArgumentException exception = Assert.Throws<ArgumentException>(
@@ -154,7 +154,7 @@ public sealed class ProgrammaticDomainValidationTests
         var totalCost = new NumericFunction("total-cost", Array.Empty<Variable>());
         ActionSchema action = CreateAction(
             "costly",
-            costExpression: new NumericFunctionActionCostExpression(
+            costExpression: new FunctionCall(
                 totalCost,
                 Array.Empty<ITerm>()));
 
@@ -185,7 +185,7 @@ public sealed class ProgrammaticDomainValidationTests
         var referencedFunction = new NumericFunction("FARE", Array.Empty<Variable>());
         ActionSchema action = CreateAction(
             "costly",
-            costExpression: new NumericFunctionActionCostExpression(
+            costExpression: new FunctionCall(
                 referencedFunction,
                 Array.Empty<ITerm>()));
         ArgumentException exception = Assert.Throws<ArgumentException>(
@@ -206,7 +206,7 @@ public sealed class ProgrammaticDomainValidationTests
         var function = new NumericFunction("fare", [functionParameter]);
         ActionSchema action = CreateAction(
             "costly",
-            costExpression: new NumericFunctionActionCostExpression(
+            costExpression: new FunctionCall(
                 function,
                 [referencedParameter]),
             parameters: [actionParameter]);
@@ -309,7 +309,7 @@ public sealed class ProgrammaticDomainValidationTests
         ActionSchema action = CreateAction(
             "act",
             fluentPreconditions: [precondition],
-            costExpression: new NumericFunctionActionCostExpression(
+            costExpression: new FunctionCall(
                 declaredFunction,
                 [declaredConstant]));
 
@@ -331,7 +331,7 @@ public sealed class ProgrammaticDomainValidationTests
         string name,
         IReadOnlyList<Literal<Atom<Fluent>>>? fluentPreconditions = null,
         IReadOnlyList<CoreConditionalEffect>? effects = null,
-        ActionCostExpression? costExpression = null,
+        NumericExpression? costExpression = null,
         IReadOnlyList<Variable>? parameters = null)
     {
         return new ActionSchema(
@@ -341,7 +341,7 @@ public sealed class ProgrammaticDomainValidationTests
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
             effects ?? Array.Empty<CoreConditionalEffect>(),
-            costExpression ?? new ConstantActionCostExpression(1d));
+            costExpression ?? new NumericConstant(1d));
     }
 
     private static Domain CreateDomain(

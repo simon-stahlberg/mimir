@@ -132,7 +132,7 @@ public sealed class DerivedDomainConstructionTests
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
             Array.Empty<ConditionalEffect>(),
-            new ConstantActionCostExpression(1d));
+            new NumericConstant(1d));
 
         ArgumentException exception = Assert.Throws<ArgumentException>(() => new Domain(
             "duplicate-actions",

@@ -14,7 +14,7 @@ internal sealed record ProgrammaticDomainCompilation(
     DomainDefinition Definition,
     ProgrammaticDomainInputs Inputs);
 
-internal sealed record ProgrammaticActionInput(string Name, ActionCostSpec Cost);
+internal sealed record ProgrammaticActionInput(string Name, NumericExpressionSpec Cost);
 
 internal sealed class ProgrammaticDomainInputs
 {
@@ -97,6 +97,7 @@ internal static class ProgrammaticDomainCompiler
     internal static ILogicalExpression BuildLogicalExpression(LogicalExpressionNode expression)
         => expression switch
         {
+            ComparisonLogicalExpressionNode => throw new NotImplementedException("Numeric planning conditions are not implemented."),
             TrueLogicalExpressionNode => new EmptyLogic(),
             FalseLogicalExpressionNode => new Or(ImmutableArray<ILogicalExpression>.Empty),
             AtomLogicalExpressionNode atom => new PredicateCall(
@@ -130,16 +131,16 @@ internal static class ProgrammaticDomainCompiler
             FunctionActionCostNode function => new FluentCall(
                 function.FunctionName,
                 BuildTerms(function.Arguments)),
-            BinaryActionCostNode { Operator: ActionCostBinaryOperator.Add } binary => new PddlAdd(
+            BinaryActionCostNode { Operator: NumericOperator.Add } binary => new PddlAdd(
                 BuildActionCost(binary.Left),
                 BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: ActionCostBinaryOperator.Subtract } binary => new Subtract(
+            BinaryActionCostNode { Operator: NumericOperator.Subtract } binary => new Subtract(
                 BuildActionCost(binary.Left),
                 BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: ActionCostBinaryOperator.Multiply } binary => new Multiply(
+            BinaryActionCostNode { Operator: NumericOperator.Multiply } binary => new Multiply(
                 BuildActionCost(binary.Left),
                 BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: ActionCostBinaryOperator.Divide } binary => new Divide(
+            BinaryActionCostNode { Operator: NumericOperator.Divide } binary => new Divide(
                 BuildActionCost(binary.Left),
                 BuildActionCost(binary.Right)),
             _ => throw new InvalidOperationException(

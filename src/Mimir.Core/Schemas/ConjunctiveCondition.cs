@@ -15,6 +15,8 @@ namespace Mimir.Core.Schemas;
 /// </summary>
 public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
 {
+    public IReadOnlyList<Literal> Literals => Array.AsReadOnly(StaticLiterals.Cast<Literal>().Concat(FluentLiterals).Concat(DerivedLiterals).ToArray());
+    public IReadOnlyList<NumericComparison> Comparisons => Array.Empty<NumericComparison>();
     public Problem Problem { get; }
     public IReadOnlyList<Variable> Parameters { get; }
     public IReadOnlyList<Literal<Atom<Static>>> StaticLiterals { get; }

@@ -75,7 +75,7 @@ public sealed class LiftedFfHeuristic : IHeuristic
     }
 
     private sealed class BinaryCompiledActionCostExpression(
-        ActionCostBinaryOperator op,
+        NumericOperator op,
         CompiledActionCostExpression left,
         CompiledActionCostExpression right) : CompiledActionCostExpression
     {
@@ -86,10 +86,10 @@ public sealed class LiftedFfHeuristic : IHeuristic
 
             return op switch
             {
-                ActionCostBinaryOperator.Add => leftValue + rightValue,
-                ActionCostBinaryOperator.Subtract => leftValue - rightValue,
-                ActionCostBinaryOperator.Multiply => leftValue * rightValue,
-                ActionCostBinaryOperator.Divide => rightValue == 0d
+                NumericOperator.Add => leftValue + rightValue,
+                NumericOperator.Subtract => leftValue - rightValue,
+                NumericOperator.Multiply => leftValue * rightValue,
+                NumericOperator.Divide => rightValue == 0d
                     ? throw new InvalidOperationException("Action cost division by zero is not supported.")
                     : leftValue / rightValue,
                 _ => throw new InvalidOperationException($"Unsupported action cost operator '{op}'.")
@@ -597,8 +597,8 @@ public sealed class LiftedFfHeuristic : IHeuristic
                     .Select(literal => new CompiledFluentAtom(literal.Value.Predicate, literal.Value.Arguments, parameterSlots))
                     .ToArray(),
                 PositiveEffects = schema.Effects
-                    .Where(effect => effect.Effect.Polarity == Polarity.Positive)
-                    .Select(effect => new CompiledFluentAtom(effect.Effect.Value.Predicate, effect.Effect.Value.Arguments, parameterSlots))
+                    .Where(effect => effect.EffectLiteral.Polarity == Polarity.Positive)
+                    .Select(effect => new CompiledFluentAtom(effect.EffectLiteral.Value.Predicate, effect.EffectLiteral.Value.Arguments, parameterSlots))
                     .ToArray(),
                 CostExpression = CompileCostExpression(schema.CostExpression, parameterSlots)
             };
@@ -780,17 +780,17 @@ public sealed class LiftedFfHeuristic : IHeuristic
     }
 
     private static CompiledActionCostExpression CompileCostExpression(
-        ActionCostExpression expression,
+        NumericExpression expression,
         IReadOnlyDictionary<Variable, int> parameterSlots)
     {
         return expression switch
         {
-            ConstantActionCostExpression constant => new ConstantCompiledActionCostExpression(constant.Value),
-            BinaryActionCostExpression binary => new BinaryCompiledActionCostExpression(
+            NumericConstant constant => new ConstantCompiledActionCostExpression(constant.Value),
+            NumericBinaryExpression binary => new BinaryCompiledActionCostExpression(
                 binary.Operator,
                 CompileCostExpression(binary.Left, parameterSlots),
                 CompileCostExpression(binary.Right, parameterSlots)),
-            NumericFunctionActionCostExpression function => new NumericFunctionCompiledActionCostExpression(
+            FunctionCall function => new NumericFunctionCompiledActionCostExpression(
                 function.Function,
                 function.Arguments,
                 parameterSlots),

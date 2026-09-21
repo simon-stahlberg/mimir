@@ -94,7 +94,7 @@ public static partial class Exports
     {
         var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
         if (ce == null) return 0;
-        return ObjectRegistry.Store(ce.Effect);
+        return ObjectRegistry.Store(ce.EffectLiteral);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_quantified_count")]

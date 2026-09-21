@@ -71,7 +71,7 @@ public sealed class ActionSchemaBuilder
     private readonly List<BuilderLiteralSpec> _preconditions = new();
     private readonly List<BuilderLiteralSpec> _effects = new();
     private readonly List<BuilderConditionalEffectSpec> _conditionalEffects = new();
-    private ActionCostSpec _cost = ActionCost.Constant(1d);
+    private NumericExpressionSpec _cost = Numeric.Constant(1d);
     private ConditionalEffectBuilder? _activeConditionalEffect;
     private bool _hasExplicitCost;
     private bool _closed;
@@ -107,6 +107,24 @@ public sealed class ActionSchemaBuilder
         return this;
     }
 
+    public ActionSchemaBuilder AddPrecondition(LogicalExpressionSpec condition)
+    {
+        EnsureAvailable();
+        ArgumentNullException.ThrowIfNull(condition);
+        throw new NotImplementedException("Expression preconditions, including numeric comparisons, are not implemented.");
+    }
+
+    public ActionSchemaBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    public ActionSchemaBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    public ActionSchemaBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    private ActionSchemaBuilder NumericUpdate(NumericFunctionSpec target, NumericExpressionSpec expression)
+    {
+        EnsureAvailable();
+        ArgumentNullException.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(expression);
+        throw new NotImplementedException("Numeric state updates are not implemented.");
+    }
+
     public ActionSchemaBuilder AddEffect(string predicateName, params string[] arguments)
         => AddEffect(predicateName, Polarity.Positive, arguments);
 
@@ -129,9 +147,9 @@ public sealed class ActionSchemaBuilder
     }
 
     public ActionSchemaBuilder WithCost(double cost)
-        => WithCost(ActionCost.Constant(cost));
+        => WithCost(Numeric.Constant(cost));
 
-    public ActionSchemaBuilder WithCost(ActionCostSpec cost)
+    public ActionSchemaBuilder WithCost(NumericExpressionSpec cost)
     {
         EnsureAvailable();
         ArgumentNullException.ThrowIfNull(cost);
@@ -242,6 +260,23 @@ public sealed class ConditionalEffectBuilder
         EnsureOpen();
         _conditions.Add(CreateLiteral(predicateName, polarity, arguments));
         return this;
+    }
+
+    public ConditionalEffectBuilder AddCondition(LogicalExpressionSpec condition)
+    {
+        EnsureOpen();
+        ArgumentNullException.ThrowIfNull(condition);
+        throw new NotImplementedException("Numeric effect conditions are not implemented.");
+    }
+    public ConditionalEffectBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    public ConditionalEffectBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    public ConditionalEffectBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
+    private ConditionalEffectBuilder NumericUpdate(NumericFunctionSpec target, NumericExpressionSpec expression)
+    {
+        EnsureOpen();
+        ArgumentNullException.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(expression);
+        throw new NotImplementedException("Numeric state updates are not implemented.");
     }
 
     public ConditionalEffectBuilder AddEffect(string predicateName, params string[] arguments)

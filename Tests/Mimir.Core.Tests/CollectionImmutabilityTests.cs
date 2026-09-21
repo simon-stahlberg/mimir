@@ -39,7 +39,7 @@ public class CollectionImmutabilityTests
             [staticLiteral],
             [derivedLiteral],
             [effect],
-            new ConstantActionCostExpression(1d));
+            new NumericConstant(1d));
 
         AssertReadOnly(fluentPredicate.Parameters);
         AssertReadOnly(function.Parameters);
@@ -63,8 +63,8 @@ public class CollectionImmutabilityTests
         var first = new Constant("first", "object");
         var second = new Constant("second", "object");
         var replacementArguments = new List<ITerm> { first };
-        var original = new NumericFunctionActionCostExpression(function, [first]);
-        NumericFunctionActionCostExpression replacement = original with
+        var original = new FunctionCall(function, [first]);
+        FunctionCall replacement = original with
         {
             Arguments = replacementArguments
         };

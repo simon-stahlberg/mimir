@@ -28,9 +28,9 @@ def build_with_public_api() -> pymimir.Problem:
     conditional: pymimir.ConditionalEffectBuilder = action.add_conditional_effect()
     conditional.add_condition("eligible", "?item")
     conditional.add_effect("done", "?item").close()
-    cost: pymimir.ActionCostSpec = pymimir.ActionCost.add(
-        pymimir.ActionCost.function("price", "?item"),
-        pymimir.ActionCost.constant(0.5),
+    cost: pymimir.NumericExpressionSpec = pymimir.Numeric.add(
+        pymimir.Numeric.function("price", "?item"),
+        pymimir.Numeric.constant(0.5),
     )
     action.with_cost(cost).close().close()
 
@@ -67,10 +67,10 @@ def build_with_public_api() -> pymimir.Problem:
         pymimir.Logic.imply(pymimir.Logic.true(), pymimir.Logic.true()),
         pymimir.Logic.forall([], pymimir.Logic.true()),
     )
-    unused_costs: tuple[pymimir.ActionCostSpec, ...] = (
-        pymimir.ActionCost.subtract(cost, pymimir.ActionCost.constant(1)),
-        pymimir.ActionCost.multiply(cost, pymimir.ActionCost.constant(2)),
-        pymimir.ActionCost.divide(cost, pymimir.ActionCost.constant(2)),
+    unused_costs: tuple[pymimir.NumericExpressionSpec, ...] = (
+        pymimir.Numeric.subtract(cost, pymimir.Numeric.constant(1)),
+        pymimir.Numeric.multiply(cost, pymimir.Numeric.constant(2)),
+        pymimir.Numeric.divide(cost, pymimir.Numeric.constant(2)),
     )
     _ = unused_logic, unused_costs
     return problem_builder.build()
@@ -83,7 +83,7 @@ def use_public_api(
     state: pymimir.State = problem.initial_state
     predicate: pymimir.Predicate = problem.domain.predicates[0]
     variable: pymimir.Variable = problem.variable("?value")
-    atom: pymimir.Atom = problem.atom(predicate, variable)
+    atom: pymimir.Atom = problem.lifted_atom(predicate, variable)
     literal: pymimir.Literal = problem.literal(atom)
     condition: pymimir.ConjunctiveCondition = problem.condition(
         literal, variables=[variable]
@@ -98,7 +98,7 @@ def use_public_api(
             omit_predicates=(predicate,),
         )
     )
-    ground_atom: pymimir.GroundAtom = problem.fact(
+    ground_atom: pymimir.GroundAtom = problem.atom(
         predicate.name, *(obj.name for obj in problem.all_objects[:predicate.arity])
     )
     ground_literal: pymimir.GroundLiteral = problem.ground_literal(ground_atom)
@@ -298,3 +298,18 @@ def use_batched_heuristics(
         should_stop=lambda expanded: expanded > 10,
     )
     _ = beam_result, qbeam_result
+
+
+def inspect_numeric_values(problem: pymimir.Problem) -> None:
+    atom: pymimir.GroundAtom = problem.atom("ready", "a")
+    call: pymimir.GroundFunctionCall = problem.function_call("price", "a")
+    truth: bool = problem.initial_state.value(atom)
+    value: float = problem.initial_state.value(call * 2 + 1)
+    condition: pymimir.NumericComparison = call.greater_than_or_equal(1)
+    satisfied: bool = problem.initial_state.holds(condition)
+    schema: pymimir.Action = problem.domain.actions[0]
+    cost: pymimir.NumericExpression = schema.cost_expression
+    requirements: tuple[pymimir.NumericComparison, ...] = schema.precondition.comparisons
+    updates: tuple[pymimir.NumericUpdate, ...] = schema.effect.numeric_updates
+    assert isinstance(truth, bool) and isinstance(value, float) and isinstance(satisfied, bool)
+    assert cost is not None and requirements is not None and updates is not None

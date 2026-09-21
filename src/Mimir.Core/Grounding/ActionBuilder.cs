@@ -32,7 +32,7 @@ internal static class ActionBuilder
         var referencedVariables = new HashSet<Variable>(ReferenceEqualityComparer.Instance);
         foreach (ConditionalEffect effect in schema.Effects)
         {
-            AddReferencedVariables(effect.Effect.Value.Arguments, referencedVariables);
+            AddReferencedVariables(effect.EffectLiteral.Value.Arguments, referencedVariables);
             AddReferencedVariables(effect.FluentConditions, referencedVariables);
             AddReferencedVariables(effect.StaticConditions, referencedVariables);
             AddReferencedVariables(effect.DerivedConditions, referencedVariables);
@@ -248,7 +248,7 @@ internal static class ActionBuilder
 
         var referencedVariables = new HashSet<Variable>(
             ReferenceEqualityComparer.Instance);
-        AddReferencedVariables(effect.Effect.Value.Arguments, referencedVariables);
+        AddReferencedVariables(effect.EffectLiteral.Value.Arguments, referencedVariables);
         AddReferencedVariables(effect.FluentConditions, referencedVariables);
         AddReferencedVariables(effect.StaticConditions, referencedVariables);
         AddReferencedVariables(effect.DerivedConditions, referencedVariables);
@@ -439,18 +439,18 @@ internal static class ActionBuilder
     }
 
     private static void AddReferencedVariables(
-        ActionCostExpression expression,
+        NumericExpression expression,
         HashSet<Variable> referencedVariables)
     {
         switch (expression)
         {
-            case ConstantActionCostExpression:
+            case NumericConstant:
                 return;
-            case BinaryActionCostExpression binary:
+            case NumericBinaryExpression binary:
                 AddReferencedVariables(binary.Left, referencedVariables);
                 AddReferencedVariables(binary.Right, referencedVariables);
                 return;
-            case NumericFunctionActionCostExpression function:
+            case FunctionCall function:
                 AddReferencedVariables(
                     function.Arguments,
                     referencedVariables);

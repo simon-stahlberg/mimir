@@ -27,7 +27,7 @@ def test_detection_is_goal_relative_and_reuses_h2(problem):
     dead = lose.apply(initial)
     detector = mm.H2DeadEndDetector(problem)
     heuristic = mm.H2Heuristic(problem)
-    hindsight = problem.ground_condition(problem.fact("dead"))
+    hindsight = problem.ground_condition(problem.atom("dead"))
 
     assert detector.is_dead_end(dead, problem.goal)
     assert not detector.is_dead_end(dead, hindsight)
@@ -73,7 +73,7 @@ def test_q_model_scores_full_row_then_dead_end_is_masked(problem, search, maximi
             assert actions == state.applicable_actions()
             self.rows.append([action.schema.name for action in actions])
             assert self.rows[-1] == ["lose", "advance"]
-            assert successors[0][1].holds(problem.fact("dead"))
+            assert successors[0][1].holds(problem.atom("dead"))
             return [100 if maximize else -100, 0]
 
     model = Model()
@@ -92,13 +92,13 @@ def test_beam_scores_dead_end_before_masking(problem):
 
         def evaluate(self, state, goal=None):
             self.scored.append(state)
-            return 0 if state.holds(problem.fact("dead")) else 10
+            return 0 if state.holds(problem.atom("dead")) else 10
 
     model = Model()
     result = mm.beam(problem, model, beam_size=1, dead_end_detector=mm.H2DeadEndDetector(problem))
     assert result.is_solved
     assert len(model.scored) == 2
-    assert any(state.holds(problem.fact("dead")) for state in model.scored)
+    assert any(state.holds(problem.atom("dead")) for state in model.scored)
 
 
 def test_invalid_inputs_are_not_dead_end_labels(problem):

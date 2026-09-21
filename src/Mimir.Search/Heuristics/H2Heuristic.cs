@@ -244,27 +244,27 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
                 var rescuedFluents = new HashSet<int>(addedFluents);
                 foreach (GroundConditionalEffect effect in conditionalEffects)
                 {
-                    if (effect.Effect.IsPositive)
-                        rescuedFluents.Add(effect.Effect.Value.LocalIndex);
+                    if (effect.EffectLiteral.IsPositive)
+                        rescuedFluents.Add(effect.EffectLiteral.Value.LocalIndex);
                 }
 
                 AddOption(options, preconditions, addedFluents, deletedFluents, rescuedFluents, action.Cost);
 
                 foreach (GroundConditionalEffect effect in conditionalEffects)
                 {
-                    int fluent = effect.Effect.Value.LocalIndex;
+                    int fluent = effect.EffectLiteral.Value.LocalIndex;
                     // A conditional delete of an unmodelled negative literal achieves
                     // nothing the unconditional option does not already achieve.
-                    if (!effect.Effect.IsPositive && _negativeLiterals[fluent] < 0)
+                    if (!effect.EffectLiteral.IsPositive && _negativeLiterals[fluent] < 0)
                         continue;
 
                     int[] effectPreconditions = Union(
                         preconditions,
                         ToLiterals(effect.PositiveFluentConditions, effect.NegativeFluentConditions));
-                    int[] effectAdds = effect.Effect.IsPositive
+                    int[] effectAdds = effect.EffectLiteral.IsPositive
                         ? Union(addedFluents, [fluent])
                         : addedFluents;
-                    int[] effectDeletes = effect.Effect.IsPositive
+                    int[] effectDeletes = effect.EffectLiteral.IsPositive
                         ? deletedFluents
                         : Union(deletedFluents, [fluent]);
                     AddOption(options, effectPreconditions, effectAdds, effectDeletes, rescuedFluents, action.Cost);

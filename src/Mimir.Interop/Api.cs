@@ -97,6 +97,7 @@ public static partial class Exports
         CallbackAborted = 5,
         Unexpected = 6,
         StateSpaceLimitExceeded = 7,
+        NotImplemented = 8,
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -136,7 +137,7 @@ public static partial class Exports
     private static NativeErrorData? _lastError;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_abi_version")]
-    public static int AbiVersion() => 20;
+    public static int AbiVersion() => 21;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_take_last_error")]
     public static unsafe byte TakeLastError(IntPtr errorPtr)
@@ -261,6 +262,7 @@ public static partial class Exports
             Mimir.Search.Space.StateSpaceLimitExceededException => new NativeErrorData(
                 NativeErrorCode.StateSpaceLimitExceeded,
                 exception.Message),
+            NotImplementedException => new NativeErrorData(NativeErrorCode.NotImplemented, exception.Message),
             ArgumentException => new NativeErrorData(
                 NativeErrorCode.InvalidArgument,
                 exception.Message),

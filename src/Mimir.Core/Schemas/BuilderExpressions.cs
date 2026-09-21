@@ -100,25 +100,46 @@ public static class Logic
     }
 }
 
-public sealed class ActionCostSpec
+public class NumericExpressionSpec
 {
+    public static implicit operator NumericExpressionSpec(double value) => Numeric.Constant(value);
+    public static NumericExpressionSpec operator +(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Add(left, right);
+    public static NumericExpressionSpec operator -(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Subtract(left, right);
+    public static NumericExpressionSpec operator *(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Multiply(left, right);
+    public static NumericExpressionSpec operator /(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Divide(left, right);
+    public static NumericExpressionSpec operator -(NumericExpressionSpec value) => Numeric.Subtract(Numeric.Constant(0), value);
+    public LogicalExpressionSpec EqualTo(NumericExpressionSpec right) => Compare(ComparisonOperator.Equal, right);
+    public LogicalExpressionSpec LessThan(NumericExpressionSpec right) => Compare(ComparisonOperator.LessThan, right);
+    public LogicalExpressionSpec LessThanOrEqual(NumericExpressionSpec right) => Compare(ComparisonOperator.LessThanOrEqual, right);
+    public LogicalExpressionSpec GreaterThan(NumericExpressionSpec right) => Compare(ComparisonOperator.GreaterThan, right);
+    public LogicalExpressionSpec GreaterThanOrEqual(NumericExpressionSpec right) => Compare(ComparisonOperator.GreaterThanOrEqual, right);
+    private LogicalExpressionSpec Compare(ComparisonOperator operation, NumericExpressionSpec right)
+    {
+        ArgumentNullException.ThrowIfNull(right);
+        return new(new ComparisonLogicalExpressionNode(Node, operation, right.Node));
+    }
     internal ActionCostNode Node { get; }
 
-    internal ActionCostSpec(ActionCostNode node)
+    internal NumericExpressionSpec(ActionCostNode node)
     {
         Node = node;
     }
 }
 
-public static class ActionCost
+public sealed class NumericFunctionSpec : NumericExpressionSpec
 {
-    public static ActionCostSpec Constant(double value)
+    internal NumericFunctionSpec(FunctionActionCostNode node) : base(node) { }
+}
+
+public static class Numeric
+{
+    public static NumericExpressionSpec Constant(double value)
     {
         decimal pddlValue = BuilderName.ToPddlNumber(value, nameof(value));
-        return new ActionCostSpec(new ConstantActionCostNode(value, pddlValue));
+        return new NumericExpressionSpec(new ConstantActionCostNode(value, pddlValue));
     }
 
-    public static ActionCostSpec Function(string functionName, params string[] arguments)
+    public static NumericFunctionSpec Function(string functionName, params string[] arguments)
     {
         BuilderName.RequireName(functionName, nameof(functionName));
         if (functionName.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
@@ -128,32 +149,32 @@ public static class ActionCost
                 nameof(functionName));
         }
 
-        return new ActionCostSpec(
+        return new NumericFunctionSpec(
             new FunctionActionCostNode(
                 functionName,
                 BuilderName.CopyTerms(arguments, nameof(arguments))));
     }
 
-    public static ActionCostSpec Add(ActionCostSpec left, ActionCostSpec right)
-        => Binary(ActionCostBinaryOperator.Add, left, right);
+    public static NumericExpressionSpec Add(NumericExpressionSpec left, NumericExpressionSpec right)
+        => Binary(NumericOperator.Add, left, right);
 
-    public static ActionCostSpec Subtract(ActionCostSpec left, ActionCostSpec right)
-        => Binary(ActionCostBinaryOperator.Subtract, left, right);
+    public static NumericExpressionSpec Subtract(NumericExpressionSpec left, NumericExpressionSpec right)
+        => Binary(NumericOperator.Subtract, left, right);
 
-    public static ActionCostSpec Multiply(ActionCostSpec left, ActionCostSpec right)
-        => Binary(ActionCostBinaryOperator.Multiply, left, right);
+    public static NumericExpressionSpec Multiply(NumericExpressionSpec left, NumericExpressionSpec right)
+        => Binary(NumericOperator.Multiply, left, right);
 
-    public static ActionCostSpec Divide(ActionCostSpec left, ActionCostSpec right)
-        => Binary(ActionCostBinaryOperator.Divide, left, right);
+    public static NumericExpressionSpec Divide(NumericExpressionSpec left, NumericExpressionSpec right)
+        => Binary(NumericOperator.Divide, left, right);
 
-    private static ActionCostSpec Binary(
-        ActionCostBinaryOperator operation,
-        ActionCostSpec left,
-        ActionCostSpec right)
+    private static NumericExpressionSpec Binary(
+        NumericOperator operation,
+        NumericExpressionSpec left,
+        NumericExpressionSpec right)
     {
         ArgumentNullException.ThrowIfNull(left);
         ArgumentNullException.ThrowIfNull(right);
-        return new ActionCostSpec(new BinaryActionCostNode(operation, left.Node, right.Node));
+        return new NumericExpressionSpec(new BinaryActionCostNode(operation, left.Node, right.Node));
     }
 }
 
@@ -296,7 +317,7 @@ internal sealed record BuilderActionSpec(
     IReadOnlyList<BuilderLiteralSpec> Preconditions,
     IReadOnlyList<BuilderLiteralSpec> Effects,
     IReadOnlyList<BuilderConditionalEffectSpec> ConditionalEffects,
-    ActionCostSpec Cost,
+    NumericExpressionSpec Cost,
     bool HasExplicitCost);
 internal sealed record BuilderDerivedPredicateSpec(string PredicateName, LogicalExpressionSpec Body);
 
@@ -328,6 +349,8 @@ internal sealed record FunctionActionCostNode(
     string FunctionName,
     IReadOnlyList<string> Arguments) : ActionCostNode;
 internal sealed record BinaryActionCostNode(
-    ActionCostBinaryOperator Operator,
+    NumericOperator Operator,
     ActionCostNode Left,
     ActionCostNode Right) : ActionCostNode;
+
+internal sealed record ComparisonLogicalExpressionNode(ActionCostNode Left, ComparisonOperator Operator, ActionCostNode Right) : LogicalExpressionNode;

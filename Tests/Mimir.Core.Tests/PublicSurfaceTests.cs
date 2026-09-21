@@ -46,7 +46,7 @@ public class PublicSurfaceTests
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
             effects,
-            new ConstantActionCostExpression(1d));
+            new NumericConstant(1d));
         TestProblemFixture fixture = TestProblemFixture.Create(["fixture"]);
         var condition = new ConjunctiveCondition(
             fixture.Problem,
@@ -54,7 +54,7 @@ public class PublicSurfaceTests
             Array.Empty<Literal<Atom<Static>>>(),
             fluentPreconditions,
             Array.Empty<Literal<Atom<Derived>>>());
-        var costExpression = new NumericFunctionActionCostExpression(function, atomArguments);
+        var costExpression = new FunctionCall(function, atomArguments);
 
         parameters.Add(new Variable("?y"));
         atomArguments.Clear();

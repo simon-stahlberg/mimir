@@ -13,7 +13,11 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
     internal OffsetBitboard NegativeStaticConditions { get; }
 
     public IReadOnlyList<Literal<Fact<Derived>>> DerivedConditions { get; }
-    public Literal<Fact<Fluent>> Effect { get; }
+    public GroundConjunctiveCondition Condition => new(Context.Problem,
+        GroundConditionLiterals.Read(Context, PositiveFluentConditions, NegativeFluentConditions,
+            PositiveStaticConditions, NegativeStaticConditions, DerivedConditions));
+    public GroundActionEffect Effect => new([new Literal<Fact>(EffectLiteral.Value, EffectLiteral.Polarity)]);
+    public Literal<Fact<Fluent>> EffectLiteral { get; }
 
     internal GroundConditionalEffect(
         InstanceContext context,
@@ -34,7 +38,7 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
         PositiveStaticConditions = positiveStaticConditions;
         NegativeStaticConditions = negativeStaticConditions;
         DerivedConditions = Array.AsReadOnly(derivedConditions.ToArray());
-        Effect = effect;
+        EffectLiteral = effect;
     }
 
     public bool IsSatisfied(ExtendedState state)
@@ -78,7 +82,7 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
         && PositiveStaticConditions.Equals(other.PositiveStaticConditions)
         && NegativeStaticConditions.Equals(other.NegativeStaticConditions)
         && ValueSequence.Equals(DerivedConditions, other.DerivedConditions)
-        && EqualityComparer<Literal<Fact<Fluent>>>.Default.Equals(Effect, other.Effect);
+        && EqualityComparer<Literal<Fact<Fluent>>>.Default.Equals(EffectLiteral, other.EffectLiteral);
 
     public override bool Equals(object? obj) => Equals(obj as GroundConditionalEffect);
 
@@ -91,7 +95,7 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
         hash.Add(PositiveStaticConditions);
         hash.Add(NegativeStaticConditions);
         ValueSequence.AddToHash(ref hash, DerivedConditions);
-        hash.Add(Effect);
+        hash.Add(EffectLiteral);
         return hash.ToHashCode();
     }
 }

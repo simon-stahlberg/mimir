@@ -55,7 +55,7 @@ public class BuilderGuardTests
             ready,
             Assert.Single(action.StaticPreconditions, literal => literal.Value.Predicate.Name == "ready")
                 .Value.Predicate);
-        Assert.Same(marked, Assert.Single(action.Effects).Effect.Value.Predicate);
+        Assert.Same(marked, Assert.Single(action.Effects).EffectLiteral.Value.Predicate);
         Assert.Same(eligible, Assert.Single(action.DerivedPreconditions).Value.Predicate);
         Assert.Same(ready, ((GroundedAtom)domain.DerivedDefinitions["eligible"]).Predicate);
         Assert.Same(domain.EqualityPredicate, action.StaticPreconditions[1].Value.Predicate);
@@ -226,7 +226,7 @@ public class BuilderGuardTests
             problem.GetNumericFunctionValue(domain.Functions.Single(), Array.Empty<Constant>()));
         Assert.Equal(
             double.Epsilon,
-            Assert.IsType<ConstantActionCostExpression>(domain.Actions.Single().CostExpression).Value);
+            Assert.IsType<NumericConstant>(domain.Actions.Single().CostExpression).Value);
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public class BuilderGuardTests
             typeof(InitialStateBuilder),
             typeof(GoalBuilder),
             typeof(LogicalExpressionSpec),
-            typeof(ActionCostSpec),
+            typeof(NumericExpressionSpec),
         ];
         Type[] forbiddenCoreHandles =
         [
@@ -342,7 +342,7 @@ public class BuilderGuardTests
             typeof(ActionSchema),
             typeof(ConditionalEffect),
             typeof(IGroundedExpression),
-            typeof(ActionCostExpression),
+            typeof(NumericExpression),
         ];
 
         foreach (Type type in builderTypes)

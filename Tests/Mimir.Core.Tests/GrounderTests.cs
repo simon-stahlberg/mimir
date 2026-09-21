@@ -772,8 +772,8 @@ public class GrounderTests
 
         var action = actions.Single(candidate => candidate.Schema.Name == "step1");
         var ce = Assert.Single(action.ConditionalEffects);
-        Assert.Equal("end", ce.Effect.Value.Predicate.Name, ignoreCase: true);
-        Assert.True(ce.Effect.IsPositive);
+        Assert.Equal("end", ce.EffectLiteral.Value.Predicate.Name, ignoreCase: true);
+        Assert.True(ce.EffectLiteral.IsPositive);
         Assert.Contains(actions, candidate => candidate.Schema.Name == "finish");
     }
 

@@ -13,7 +13,11 @@ public class ConditionalEffect
     public IReadOnlyList<Literal<Atom<Fluent>>> FluentConditions { get; }
     public IReadOnlyList<Literal<Atom<Static>>> StaticConditions { get; }
     public IReadOnlyList<Literal<Atom<Derived>>> DerivedConditions { get; }
-    public Literal<Atom<Fluent>> Effect { get; }
+    public SchemaCondition Condition => new(StaticConditions.Cast<Literal>().Concat(FluentConditions).Concat(DerivedConditions));
+    public ActionEffect Effect => new([EffectLiteral]);
+    internal bool IsUnconditional => QuantifiedVariables.Count == 0 && StaticConditions.Count == 0
+        && FluentConditions.Count == 0 && DerivedConditions.Count == 0;
+    public Literal<Atom<Fluent>> EffectLiteral { get; }
 
     public ConditionalEffect(
         IReadOnlyList<Variable> quantifiedVariables,
@@ -28,7 +32,7 @@ public class ConditionalEffect
         FluentConditions = CopyCollection(fluentConditions, nameof(fluentConditions));
         StaticConditions = CopyCollection(staticConditions, nameof(staticConditions));
         DerivedConditions = CopyCollection(derivedConditions, nameof(derivedConditions));
-        Effect = effect;
+        EffectLiteral = effect;
     }
 
     private static IReadOnlyList<T> CopyCollection<T>(IReadOnlyList<T> values, string parameterName)

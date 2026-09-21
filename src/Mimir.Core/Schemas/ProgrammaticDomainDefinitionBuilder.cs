@@ -75,7 +75,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
     private ActionDefinition BuildAction(ActionSchema action)
     {
         ArgumentNullException.ThrowIfNull(action);
-        if (!_actionCostsEnabled && action.CostExpression is not ConstantActionCostExpression { Value: 1d })
+        if (!_actionCostsEnabled && action.CostExpression is not NumericConstant { Value: 1d })
         {
             throw new ArgumentException(
                 $"Action '{action.Name}' has a non-default cost but the domain does not require :action-costs.",
@@ -246,18 +246,18 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             effect.StaticConditions,
             effect.DerivedConditions,
             effectScope);
-        IEffect literalEffect = effect.Effect.Polarity switch
+        IEffect literalEffect = effect.EffectLiteral.Polarity switch
         {
             Polarity.Positive => new AddEffect(BuildPredicateCall(
-                effect.Effect.Value.Predicate,
-                effect.Effect.Value.Arguments,
+                effect.EffectLiteral.Value.Predicate,
+                effect.EffectLiteral.Value.Arguments,
                 effectScope)),
             Polarity.Negative => new DeleteEffect(BuildPredicateCall(
-                effect.Effect.Value.Predicate,
-                effect.Effect.Value.Arguments,
+                effect.EffectLiteral.Value.Predicate,
+                effect.EffectLiteral.Value.Arguments,
                 effectScope)),
             _ => throw new InvalidOperationException(
-                $"Unsupported effect polarity '{effect.Effect.Polarity}'.")
+                $"Unsupported effect polarity '{effect.EffectLiteral.Polarity}'.")
         };
 
         if (effect.QuantifiedVariables.Count == 0)
@@ -275,39 +275,39 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
     }
 
     private INumericExpression BuildActionCostExpression(
-        ActionCostExpression expression,
+        NumericExpression expression,
         IReadOnlySet<Variable> variableScope)
     {
         ArgumentNullException.ThrowIfNull(expression);
 
         return expression switch
         {
-            ConstantActionCostExpression constant => BuildNumberLiteral(constant.Value),
-            BinaryActionCostExpression binary => binary.Operator switch
+            NumericConstant constant => BuildNumberLiteral(constant.Value),
+            NumericBinaryExpression binary => binary.Operator switch
             {
-                ActionCostBinaryOperator.Add => new Add(
+                NumericOperator.Add => new Add(
                     BuildActionCostExpression(binary.Left, variableScope),
                     BuildActionCostExpression(binary.Right, variableScope)),
-                ActionCostBinaryOperator.Subtract => new Subtract(
+                NumericOperator.Subtract => new Subtract(
                     BuildActionCostExpression(binary.Left, variableScope),
                     BuildActionCostExpression(binary.Right, variableScope)),
-                ActionCostBinaryOperator.Multiply => new Multiply(
+                NumericOperator.Multiply => new Multiply(
                     BuildActionCostExpression(binary.Left, variableScope),
                     BuildActionCostExpression(binary.Right, variableScope)),
-                ActionCostBinaryOperator.Divide => new Divide(
+                NumericOperator.Divide => new Divide(
                     BuildActionCostExpression(binary.Left, variableScope),
                     BuildActionCostExpression(binary.Right, variableScope)),
                 _ => throw new InvalidOperationException(
                     $"Unsupported action cost operator '{binary.Operator}'.")
             },
-            NumericFunctionActionCostExpression function => BuildNumericFunctionCall(function, variableScope),
+            FunctionCall function => BuildNumericFunctionCall(function, variableScope),
             _ => throw new InvalidOperationException(
                 $"Unsupported action cost expression '{expression.GetType().Name}'.")
         };
     }
 
     private FluentCall BuildNumericFunctionCall(
-        NumericFunctionActionCostExpression expression,
+        FunctionCall expression,
         IReadOnlySet<Variable> variableScope)
     {
         if (expression.Function == null)
@@ -334,17 +334,17 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
     }
 
     private void ValidateActionCostExpression(
-        ActionCostExpression expression,
+        NumericExpression expression,
         IReadOnlyList<Variable> actionParameters)
     {
         ArgumentNullException.ThrowIfNull(expression);
 
         switch (expression)
         {
-            case ConstantActionCostExpression constant:
+            case NumericConstant constant:
                 BuildNumberLiteral(constant.Value);
                 return;
-            case BinaryActionCostExpression binary:
+            case NumericBinaryExpression binary:
                 if (!Enum.IsDefined(binary.Operator))
                 {
                     throw new InvalidOperationException(
@@ -353,7 +353,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
                 ValidateActionCostExpression(binary.Left, actionParameters);
                 ValidateActionCostExpression(binary.Right, actionParameters);
                 return;
-            case NumericFunctionActionCostExpression functionExpression:
+            case FunctionCall functionExpression:
                 ValidateNumericFunctionCost(functionExpression, actionParameters);
                 return;
             default:
@@ -363,7 +363,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
     }
 
     private void ValidateNumericFunctionCost(
-        NumericFunctionActionCostExpression expression,
+        FunctionCall expression,
         IReadOnlyList<Variable> actionParameters)
     {
         if (expression.Function == null)

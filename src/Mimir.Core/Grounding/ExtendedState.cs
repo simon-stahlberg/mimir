@@ -86,11 +86,11 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
 
             triggeredEffects ??= new List<GroundConditionalEffect>();
             triggeredEffects.Add(effect);
-            if (effect.Effect.Polarity == Polarity.Positive)
+            if (effect.EffectLiteral.Polarity == Polarity.Positive)
             {
                 length = Math.Max(
                     length,
-                    effect.Effect.Value.LocalIndex / 64 + 1);
+                    effect.EffectLiteral.Value.LocalIndex / 64 + 1);
             }
         }
 
@@ -124,10 +124,10 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
         for (int i = 0; i < triggeredEffects.Count; i++)
         {
             GroundConditionalEffect effect = triggeredEffects[i];
-            if (effect.Effect.Polarity != Polarity.Negative)
+            if (effect.EffectLiteral.Polarity != Polarity.Negative)
                 continue;
 
-            int localIndex = effect.Effect.Value.LocalIndex;
+            int localIndex = effect.EffectLiteral.Value.LocalIndex;
             int wordIndex = localIndex / 64;
             if (wordIndex < result.Length)
                 result[wordIndex] &= ~(1UL << (localIndex % 64));
@@ -151,10 +151,10 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
         for (int i = 0; i < triggeredEffects.Count; i++)
         {
             GroundConditionalEffect effect = triggeredEffects[i];
-            if (effect.Effect.Polarity != Polarity.Positive)
+            if (effect.EffectLiteral.Polarity != Polarity.Positive)
                 continue;
 
-            int localIndex = effect.Effect.Value.LocalIndex;
+            int localIndex = effect.EffectLiteral.Value.LocalIndex;
             result[localIndex / 64] |= 1UL << (localIndex % 64);
         }
     }

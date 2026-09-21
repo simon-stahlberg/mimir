@@ -33,7 +33,7 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert pymimir.advanced.lib.mimir_abi_version() == 20
+    assert pymimir.advanced.lib.mimir_abi_version() == 21
     assert pymimir.__version__ == "0.14.0b5"
     assert not hasattr(pymimir, "brfs")
     assert not hasattr(pymimir, "astar_eager")
@@ -155,7 +155,7 @@ def test_equality_is_an_ordinary_static_predicate(generator):
 
     x = problem.variable("?x")
     y = problem.variable("?y")
-    atom = problem.atom(equals, x, y)
+    atom = problem.lifted_atom(equals, x, y)
     negative = problem.literal(atom, positive=False)
     assert negative.atom.predicate == equals
     assert not negative.is_positive
@@ -175,20 +175,20 @@ def test_equality_is_an_ordinary_static_predicate(generator):
     assert all(len(grounding) == 0 for grounding in groundings)
 
     a = problem.object("a")
-    variable_object = problem.literal(problem.atom(equals, x, a), positive=False)
+    variable_object = problem.literal(problem.lifted_atom(equals, x, a), positive=False)
     assert [binding[x].name for binding in problem.condition(
         variable_object, variables=(x,)).bindings(problem.initial_state)
     ] == ["b"]
-    reflexive = problem.fact("=", "a", "a")
-    non_reflexive = problem.fact("=", "a", "b")
+    reflexive = problem.atom("=", "a", "a")
+    non_reflexive = problem.atom("=", "a", "b")
     assert problem.initial_state.holds(reflexive)
     assert not problem.initial_state.holds(non_reflexive)
     assert all(atom.predicate != equals for atom in problem.initial_static_atoms)
     assert problem.condition(
-        problem.literal(problem.atom(equals, a, a)), variables=()
+        problem.literal(problem.lifted_atom(equals, a, a)), variables=()
     ).bindings(problem.initial_state) == ({},)
     assert problem.initial_state.holds(problem.goal)
-    assert all(action.objects[0] != action.objects[1]
+    assert all(action.arguments[0] != action.arguments[1]
                for action in problem.initial_state.applicable_actions())
 
 
@@ -321,9 +321,9 @@ def extended_state_problem():
 
 def test_every_python_state_producer_exposes_derived_truth(extended_state_problem):
     problem = extended_state_problem
-    enabled = problem.fact('enabled')
-    ready = problem.fact('ready')
-    done = problem.fact('done')
+    enabled = problem.atom('enabled')
+    ready = problem.atom('ready')
+    done = problem.atom('done')
     initial = problem.initial_state
     custom = problem.state(enabled)
     successor = problem.action('enable').apply(initial)
@@ -352,7 +352,7 @@ def test_every_python_state_producer_exposes_derived_truth(extended_state_proble
     assert not conditional.apply(initial).holds(done)
     assert conditional.apply(successor).holds(done)
 
-    ready_atom = problem.atom(problem.domain.predicate('ready'))
+    ready_atom = problem.lifted_atom(problem.domain.predicate('ready'))
     ready_condition = problem.condition(problem.literal(ready_atom))
     assert ready_condition.bindings(initial) == ()
     assert ready_condition.bindings(successor) == ({},)
@@ -380,7 +380,7 @@ def test_every_python_state_producer_exposes_derived_truth(extended_state_proble
 
 def test_search_and_heuristic_callbacks_receive_extended_states(extended_state_problem):
     problem = extended_state_problem
-    ready = problem.fact('ready')
+    ready = problem.atom('ready')
     observed = {
         'expand': [],
         'goal': [],
@@ -512,10 +512,10 @@ def test_hot_native_views_are_cached(blocks):
 
     atom = state.atoms[0]
     assert atom.predicate is atom.predicate
-    assert atom.objects is atom.objects
+    assert atom.arguments is atom.arguments
     action = state.applicable_actions()[0]
     assert action.schema is action.schema
-    assert action.objects is action.objects
+    assert action.arguments is action.arguments
     assert action.precondition is action.precondition
     assert action.effect is action.effect
     assert action.conditional_effects is action.conditional_effects
@@ -633,11 +633,11 @@ def test_legacy_getters_and_factories_are_not_public(blocks):
 
 def test_effect_views_are_typed_read_only_values(blocks):
     action = blocks.domain.actions[0]
-    conditional = action.conditional_effects[0]
-    effect = conditional.effect
+    assert action.conditional_effects == ()
+    effect = action.effect
     assert isinstance(effect.parameters, tuple)
     assert isinstance(effect.literals, tuple)
-    assert conditional.effect_literal in effect.literals
+    assert effect.literals
     assert isinstance(action.static_preconditions, tuple)
     assert isinstance(action.fluent_preconditions, tuple)
     assert isinstance(action.derived_preconditions, tuple)
@@ -671,7 +671,7 @@ def test_properties_factories_and_state_construction(blocks):
     assert clear.name == "clear"
     assert clear.predicate_type is pymimir.model.PredicateType.FLUENT
     assert clear.is_fluent
-    fact = blocks.fact("clear", "b1")
+    fact = blocks.atom("clear", "b1")
     assert fact.predicate == clear
     custom = blocks.state(fact, fact)
     assert len(custom) == len(custom.static_atoms) + 1
@@ -696,7 +696,7 @@ def test_atom_predicates_retain_the_domain_without_retaining_the_problem(kind):
     if kind == "atom":
         source_predicate = domain.predicate("clear")
         variable = problem.variable("?block")
-        atom = problem.atom(source_predicate, variable)
+        atom = problem.lifted_atom(source_predicate, variable)
         predicate = atom.predicate
         del source_predicate, variable
     else:
@@ -744,15 +744,15 @@ def test_state_rejects_non_fluent_facts():
           (:init (fixed))
           (:goal (changed)))
     """)
-    fixed = problem.fact("fixed")
+    fixed = problem.atom("fixed")
     assert fixed.is_static
     with pytest.raises(ValueError, match="fluent atoms only"):
         problem.state(fixed)
 
 
 def test_variadic_ground_condition_contract(blocks):
-    first = blocks.fact("clear", "b1")
-    second = blocks.fact("on-table", "b2")
+    first = blocks.atom("clear", "b1")
+    second = blocks.atom("on-table", "b2")
     negative = blocks.ground_literal(second, positive=False)
 
     assert len(blocks.ground_condition()) == 0
@@ -769,7 +769,7 @@ def test_ground_condition_rejects_foreign_values(blocks):
         EXAMPLES / "blocks_3" / "domain.pddl",
         EXAMPLES / "blocks_3" / "p01.pddl",
     )
-    foreign = other.fact("clear", "b1")
+    foreign = other.atom("clear", "b1")
     with pytest.raises(ValueError):
         blocks.ground_condition(foreign)
     with pytest.raises(ValueError):
@@ -784,7 +784,7 @@ def test_factory_ownership_errors_are_values(blocks):
     with pytest.raises(ValueError):
         blocks.ground_atom(blocks.domain.predicate("clear"), other.all_objects[0])
     with pytest.raises(ValueError):
-        blocks.state(other.fact("clear", "b1"))
+        blocks.state(other.atom("clear", "b1"))
 
 
 def test_search_result_field_invariants(blocks):
@@ -1029,7 +1029,7 @@ def test_condition_groundings_substitute_and_omit_predicates(blocks):
     assert len(grounding) == 1
     literal = grounding.literals[0]
     assert literal.atom.predicate == blocks.domain.predicate("on")
-    assert literal.atom.objects == (
+    assert literal.atom.arguments == (
         binding[condition.parameters[0]],
         binding[condition.parameters[1]],
     )

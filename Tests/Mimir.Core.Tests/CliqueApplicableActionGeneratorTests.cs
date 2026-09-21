@@ -50,7 +50,7 @@ public class CliqueApplicableActionGeneratorTests
         conditional0.AddCondition("bonus-derived");
         conditional0.AddEffect("bonus");
         conditional0.Close();
-        action.WithCost(ActionCost.Function("step-cost"));
+        action.WithCost(Numeric.Function("step-cost"));
         action.Close();
         actions.Close();
         DerivedPredicateListBuilder derivedPredicates = domainBuilder.DerivedPredicates();
@@ -343,7 +343,7 @@ public class CliqueApplicableActionGeneratorTests
         ActionSchemaBuilder action = actions.Add("act");
         action.AddParameter("?x", "object");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Function("binding-cost", "?x"));
+        action.WithCost(Numeric.Function("binding-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -534,7 +534,7 @@ public class CliqueApplicableActionGeneratorTests
         action.AddParameter("?x", "item");
         action.AddPrecondition("ready");
         action.AddEffect("done", "?x");
-        action.WithCost(ActionCost.Function("binding-cost", "?x"));
+        action.WithCost(Numeric.Function("binding-cost", "?x"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -714,7 +714,7 @@ public class CliqueApplicableActionGeneratorTests
         ActionListBuilder actions = domainBuilder.Actions();
         ActionSchemaBuilder action = actions.Add("broken");
         action.AddEffect("done");
-        action.WithCost(ActionCost.Divide(ActionCost.Constant(1d), ActionCost.Constant(0d)));
+        action.WithCost(Numeric.Divide(Numeric.Constant(1d), Numeric.Constant(0d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();

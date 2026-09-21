@@ -62,6 +62,35 @@ internal static class CorePddlSupportValidator
             totalCostInitialized = true;
         }
 
+        var pendingGoals = new Stack<ILogicalExpression>();
+        pendingGoals.Push(problem.Goal);
+        while (pendingGoals.TryPop(out ILogicalExpression? goal))
+        {
+            switch (goal)
+            {
+                case Comparison:
+                    throw new NotImplementedException("Numeric planning goals are not implemented.");
+                case And conjunction:
+                    foreach (ILogicalExpression child in conjunction.Expressions) pendingGoals.Push(child);
+                    break;
+                case Or disjunction:
+                    foreach (ILogicalExpression child in disjunction.Expressions) pendingGoals.Push(child);
+                    break;
+                case Not negation:
+                    pendingGoals.Push(negation.Expression);
+                    break;
+                case Imply implication:
+                    pendingGoals.Push(implication.Antecedent);
+                    pendingGoals.Push(implication.Consequent);
+                    break;
+                case Exists exists:
+                    pendingGoals.Push(exists.Body);
+                    break;
+                case Forall forall:
+                    pendingGoals.Push(forall.Body);
+                    break;
+            }
+        }
         ValidateGoal(problem.Goal);
 
         if (problem.Metric is not null)
@@ -100,7 +129,7 @@ internal static class CorePddlSupportValidator
                 ValidateLogicalExpression(existsExpression.Body, context);
                 return;
             case Comparison:
-                throw new NotSupportedException($"Numeric comparisons are not supported in the {context}.");
+                throw new NotImplementedException($"Numeric comparisons are not supported in the {context}.");
             case PredicateCall:
             case Equality:
             case EmptyLogic:
@@ -318,7 +347,7 @@ internal static class CorePddlSupportValidator
         string fluentName,
         string context)
     {
-        throw new NotSupportedException(
+        throw new NotImplementedException(
             $"Numeric mutation '({operation} ({fluentName}) ...)' is not supported in the {context}. "
             + "Only '(increase (total-cost) <expr>)' is supported.");
     }

@@ -14,7 +14,7 @@ class StateHeuristic(Heuristic):
         self.calls = []
 
     def evaluate(self, state, goal=None):
-        node = next(index for index in self.values if state.holds(self.problem.fact("at", f"n{index}")))
+        node = next(index for index in self.values if state.holds(self.problem.atom("at", f"n{index}")))
         self.calls.append(node)
         return self.values[node]
 
@@ -323,7 +323,7 @@ def test_python_batch_states_can_be_retained_and_release_their_handles(graph):
     heuristic = BatchStateHeuristic(problem, {2: 1, 3: 2})
     mm.beam(problem, heuristic)
     retained = heuristic.batches[0]
-    assert retained[0].holds(problem.fact("at", "n2"))
+    assert retained[0].holds(problem.atom("at", "n2"))
     handles = [state._handle for state in retained]
     refs = [weakref.ref(state) for state in retained]
     del retained
@@ -395,7 +395,7 @@ def test_initial_goal_fast_path_handles_derived_and_negative_literals():
 
 def test_batch_override_receives_alternate_goal(graph):
     problem, _ = graph([(0, 2, 0), (2, 3, 0)])
-    goal = problem.ground_condition(problem.fact("at", "n3"))
+    goal = problem.ground_condition(problem.atom("at", "n3"))
     heuristic = BatchStateHeuristic(problem, {})
     seen = []
     def evaluate(states, supplied_goal=None):

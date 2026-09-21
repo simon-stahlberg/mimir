@@ -181,7 +181,7 @@ public static partial class Exports
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_schema_builder_with_cost")]
     public static byte ActionSchemaBuilderWithCost(int handle, int costHandle)
         => Mutate<ActionSchemaBuilder>(handle, builder =>
-            builder.WithCost(RequireHandle<ActionCostSpec>(costHandle)));
+            builder.WithCost(RequireHandle<NumericExpressionSpec>(costHandle)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_schema_builder_close")]
     public static byte ActionSchemaBuilderClose(int handle)
@@ -304,40 +304,40 @@ public static partial class Exports
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_constant")]
     public static int ActionCostConstant(double value)
-        => CreateHandle(() => ActionCost.Constant(value));
+        => CreateHandle(() => Numeric.Constant(value));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_function")]
     public static int ActionCostFunction(
         IntPtr functionNamePtr,
         IntPtr argumentsPtr,
         int argumentCount)
-        => CreateHandle(() => ActionCost.Function(
+        => CreateHandle(() => Numeric.Function(
             ReadRequiredUtf8(functionNamePtr, "function_name"),
             ReadUtf8Array(argumentsPtr, argumentCount, "arguments")));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_add")]
     public static int ActionCostAdd(int leftHandle, int rightHandle)
-        => CreateHandle(() => ActionCost.Add(
-            RequireHandle<ActionCostSpec>(leftHandle),
-            RequireHandle<ActionCostSpec>(rightHandle)));
+        => CreateHandle(() => Numeric.Add(
+            RequireHandle<NumericExpressionSpec>(leftHandle),
+            RequireHandle<NumericExpressionSpec>(rightHandle)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_subtract")]
     public static int ActionCostSubtract(int leftHandle, int rightHandle)
-        => CreateHandle(() => ActionCost.Subtract(
-            RequireHandle<ActionCostSpec>(leftHandle),
-            RequireHandle<ActionCostSpec>(rightHandle)));
+        => CreateHandle(() => Numeric.Subtract(
+            RequireHandle<NumericExpressionSpec>(leftHandle),
+            RequireHandle<NumericExpressionSpec>(rightHandle)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_multiply")]
     public static int ActionCostMultiply(int leftHandle, int rightHandle)
-        => CreateHandle(() => ActionCost.Multiply(
-            RequireHandle<ActionCostSpec>(leftHandle),
-            RequireHandle<ActionCostSpec>(rightHandle)));
+        => CreateHandle(() => Numeric.Multiply(
+            RequireHandle<NumericExpressionSpec>(leftHandle),
+            RequireHandle<NumericExpressionSpec>(rightHandle)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_divide")]
     public static int ActionCostDivide(int leftHandle, int rightHandle)
-        => CreateHandle(() => ActionCost.Divide(
-            RequireHandle<ActionCostSpec>(leftHandle),
-            RequireHandle<ActionCostSpec>(rightHandle)));
+        => CreateHandle(() => Numeric.Divide(
+            RequireHandle<NumericExpressionSpec>(leftHandle),
+            RequireHandle<NumericExpressionSpec>(rightHandle)));
 
     // -- Problem builder --
 

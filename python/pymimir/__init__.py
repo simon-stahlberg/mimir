@@ -1,7 +1,7 @@
 """Mimir Python bindings.
 
-This package exposes a high-level Python API for the non-numerical fragment of
-PDDL.
+This package exposes a high-level planning API with Boolean state queries,
+static numeric expressions, and explicit errors for unsupported numeric planning.
 
 Load models with :class:`Problem.from_files`, construct prototype values through
 problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
@@ -11,8 +11,9 @@ problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 
 from . import builders, heuristics, learning, model, search, state_space
 from .builders import (
-    ActionCost,
-    ActionCostSpec,
+    Numeric,
+    NumericExpressionSpec,
+    NumericFunctionSpec,
     ActionListBuilder,
     ActionSchemaBuilder,
     ConditionalEffectBuilder,
@@ -52,6 +53,11 @@ from .model import (
     State,
     Term,
     Variable,
+)
+from .numeric import (
+    NumericFunction, NumericExpression, NumericConstant, NumericBinaryExpression,
+    FunctionCall, GroundFunctionCall, NumericComparison, GroundNumericComparison,
+    NumericUpdate, GroundNumericUpdate, NumericOperator, ComparisonOperator, NumericUpdateOperator,
 )
 from .search import (
     Solution,
@@ -105,7 +111,10 @@ __all__ = [
     "ActionListBuilder", "ActionSchemaBuilder", "ConditionalEffectBuilder",
     "DerivedPredicateListBuilder", "ProblemBuilder", "ProblemObjectListBuilder",
     "InitialStateBuilder", "GoalBuilder", "Logic", "LogicalExpressionSpec",
-    "ActionCost", "ActionCostSpec",
+    "Numeric", "NumericExpressionSpec", "NumericFunctionSpec",
+    "NumericFunction", "NumericExpression", "NumericConstant", "NumericBinaryExpression",
+    "FunctionCall", "GroundFunctionCall", "NumericComparison", "GroundNumericComparison",
+    "NumericUpdate", "GroundNumericUpdate", "NumericOperator", "ComparisonOperator", "NumericUpdateOperator",
     # Search
     "search", "Solution", "SearchResult", "SearchStatistics", "SearchStatus", "Transition",
     "bfs", "ucs", "astar", "gbfs", "qgbfs", "beam", "qbeam", "iw",
