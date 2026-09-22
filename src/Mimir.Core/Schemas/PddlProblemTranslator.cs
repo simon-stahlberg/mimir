@@ -13,12 +13,12 @@ internal sealed class PddlProblemTranslator
     public IReadOnlyDictionary<string, Constant> ObjectLookup { get; }
     public IReadOnlyDictionary<string, Predicate> AllPredicates { get; }
     public IReadOnlyList<Literal<Fact>> Goal { get; }
+    public IReadOnlyList<NumericComparison> NumericGoals { get; }
 
     internal PddlProblemTranslator(
         Domain domain,
         Problem problem,
-        ProblemDefinition astProblem,
-        ProgrammaticProblemInputs? programmaticInputs = null)
+        ProblemDefinition astProblem)
     {
         var objectsList = new List<Constant>(domain.Constants);
         var declaredObjectsList = new List<Constant>();
@@ -39,7 +39,6 @@ internal sealed class PddlProblemTranslator
         DeclaredObjects = declaredObjectsList;
         AllObjects = objectsList;
         ObjectLookup = objectLookup;
-        Context = new InstanceContext(problem, objectsList);
 
         // 2. Identify all predicates
         var allPredicates = new Dictionary<string, Predicate>(StringComparer.OrdinalIgnoreCase);
@@ -53,7 +52,23 @@ internal sealed class PddlProblemTranslator
         bool totalCostInitialized = false;
 
         // 3. Process Initial State
-        int projectedNumericInitializationCount = 0;
+        var numericValues = new Dictionary<NumericFunctionKey, double>();
+        foreach (NumericInitialization initialization in astProblem.Init.OfType<NumericInitialization>())
+        {
+            ProblemNumericInit.RegisterNumericInitialization(numericValues, objectLookup,
+                initialization, allFunctions, actionCostsEnabled, ref totalCostInitialized);
+        }
+
+        AddUndefinedAssignTargets(domain, objectsList, numericValues);
+        var numericLayout = new NumericStateLayout(numericValues, domain.ChangingFunctions);
+        foreach (ActionSchema action in domain.Actions)
+        {
+            if (NumericEvaluation.DependsOnState(action.CostExpression, domain.ChangingFunctions))
+                throw new NotSupportedException(
+                    $"Action '{action.Name}' has a cost that depends on changing numeric fluents; only state-independent action costs are supported.");
+        }
+        Context = new InstanceContext(problem, objectsList, numericLayout);
+
         foreach (var initExpr in astProblem.Init)
         {
             if (initExpr is PredicateCall pCall)
@@ -76,32 +91,13 @@ internal sealed class PddlProblemTranslator
                     throw new InvalidOperationException(
                         $"Derived predicate '{pCall.Name}' cannot appear in the initial state.");
             }
-            else if (initExpr is NumericInitialization numericInitialization)
+            else if (initExpr is NumericInitialization or NegativePredicateInitialization)
             {
-                if (programmaticInputs is null)
-                {
-                    ProblemNumericInit.RegisterNumericInitialization(
-                        problem._numericFunctionValues,
-                        objectLookup,
-                        numericInitialization,
-                        allFunctions,
-                        actionCostsEnabled,
-                        ref totalCostInitialized);
-                }
-                else
-                {
-                    projectedNumericInitializationCount++;
-                }
-            }
-            else if (initExpr is NegativePredicateInitialization)
-            {
-                // Negative initial facts are already false under closed-world semantics.
                 continue;
             }
             else
             {
-                throw new NotSupportedException(
-                    $"Core cannot construct initial element '{initExpr.GetType().Name}'.");
+                throw new NotSupportedException($"Core cannot construct initial element '{initExpr.GetType().Name}'.");
             }
         }
 
@@ -115,35 +111,57 @@ internal sealed class PddlProblemTranslator
             staticBitboardWords[arrayIndex] |= 1UL << bitIndex;
         }
 
-        if (programmaticInputs is not null)
-        {
-            if (projectedNumericInitializationCount != programmaticInputs.NumericInitializations.Count)
-                throw new InvalidOperationException("Programmatic numeric initialization projection is inconsistent.");
-
-            foreach (BuilderProblemNumericSpec numeric in programmaticInputs.NumericInitializations)
-            {
-                NumericFunction function = allFunctions[numeric.FunctionName];
-                Constant[] arguments = numeric.Arguments
-                    .Select(argument => objectLookup[argument])
-                    .ToArray();
-                var key = new NumericFunctionKey(function, arguments);
-                if (!problem._numericFunctionValues.TryAdd(key, numeric.Value))
-                {
-                    throw new InvalidOperationException(
-                        $"Numeric function '{function.Name}' was initialized more than once for the same arguments.");
-                }
-            }
-        }
         Context.SetStaticBitboardWords(staticBitboardWords);
 
         var goalList = new List<Literal<Fact>>();
+        var comparisons = new List<NumericComparison>();
         ProblemGoalExtractor.ExtractGoalLiterals(
             astProblem.Goal,
             AllPredicates,
             objectLookup,
             Context,
-            goalList);
+            goalList, allFunctions, comparisons);
+        NumericGoals = comparisons;
         Goal = goalList;
         Context.InitializeDerivedClosure();
+    }
+
+    // PDDL 2.1 lets assign define a fluent that the initial state leaves undefined, so every type-correct
+    // instance of an assigned function needs a state slot even without an initial value.
+    private static void AddUndefinedAssignTargets(Domain domain, IReadOnlyList<Constant> objects,
+        Dictionary<NumericFunctionKey, double> numericValues)
+    {
+        var assignedFunctions = new HashSet<NumericFunction>();
+        foreach (ActionSchema action in domain.Actions)
+        {
+            foreach (ConditionalEffect effect in action.Effects)
+            {
+                if (effect.NumericEffect is { Operator: NumericUpdateOperator.Assign } update)
+                    assignedFunctions.Add(update.Target.Function);
+            }
+        }
+
+        foreach (NumericFunction function in assignedFunctions)
+        {
+            Constant[][] candidates = function.Parameters
+                .Select(parameter => objects.Where(candidate => domain.IsCompatible(candidate.Type, parameter.Type)).ToArray())
+                .ToArray();
+            var arguments = new Constant[candidates.Length];
+            AddInstances(0);
+
+            void AddInstances(int position)
+            {
+                if (position == arguments.Length)
+                {
+                    numericValues.TryAdd(new NumericFunctionKey(function, arguments.ToArray()), NumericEvaluation.Undefined);
+                    return;
+                }
+                foreach (Constant candidate in candidates[position])
+                {
+                    arguments[position] = candidate;
+                    AddInstances(position + 1);
+                }
+            }
+        }
     }
 }

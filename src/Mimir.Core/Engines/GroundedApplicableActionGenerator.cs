@@ -224,7 +224,13 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
                         continue;
                 }
 
+                if (!candidate.Action.AreNumericPreconditionsSatisfied(state.State))
+                    continue;
+
                 if (!candidate.Action.AreStateDependentDerivedPreconditionsSatisfied(state))
+                    continue;
+
+                if (!candidate.Action.AreNumericEffectsDefined(state))
                     continue;
 
                 if (groupIndex >= 0)

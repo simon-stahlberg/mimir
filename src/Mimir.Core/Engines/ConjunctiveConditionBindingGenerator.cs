@@ -50,7 +50,8 @@ public sealed partial class ConjunctiveConditionBindingGenerator
             condition.Parameters,
             condition.FluentLiterals,
             condition.StaticLiterals,
-            condition.DerivedLiterals);
+            condition.DerivedLiterals,
+            condition.Comparisons);
     }
 
     public CompiledConjunctiveCondition Compile(
@@ -58,13 +59,15 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         IReadOnlyList<Variable> variables,
         IReadOnlyList<Literal<Atom<Fluent>>> fluentConditions,
         IReadOnlyList<Literal<Atom<Static>>> staticConditions,
-        IReadOnlyList<Literal<Atom<Derived>>> derivedConditions)
+        IReadOnlyList<Literal<Atom<Derived>>> derivedConditions,
+        IReadOnlyList<NumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(variables);
         ArgumentNullException.ThrowIfNull(fluentConditions);
         ArgumentNullException.ThrowIfNull(staticConditions);
         ArgumentNullException.ThrowIfNull(derivedConditions);
+        ArgumentNullException.ThrowIfNull(numericConditions);
 
         var compiledVariables = variables.ToArray();
         var variableIndices = new Dictionary<Variable, int>(compiledVariables.Length, ReferenceEqualityComparer.Instance);
@@ -93,13 +96,17 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         foreach (Literal<Atom<Derived>> literal in derivedConditions)
             problem.ValidateConditionLiteral(literal, variableSet, nameof(derivedConditions));
 
+        foreach (NumericComparison comparison in numericConditions)
+            problem.ValidateNumericComparison(comparison, variableSet, nameof(numericConditions));
+
         CompiledConjunctiveConditionData compiledCondition = CompileConditionData(
             problem,
             compiledVariables,
             variableIndices,
             fluentConditions,
             staticConditions,
-            derivedConditions);
+            derivedConditions,
+            numericConditions ?? Array.Empty<NumericComparison>());
         return new CompiledConjunctiveCondition(
             problem,
             compiledVariables,
@@ -305,6 +312,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         int maxBindings)
     {
         ArgumentNullException.ThrowIfNull(condition);
+
         ArgumentNullException.ThrowIfNull(state);
         if (maxBindings < 0)
             throw new ArgumentOutOfRangeException(nameof(maxBindings));

@@ -11,34 +11,23 @@ public static partial class Exports
     public static int GoalCreate(
         int problemHandle,
         IntPtr literalHandlesPtr,
-        int literalCount)
-    {
-        var problem = ObjectRegistry.Get<Problem>(problemHandle);
-        if (problem == null || literalCount < 0) return 0;
-        if (literalCount > 0 && literalHandlesPtr == IntPtr.Zero) return 0;
-
-        var literals = new List<Literal<Fact>>(literalCount);
-        unsafe
+        int literalCount, IntPtr comparisonHandles, int comparisonCount)
+        => CreateHandle(() =>
         {
-            int* handles = (int*)literalHandlesPtr;
-            for (int i = 0; i < literalCount; i++)
-            {
-                object? value = ObjectRegistry.GetRaw(handles[i]);
-                Literal<Fact>? literal = value switch
+            Problem problem = RequireHandle<Problem>(problemHandle);
+            Literal<Fact>[] literals = ReadHandleArray<object>(literalHandlesPtr, literalCount, "literals")
+                .Select(value => value switch
                 {
                     Literal<Fact> item => item,
                     Literal<Fact<Fluent>> item => new Literal<Fact>(item.Value, item.Polarity),
                     Literal<Fact<Static>> item => new Literal<Fact>(item.Value, item.Polarity),
                     Literal<Fact<Derived>> item => new Literal<Fact>(item.Value, item.Polarity),
-                    _ => null,
-                };
-                if (literal == null) return 0;
-                literals.Add(literal);
-            }
-        }
-
-        return CreateHandle(() => GoalCondition.FromLiterals(problem, literals));
-    }
+                    _ => throw new ArgumentException("Goal literals must be ground literals.", "literals"),
+                })
+                .ToArray();
+            return GoalCondition.FromLiterals(problem, literals,
+                ReadHandleArray<GroundNumericComparison>(comparisonHandles, comparisonCount, "comparisons"));
+        });
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_goal_is_satisfied")]
     public static int GoalIsSatisfied(int goalHandle, int stateHandle)

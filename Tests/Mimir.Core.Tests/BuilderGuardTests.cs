@@ -55,7 +55,7 @@ public class BuilderGuardTests
             ready,
             Assert.Single(action.StaticPreconditions, literal => literal.Value.Predicate.Name == "ready")
                 .Value.Predicate);
-        Assert.Same(marked, Assert.Single(action.Effects).EffectLiteral.Value.Predicate);
+        Assert.Same(marked, Assert.Single(action.Effects).LiteralEffect!.Value.Predicate);
         Assert.Same(eligible, Assert.Single(action.DerivedPreconditions).Value.Predicate);
         Assert.Same(ready, ((GroundedAtom)domain.DerivedDefinitions["eligible"]).Predicate);
         Assert.Same(domain.EqualityPredicate, action.StaticPreconditions[1].Value.Predicate);
@@ -217,7 +217,7 @@ public class BuilderGuardTests
 
         Problem problem = new ProblemBuilder(domain, "numeric-problem")
             .InitialState()
-                .AddNumericInitialization("value", double.Epsilon)
+                .SetValue(Numeric.Function("value"), double.Epsilon)
                 .Close()
             .Build();
 
@@ -253,7 +253,7 @@ public class BuilderGuardTests
         Assert.Throws<ArgumentException>(() => initial.AddFact("marked", "b"));
         Assert.Throws<ArgumentException>(() => initial.AddFact("unknown", "a"));
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            initial.AddNumericInitialization("unknown", double.PositiveInfinity));
+            initial.SetValue(Numeric.Function("unknown"), double.PositiveInfinity));
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class BuilderGuardTests
         InitialStateBuilder initial = problemBuilder.InitialState();
         Assert.Throws<ArgumentException>(() => initial.AddFact("="));
         Assert.Throws<ArgumentException>(() => initial.AddFact("derived"));
-        initial.AddNumericInitialization("value", 1d);
-        Assert.Throws<ArgumentException>(() => initial.AddNumericInitialization("VALUE", 2d));
+        initial.SetValue(Numeric.Function("value"), 1d);
+        Assert.Throws<ArgumentException>(() => initial.SetValue(Numeric.Function("VALUE"), 2d));
         initial.Close();
 
         GoalBuilder goal = problemBuilder.Goal();

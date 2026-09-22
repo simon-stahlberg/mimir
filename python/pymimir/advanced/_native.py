@@ -121,7 +121,7 @@ except AttributeError as exc:
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"
     ) from exc
 
-if lib.mimir_abi_version() != 21:
+if lib.mimir_abi_version() != 24:
     raise RuntimeError(
         "Loaded Mimir native library has an incompatible ABI. "
         "Rebuild it with: dotnet publish src/Mimir.Interop/Mimir.Interop.csproj -c Release -r <rid>"
@@ -233,7 +233,9 @@ def _raise_native_error(error: _NativeError, default_message: str) -> None:
     if error.code == 2:
         raise ValueError(message)
     if error.code == 8:
-        raise NotImplementedError(message)
+        from ..errors import UnsupportedError
+
+        raise UnsupportedError(message)
     if error.code == 7:
         from ..errors import StateSpaceLimitExceeded
 

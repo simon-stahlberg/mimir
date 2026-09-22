@@ -39,12 +39,14 @@ public class ActionGroundingPlanTests
         DomainBuilder builder = new DomainBuilder("failed-cost-cleanup")
             .Requirements().Add(":strips").Add(":action-costs").Close()
             .Predicates().Add("bad-effect").Add("good-effect").Close()
-            .Functions().Add("missing").Close();
+            .Functions().Add("penalty").Close();
         ActionListBuilder actions = builder.Actions();
-        actions.Add("bad").AddEffect("bad-effect").WithCost(Numeric.Function("missing")).Close();
+        actions.Add("bad").AddEffect("bad-effect").WithCost(Numeric.Function("penalty")).Close();
         actions.Add("good").AddEffect("good-effect").Close();
         Domain domain = actions.Close().Build();
-        Problem problem = new ProblemBuilder(domain, "failed-cost-cleanup-problem").Build();
+        Problem problem = new ProblemBuilder(domain, "failed-cost-cleanup-problem")
+            .InitialState().SetValue(Numeric.Function("penalty"), -1d).Close()
+            .Build();
         ActionSchema bad = domain.Actions.Single(action => action.Name == "bad");
         ActionSchema good = domain.Actions.Single(action => action.Name == "good");
         Assert.Throws<InvalidOperationException>(
@@ -126,7 +128,7 @@ public class ActionGroundingPlanTests
             .Objects().Add("item", "item").Close()
             .InitialState()
                 .AddFact("ready", "item")
-                .AddNumericInitialization("weight", weight, "item").Close()
+                .SetValue(Numeric.Function("weight", "item"), weight).Close()
             .Build();
 
 }

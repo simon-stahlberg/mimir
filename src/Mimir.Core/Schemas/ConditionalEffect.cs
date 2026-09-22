@@ -2,37 +2,43 @@ namespace Mimir.Core.Schemas;
 
 using Grounding;
 
-/// <summary>
-/// A conditional effect in canonical form: a conjunction of literal conditions
-/// guarding a single effect literal. Unconditional effects have an empty Conditions list.
-/// Quantified variables come from forall wrappers in the original PDDL.
-/// </summary>
 public class ConditionalEffect
 {
     public IReadOnlyList<Variable> QuantifiedVariables { get; }
     public IReadOnlyList<Literal<Atom<Fluent>>> FluentConditions { get; }
     public IReadOnlyList<Literal<Atom<Static>>> StaticConditions { get; }
     public IReadOnlyList<Literal<Atom<Derived>>> DerivedConditions { get; }
-    public SchemaCondition Condition => new(StaticConditions.Cast<Literal>().Concat(FluentConditions).Concat(DerivedConditions));
-    public ActionEffect Effect => new([EffectLiteral]);
+    public IReadOnlyList<NumericComparison> NumericConditions { get; }
+    public NumericUpdate? NumericEffect { get; }
+    public Literal<Atom<Fluent>>? LiteralEffect { get; }
+    public SchemaCondition Condition => new(StaticConditions.Cast<Literal>().Concat(FluentConditions).Concat(DerivedConditions), NumericConditions);
+    public ActionEffect Effect => new(LiteralEffect is null ? [] : [LiteralEffect], NumericEffect is null ? [] : [NumericEffect]);
     internal bool IsUnconditional => QuantifiedVariables.Count == 0 && StaticConditions.Count == 0
-        && FluentConditions.Count == 0 && DerivedConditions.Count == 0;
-    public Literal<Atom<Fluent>> EffectLiteral { get; }
+        && FluentConditions.Count == 0 && DerivedConditions.Count == 0 && NumericConditions.Count == 0;
+    // For code paths that only accept propositional effects (e.g. heuristics on non-numeric problems).
+    internal Literal<Atom<Fluent>> RequiredLiteralEffect => LiteralEffect ?? throw new InvalidOperationException("This effect is numeric.");
 
     public ConditionalEffect(
         IReadOnlyList<Variable> quantifiedVariables,
         IReadOnlyList<Literal<Atom<Fluent>>> fluentConditions,
         IReadOnlyList<Literal<Atom<Static>>> staticConditions,
         IReadOnlyList<Literal<Atom<Derived>>> derivedConditions,
-        Literal<Atom<Fluent>> effect)
+        Literal<Atom<Fluent>>? effect,
+        IReadOnlyList<NumericComparison>? numericConditions = null,
+        NumericUpdate? numericEffect = null)
     {
-        ArgumentNullException.ThrowIfNull(effect);
+        if (effect is null && numericEffect is null)
+            throw new ArgumentNullException(nameof(effect), "An effect needs a literal or a numeric update.");
+        if (effect is not null && numericEffect is not null)
+            throw new ArgumentException("An effect cannot contain both a literal and a numeric update.");
 
         QuantifiedVariables = CopyCollection(quantifiedVariables, nameof(quantifiedVariables));
         FluentConditions = CopyCollection(fluentConditions, nameof(fluentConditions));
         StaticConditions = CopyCollection(staticConditions, nameof(staticConditions));
         DerivedConditions = CopyCollection(derivedConditions, nameof(derivedConditions));
-        EffectLiteral = effect;
+        LiteralEffect = effect;
+        NumericConditions = CopyCollection(numericConditions ?? [], nameof(numericConditions));
+        NumericEffect = numericEffect;
     }
 
     private static IReadOnlyList<T> CopyCollection<T>(IReadOnlyList<T> values, string parameterName)

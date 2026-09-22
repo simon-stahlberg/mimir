@@ -5,30 +5,37 @@ namespace Mimir.Core.Schemas;
 public sealed class SchemaCondition
 {
     public IReadOnlyList<Literal> Literals { get; }
-    public IReadOnlyList<NumericComparison> Comparisons => Array.Empty<NumericComparison>();
+    public IReadOnlyList<NumericComparison> Comparisons { get; }
 
-    internal SchemaCondition(IEnumerable<Literal> literals)
-        => Literals = Array.AsReadOnly(literals.ToArray());
+    internal SchemaCondition(IEnumerable<Literal> literals, IEnumerable<NumericComparison> comparisons)
+    {
+        Literals = Array.AsReadOnly(literals.ToArray());
+        Comparisons = Array.AsReadOnly(comparisons.ToArray());
+    }
 }
 
 public sealed class ActionEffect
 {
     public IReadOnlyList<Literal<Atom<Fluent>>> Literals { get; }
-    public IReadOnlyList<NumericUpdate> NumericUpdates => Array.Empty<NumericUpdate>();
+    public IReadOnlyList<NumericUpdate> NumericUpdates { get; }
 
-    internal ActionEffect(IEnumerable<Literal<Atom<Fluent>>> literals)
-        => Literals = Array.AsReadOnly(literals.ToArray());
+    internal ActionEffect(IEnumerable<Literal<Atom<Fluent>>> literals, IEnumerable<NumericUpdate> updates)
+    {
+        Literals = Array.AsReadOnly(literals.ToArray());
+        NumericUpdates = Array.AsReadOnly(updates.ToArray());
+    }
 }
 
 public sealed class GroundConjunctiveCondition
 {
     public Problem Problem { get; }
     public IReadOnlyList<Literal<Fact>> Literals { get; }
-    public IReadOnlyList<GroundNumericComparison> Comparisons => Array.Empty<GroundNumericComparison>();
+    public IReadOnlyList<GroundNumericComparison> Comparisons { get; }
 
-    internal GroundConjunctiveCondition(Problem problem, IEnumerable<Literal<Fact>> literals)
+    internal GroundConjunctiveCondition(Problem problem, IEnumerable<Literal<Fact>> literals, IEnumerable<GroundNumericComparison> comparisons)
     {
         Problem = problem;
+        Comparisons = Array.AsReadOnly(comparisons.ToArray());
         Literals = Array.AsReadOnly(literals.ToArray());
     }
 }
@@ -36,10 +43,13 @@ public sealed class GroundConjunctiveCondition
 public sealed class GroundActionEffect
 {
     public IReadOnlyList<Literal<Fact>> Literals { get; }
-    public IReadOnlyList<GroundNumericUpdate> NumericUpdates => Array.Empty<GroundNumericUpdate>();
+    public IReadOnlyList<GroundNumericUpdate> NumericUpdates { get; }
 
-    internal GroundActionEffect(IEnumerable<Literal<Fact>> literals)
-        => Literals = Array.AsReadOnly(literals.ToArray());
+    internal GroundActionEffect(IEnumerable<Literal<Fact>> literals, IEnumerable<GroundNumericUpdate> updates)
+    {
+        Literals = Array.AsReadOnly(literals.ToArray());
+        NumericUpdates = Array.AsReadOnly(updates.ToArray());
+    }
 }
 
 internal static class GroundConditionLiterals

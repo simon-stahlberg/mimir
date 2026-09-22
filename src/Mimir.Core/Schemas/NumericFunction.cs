@@ -2,6 +2,10 @@ namespace Mimir.Core.Schemas;
 
 public sealed class NumericFunction
 {
+    internal const string TotalCostName = "total-cost";
+
+    internal static bool IsTotalCost(string name) => name.Equals(TotalCostName, StringComparison.OrdinalIgnoreCase);
+
     public string Name { get; }
     public IReadOnlyList<Variable> Parameters { get; }
 

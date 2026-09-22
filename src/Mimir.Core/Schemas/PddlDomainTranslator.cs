@@ -19,9 +19,7 @@ internal sealed class PddlDomainTranslator
     public IReadOnlyDictionary<string, string> TypeHierarchy { get; }
     public IReadOnlyDictionary<string, IGroundedExpression> DerivedDefinitions { get; }
 
-    internal PddlDomainTranslator(
-        DomainDefinition astDomain,
-        ProgrammaticDomainInputs? programmaticInputs = null)
+    internal PddlDomainTranslator(DomainDefinition astDomain)
     {
         if (!astDomain.IsCanonical())
             throw new ArgumentException("The provided AST DomainDefinition is not in canonical form.");
@@ -100,29 +98,6 @@ internal sealed class PddlDomainTranslator
             throw new InvalidOperationException($"Validated expression contains undeclared constant '{term.Name}'.");
         }
 
-        NumericExpression BuildProgrammaticActionCost(
-            ActionCostNode cost,
-            IReadOnlyDictionary<string, Variable> variableScope)
-        {
-            return cost switch
-            {
-                ConstantActionCostNode constant => new NumericConstant(constant.Value),
-                FunctionActionCostNode function => new FunctionCall(
-                    allFunctions[function.FunctionName],
-                    function.Arguments.Select(argument =>
-                    {
-                        if (argument.StartsWith('?')) return (ITerm)variableScope[argument];
-                        return domainConstants[argument];
-                    }).ToArray()),
-                BinaryActionCostNode binary => new NumericBinaryExpression(
-                    binary.Operator,
-                    BuildProgrammaticActionCost(binary.Left, variableScope),
-                    BuildProgrammaticActionCost(binary.Right, variableScope)),
-                _ => throw new InvalidOperationException(
-                    $"Unsupported action cost specification '{cost.GetType().Name}'.")
-            };
-        }
-
         TypeHierarchy = astDomain.Types.ToDictionary(t => t.Name, t => t.ParentType, StringComparer.OrdinalIgnoreCase);
 
         foreach (var constant in astDomain.Constants)
@@ -135,7 +110,7 @@ internal sealed class PddlDomainTranslator
         {
             var (_, parameters) = ExtendVariableScope(parentScope: null, functionDecl.Parameters);
             NumericFunction function = GetOrCreateFunction(functionDecl.Name, parameters);
-            if (!functionDecl.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+            if (!NumericFunction.IsTotalCost(functionDecl.Name))
                 functionsList.Add(function);
         }
 
@@ -166,7 +141,7 @@ internal sealed class PddlDomainTranslator
 
         var fluentNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var action in astDomain.Actions)
-            DomainCostTranslator.CollectFluentNames(action.Effect, fluentNames);
+            CollectFluentNames(action.Effect, fluentNames);
 
         foreach (var pDecl in astDomain.Predicates)
         {
@@ -225,6 +200,7 @@ internal sealed class PddlDomainTranslator
                 bodies.Add(DomainExpressionTranslator.TranslateExpression(
                     rule.Body,
                     allPredicates,
+                    allFunctions,
                     ruleScope,
                     MapDomainTerm,
                     ExtendVariableScope));
@@ -244,13 +220,8 @@ internal sealed class PddlDomainTranslator
             IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions,
             IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions,
             IReadOnlyList<ConditionalEffect> Effects,
+            IReadOnlyList<NumericComparison> Comparisons,
             NumericExpression? ExplicitCostExpression)>();
-
-        if (programmaticInputs is not null
-            && programmaticInputs.Actions.Count != astDomain.Actions.Length)
-        {
-            throw new InvalidOperationException("Programmatic domain action projection is inconsistent.");
-        }
 
         for (int actionIndex = 0; actionIndex < astDomain.Actions.Length; actionIndex++)
         {
@@ -260,6 +231,7 @@ internal sealed class PddlDomainTranslator
             var fPre = new List<Literal<Atom<Fluent>>>();
             var sPre = new List<Literal<Atom<Static>>>();
             var dPre = new List<Literal<Atom<Derived>>>();
+            var comparisons = new List<NumericComparison>();
 
             if (action.Precondition != null)
             {
@@ -271,7 +243,7 @@ internal sealed class PddlDomainTranslator
                     MapDomainTerm,
                     fPre,
                     sPre,
-                    dPre);
+                    dPre, allFunctions, comparisons);
             }
 
             var effects = new List<ConditionalEffect>();
@@ -295,28 +267,17 @@ internal sealed class PddlDomainTranslator
                         allPredicates,
                         MapDomainTerm,
                         ExtendVariableScope,
-                        effects);
+                        effects, allFunctions);
                 }
             }
 
-            NumericExpression? explicitCostExpression;
-            if (programmaticInputs is null)
-            {
-                explicitCostExpression = DomainCostTranslator.ExtractActionCostExpression(
-                    action.Effect,
-                    parameterScope,
-                    allFunctions,
-                    MapDomainTerm);
-            }
-            else
-            {
-                ProgrammaticActionInput supplied = programmaticInputs.Actions[actionIndex];
-                if (!action.Name.Equals(supplied.Name, StringComparison.Ordinal))
-                    throw new InvalidOperationException("Programmatic domain action projection is inconsistent.");
-                explicitCostExpression = BuildProgrammaticActionCost(supplied.Cost.Node, parameterScope);
-            }
+            NumericExpression? explicitCostExpression = NumericExpressionTranslator.ExtractActionCostExpression(
+                action.Effect,
+                parameterScope,
+                allFunctions,
+                MapDomainTerm);
 
-            pendingActions.Add((action.Name, vars, fPre, sPre, dPre, effects, explicitCostExpression));
+            pendingActions.Add((action.Name, vars, fPre, sPre, dPre, effects, comparisons, explicitCostExpression));
         }
 
         double defaultActionCost = astDomain.Requirements.HasRequirement(PddlRequirement.ActionCosts) ? 0d : 1d;
@@ -330,9 +291,40 @@ internal sealed class PddlDomainTranslator
                 pendingAction.StaticPreconditions,
                 pendingAction.DerivedPreconditions,
                 pendingAction.Effects,
-                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost)));
+                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost), pendingAction.Comparisons));
         }
 
         Actions = actionsList;
+    }
+
+    private static void CollectFluentNames(IEffect? effect, HashSet<string> fluentNames)
+    {
+        if (effect == null) return;
+        switch (effect)
+        {
+            case Pddl.Ast.Effects.AndEffect a:
+                foreach (var e in a.Effects) CollectFluentNames(e, fluentNames);
+                break;
+            case Pddl.Ast.Effects.ConditionalEffect c:
+                CollectFluentNames(c.Effect, fluentNames);
+                break;
+            case Pddl.Ast.Effects.ForallEffect f:
+                CollectFluentNames(f.Effect, fluentNames);
+                break;
+            case Pddl.Ast.Effects.AddEffect add:
+                fluentNames.Add(add.Predicate.Name);
+                break;
+            case Pddl.Ast.Effects.DeleteEffect del:
+                fluentNames.Add(del.Predicate.Name);
+                break;
+            case Pddl.Ast.Effects.Assign:
+            case Pddl.Ast.Effects.Increase:
+            case Pddl.Ast.Effects.Decrease:
+            case Pddl.Ast.Effects.ScaleUp:
+            case Pddl.Ast.Effects.ScaleDown:
+                break;
+            default:
+                throw new NotSupportedException($"Unsupported effect '{effect.GetType().Name}'.");
+        }
     }
 }

@@ -26,6 +26,7 @@ public sealed class ProblemBuilder
         Array.Empty<BuilderProblemNumericSpec>();
     private IReadOnlyList<BuilderProblemGoalSpec> _goals = Array.Empty<BuilderProblemGoalSpec>();
     private IReadOnlyDictionary<string, BuilderTypedNameSpec> _objectsByName;
+    private IReadOnlyList<LogicalExpressionSpec> _goalExpressions = Array.Empty<LogicalExpressionSpec>();
     private object? _activeChild;
     private int _nextStage;
     private bool _built;
@@ -75,12 +76,10 @@ public sealed class ProblemBuilder
                 _objects,
                 _initialFacts,
                 _numericInitializations,
-                _goals);
-            var inputs = new ProgrammaticProblemInputs(_numericInitializations);
+                _goals, _goalExpressions);
             Problem problem = Problem.CreateProgrammatic(
                 _domain,
                 definition,
-                inputs,
                 _generatorType);
             _built = true;
             return problem;
@@ -120,10 +119,11 @@ public sealed class ProblemBuilder
         _activeChild = null;
     }
 
-    internal void CommitGoal(GoalBuilder child, IReadOnlyList<BuilderProblemGoalSpec> goals)
+    internal void CommitGoal(GoalBuilder child, IReadOnlyList<BuilderProblemGoalSpec> goals, IReadOnlyList<LogicalExpressionSpec> expressions)
     {
         EnsureActiveChild(child);
         _goals = Array.AsReadOnly(goals.ToArray());
+        _goalExpressions = Array.AsReadOnly(expressions.ToArray());
         _activeChild = null;
     }
 

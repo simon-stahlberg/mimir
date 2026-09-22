@@ -157,7 +157,7 @@ def test_complete_builder_surface_produces_working_problem(generator):
         "selected", "a"
     ).add_fact(
         "selected", "b"
-    ).add_numeric_initialization("price", 2.5, "a").close()
+    ).set_value(pymimir.Numeric.function("price", "a"), 2.5).close()
     builder.goal().add("done", "a").add("done", "b").add(
         "done", "home", positive=False
     ).add("=", "a", "a").close()

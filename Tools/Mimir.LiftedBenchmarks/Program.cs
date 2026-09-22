@@ -27,8 +27,9 @@ foreach (BenchmarkInstance benchmark in benchmarks)
 static BenchmarkInstance[] DiscoverBenchmarks(string benchmarkRoot)
 {
     var benchmarks = new List<BenchmarkInstance>();
-    string[] directories = Directory
-        .EnumerateDirectories(benchmarkRoot)
+    string[] categories = ["strips", "adl"];
+    string[] directories = categories
+        .SelectMany(category => Directory.EnumerateDirectories(Path.Combine(benchmarkRoot, category)))
         .OrderBy(path => path, StringComparer.Ordinal)
         .ToArray();
 

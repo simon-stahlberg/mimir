@@ -12,12 +12,14 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         IReadOnlyDictionary<Variable, int> variableIndices,
         IReadOnlyList<Literal<Atom<Fluent>>> fluentConditions,
         IReadOnlyList<Literal<Atom<Static>>> staticConditions,
-        IReadOnlyList<Literal<Atom<Derived>>> derivedConditions)
+        IReadOnlyList<Literal<Atom<Derived>>> derivedConditions,
+        IReadOnlyList<NumericComparison> numericConditions)
     {
         int k = variables.Count;
         var compiledCondition = new CompiledConjunctiveConditionData
         {
             VariableCount = k,
+            Problem = problem,
             StateDependentUnaryConstraints = new List<IUnaryConstraint>[k]
         };
 
@@ -159,6 +161,36 @@ public sealed partial class ConjunctiveConditionBindingGenerator
                 positiveFluentOrdinal: -1);
         }
 
+        List<CompiledNumericComparison>? pendingNumericUnary = null;
+        List<CompiledNumericComparison>? deferredNumeric = null;
+        foreach (NumericComparison comparison in numericConditions)
+        {
+            var compiled = new CompiledNumericComparison(comparison, variableIndices);
+            bool changing = NumericEvaluation.DependsOnState(comparison, problem.Domain.ChangingFunctions);
+            int[] indices = compiled.VariableIndices;
+            if (!changing && indices.Length <= 2)
+            {
+                StaticConstraint constraint = values => compiled.Evaluate(problem.Context, values, null);
+                if (indices.Length == 0) staticNullary.Add(constraint);
+                if (indices.Length == 1) staticUnary[indices[0]].Add(constraint);
+                if (indices.Length == 2) AddStaticBinary(indices[0], indices[1], constraint);
+                continue;
+            }
+            if (indices.Length == 0)
+            {
+                GroundNumericComparison grounded = compiled.Ground(problem, Array.Empty<Constant>());
+                compiledCondition.StateDependentNullaryConstraints.Add((_, state) => state.State.Holds(grounded));
+                continue;
+            }
+            if (indices.Length == 1)
+            {
+                (pendingNumericUnary ??= new List<CompiledNumericComparison>()).Add(compiled);
+                continue;
+            }
+            (deferredNumeric ??= new List<CompiledNumericComparison>()).Add(compiled);
+        }
+        compiledCondition.DeferredNumericConditions = deferredNumeric?.ToArray() ?? Array.Empty<CompiledNumericComparison>();
+
         var binding = new Constant[k];
         compiledCondition.StaticNullaryValid = AreStaticConstraintsSatisfied(staticNullary, binding);
         if (!compiledCondition.StaticNullaryValid)
@@ -245,6 +277,19 @@ public sealed partial class ConjunctiveConditionBindingGenerator
 
         PreRegisterProjectedConditionFacts(compiledCondition, compiledLiterals);
         FinalizeDynamicConstraintTables(problem, compiledCondition, pendingStateDependentUnaryConstraints, pendingDynamicBinary, binding);
+        foreach (CompiledNumericComparison comparison in pendingNumericUnary ?? [])
+        {
+            int variableIndex = comparison.VariableIndices[0];
+            Constant[] domain = compiledCondition.StaticCandidateDomains[variableIndex];
+            var grounded = new GroundNumericComparison[domain.Length];
+            for (int i = 0; i < domain.Length; i++)
+            {
+                binding[variableIndex] = domain[i];
+                grounded[i] = comparison.Ground(problem, binding);
+            }
+            binding[variableIndex] = null!;
+            compiledCondition.StateDependentUnaryConstraints[variableIndex].Add(new NumericUnaryConstraint(grounded));
+        }
         foreach (CompiledConditionLiteral literal in positiveStaticHigherArityConstraints)
         {
             compiledCondition.PositiveStaticRelations.Add(BuildPositiveRelationIndex(

@@ -70,11 +70,12 @@ public sealed class DomainBuilder
         ValidateCrossSectionRules();
         try
         {
-            ProgrammaticDomainCompilation compilation = ProgrammaticDomainCompiler.Compile(this);
-            DomainDefinition canonical = Canonicalizer.Compile(compilation.Definition);
+            DomainDefinition definition = ProgrammaticDomainCompiler.Compile(this);
+            CorePddlSupportValidator.ValidateDomain(SemanticValidator.ValidateDomain(definition), isCanonical: false);
+            DomainDefinition canonical = Canonicalizer.Compile(definition);
             CorePddlSupportValidator.ValidateDomain(canonical);
             DerivedDependencyValidator.Validate(canonical);
-            Domain domain = Domain.CreateProgrammatic(canonical, compilation.Inputs);
+            var domain = new Domain(canonical);
             _built = true;
             return domain;
         }
@@ -188,6 +189,12 @@ public sealed class DomainBuilder
         foreach (BuilderLiteralSpec effect in action.Effects)
             ValidateLiteral(effect, scope, isEffect: true, $"action '{action.Name}' effect");
 
+        foreach (LogicalExpressionSpec expression in action.Expressions) ValidateLogicalExpression(expression.Node, scope, action.Name);
+        foreach (BuilderNumericUpdateSpec update in action.NumericUpdates)
+        {
+            ValidateNumericExpression(update.Target.Node, scope, $"action '{action.Name}'");
+            ValidateNumericExpression(update.Expression.Node, scope, $"action '{action.Name}'");
+        }
         foreach (BuilderConditionalEffectSpec conditionalEffect in action.ConditionalEffects)
         {
             ValidateDeclarationParameters(
@@ -211,16 +218,18 @@ public sealed class DomainBuilder
                     isEffect: false,
                     $"conditional effect condition in action '{action.Name}'");
             }
-            ValidateLiteral(
+            if (conditionalEffect.Effect is not null) ValidateLiteral(
                 conditionalEffect.Effect,
                 conditionalScope,
                 isEffect: true,
                 $"conditional effect target in action '{action.Name}'");
         }
 
-        ValidateActionCost(action.Cost.Node, scope, action.Name);
+        if (action.Cost is null)
+            return;
+        ValidateNumericExpression(action.Cost.Node, scope, $"action '{action.Name}' cost");
         if (!HasRequirement(":action-costs")
-            && action.Cost.Node is not ConstantActionCostNode { Value: 1d })
+            && action.Cost.Node is not ConstantNumericNode { Value: 1d })
         {
             throw new InvalidOperationException(
                 $"Action '{action.Name}' has a non-default cost but the domain does not require :action-costs.");
@@ -256,7 +265,13 @@ public sealed class DomainBuilder
                 isEffect: false,
                 $"conditional effect condition in action '{actionName}'");
         }
-        ValidateLiteral(
+        foreach (LogicalExpressionSpec expression in conditionalEffect.Expressions) ValidateLogicalExpression(expression.Node, scope, actionName);
+        if (conditionalEffect.NumericUpdate is { } numeric)
+        {
+            ValidateNumericExpression(numeric.Target.Node, scope, $"action '{actionName}'");
+            ValidateNumericExpression(numeric.Expression.Node, scope, $"action '{actionName}'");
+        }
+        if (conditionalEffect.Effect is not null) ValidateLiteral(
             conditionalEffect.Effect,
             scope,
             isEffect: true,
@@ -345,6 +360,10 @@ public sealed class DomainBuilder
     {
         switch (expression)
         {
+            case ComparisonLogicalExpressionNode comparison:
+                ValidateNumericExpression(comparison.Left, scope, owner);
+                ValidateNumericExpression(comparison.Right, scope, owner);
+                return;
             case TrueLogicalExpressionNode or FalseLogicalExpressionNode:
                 return;
             case AtomLogicalExpressionNode atom:
@@ -448,24 +467,24 @@ public sealed class DomainBuilder
         }
     }
 
-    private void ValidateActionCost(
-        ActionCostNode cost,
+    private void ValidateNumericExpression(
+        NumericExpressionNode expression,
         IReadOnlyDictionary<string, string> scope,
-        string actionName)
+        string owner)
     {
-        switch (cost)
+        switch (expression)
         {
-            case ConstantActionCostNode:
+            case ConstantNumericNode:
                 return;
-            case BinaryActionCostNode binary:
-                ValidateActionCost(binary.Left, scope, actionName);
-                ValidateActionCost(binary.Right, scope, actionName);
+            case BinaryNumericNode binary:
+                ValidateNumericExpression(binary.Left, scope, owner);
+                ValidateNumericExpression(binary.Right, scope, owner);
                 return;
-            case FunctionActionCostNode functionCall:
+            case FunctionNumericNode functionCall:
                 if (!_functionsByName.TryGetValue(functionCall.FunctionName, out BuilderFunctionSpec? function))
                 {
                     throw new InvalidOperationException(
-                        $"Numeric function '{functionCall.FunctionName}' used by action '{actionName}' is not declared.");
+                        $"Numeric function '{functionCall.FunctionName}' used by {owner} is not declared.");
                 }
                 if (function.Parameters.Count != functionCall.Arguments.Count)
                 {
@@ -474,7 +493,7 @@ public sealed class DomainBuilder
                 }
                 for (int index = 0; index < functionCall.Arguments.Count; index++)
                 {
-                    string actualType = ResolveTermType(functionCall.Arguments[index], scope, $"action '{actionName}' cost");
+                    string actualType = ResolveTermType(functionCall.Arguments[index], scope, owner);
                     string expectedType = function.Parameters[index].Type;
                     if (!IsCompatible(actualType, expectedType))
                     {
@@ -484,7 +503,7 @@ public sealed class DomainBuilder
                 }
                 return;
             default:
-                throw new InvalidOperationException($"Unsupported action cost specification '{cost.GetType().Name}'.");
+                throw new InvalidOperationException($"Unsupported numeric expression specification '{expression.GetType().Name}'.");
         }
     }
 
@@ -539,7 +558,7 @@ public sealed class DomainBuilder
         foreach (BuilderActionSpec action in _actions)
         {
             effectTargets.UnionWith(action.Effects.Select(effect => effect.PredicateName));
-            effectTargets.UnionWith(action.ConditionalEffects.Select(effect => effect.Effect.PredicateName));
+            effectTargets.UnionWith(action.ConditionalEffects.Where(effect => effect.Effect is not null).Select(effect => effect.Effect!.PredicateName));
         }
 
         foreach (BuilderDerivedPredicateSpec definition in _derivedPredicates)

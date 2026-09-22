@@ -99,6 +99,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
     {
         private readonly CliqueApplicableActionGenerator _generator;
         private ActionSchemaCache _schemaCache = null!;
+        private ExtendedState _state = null!;
         private List<GroundAction> _actions = null!;
         private int _maxActions;
 
@@ -112,10 +113,12 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
 
         public void Prepare(
             ActionSchemaCache schemaCache,
+            ExtendedState state,
             List<GroundAction> actions,
             int maxActions)
         {
             _schemaCache = schemaCache;
+            _state = state;
             _actions = actions;
             _maxActions = maxActions;
         }
@@ -123,6 +126,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         public void Release()
         {
             _schemaCache = null!;
+            _state = null!;
             _actions = null!;
             _maxActions = 0;
         }
@@ -130,6 +134,8 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         private bool Collect(ReadOnlySpan<Constant> binding)
         {
             GroundAction action = _generator.GetOrBuildAction(_schemaCache, binding);
+            if (!action.AreNumericEffectsDefined(_state))
+                return true;
             _actions.Add(action);
             return _actions.Count < _maxActions;
         }
@@ -143,6 +149,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
 
     internal CliqueApplicableActionGenerator(Problem problem)
     {
+        ArgumentNullException.ThrowIfNull(problem);
         Problem = problem ?? throw new ArgumentNullException(nameof(problem));
         // One reusable reference callback avoids cold generic-specialization allocations
         // while keeping repeated applicable-action collection allocation-free.
@@ -174,7 +181,8 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
                 schema.Parameters,
                 schema.FluentPreconditions,
                 schema.StaticPreconditions,
-                schema.DerivedPreconditions);
+                schema.DerivedPreconditions,
+                schema.NumericPreconditions);
             schemaCache.HasExistentialWitnessParameters =
                 schemaCache.TransitionRelevantParameters.Any(isRelevant => !isRelevant);
             schemaCache.GroundActionCache = new Dictionary<BindingKey, CachedGroundAction>(
@@ -223,7 +231,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
             }
 
             ApplicableActionCollector collector = _actionCollector;
-            collector.Prepare(schemaCache, actions, maxActions);
+            collector.Prepare(schemaCache, state, actions, maxActions);
             try
             {
                 if (schemaCache.HasExistentialWitnessParameters)

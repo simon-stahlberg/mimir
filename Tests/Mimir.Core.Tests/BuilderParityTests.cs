@@ -324,7 +324,7 @@ public class BuilderParityTests
                 .Close()
             .InitialState()
                 .AddFact("ready", "a")
-                .AddNumericInitialization("price", 2.5d, "a")
+                .SetValue(Numeric.Function("price", "a"), 2.5d)
                 .Close()
             .Goal()
                 .Add("done", "a")
@@ -449,7 +449,7 @@ public class BuilderParityTests
             .Concat(effect.StaticConditions.Select(FormatLiteral))
             .Concat(effect.DerivedConditions.Select(FormatLiteral));
         return $"forall({FormatVariables(effect.QuantifiedVariables)})" +
-               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.EffectLiteral)}";
+               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.LiteralEffect!)}";
     }
 
     private static string FormatExpression(IGroundedExpression expression)

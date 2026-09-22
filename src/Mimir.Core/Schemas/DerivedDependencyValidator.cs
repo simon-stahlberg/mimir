@@ -93,7 +93,7 @@ internal static class DerivedDependencyValidator
             case GroundedAtom { Predicate: Predicate<Derived> predicate }:
                 dependencies.Add(new Dependency(predicate.Name, isNegative));
                 return;
-            case GroundedAtom or GroundedTrue:
+            case GroundedAtom or GroundedTrue or NumericComparison:
                 return;
             case GroundedNot not:
                 CollectDependencies(not.Expression, dependencies, !isNegative);

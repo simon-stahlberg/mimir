@@ -64,7 +64,7 @@ public class CliqueApplicableActionGeneratorTests
         initialState.AddFact("ready");
         initialState.AddFact("bonus-enabled");
         initialState.AddFact("bonus-ready");
-        initialState.AddNumericInitialization("step-cost", 7d);
+        initialState.SetValue(Numeric.Function("step-cost"), 7d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done");
@@ -353,8 +353,8 @@ public class CliqueApplicableActionGeneratorTests
         objects.Add("b", "object");
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
-        initialState.AddNumericInitialization("binding-cost", 2d, "a");
-        initialState.AddNumericInitialization("binding-cost", 3d, "b");
+        initialState.SetValue(Numeric.Function("binding-cost", "a"), 2d);
+        initialState.SetValue(Numeric.Function("binding-cost", "b"), 3d);
         initialState.Close();
         return problemBuilder.Build();
     }
@@ -545,7 +545,7 @@ public class CliqueApplicableActionGeneratorTests
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("ready");
-        initialState.AddNumericInitialization("binding-cost", 4d, "a");
+        initialState.SetValue(Numeric.Function("binding-cost", "a"), 4d);
         initialState.Close();
         return problemBuilder.Build();
     }
@@ -701,7 +701,7 @@ public class CliqueApplicableActionGeneratorTests
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForNullaryAction_InvalidCostFailsDuringGeneratorConstruction()
+    private static Problem CreateProblemForNullaryAction_UndefinedCostIsNeverApplicable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("d");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -1270,19 +1270,11 @@ public class CliqueApplicableActionGeneratorTests
     }
 
     [Fact]
-    public void NullaryAction_InvalidCostFailsDuringGeneratorConstruction()
+    public void NullaryAction_UndefinedCostIsNeverApplicable()
     {
-        Problem problem = CreateProblemForNullaryAction_InvalidCostFailsDuringGeneratorConstruction();
+        Problem problem = CreateProblemForNullaryAction_UndefinedCostIsNeverApplicable();
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-            () => new CliqueApplicableActionGenerator(problem));
-
-        Assert.Contains("Failed to ground action 'broken()'", exception.Message);
-        Assert.NotNull(exception.InnerException);
-        Assert.Contains(
-            "division by zero",
-            exception.InnerException!.Message,
-            StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(new CliqueApplicableActionGenerator(problem).GetApplicableActions(problem.InitialState.Expand()));
     }
 
     [Theory]

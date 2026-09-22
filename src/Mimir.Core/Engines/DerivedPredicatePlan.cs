@@ -19,12 +19,15 @@ internal sealed class DerivedPredicatePlan
     private readonly Dictionary<Predicate<Derived>, DerivedPredicateComponent> _componentsByPredicate;
 
     internal IReadOnlyList<DerivedPredicateComponent> Components { get; }
+    internal bool HasNumericConditions { get; }
 
     private DerivedPredicatePlan(
         IReadOnlyList<DerivedPredicateComponent> components,
-        Dictionary<Predicate<Derived>, bool> stateDependent)
+        Dictionary<Predicate<Derived>, bool> stateDependent,
+        bool hasNumericConditions)
     {
         Components = components;
+        HasNumericConditions = hasNumericConditions;
         _stateDependent = stateDependent;
         _componentsByPredicate = new Dictionary<Predicate<Derived>, DerivedPredicateComponent>(
             ReferenceEqualityComparer.Instance);
@@ -50,16 +53,17 @@ internal sealed class DerivedPredicatePlan
             new Dictionary<Predicate<Derived>, bool>(
                 ReferenceEqualityComparer.Instance);
 
+        bool hasNumericConditions = false;
         foreach (Predicate<Derived> predicate in domain.Derived)
         {
             var predicateDependencies = new List<DerivedDependency>();
             dependencies.Add(predicate, predicateDependencies);
-            directlyStateDependent.Add(
-                predicate,
-                CollectDependencies(
-                    domain.DerivedDefinitions[predicate.Name],
-                    predicateDependencies,
-                    isNegative: false));
+            var comparisons = new List<NumericComparison>();
+            bool readsFluents = CollectDependencies(domain.DerivedDefinitions[predicate.Name],
+                predicateDependencies, comparisons, isNegative: false);
+            directlyStateDependent.Add(predicate, readsFluents || comparisons.Any(comparison =>
+                NumericEvaluation.DependsOnState(comparison, domain.ChangingFunctions)));
+            hasNumericConditions |= comparisons.Count > 0;
         }
 
         IReadOnlyList<IReadOnlyList<Predicate<Derived>>> componentPredicates =
@@ -101,7 +105,7 @@ internal sealed class DerivedPredicatePlan
                 stateDependent.Add(predicate, componentIsStateDependent);
         }
 
-        return new DerivedPredicatePlan(components.AsReadOnly(), stateDependent);
+        return new DerivedPredicatePlan(components.AsReadOnly(), stateDependent, hasNumericConditions);
     }
 
     private static IReadOnlyList<IReadOnlyList<int>> BuildPositiveDependentRuleIndices(
@@ -158,10 +162,14 @@ internal sealed class DerivedPredicatePlan
     private static bool CollectDependencies(
         IGroundedExpression expression,
         List<DerivedDependency> dependencies,
+        List<NumericComparison> comparisons,
         bool isNegative)
     {
         switch (expression)
         {
+            case NumericComparison comparison:
+                comparisons.Add(comparison);
+                return false;
             case GroundedTrue:
                 return false;
             case GroundedAtom { Predicate: Predicate<Fluent> }:
@@ -172,25 +180,27 @@ internal sealed class DerivedPredicatePlan
             case GroundedAtom:
                 return false;
             case GroundedNot not:
-                return CollectDependencies(not.Expression, dependencies, !isNegative);
+                return CollectDependencies(not.Expression, dependencies, comparisons, !isNegative);
             case GroundedAnd and:
-                return AnyStateDependency(and.Expressions, dependencies, isNegative);
+                return AnyStateDependency(and.Expressions, dependencies, comparisons, isNegative);
             case GroundedOr or:
-                return AnyStateDependency(or.Expressions, dependencies, isNegative);
+                return AnyStateDependency(or.Expressions, dependencies, comparisons, isNegative);
             case GroundedImply imply:
                 bool antecedent = CollectDependencies(
                     imply.Antecedent,
                     dependencies,
+                    comparisons,
                     !isNegative);
                 bool consequent = CollectDependencies(
                     imply.Consequent,
                     dependencies,
+                    comparisons,
                     isNegative);
                 return antecedent || consequent;
             case GroundedForall forall:
-                return CollectDependencies(forall.Body, dependencies, isNegative);
+                return CollectDependencies(forall.Body, dependencies, comparisons, isNegative);
             case GroundedExists exists:
-                return CollectDependencies(exists.Body, dependencies, isNegative);
+                return CollectDependencies(exists.Body, dependencies, comparisons, isNegative);
             default:
                 throw new InvalidOperationException(expression.GetType().Name);
         }
@@ -199,11 +209,12 @@ internal sealed class DerivedPredicatePlan
     private static bool AnyStateDependency(
         IEnumerable<IGroundedExpression> expressions,
         List<DerivedDependency> dependencies,
+        List<NumericComparison> comparisons,
         bool isNegative)
     {
         bool found = false;
         foreach (IGroundedExpression expression in expressions)
-            found |= CollectDependencies(expression, dependencies, isNegative);
+            found |= CollectDependencies(expression, dependencies, comparisons, isNegative);
         return found;
     }
 

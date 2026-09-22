@@ -7,6 +7,10 @@ class MimirError(RuntimeError):
     """A native Mimir operation failed."""
 
 
+class UnsupportedError(MimirError, NotImplementedError):
+    """The operation is not supported for this model, e.g. a heuristic on a numeric problem."""
+
+
 class StateSpaceLimitExceeded(MimirError):
     """State-space expansion exceeded its configured state limit."""
 

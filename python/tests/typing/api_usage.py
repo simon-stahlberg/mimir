@@ -57,7 +57,7 @@ def build_with_public_api() -> pymimir.Problem:
     objects.add("a", "item").close()
     initial: pymimir.InitialStateBuilder = problem_builder.initial_state()
     initial.add_fact("ready", "a")
-    initial.add_numeric_initialization("price", 2.5, "a").close()
+    initial.set_value(pymimir.Numeric.function("price", "a"), 2.5).close()
     goal: pymimir.GoalBuilder = problem_builder.goal()
     goal.add("done", "a").add("done", "home", positive=False).close()
 

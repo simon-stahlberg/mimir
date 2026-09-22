@@ -5,6 +5,8 @@ namespace Mimir.Core.Schemas;
 public sealed class ActionSchema
 {
     public string Name { get; }
+    public IReadOnlyList<NumericComparison> NumericPreconditions { get; }
+    internal bool HasNumericConditionsOrEffects => NumericPreconditions.Count > 0 || Effects.Any(effect => effect.NumericConditions.Count > 0 || effect.NumericEffect is not null);
     public IReadOnlyList<Variable> Parameters { get; }
 
     public IReadOnlyList<Literal<Atom<Fluent>>> FluentPreconditions { get; }
@@ -12,8 +14,9 @@ public sealed class ActionSchema
     public IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions { get; }
 
     internal IReadOnlyList<ConditionalEffect> Effects { get; }
-    public SchemaCondition Precondition => new(StaticPreconditions.Cast<Literal>().Concat(FluentPreconditions).Concat(DerivedPreconditions));
-    public ActionEffect Effect => new(Effects.Where(effect => effect.IsUnconditional).Select(effect => effect.EffectLiteral));
+    public SchemaCondition Precondition => new(StaticPreconditions.Cast<Literal>().Concat(FluentPreconditions).Concat(DerivedPreconditions), NumericPreconditions);
+    public ActionEffect Effect => new(Effects.Where(effect => effect.IsUnconditional && effect.LiteralEffect is not null).Select(effect => effect.LiteralEffect!),
+        Effects.Where(effect => effect.IsUnconditional && effect.NumericEffect is not null).Select(effect => effect.NumericEffect!));
     public IReadOnlyList<ConditionalEffect> ConditionalEffects => Array.AsReadOnly(Effects.Where(effect => !effect.IsUnconditional).ToArray());
     public NumericExpression CostExpression { get; }
 
@@ -24,7 +27,8 @@ public sealed class ActionSchema
         IReadOnlyList<Literal<Atom<Static>>> staticPreconditions,
         IReadOnlyList<Literal<Atom<Derived>>> derivedPreconditions,
         IReadOnlyList<ConditionalEffect> effects,
-        NumericExpression costExpression)
+        NumericExpression costExpression,
+        IReadOnlyList<NumericComparison>? numericPreconditions = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(costExpression);
@@ -36,6 +40,7 @@ public sealed class ActionSchema
         DerivedPreconditions = CopyCollection(derivedPreconditions, nameof(derivedPreconditions));
         Effects = CopyCollection(effects, nameof(effects));
         CostExpression = costExpression;
+        NumericPreconditions = CopyCollection(numericPreconditions ?? [], nameof(numericPreconditions));
     }
 
     private static IReadOnlyList<T> CopyCollection<T>(IReadOnlyList<T> values, string parameterName)

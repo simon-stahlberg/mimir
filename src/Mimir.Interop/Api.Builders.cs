@@ -300,14 +300,14 @@ public static partial class Exports
                 "parameters"),
             RequireHandle<LogicalExpressionSpec>(bodyHandle)));
 
-    // -- Action cost specifications --
+    // -- Numeric expression specifications --
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_constant")]
-    public static int ActionCostConstant(double value)
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_spec_constant")]
+    public static int NumericSpecConstant(double value)
         => CreateHandle(() => Numeric.Constant(value));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_function")]
-    public static int ActionCostFunction(
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_spec_function")]
+    public static int NumericSpecFunction(
         IntPtr functionNamePtr,
         IntPtr argumentsPtr,
         int argumentCount)
@@ -315,29 +315,49 @@ public static partial class Exports
             ReadRequiredUtf8(functionNamePtr, "function_name"),
             ReadUtf8Array(argumentsPtr, argumentCount, "arguments")));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_add")]
-    public static int ActionCostAdd(int leftHandle, int rightHandle)
-        => CreateHandle(() => Numeric.Add(
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_spec_binary")]
+    public static int NumericSpecBinary(int operation, int leftHandle, int rightHandle)
+        => CreateHandle(() => Numeric.Binary(
+            (NumericOperator)operation,
             RequireHandle<NumericExpressionSpec>(leftHandle),
             RequireHandle<NumericExpressionSpec>(rightHandle)));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_subtract")]
-    public static int ActionCostSubtract(int leftHandle, int rightHandle)
-        => CreateHandle(() => Numeric.Subtract(
-            RequireHandle<NumericExpressionSpec>(leftHandle),
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_spec_compare")]
+    public static int NumericSpecCompare(int leftHandle, int operation, int rightHandle)
+        => CreateHandle(() => RequireHandle<NumericExpressionSpec>(leftHandle).Compare(
+            (ComparisonOperator)operation,
             RequireHandle<NumericExpressionSpec>(rightHandle)));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_multiply")]
-    public static int ActionCostMultiply(int leftHandle, int rightHandle)
-        => CreateHandle(() => Numeric.Multiply(
-            RequireHandle<NumericExpressionSpec>(leftHandle),
-            RequireHandle<NumericExpressionSpec>(rightHandle)));
+    [UnmanagedCallersOnly(EntryPoint = "mimir_builder_add_expression")]
+    public static byte BuilderAddExpression(int builder, int expression) => Mutate<object>(builder, value =>
+    {
+        LogicalExpressionSpec condition = RequireHandle<LogicalExpressionSpec>(expression);
+        switch (value)
+        {
+            case ActionSchemaBuilder action: action.AddPrecondition(condition); break;
+            case ConditionalEffectBuilder effect: effect.AddCondition(condition); break;
+            case GoalBuilder goal: goal.Add(condition); break;
+            default: throw new ArgumentException("Expected an action, effect, or goal builder.");
+        }
+    });
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_cost_divide")]
-    public static int ActionCostDivide(int leftHandle, int rightHandle)
-        => CreateHandle(() => Numeric.Divide(
-            RequireHandle<NumericExpressionSpec>(leftHandle),
-            RequireHandle<NumericExpressionSpec>(rightHandle)));
+    [UnmanagedCallersOnly(EntryPoint = "mimir_builder_numeric_update")]
+    public static byte BuilderNumericUpdate(int builder, int target, int operation, int expression) => Mutate<object>(builder, value =>
+    {
+        NumericFunctionSpec field = RequireHandle<NumericFunctionSpec>(target);
+        NumericExpressionSpec right = RequireHandle<NumericExpressionSpec>(expression);
+        var update = (NumericUpdateOperator)operation;
+        switch (value)
+        {
+            case ActionSchemaBuilder action: action.NumericUpdate(field, update, right); break;
+            case ConditionalEffectBuilder effect: effect.NumericUpdate(field, update, right); break;
+            default: throw new ArgumentException("Expected an action or effect builder.");
+        }
+    });
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_set_value")]
+    public static byte InitialStateSetValue(int builder, int target, double value)
+        => Mutate<InitialStateBuilder>(builder, initial => initial.SetValue(RequireHandle<NumericFunctionSpec>(target), value));
 
     // -- Problem builder --
 
@@ -390,18 +410,6 @@ public static partial class Exports
         int argumentCount)
         => Mutate<InitialStateBuilder>(handle, builder => builder.AddFact(
             ReadRequiredUtf8(predicateNamePtr, "predicate_name"),
-            ReadUtf8Array(argumentsPtr, argumentCount, "arguments")));
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_builder_add_numeric_initialization")]
-    public static byte InitialStateBuilderAddNumericInitialization(
-        int handle,
-        IntPtr functionNamePtr,
-        double value,
-        IntPtr argumentsPtr,
-        int argumentCount)
-        => Mutate<InitialStateBuilder>(handle, builder => builder.AddNumericInitialization(
-            ReadRequiredUtf8(functionNamePtr, "function_name"),
-            value,
             ReadUtf8Array(argumentsPtr, argumentCount, "arguments")));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_builder_close")]

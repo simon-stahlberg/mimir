@@ -40,7 +40,7 @@ public class NumericApiTests
         Assert.True(state.Holds(fuel.GreaterThanOrEqual(20)));
         Assert.False(state.Holds(fuel.LessThan(20)));
         Assert.Equal(fuel, problem.FunctionCall("fuel", "truck1"));
-        Assert.Throws<DivideByZeroException>(() => state.Value(fuel / 0));
+        Assert.True(double.IsNaN(state.Value(fuel / 0)));
         Assert.Throws<ArgumentException>(() => state.Value(CreateProblem().FunctionCall("fuel", "truck1")));
     }
 
@@ -71,18 +71,23 @@ public class NumericApiTests
     }
 
     [Fact]
-    public void Builders_ExposeNumericExpressionsButRejectMissingPlanning()
+    public void Builders_AcceptNumericConditionsAndUpdates()
     {
-        NumericFunctionSpec fuel = Numeric.Function("fuel", "?t");
-        ActionSchemaBuilder action = new DomainBuilder("numeric").Actions().Add("drive");
-        Assert.Throws<NotImplementedException>(() => action.AddPrecondition(fuel.GreaterThanOrEqual(1)));
-        Assert.Throws<NotImplementedException>(() => action.Assign(fuel, 1));
-        Assert.Throws<NotImplementedException>(() => action.Increase(fuel, 1));
-        Assert.Throws<NotImplementedException>(() => action.Decrease(fuel, 1));
-        ConditionalEffectBuilder conditional = action.AddConditionalEffect();
-        Assert.Throws<NotImplementedException>(() => conditional.AddCondition(fuel.EqualTo(1)));
-        Assert.Throws<NotImplementedException>(() => conditional.Assign(fuel, 1));
-        Assert.Throws<NotImplementedException>(() => new ProblemBuilder(CreateProblem().Domain, "p")
-            .Goal().Add(fuel.LessThan(1)));
+        var builder = new DomainBuilder("numeric");
+        builder.Requirements().Add(":numeric-fluents").Close();
+        builder.Functions().Add("fuel").Close();
+        NumericFunctionSpec fuel = Numeric.Function("fuel");
+        ActionSchemaBuilder action = builder.Actions().Add("drive");
+        action.AddPrecondition(fuel.GreaterThanOrEqual(1)).Decrease(fuel, 1).Close().Close();
+        Domain domain = builder.Build();
+        var problemBuilder = new ProblemBuilder(domain, "p");
+        problemBuilder.InitialState().SetValue(fuel, 2).Close();
+        problemBuilder.Goal().Add(fuel.EqualTo(0)).Close();
+        Problem problem = problemBuilder.Build();
+        var grounded = problem.GroundAction(domain.Actions[0]);
+        State next = problem.InitialState.Expand().Apply(grounded);
+        Assert.Equal(1, next.Value(problem.FunctionCall("fuel")));
+        Assert.False(next.Holds(problem.NumericGoals[0]));
+        Assert.True(next.Expand().Apply(grounded).Holds(problem.NumericGoals[0]));
     }
 }

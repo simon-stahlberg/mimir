@@ -91,6 +91,7 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
 
     private static void EnsureSupportedDomain(Problem problem)
     {
+        problem.RequirePropositionalPlanning("h^2");
         foreach (ActionSchema action in problem.Domain.Actions)
         {
             if (action.DerivedPreconditions.Count > 0)
@@ -118,6 +119,8 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
     private void EnsureSupportedGoal(GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
+        if (goal.Comparisons.Count > 0)
+            throw new NotSupportedException("h^2 does not support numeric goals.");
         if (!ReferenceEquals(goal.Problem, _problem))
             throw new ArgumentException(
                 "Goal belongs to a different problem instance than this heuristic.",
@@ -244,27 +247,27 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
                 var rescuedFluents = new HashSet<int>(addedFluents);
                 foreach (GroundConditionalEffect effect in conditionalEffects)
                 {
-                    if (effect.EffectLiteral.IsPositive)
-                        rescuedFluents.Add(effect.EffectLiteral.Value.LocalIndex);
+                    if (effect.RequiredLiteralEffect.IsPositive)
+                        rescuedFluents.Add(effect.RequiredLiteralEffect.Value.LocalIndex);
                 }
 
                 AddOption(options, preconditions, addedFluents, deletedFluents, rescuedFluents, action.Cost);
 
                 foreach (GroundConditionalEffect effect in conditionalEffects)
                 {
-                    int fluent = effect.EffectLiteral.Value.LocalIndex;
+                    int fluent = effect.RequiredLiteralEffect.Value.LocalIndex;
                     // A conditional delete of an unmodelled negative literal achieves
                     // nothing the unconditional option does not already achieve.
-                    if (!effect.EffectLiteral.IsPositive && _negativeLiterals[fluent] < 0)
+                    if (!effect.RequiredLiteralEffect.IsPositive && _negativeLiterals[fluent] < 0)
                         continue;
 
                     int[] effectPreconditions = Union(
                         preconditions,
                         ToLiterals(effect.PositiveFluentConditions, effect.NegativeFluentConditions));
-                    int[] effectAdds = effect.EffectLiteral.IsPositive
+                    int[] effectAdds = effect.RequiredLiteralEffect.IsPositive
                         ? Union(addedFluents, [fluent])
                         : addedFluents;
-                    int[] effectDeletes = effect.EffectLiteral.IsPositive
+                    int[] effectDeletes = effect.RequiredLiteralEffect.IsPositive
                         ? deletedFluents
                         : Union(deletedFluents, [fluent]);
                     AddOption(options, effectPreconditions, effectAdds, effectDeletes, rescuedFluents, action.Cost);

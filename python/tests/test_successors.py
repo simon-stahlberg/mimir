@@ -4,7 +4,7 @@ import gc
 import pytest
 
 import pymimir as mm
-import pymimir.model as model_api
+import pymimir._base as handle_api
 from pymimir.advanced import free_handle, lib, value_hash
 
 
@@ -116,7 +116,7 @@ def test_successor_wrapping_failure_releases_all_handles(problem, monkeypatch, f
     released = []
     original_copy = lib.mimir_transition_list_copy_handles
     original_free = lib.mimir_free_handle
-    original_finalizer = model_api._create_finalizer
+    original_finalizer = handle_api._create_finalizer
     wrappers = 0
 
     def copy(*args):
@@ -140,7 +140,7 @@ def test_successor_wrapping_failure_releases_all_handles(problem, monkeypatch, f
 
     monkeypatch.setattr(lib, "mimir_transition_list_copy_handles", copy)
     monkeypatch.setattr(lib, "mimir_free_handle", release)
-    monkeypatch.setattr(model_api, "_create_finalizer", create_finalizer)
+    monkeypatch.setattr(handle_api, "_create_finalizer", create_finalizer)
     with pytest.raises(RuntimeError, match="injected wrapper failure"):
         state.successor_states()
     gc.collect()

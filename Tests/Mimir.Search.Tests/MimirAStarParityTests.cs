@@ -9,7 +9,7 @@ namespace Mimir.Search.Tests;
 
 public class MimirAStarParityTests
 {
-    private static string BenchmarkPath => Path.Combine(AppContext.BaseDirectory, "../../../../../Benchmark");
+    private static string BenchmarkPath => Path.Combine(AppContext.BaseDirectory, "../../../../../Benchmark/strips");
 
     [Fact]
     public void GroundedAStarHMax_SupportsDeliveryEqualityPreconditions()

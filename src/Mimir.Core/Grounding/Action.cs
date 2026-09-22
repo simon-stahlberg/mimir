@@ -88,6 +88,7 @@ internal sealed class ActionPreconditions :
     private readonly bool _staticDerivedPreconditionsSatisfied;
     private readonly Literal<Fact<Derived>>[] _stateDependentDerivedPreconditions;
 
+    internal IReadOnlyList<GroundNumericComparison> Comparisons { get; }
     internal OffsetBitboard PositiveFluent { get; }
     internal OffsetBitboard NegativeFluent { get; }
     internal OffsetBitboard PositiveStatic { get; }
@@ -99,11 +100,14 @@ internal sealed class ActionPreconditions :
         OffsetBitboard negativeFluent,
         OffsetBitboard positiveStatic,
         OffsetBitboard negativeStatic,
-        IReadOnlyList<Literal<Fact<Derived>>> derivedPreconditions)
+        IReadOnlyList<Literal<Fact<Derived>>> derivedPreconditions,
+        IReadOnlyList<GroundNumericComparison>? comparisons = null)
         : base(GetDerivedPreconditions(derivedPreconditions))
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        Comparisons = comparisons is null || comparisons.Count == 0
+            ? Array.Empty<GroundNumericComparison>() : Array.AsReadOnly(comparisons.ToArray());
         PositiveFluent = positiveFluent;
         NegativeFluent = negativeFluent;
         PositiveStatic = positiveStatic;
@@ -170,30 +174,29 @@ internal sealed class ActionEffects :
     internal OffsetBitboard Add { get; }
     internal OffsetBitboard Delete { get; }
     public double Cost { get; }
+    internal IReadOnlyList<GroundNumericUpdate> NumericUpdates { get; }
+    internal bool HasNumericEffects { get; }
 
     public ActionEffects(
         ActionSchema schema,
         OffsetBitboard add,
         OffsetBitboard delete,
         IReadOnlyList<GroundConditionalEffect> conditionalEffects,
-        double cost)
+        double cost,
+        IReadOnlyList<GroundNumericUpdate> numericUpdates)
         : base(GetConditionalEffects(conditionalEffects))
     {
         ArgumentNullException.ThrowIfNull(schema);
-        if (!double.IsFinite(cost))
-        {
-            throw new InvalidOperationException(
-                $"Grounded action '{schema.Name}' has a non-finite cost.");
-        }
-        if (cost < 0d)
-        {
-            throw new InvalidOperationException(
-                $"Grounded action '{schema.Name}' has a negative cost ({cost}).");
-        }
+        ArgumentNullException.ThrowIfNull(numericUpdates);
 
         Add = add;
         Delete = delete;
         Cost = cost;
+        NumericUpdates = numericUpdates.Count == 0
+            ? Array.Empty<GroundNumericUpdate>() : Array.AsReadOnly(numericUpdates.ToArray());
+        HasNumericEffects = NumericUpdates.Count > 0;
+        foreach (GroundConditionalEffect effect in this)
+            HasNumericEffects |= effect.NumericEffect is not null;
     }
 
     private static GroundConditionalEffect[] GetConditionalEffects(
@@ -208,10 +211,10 @@ public class Action : IEquatable<Action>
 {
     public GroundConjunctiveCondition Precondition => new(Context.Problem,
         GroundConditionLiterals.Read(Context, PositiveFluentPreconditions, NegativeFluentPreconditions,
-            PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions));
+            PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions), _preconditions.Comparisons);
 
     public GroundActionEffect Effect => new(GroundConditionLiterals.Read(Context,
-        AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()));
+        AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()), _effects.NumericUpdates);
 
     public NumericExpression CostExpression => Schema.CostExpression.Ground(Context.Problem,
         Schema.Parameters.Zip(Arguments).ToDictionary(pair => pair.First, pair => pair.Second));
@@ -223,6 +226,7 @@ public class Action : IEquatable<Action>
     public InstanceContext Context => _binding.Context;
     public ActionSchema Schema => _binding.Schema;
     public IReadOnlyList<Constant> Arguments => _binding;
+    // NaN when the cost is undefined (PDDL 2.1); such an action is never applicable.
     public double Cost => _effects.Cost;
 
     internal OffsetBitboard PositiveFluentPreconditions
@@ -233,6 +237,8 @@ public class Action : IEquatable<Action>
         => _preconditions.PositiveStatic;
     internal OffsetBitboard NegativeStaticPreconditions
         => _preconditions.NegativeStatic;
+    internal IReadOnlyList<GroundNumericComparison> NumericPreconditions => _preconditions.Comparisons;
+    internal IReadOnlyList<GroundNumericUpdate> NumericUpdates => _effects.NumericUpdates;
     internal OffsetBitboard AddEffects => _effects.Add;
     internal OffsetBitboard DeleteEffects => _effects.Delete;
     internal ActionBinding BindingComponent => _binding;
@@ -277,7 +283,8 @@ public class Action : IEquatable<Action>
             addEffects,
             deleteEffects,
             conditionalEffects,
-            cost);
+            cost,
+            Array.Empty<GroundNumericUpdate>());
     }
 
     internal Action(
@@ -327,8 +334,32 @@ public class Action : IEquatable<Action>
         if (!compactState.ContainsNone(NegativeFluentPreconditions))
             return false;
 
+        if (!AreNumericPreconditionsSatisfied(compactState)) return false;
         return AreStaticDerivedPreconditionsSatisfied()
-            && AreStateDependentDerivedPreconditionsSatisfied(state);
+            && AreStateDependentDerivedPreconditionsSatisfied(state)
+            && AreNumericEffectsDefined(state);
+    }
+
+    // Checked after the preconditions because triggered conditional effects are only meaningful in states
+    // where the action's preconditions hold.
+    internal bool AreNumericEffectsDefined(ExtendedState state)
+    {
+        if (double.IsNaN(Cost)) return false;
+        if (!_effects.HasNumericEffects) return true;
+        List<GroundConditionalEffect>? triggered = null;
+        foreach (GroundConditionalEffect effect in _effects)
+        {
+            if (effect.NumericEffect is not null && effect.IsSatisfied(state))
+                (triggered ??= new List<GroundConditionalEffect>()).Add(effect);
+        }
+        return NumericStateTransition.IsDefined(state.State, _effects.NumericUpdates, triggered);
+    }
+
+    internal bool AreNumericPreconditionsSatisfied(State state)
+    {
+        foreach (GroundNumericComparison comparison in _preconditions.Comparisons)
+            if (!state.Holds(comparison)) return false;
+        return true;
     }
 
     internal bool AreStaticDerivedPreconditionsSatisfied()

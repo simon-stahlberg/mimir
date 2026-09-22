@@ -265,10 +265,12 @@ public class InstanceContext
             ?? throw new InvalidOperationException(nameof(InitializeDerivedClosure));
 
     public Problem Problem { get; }
+    internal NumericStateLayout NumericLayout { get; }
 
-    internal InstanceContext(Problem problem, IEnumerable<Constant> objects)
+    internal InstanceContext(Problem problem, IEnumerable<Constant> objects, NumericStateLayout numericLayout)
     {
         Problem = problem ?? throw new ArgumentNullException(nameof(problem));
+        NumericLayout = numericLayout ?? throw new ArgumentNullException(nameof(numericLayout));
         ArgumentNullException.ThrowIfNull(objects);
         Constant[] objectArray = objects.ToArray();
         _objects = new HashSet<Constant>(

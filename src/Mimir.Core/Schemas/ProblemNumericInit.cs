@@ -13,6 +13,10 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
     private readonly Constant? _arg3;
     private readonly IReadOnlyList<Constant>? _arguments;
 
+    internal NumericFunction Function => _function;
+    internal NumericFunctionKey Snapshot() => _arity > 3
+        ? new NumericFunctionKey(_function, _arguments!.ToArray()) : this;
+
     public NumericFunctionKey(NumericFunction function, IReadOnlyList<Constant> arguments)
     {
         _function = function;
@@ -23,6 +27,16 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
         // Only higher arities retain the collection. Initialization keys receive a
         // private array; lookup keys borrow theirs only during Dictionary.TryGetValue.
         _arguments = arguments.Count > 3 ? arguments : null;
+    }
+
+    public override string ToString()
+    {
+        var arguments = new List<string>(_arity);
+        if (_arity > 0) arguments.Add(_arg1!.Name);
+        if (_arity > 1) arguments.Add(_arg2!.Name);
+        if (_arity > 2) arguments.Add(_arg3!.Name);
+        for (int index = 3; index < _arity; index++) arguments.Add(_arguments![index].Name);
+        return $"({_function.Name}{string.Concat(arguments.Select(argument => " " + argument))})";
     }
 
     public bool Equals(NumericFunctionKey other)
@@ -68,7 +82,7 @@ internal static class ProblemNumericInit
     {
         NumberLiteral numberLiteral = numericInitialization.Value;
 
-        if (numericInitialization.Fluent.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+        if (NumericFunction.IsTotalCost(numericInitialization.Fluent.Name))
         {
             if (!actionCostsEnabled)
                 throw new NotSupportedException("Initializing total-cost requires the :action-costs requirement.");
@@ -104,7 +118,10 @@ internal static class ProblemNumericInit
 
         var key = new NumericFunctionKey(function, arguments);
 
-        if (!numericFunctionValues.TryAdd(key, (double)numberLiteral.Value))
+        double value = numberLiteral is ProgrammaticNumberLiteral programmatic
+            ? programmatic.RuntimeValue
+            : (double)numberLiteral.Value;
+        if (!numericFunctionValues.TryAdd(key, value))
             throw new InvalidOperationException($"Numeric function '{function.Name}' was initialized more than once for the same arguments.");
     }
 }

@@ -20,47 +20,42 @@ public class State : IEquatable<State>
     public bool Holds(NumericComparison comparison)
     {
         ArgumentNullException.ThrowIfNull(comparison);
-        double left = Value(comparison.Left);
-        double right = Value(comparison.Right);
-        return comparison.Operator switch
-        {
-            ComparisonOperator.Equal => left == right,
-            ComparisonOperator.LessThan => left < right,
-            ComparisonOperator.LessThanOrEqual => left <= right,
-            ComparisonOperator.GreaterThan => left > right,
-            ComparisonOperator.GreaterThanOrEqual => left >= right,
-            _ => throw new ArgumentException("Unknown comparison operator.")
-        };
+        return NumericEvaluation.Compare(comparison.Operator, Value(comparison.Left), Value(comparison.Right));
     }
 
     private readonly ulong[] _bitboard;
+    private readonly double[] _numericValues;
     private readonly int _hashCode;
 
     public InstanceContext Context { get; }
     internal ReadOnlySpan<ulong> Bitboard => _bitboard;
+    internal ReadOnlySpan<double> NumericValues => _numericValues;
 
-    internal State(InstanceContext context, ulong[] bitboard)
+    internal State(InstanceContext context, ulong[] bitboard,
+        double[]? numericValues = null, bool takeOwnership = false)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(bitboard);
+        numericValues ??= Array.Empty<double>();
+        if (numericValues.Length != context.NumericLayout.Count)
+            throw new ArgumentException($"State requires {context.NumericLayout.Count} numeric values, received {numericValues.Length}.", nameof(numericValues));
 
         Context = context;
-        _bitboard = bitboard.ToArray();
-        _hashCode = ComputeHashCode(context, _bitboard);
+        _bitboard = bitboard.Length == 0 ? Array.Empty<ulong>() : takeOwnership ? bitboard : bitboard.ToArray();
+        _numericValues = numericValues.Length == 0 ? Array.Empty<double>() : takeOwnership ? numericValues : numericValues.ToArray();
+        for (int index = 0; index < _numericValues.Length; index++)
+            _numericValues[index] = NumericEvaluation.Quantize(_numericValues[index]);
+        _hashCode = ComputeHashCode(context, _bitboard, _numericValues);
     }
 
-    internal State(InstanceContext context, ulong[] bitboard, bool takeOwnership)
+    internal State(State source, ulong[] bitboard, bool takeOwnership)
     {
-        Context = context;
-        _bitboard = bitboard;
-        _hashCode = ComputeHashCode(context, _bitboard);
-    }
-
-    internal State(InstanceContext context)
-    {
-        Context = context ?? throw new ArgumentNullException(nameof(context));
-        _bitboard = Array.Empty<ulong>();
-        _hashCode = ComputeHashCode(Context, _bitboard);
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(bitboard);
+        Context = source.Context;
+        _bitboard = bitboard.Length == 0 ? Array.Empty<ulong>() : takeOwnership ? bitboard : bitboard.ToArray();
+        _numericValues = source._numericValues;
+        _hashCode = ComputeHashCode(Context, _bitboard, _numericValues);
     }
 
     internal bool IsTrue(FluentIndex factIndex)
@@ -195,7 +190,7 @@ public class State : IEquatable<State>
             newBitboard[arrayIndex] |= 1UL << bitIndex;
         }
 
-        return new State(Context, TrimTrailingZeros(newBitboard), takeOwnership: true);
+        return new State(this, TrimTrailingZeros(newBitboard), takeOwnership: true);
     }
 
     public bool Equals(State? other)
@@ -203,7 +198,8 @@ public class State : IEquatable<State>
         if (ReferenceEquals(this, other)) return true;
         if (other is null
             || !ReferenceEquals(other.Context, Context)
-            || other._hashCode != _hashCode)
+            || other._hashCode != _hashCode
+            || !_numericValues.AsSpan().SequenceEqual(other._numericValues))
         {
             return false;
         }
@@ -233,7 +229,8 @@ public class State : IEquatable<State>
 
     private static int ComputeHashCode(
         InstanceContext context,
-        ReadOnlySpan<ulong> bitboard)
+        ReadOnlySpan<ulong> bitboard,
+        ReadOnlySpan<double> numericValues)
     {
         var hash = new HashCode();
         hash.Add(RuntimeHelpers.GetHashCode(context));
@@ -249,6 +246,7 @@ public class State : IEquatable<State>
             hash.Add(bitboard[i]);
         }
 
+        foreach (double value in numericValues) hash.Add(value);
         return hash.ToHashCode();
     }
 }

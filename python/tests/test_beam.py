@@ -337,7 +337,7 @@ def test_python_batch_states_can_be_retained_and_release_their_handles(graph):
 @pytest.mark.parametrize("failure_index", [1, 2])
 def test_python_batch_wrapper_failure_releases_adopted_and_unadopted_handles(graph, monkeypatch, failure_index):
     import gc
-    import pymimir.model as model
+    import pymimir._base as handles
     import pymimir.search as search
     from pymimir.advanced import lib, value_hash
     problem, _ = graph([(0, 2, 0), (0, 3, 0)])
@@ -345,7 +345,7 @@ def test_python_batch_wrapper_failure_releases_adopted_and_unadopted_handles(gra
     start, goal = problem.initial_state, problem.goal
     allocated, released = [], []
     original_callback = search.HEURISTIC_BATCH_CALLBACK
-    original_finalizer = model._create_finalizer
+    original_finalizer = handles._create_finalizer
     original_free = lib.mimir_free_handle
     calls = 0
     def callback(function):
@@ -364,7 +364,7 @@ def test_python_batch_wrapper_failure_releases_adopted_and_unadopted_handles(gra
         released.append(handle)
         original_free(handle)
     monkeypatch.setattr(search, "HEURISTIC_BATCH_CALLBACK", callback)
-    monkeypatch.setattr(model, "_create_finalizer", create_finalizer)
+    monkeypatch.setattr(handles, "_create_finalizer", create_finalizer)
     monkeypatch.setattr(lib, "mimir_free_handle", release)
     with pytest.raises(RuntimeError, match="wrapper failed"):
         mm.beam(problem, heuristic, start_state=start, goal=goal)

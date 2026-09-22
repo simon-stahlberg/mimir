@@ -10,27 +10,11 @@ using PddlTerm = Mimir.Pddl.Ast.Models.Term;
 
 namespace Mimir.Core.Schemas;
 
-internal sealed record ProgrammaticDomainCompilation(
-    DomainDefinition Definition,
-    ProgrammaticDomainInputs Inputs);
-
-internal sealed record ProgrammaticActionInput(string Name, NumericExpressionSpec Cost);
-
-internal sealed class ProgrammaticDomainInputs
-{
-    internal IReadOnlyList<ProgrammaticActionInput> Actions { get; }
-
-    internal ProgrammaticDomainInputs(IEnumerable<BuilderActionSpec> actions)
-    {
-        Actions = Array.AsReadOnly(actions
-            .Select(action => new ProgrammaticActionInput(action.Name, action.Cost))
-            .ToArray());
-    }
-}
+internal sealed record ProgrammaticNumberLiteral(double RuntimeValue, decimal Projection) : NumberLiteral(Projection);
 
 internal static class ProgrammaticDomainCompiler
 {
-    internal static ProgrammaticDomainCompilation Compile(DomainBuilder builder)
+    internal static DomainDefinition Compile(DomainBuilder builder)
     {
         ImmutableArray<PddlRequirement> requirements = builder.RequirementSpecs
             .SelectMany(ParseRequirement)
@@ -39,7 +23,7 @@ internal static class ProgrammaticDomainCompiler
         Dictionary<string, BuilderDerivedPredicateSpec> definitions = builder.DerivedPredicateSpecs
             .ToDictionary(definition => definition.PredicateName, StringComparer.OrdinalIgnoreCase);
 
-        var definition = new DomainDefinition(
+        return new DomainDefinition(
             builder.Name,
             requirements,
             builder.TypeSpecs
@@ -63,10 +47,6 @@ internal static class ProgrammaticDomainCompiler
                     BuildPredicateDeclaration(predicate),
                     BuildLogicalExpression(definitions[predicate.Name].Body.Node)))
                 .ToImmutableArray());
-
-        return new ProgrammaticDomainCompilation(
-            definition,
-            new ProgrammaticDomainInputs(builder.ActionSpecs));
     }
 
     internal static IReadOnlyList<PddlRequirement> ParseRequirement(string requirement)
@@ -97,7 +77,8 @@ internal static class ProgrammaticDomainCompiler
     internal static ILogicalExpression BuildLogicalExpression(LogicalExpressionNode expression)
         => expression switch
         {
-            ComparisonLogicalExpressionNode => throw new NotImplementedException("Numeric planning conditions are not implemented."),
+            ComparisonLogicalExpressionNode comparison => new Comparison((Mimir.Pddl.Ast.Expressions.ComparisonOperator)comparison.Operator,
+                BuildNumericExpression(comparison.Left), BuildNumericExpression(comparison.Right)),
             TrueLogicalExpressionNode => new EmptyLogic(),
             FalseLogicalExpressionNode => new Or(ImmutableArray<ILogicalExpression>.Empty),
             AtomLogicalExpressionNode atom => new PredicateCall(
@@ -124,27 +105,27 @@ internal static class ProgrammaticDomainCompiler
                 $"Unsupported logical expression specification '{expression.GetType().Name}'.")
         };
 
-    internal static INumericExpression BuildActionCost(ActionCostNode cost)
+    internal static INumericExpression BuildNumericExpression(NumericExpressionNode cost)
         => cost switch
         {
-            ConstantActionCostNode constant => new NumberLiteral(constant.PddlValue),
-            FunctionActionCostNode function => new FluentCall(
+            ConstantNumericNode constant => new ProgrammaticNumberLiteral(constant.Value, constant.PddlValue),
+            FunctionNumericNode function => new FluentCall(
                 function.FunctionName,
                 BuildTerms(function.Arguments)),
-            BinaryActionCostNode { Operator: NumericOperator.Add } binary => new PddlAdd(
-                BuildActionCost(binary.Left),
-                BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: NumericOperator.Subtract } binary => new Subtract(
-                BuildActionCost(binary.Left),
-                BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: NumericOperator.Multiply } binary => new Multiply(
-                BuildActionCost(binary.Left),
-                BuildActionCost(binary.Right)),
-            BinaryActionCostNode { Operator: NumericOperator.Divide } binary => new Divide(
-                BuildActionCost(binary.Left),
-                BuildActionCost(binary.Right)),
+            BinaryNumericNode { Operator: NumericOperator.Add } binary => new PddlAdd(
+                BuildNumericExpression(binary.Left),
+                BuildNumericExpression(binary.Right)),
+            BinaryNumericNode { Operator: NumericOperator.Subtract } binary => new Subtract(
+                BuildNumericExpression(binary.Left),
+                BuildNumericExpression(binary.Right)),
+            BinaryNumericNode { Operator: NumericOperator.Multiply } binary => new Multiply(
+                BuildNumericExpression(binary.Left),
+                BuildNumericExpression(binary.Right)),
+            BinaryNumericNode { Operator: NumericOperator.Divide } binary => new Divide(
+                BuildNumericExpression(binary.Left),
+                BuildNumericExpression(binary.Right)),
             _ => throw new InvalidOperationException(
-                $"Unsupported action cost specification '{cost.GetType().Name}'.")
+                $"Unsupported numeric expression specification '{cost.GetType().Name}'.")
         };
 
     private static PredicateDeclaration BuildPredicateDeclaration(BuilderPredicateSpec predicate)
@@ -152,32 +133,49 @@ internal static class ProgrammaticDomainCompiler
 
     private static ActionDefinition BuildAction(BuilderActionSpec action, bool actionCostsEnabled)
     {
-        var effects = new List<IEffect>(
-            action.Effects.Count + action.ConditionalEffects.Count + (actionCostsEnabled ? 1 : 0));
+        var effects = new List<IEffect>();
         effects.AddRange(action.Effects.Select(BuildSimpleEffect));
+        effects.AddRange(action.NumericUpdates.Select(BuildNumericUpdate));
         effects.AddRange(action.ConditionalEffects.Select(BuildConditionalEffect));
-        if (actionCostsEnabled)
+        // Without :action-costs the only permitted explicit cost is the implicit unit cost.
+        if (actionCostsEnabled && action.Cost is not null)
         {
             effects.Add(new Increase(
-                new FluentCall("total-cost", ImmutableArray<PddlTerm>.Empty),
-                BuildActionCost(action.Cost.Node)));
+                new FluentCall(NumericFunction.TotalCostName, ImmutableArray<PddlTerm>.Empty),
+                BuildNumericExpression(action.Cost.Node)));
         }
 
         return new ActionDefinition(
             action.Name,
             BuildParameters(action.Parameters),
-            BuildCondition(action.Preconditions),
+            BuildCondition(action.Preconditions, action.Expressions),
             new AndEffect(effects.ToImmutableArray()));
     }
 
     private static IEffect BuildConditionalEffect(BuilderConditionalEffectSpec effect)
     {
-        IEffect result = BuildSimpleEffect(effect.Effect);
-        if (effect.Conditions.Count > 0)
-            result = new PddlConditionalEffect(BuildCondition(effect.Conditions), result);
+        IEffect result = effect.NumericUpdate is { } numeric ? BuildNumericUpdate(numeric)
+            : BuildSimpleEffect(effect.Effect ?? throw new InvalidOperationException("Missing effect."));
+        if (effect.Conditions.Count > 0 || effect.Expressions.Count > 0)
+            result = new PddlConditionalEffect(BuildCondition(effect.Conditions, effect.Expressions), result);
         if (effect.Parameters.Count > 0)
             result = new ForallEffect(BuildParameters(effect.Parameters), result);
         return result;
+    }
+
+    private static IEffect BuildNumericUpdate(BuilderNumericUpdateSpec update)
+    {
+        var target = (FluentCall)BuildNumericExpression(update.Target.Node);
+        INumericExpression value = BuildNumericExpression(update.Expression.Node);
+        return update.Operator switch
+        {
+            NumericUpdateOperator.Assign => new Assign(target, value),
+            NumericUpdateOperator.Increase => new Increase(target, value),
+            NumericUpdateOperator.Decrease => new Decrease(target, value),
+            NumericUpdateOperator.ScaleUp => new ScaleUp(target, value),
+            NumericUpdateOperator.ScaleDown => new ScaleDown(target, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(update))
+        };
     }
 
     private static IEffect BuildSimpleEffect(BuilderLiteralSpec literal)
@@ -188,9 +186,9 @@ internal static class ProgrammaticDomainCompiler
             : new DeleteEffect(predicate);
     }
 
-    private static ILogicalExpression BuildCondition(IReadOnlyList<BuilderLiteralSpec> literals)
+    private static ILogicalExpression BuildCondition(IReadOnlyList<BuilderLiteralSpec> literals, IReadOnlyList<LogicalExpressionSpec> conditions)
     {
-        ILogicalExpression[] expressions = literals.Select(BuildLiteral).ToArray();
+        ILogicalExpression[] expressions = literals.Select(BuildLiteral).Concat(conditions.Select(condition => BuildLogicalExpression(condition.Node))).ToArray();
         return expressions.Length switch
         {
             0 => new EmptyLogic(),
@@ -228,7 +226,7 @@ internal static class ProgrammaticProblemCompiler
         IReadOnlyList<BuilderTypedNameSpec> objects,
         IReadOnlyList<BuilderProblemFactSpec> initialFacts,
         IReadOnlyList<BuilderProblemNumericSpec> numericInitializations,
-        IReadOnlyList<BuilderProblemGoalSpec> goals)
+        IReadOnlyList<BuilderProblemGoalSpec> goals, IReadOnlyList<LogicalExpressionSpec> expressions)
     {
         ImmutableArray<IProblemInitElement>.Builder initialState =
             ImmutableArray.CreateBuilder<IProblemInitElement>(
@@ -243,10 +241,10 @@ internal static class ProgrammaticProblemCompiler
         {
             initialState.Add(new NumericInitialization(
                 new FluentCall(numeric.FunctionName, BuildConstantTerms(numeric.Arguments)),
-                new NumberLiteral(numeric.PddlValue)));
+                new ProgrammaticNumberLiteral(numeric.Value, numeric.PddlValue)));
         }
 
-        ILogicalExpression[] goalExpressions = goals.Select(BuildGoal).ToArray();
+        ILogicalExpression[] goalExpressions = goals.Select(BuildGoal).Concat(expressions.Select(expression => ProgrammaticDomainCompiler.BuildLogicalExpression(expression.Node))).ToArray();
         ILogicalExpression goal = goalExpressions.Length switch
         {
             0 => new EmptyLogic(),

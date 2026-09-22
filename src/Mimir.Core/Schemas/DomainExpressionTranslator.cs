@@ -10,26 +10,28 @@ internal static class DomainExpressionTranslator
     public static IGroundedExpression TranslateExpression(
         ILogicalExpression expr,
         IReadOnlyDictionary<string, Predicate> predicateLookup,
+        IReadOnlyDictionary<string, NumericFunction> functions,
         Dictionary<string, Variable> variableScope,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope)
     {
         return expr switch
         {
+            Comparison comparison => NumericExpressionTranslator.TranslateComparison(comparison, variableScope, functions, mapTerm),
             EmptyLogic => new GroundedTrue(),
             And and => new GroundedAnd(and.Expressions
-                .Select(e => TranslateExpression(e, predicateLookup, variableScope, mapTerm, extendVariableScope))
+                .Select(e => TranslateExpression(e, predicateLookup, functions, variableScope, mapTerm, extendVariableScope))
                 .ToImmutableArray()),
             Or or => new GroundedOr(or.Expressions
-                .Select(e => TranslateExpression(e, predicateLookup, variableScope, mapTerm, extendVariableScope))
+                .Select(e => TranslateExpression(e, predicateLookup, functions, variableScope, mapTerm, extendVariableScope))
                 .ToImmutableArray()),
             Not not => new GroundedNot(
-                TranslateExpression(not.Expression, predicateLookup, variableScope, mapTerm, extendVariableScope)),
+                TranslateExpression(not.Expression, predicateLookup, functions, variableScope, mapTerm, extendVariableScope)),
             Imply imply => new GroundedImply(
-                TranslateExpression(imply.Antecedent, predicateLookup, variableScope, mapTerm, extendVariableScope),
-                TranslateExpression(imply.Consequent, predicateLookup, variableScope, mapTerm, extendVariableScope)),
-            Forall forall => TranslateForall(forall, predicateLookup, variableScope, mapTerm, extendVariableScope),
-            Exists exists => TranslateExists(exists, predicateLookup, variableScope, mapTerm, extendVariableScope),
+                TranslateExpression(imply.Antecedent, predicateLookup, functions, variableScope, mapTerm, extendVariableScope),
+                TranslateExpression(imply.Consequent, predicateLookup, functions, variableScope, mapTerm, extendVariableScope)),
+            Forall forall => TranslateForall(forall, predicateLookup, functions, variableScope, mapTerm, extendVariableScope),
+            Exists exists => TranslateExists(exists, predicateLookup, functions, variableScope, mapTerm, extendVariableScope),
             Equality equality => TranslateAtom(
                 "=", [equality.Left, equality.Right], predicateLookup, variableScope, mapTerm),
             PredicateCall pCall => TranslateAtom(
@@ -39,17 +41,10 @@ internal static class DomainExpressionTranslator
         };
     }
 
-    public static IGroundedExpression TranslateExpressionInternal(
-        ILogicalExpression expr,
-        IReadOnlyDictionary<string, Predicate> predicateLookup,
-        Dictionary<string, Variable> variableScope,
-        Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
-        Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope)
-        => TranslateExpression(expr, predicateLookup, variableScope, mapTerm, extendVariableScope);
-
     private static GroundedForall TranslateForall(
         Forall forall,
         IReadOnlyDictionary<string, Predicate> predicateLookup,
+        IReadOnlyDictionary<string, NumericFunction> functions,
         Dictionary<string, Variable> variableScope,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope)
@@ -57,12 +52,13 @@ internal static class DomainExpressionTranslator
         var (innerScope, variables) = extendVariableScope(variableScope, forall.Variables);
         return new GroundedForall(
             variables,
-            TranslateExpression(forall.Body, predicateLookup, innerScope, mapTerm, extendVariableScope));
+            TranslateExpression(forall.Body, predicateLookup, functions, innerScope, mapTerm, extendVariableScope));
     }
 
     private static GroundedExists TranslateExists(
         Exists exists,
         IReadOnlyDictionary<string, Predicate> predicateLookup,
+        IReadOnlyDictionary<string, NumericFunction> functions,
         Dictionary<string, Variable> variableScope,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope)
@@ -70,7 +66,7 @@ internal static class DomainExpressionTranslator
         var (innerScope, variables) = extendVariableScope(variableScope, exists.Variables);
         return new GroundedExists(
             variables,
-            TranslateExpression(exists.Body, predicateLookup, innerScope, mapTerm, extendVariableScope));
+            TranslateExpression(exists.Body, predicateLookup, functions, innerScope, mapTerm, extendVariableScope));
     }
 
     public static void ExtractPreconditions(
@@ -81,19 +77,23 @@ internal static class DomainExpressionTranslator
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         List<Literal<Atom<Fluent>>> fPre,
         List<Literal<Atom<Static>>> sPre,
-        List<Literal<Atom<Derived>>> dPre)
+        List<Literal<Atom<Derived>>> dPre,
+        IReadOnlyDictionary<string, NumericFunction> functions, List<NumericComparison> comparisons)
     {
         switch (expr)
         {
+            case Comparison comparison when polarity == Polarity.Positive:
+                comparisons.Add(NumericExpressionTranslator.TranslateComparison(comparison, variableScope, functions, mapTerm));
+                return;
             case EmptyLogic:
                 return;
             case And andExpr:
                 foreach (var child in andExpr.Expressions)
-                    ExtractPreconditions(child, polarity, allPredicates, variableScope, mapTerm, fPre, sPre, dPre);
+                    ExtractPreconditions(child, polarity, allPredicates, variableScope, mapTerm, fPre, sPre, dPre, functions, comparisons);
                 break;
             case Not not:
                 var flipped = polarity == Polarity.Positive ? Polarity.Negative : Polarity.Positive;
-                ExtractPreconditions(not.Expression, flipped, allPredicates, variableScope, mapTerm, fPre, sPre, dPre);
+                ExtractPreconditions(not.Expression, flipped, allPredicates, variableScope, mapTerm, fPre, sPre, dPre, functions, comparisons);
                 break;
             case PredicateCall pCall:
                 AddLiteral(
@@ -112,140 +112,80 @@ internal static class DomainExpressionTranslator
     }
 
     public static void ExtractEffects(
-        Mimir.Pddl.Ast.Effects.ConditionalEffect cond,
-        IReadOnlyList<Variable> outerQuantifiedVars,
-        Dictionary<string, Variable> variableScope,
-        Dictionary<string, Predicate> allPredicates,
+        IEffect effect,
+        IReadOnlyList<Variable> quantified,
+        Dictionary<string, Variable> scope,
+        Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
-        Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope,
-        List<ConditionalEffect> results)
+        Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
+        List<ConditionalEffect> results,
+        IReadOnlyDictionary<string, NumericFunction> functions)
+        => ExtractEffects(effect, quantified, scope, predicates, mapTerm, extendScope, results, functions,
+            EffectCondition.Empty);
+
+    private sealed record EffectCondition(
+        IReadOnlyList<Literal<Atom<Fluent>>> Fluent,
+        IReadOnlyList<Literal<Atom<Static>>> Static,
+        IReadOnlyList<Literal<Atom<Derived>>> Derived,
+        IReadOnlyList<NumericComparison> Comparisons)
     {
-        var condFPre = new List<Literal<Atom<Fluent>>>();
-        var condSPre = new List<Literal<Atom<Static>>>();
-        var condDPre = new List<Literal<Atom<Derived>>>();
-
-        if (!LogicalExpressionSemantics.IsAlwaysTrue(cond.Condition))
-            ExtractPreconditions(cond.Condition, Polarity.Positive, allPredicates, variableScope, mapTerm, condFPre, condSPre, condDPre);
-
-        var innerEffect = cond.Effect;
-
-        if (innerEffect is Mimir.Pddl.Ast.Effects.ForallEffect forall)
-        {
-            var (innerScope, innerVariables) = extendVariableScope(variableScope, forall.Variables);
-            var quantifiedVars = new List<Variable>(outerQuantifiedVars.Count + innerVariables.Count);
-            quantifiedVars.AddRange(outerQuantifiedVars);
-            quantifiedVars.AddRange(innerVariables);
-
-            ExtractForallInner(
-                forall.Effect,
-                quantifiedVars,
-                innerScope,
-                condFPre,
-                condSPre,
-                condDPre,
-                allPredicates,
-                mapTerm,
-                extendVariableScope,
-                results);
-        }
-        else
-        {
-            var effectLiteral = ExtractSingleEffectLiteral(innerEffect, allPredicates, variableScope, mapTerm);
-            if (effectLiteral != null)
-                results.Add(new ConditionalEffect(outerQuantifiedVars, condFPre, condSPre, condDPre, effectLiteral));
-        }
+        public static readonly EffectCondition Empty = new([], [], [], []);
     }
 
-    private static void ExtractForallInner(
-        IEffect innerEffect,
-        IReadOnlyList<Variable> quantifiedVars,
-        Dictionary<string, Variable> variableScope,
-        List<Literal<Atom<Fluent>>> outerCondF,
-        List<Literal<Atom<Static>>> outerCondS,
-        List<Literal<Atom<Derived>>> outerCondD,
-        Dictionary<string, Predicate> allPredicates,
+    private static void ExtractEffects(
+        IEffect effect,
+        IReadOnlyList<Variable> quantified,
+        Dictionary<string, Variable> scope,
+        Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
-        Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendVariableScope,
-        List<ConditionalEffect> results)
+        Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
+        List<ConditionalEffect> results,
+        IReadOnlyDictionary<string, NumericFunction> functions,
+        EffectCondition outerCondition)
     {
-        switch (innerEffect)
+        var fluent = new List<Literal<Atom<Fluent>>>(outerCondition.Fluent);
+        var statics = new List<Literal<Atom<Static>>>(outerCondition.Static);
+        var derived = new List<Literal<Atom<Derived>>>(outerCondition.Derived);
+        var comparisons = new List<NumericComparison>(outerCondition.Comparisons);
+        switch (effect)
         {
-            case Mimir.Pddl.Ast.Effects.ConditionalEffect innerCond:
-            {
-                var condF = new List<Literal<Atom<Fluent>>>(outerCondF);
-                var condS = new List<Literal<Atom<Static>>>(outerCondS);
-                var condD = new List<Literal<Atom<Derived>>>(outerCondD);
-
-                if (!LogicalExpressionSemantics.IsAlwaysTrue(innerCond.Condition))
-                    ExtractPreconditions(innerCond.Condition, Polarity.Positive, allPredicates, variableScope, mapTerm, condF, condS, condD);
-
-                ExtractForallInner(
-                    innerCond.Effect,
-                    quantifiedVars,
-                    variableScope,
-                    condF,
-                    condS,
-                    condD,
-                    allPredicates,
-                    mapTerm,
-                    extendVariableScope,
-                    results);
+            case Mimir.Pddl.Ast.Effects.ConditionalEffect conditional:
+                ExtractPreconditions(conditional.Condition, Polarity.Positive, predicates, scope, mapTerm,
+                    fluent, statics, derived, functions, comparisons);
+                ExtractEffects(conditional.Effect, quantified, scope, predicates, mapTerm, extendScope, results, functions,
+                    new EffectCondition(fluent, statics, derived, comparisons));
                 return;
-            }
-            case Mimir.Pddl.Ast.Effects.AndEffect andEffect:
-            {
-                foreach (IEffect child in andEffect.Effects)
-                {
-                    ExtractForallInner(
-                        child,
-                        quantifiedVars,
-                        variableScope,
-                        outerCondF,
-                        outerCondS,
-                        outerCondD,
-                        allPredicates,
-                        mapTerm,
-                        extendVariableScope,
-                        results);
-                }
+            case Mimir.Pddl.Ast.Effects.AndEffect conjunction:
+                foreach (IEffect child in conjunction.Effects)
+                    ExtractEffects(child, quantified, scope, predicates, mapTerm, extendScope, results, functions, outerCondition);
                 return;
-            }
             case Mimir.Pddl.Ast.Effects.ForallEffect forall:
-            {
-                var (innerScope, innerVariables) = extendVariableScope(variableScope, forall.Variables);
-                var nestedQuantifiedVariables = new List<Variable>(quantifiedVars.Count + innerVariables.Count);
-                nestedQuantifiedVariables.AddRange(quantifiedVars);
-                nestedQuantifiedVariables.AddRange(innerVariables);
-
-                ExtractForallInner(
-                    forall.Effect,
-                    nestedQuantifiedVariables,
-                    innerScope,
-                    outerCondF,
-                    outerCondS,
-                    outerCondD,
-                    allPredicates,
-                    mapTerm,
-                    extendVariableScope,
-                    results);
+                var (innerScope, variables) = extendScope(scope, forall.Variables);
+                ExtractEffects(forall.Effect, quantified.Concat(variables).ToArray(), innerScope, predicates,
+                    mapTerm, extendScope, results, functions, outerCondition);
                 return;
-            }
-            default:
-            {
-                Literal<Atom<Fluent>>? literal =
-                    ExtractSingleEffectLiteral(innerEffect, allPredicates, variableScope, mapTerm);
-                if (literal is not null)
-                {
-                    results.Add(new ConditionalEffect(
-                        quantifiedVars,
-                        outerCondF,
-                        outerCondS,
-                        outerCondD,
-                        literal));
-                }
+            case Mimir.Pddl.Ast.Effects.Increase increase when NumericFunction.IsTotalCost(increase.Fluent.Name):
                 return;
-            }
         }
+        (FluentCall Target, INumericExpression Value, NumericUpdateOperator Operator)? update = effect switch
+        {
+            Mimir.Pddl.Ast.Effects.Assign e => (e.Fluent, e.Value, NumericUpdateOperator.Assign),
+            Mimir.Pddl.Ast.Effects.Increase e => (e.Fluent, e.Value, NumericUpdateOperator.Increase),
+            Mimir.Pddl.Ast.Effects.Decrease e => (e.Fluent, e.Value, NumericUpdateOperator.Decrease),
+            Mimir.Pddl.Ast.Effects.ScaleUp e => (e.Fluent, e.Value, NumericUpdateOperator.ScaleUp),
+            Mimir.Pddl.Ast.Effects.ScaleDown e => (e.Fluent, e.Value, NumericUpdateOperator.ScaleDown),
+            _ => null
+        };
+        if (update is { } numeric)
+        {
+            var target = (FunctionCall)NumericExpressionTranslator.TranslateExpression(numeric.Target, scope, functions, mapTerm);
+            NumericExpression value = NumericExpressionTranslator.TranslateExpression(numeric.Value, scope, functions, mapTerm);
+            results.Add(new ConditionalEffect(quantified, fluent, statics, derived, null, comparisons,
+                new NumericUpdate(target, numeric.Operator, value)));
+            return;
+        }
+        Literal<Atom<Fluent>> literal = ExtractEffectLiteral(effect, predicates, scope, mapTerm);
+        results.Add(new ConditionalEffect(quantified, fluent, statics, derived, literal, comparisons));
     }
 
     private static GroundedAtom TranslateAtom(
@@ -294,50 +234,24 @@ internal static class DomainExpressionTranslator
         }
     }
 
-    private static Literal<Atom<Fluent>>? ExtractSingleEffectLiteral(
+    private static Literal<Atom<Fluent>> ExtractEffectLiteral(
         IEffect effect,
         Dictionary<string, Predicate> allPredicates,
         Dictionary<string, Variable> variableScope,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm)
     {
-        switch (effect)
+        (PredicateCall call, Polarity polarity) = effect switch
         {
-            case Mimir.Pddl.Ast.Effects.AddEffect add:
-            {
-                var terms = add.Predicate.Arguments.Select(term => mapTerm(term, variableScope)).ToList();
-                if (!allPredicates.TryGetValue(add.Predicate.Name, out var predicate))
-                    throw new InvalidOperationException(
-                        $"Validated effect references undeclared predicate '{add.Predicate.Name}'.");
-                if (predicate is not Predicate<Fluent> fluent)
-                    throw new InvalidOperationException(
-                        $"Validated effect modifies non-fluent predicate '{add.Predicate.Name}'.");
+            Mimir.Pddl.Ast.Effects.AddEffect add => (add.Predicate, Polarity.Positive),
+            Mimir.Pddl.Ast.Effects.DeleteEffect delete => (delete.Predicate, Polarity.Negative),
+            _ => throw new InvalidOperationException($"Validated effect has unknown type '{effect.GetType().Name}'.")
+        };
+        if (!allPredicates.TryGetValue(call.Name, out Predicate? predicate))
+            throw new InvalidOperationException($"Validated effect references undeclared predicate '{call.Name}'.");
+        if (predicate is not Predicate<Fluent> fluent)
+            throw new InvalidOperationException($"Validated effect modifies non-fluent predicate '{call.Name}'.");
 
-                return new Literal<Atom<Fluent>>(new Atom<Fluent>(fluent, terms), Polarity.Positive);
-            }
-            case Mimir.Pddl.Ast.Effects.DeleteEffect del:
-            {
-                var terms = del.Predicate.Arguments.Select(term => mapTerm(term, variableScope)).ToList();
-                if (!allPredicates.TryGetValue(del.Predicate.Name, out var predicate))
-                    throw new InvalidOperationException(
-                        $"Validated effect references undeclared predicate '{del.Predicate.Name}'.");
-                if (predicate is not Predicate<Fluent> fluent)
-                    throw new InvalidOperationException(
-                        $"Validated effect modifies non-fluent predicate '{del.Predicate.Name}'.");
-
-                return new Literal<Atom<Fluent>>(new Atom<Fluent>(fluent, terms), Polarity.Negative);
-            }
-            case Mimir.Pddl.Ast.Effects.Increase increase
-                when increase.Fluent.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase):
-                return null;
-            case Mimir.Pddl.Ast.Effects.Assign:
-            case Mimir.Pddl.Ast.Effects.Increase:
-            case Mimir.Pddl.Ast.Effects.Decrease:
-            case Mimir.Pddl.Ast.Effects.ScaleUp:
-            case Mimir.Pddl.Ast.Effects.ScaleDown:
-                throw new NotSupportedException("Core does not support ordinary numeric effects.");
-            default:
-                throw new InvalidOperationException(
-                    $"Validated effect has unknown type '{effect.GetType().Name}'.");
-        }
+        List<ITerm> terms = call.Arguments.Select(term => mapTerm(term, variableScope)).ToList();
+        return new Literal<Atom<Fluent>>(new Atom<Fluent>(fluent, terms), polarity);
     }
 }

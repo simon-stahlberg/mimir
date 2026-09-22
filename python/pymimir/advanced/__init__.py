@@ -10,10 +10,10 @@ their ``ctypes`` callback objects alive for every native invocation and must
 adopt or free every handle received by a callback.
 """
 
-from . import builders, datasets, formalism, heuristics, learning, search
+from . import builders, datasets, formalism, heuristics, learning, numeric, search
 from ._native import free_handle, lib, relationship_value, take_string, value_equals, value_hash
 
 __all__ = [
     "lib", "take_string", "free_handle", "value_equals", "value_hash", "relationship_value",
-    "builders", "formalism", "search", "heuristics", "datasets", "learning",
+    "builders", "formalism", "numeric", "search", "heuristics", "datasets", "learning",
 ]

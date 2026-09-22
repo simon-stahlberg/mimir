@@ -49,6 +49,20 @@ public partial class Domain
     public IReadOnlyDictionary<string, IGroundedExpression> DerivedDefinitions { get; }
     public Predicate<Static>? EqualityPredicate { get; }
     internal DerivedPredicatePlan DerivedPlan { get; }
+    internal IReadOnlySet<NumericFunction> ChangingFunctions { get; }
+
+    private static HashSet<NumericFunction> FindChangingFunctions(IReadOnlyList<ActionSchema> actions)
+    {
+        var functions = new HashSet<NumericFunction>();
+        foreach (ActionSchema action in actions)
+        {
+            foreach (ConditionalEffect effect in action.Effects)
+            {
+                if (effect.NumericEffect is { } update) functions.Add(update.Target.Function);
+            }
+        }
+        return functions;
+    }
 
     public static Domain FromFile(string filePath)
         => new(LoadFile(filePath));
@@ -113,6 +127,7 @@ public partial class Domain
             () =>
             {
                 DomainDefinition astDomain = PddlParser.ParseDomain(text);
+                CorePddlSupportValidator.ValidateDomain(SemanticValidator.ValidateDomain(astDomain), isCanonical: false);
                 DomainDefinition canonicalDomain = Canonicalizer.Compile(astDomain);
                 CorePddlSupportValidator.ValidateDomain(canonicalDomain);
                 DerivedDependencyValidator.Validate(canonicalDomain);
@@ -120,33 +135,16 @@ public partial class Domain
             });
     }
 
+    // Callers (LoadText, DomainBuilder) have already validated the canonical definition.
     internal Domain(DomainDefinition astDomain)
-        : this(astDomain, programmaticInputs: null)
-    {
-    }
-
-    internal static Domain CreateProgrammatic(
-        DomainDefinition astDomain,
-        ProgrammaticDomainInputs programmaticInputs)
-    {
-        ArgumentNullException.ThrowIfNull(programmaticInputs);
-        return new Domain(astDomain, programmaticInputs);
-    }
-
-    private Domain(
-        DomainDefinition astDomain,
-        ProgrammaticDomainInputs? programmaticInputs)
     {
         if (!astDomain.IsCanonical())
             throw new ArgumentException("The provided AST DomainDefinition is not in canonical form.");
 
-        CorePddlSupportValidator.ValidateDomain(astDomain);
-        DerivedDependencyValidator.Validate(astDomain);
-
         PddlDefinition = astDomain;
         Name = astDomain.Name;
 
-        var builder = new PddlDomainTranslator(astDomain, programmaticInputs);
+        var builder = new PddlDomainTranslator(astDomain);
 
         Requirements = Array.AsReadOnly(
             astDomain.Requirements.Select(requirement => requirement.ToPddlString()).ToArray());
@@ -160,6 +158,7 @@ public partial class Domain
         Functions = Array.AsReadOnly(builder.Functions.ToArray());
         Constants = Array.AsReadOnly(builder.Constants.ToArray());
         Actions = Array.AsReadOnly(builder.Actions.ToArray());
+        ChangingFunctions = FindChangingFunctions(Actions);
         TypeHierarchy = new ReadOnlyDictionary<string, string>(
             builder.TypeHierarchy.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase));
         _compatibleParentTypes = BuildTypeCompatibility(TypeHierarchy);
@@ -197,7 +196,7 @@ public partial class Domain
         RejectNullElements(actions, nameof(actions));
         RejectNullElements(requirements ?? Array.Empty<string>(), nameof(requirements));
         if (functions?.Any(function =>
-                function.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase)) == true)
+                NumericFunction.IsTotalCost(function.Name)) == true)
         {
             throw new ArgumentException(
                 "The built-in total-cost function is reserved for planner bookkeeping and cannot be supplied as a programmatic numeric function.",
@@ -240,6 +239,7 @@ public partial class Domain
         Functions = Array.AsReadOnly(functions?.ToArray() ?? Array.Empty<NumericFunction>());
         Constants = Array.AsReadOnly(constants.ToArray());
         Actions = Array.AsReadOnly(actions.ToArray());
+        ChangingFunctions = FindChangingFunctions(Actions);
         TypeHierarchy = new ReadOnlyDictionary<string, string>(
             typeHierarchy.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase));
         _compatibleParentTypes = BuildTypeCompatibility(TypeHierarchy);

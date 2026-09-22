@@ -43,7 +43,7 @@ public sealed record NumericConstant : NumericExpression
     public double Value { get; }
     public NumericConstant(double value)
     {
-        if (!double.IsFinite(value)) throw new ArgumentOutOfRangeException(nameof(value));
+        if (!double.IsFinite(value)) throw new ArgumentOutOfRangeException(nameof(value), value, "Numeric constants must be finite.");
         Value = value;
     }
 }
@@ -138,9 +138,9 @@ public sealed record FunctionCall(
 
 
 public enum ComparisonOperator { Equal, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual }
-public enum NumericUpdateOperator { Assign, Increase, Decrease }
+public enum NumericUpdateOperator { Assign, Increase, Decrease, ScaleUp, ScaleDown }
 
-public record NumericComparison
+public record NumericComparison : IGroundedExpression
 {
     public NumericExpression Left { get; }
     public ComparisonOperator Operator { get; }
@@ -205,6 +205,8 @@ public sealed record GroundNumericUpdate
 public sealed record GroundFunctionCall : NumericExpression
 {
     public Problem Problem { get; }
+    internal NumericField Field { get; }
+    internal InstanceContext Context { get; }
     public NumericFunction Function { get; }
     public IReadOnlyList<Constant> Arguments { get; }
 
@@ -214,6 +216,8 @@ public sealed record GroundFunctionCall : NumericExpression
         ArgumentNullException.ThrowIfNull(function);
         ArgumentNullException.ThrowIfNull(arguments);
         problem.ValidateNumericFunctionArguments(function, arguments);
+        Context = problem.Context;
+        Field = Context.NumericLayout.Resolve(function, arguments);
         Problem = problem;
         Function = function;
         Arguments = Array.AsReadOnly(arguments.ToArray());
@@ -235,46 +239,96 @@ public sealed record GroundFunctionCall : NumericExpression
 
 internal static class NumericEvaluation
 {
+    internal static bool IsGround(NumericExpression expression) => expression switch
+    {
+        NumericConstant or GroundFunctionCall => true,
+        NumericBinaryExpression binary => IsGround(binary.Left) && IsGround(binary.Right),
+        _ => false
+    };
+
     internal static void RequireGround(NumericExpression expression)
     {
-        switch (expression)
-        {
-            case NumericConstant or GroundFunctionCall: return;
-            case NumericBinaryExpression binary:
-                RequireGround(binary.Left);
-                RequireGround(binary.Right);
-                return;
-            default: throw new ArgumentException("Expected a grounded numeric expression.");
-        }
+        if (!IsGround(expression)) throw new ArgumentException("Expected a grounded numeric expression.");
     }
 
     internal static double Evaluate(State state, NumericExpression expression)
     {
         ArgumentNullException.ThrowIfNull(expression);
-        double result;
         switch (expression)
         {
             case NumericConstant constant: return constant.Value;
             case GroundFunctionCall call:
-                if (!ReferenceEquals(call.Problem, state.Context.Problem))
+                if (!ReferenceEquals(call.Context, state.Context))
                     throw new ArgumentException("Numeric expression belongs to a different problem.");
-                return call.Problem.GetNumericFunctionValue(call.Function, call.Arguments);
+                return call.Field.Index is NumericFluentIndex index
+                    ? state.NumericValues[index.Value]
+                    : call.Field.InitialValue;
             case NumericBinaryExpression binary:
-                double left = Evaluate(state, binary.Left);
-                double right = Evaluate(state, binary.Right);
-                result = binary.Operator switch
-                {
-                    NumericOperator.Add => left + right,
-                    NumericOperator.Subtract => left - right,
-                    NumericOperator.Multiply => left * right,
-                    NumericOperator.Divide when right == 0 => throw new DivideByZeroException(),
-                    NumericOperator.Divide => left / right,
-                    _ => throw new ArgumentException("Unknown numeric operator.")
-                };
-                break;
+                return Apply(binary.Operator, Evaluate(state, binary.Left), Evaluate(state, binary.Right));
             default: throw new ArgumentException("State.Value requires a grounded numeric expression.");
         }
-        if (!double.IsFinite(result)) throw new ArithmeticException("Numeric evaluation produced a non-finite value.");
-        return result;
+    }
+
+    internal static bool DependsOnState(NumericExpression expression, IReadOnlySet<NumericFunction> changingFunctions)
+        => expression switch
+        {
+            NumericConstant => false,
+            FunctionCall call => changingFunctions.Contains(call.Function),
+            GroundFunctionCall call => changingFunctions.Contains(call.Function),
+            NumericBinaryExpression binary => DependsOnState(binary.Left, changingFunctions)
+                || DependsOnState(binary.Right, changingFunctions),
+            _ => throw new InvalidOperationException($"Unknown numeric expression '{expression.GetType().Name}'.")
+        };
+
+    internal static bool DependsOnState(NumericComparison comparison, IReadOnlySet<NumericFunction> changingFunctions)
+        => DependsOnState(comparison.Left, changingFunctions) || DependsOnState(comparison.Right, changingFunctions);
+
+    // PDDL 2.1 leaves unassigned fluents and division by zero undefined; NaN encodes "undefined" and makes
+    // every comparison and update that reads it fail, which renders the enclosing action inapplicable.
+    internal const double Undefined = double.NaN;
+    internal const double Epsilon = 1e-9;
+
+    // 1e9 is exact in binary, so value * GridScale / GridScale lands on the double nearest to each decimal grid
+    // point (0.3 stays 0.3). Above the limit value * GridScale would lose integer precision.
+    private const double GridScale = 1e9;
+    private const double QuantizationLimit = 1e6;
+
+    internal static double Apply(NumericOperator operation, double left, double right)
+    {
+        double result = operation switch
+        {
+            NumericOperator.Add => left + right,
+            NumericOperator.Subtract => left - right,
+            NumericOperator.Multiply => left * right,
+            NumericOperator.Divide when right == 0d => Undefined,
+            NumericOperator.Divide => left / right,
+            _ => throw new ArgumentException("Unknown numeric operator.")
+        };
+        return double.IsFinite(result) ? result : Undefined;
+    }
+
+    internal static bool Compare(ComparisonOperator operation, double left, double right)
+    {
+        if (double.IsNaN(left) || double.IsNaN(right)) return false;
+        return operation switch
+        {
+            ComparisonOperator.Equal => Math.Abs(left - right) <= Epsilon,
+            ComparisonOperator.LessThan => left < right - Epsilon,
+            ComparisonOperator.LessThanOrEqual => left <= right + Epsilon,
+            ComparisonOperator.GreaterThan => left > right + Epsilon,
+            ComparisonOperator.GreaterThanOrEqual => left >= right - Epsilon,
+            _ => throw new ArgumentException("Unknown comparison operator.")
+        };
+    }
+
+    // Snapping state values to the epsilon grid keeps state equality and hashing exact and transitive while
+    // still merging values that differ only by floating-point noise.
+    internal static double Quantize(double value)
+    {
+        if (double.IsNaN(value)) return Undefined;
+        if (double.IsInfinity(value)) throw new ArgumentException("Numeric values must be finite or undefined.");
+        if (Math.Abs(value) >= QuantizationLimit) return value;
+        double quantized = Math.Round(value * GridScale) / GridScale;
+        return quantized == 0d ? 0d : quantized;
     }
 }

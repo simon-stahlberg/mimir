@@ -7,7 +7,7 @@ namespace Mimir.Core.Schemas;
 
 internal static class CorePddlSupportValidator
 {
-    public static void ValidateDomain(DomainDefinition domain)
+    public static void ValidateDomain(DomainDefinition domain, bool isCanonical = true)
     {
         ArgumentNullException.ThrowIfNull(domain);
 
@@ -25,6 +25,7 @@ internal static class CorePddlSupportValidator
             {
                 ValidateEffect(
                     action.Effect,
+                    isCanonical,
                     actionCostsEnabled,
                     isConditional: false,
                     isQuantified: false,
@@ -62,35 +63,6 @@ internal static class CorePddlSupportValidator
             totalCostInitialized = true;
         }
 
-        var pendingGoals = new Stack<ILogicalExpression>();
-        pendingGoals.Push(problem.Goal);
-        while (pendingGoals.TryPop(out ILogicalExpression? goal))
-        {
-            switch (goal)
-            {
-                case Comparison:
-                    throw new NotImplementedException("Numeric planning goals are not implemented.");
-                case And conjunction:
-                    foreach (ILogicalExpression child in conjunction.Expressions) pendingGoals.Push(child);
-                    break;
-                case Or disjunction:
-                    foreach (ILogicalExpression child in disjunction.Expressions) pendingGoals.Push(child);
-                    break;
-                case Not negation:
-                    pendingGoals.Push(negation.Expression);
-                    break;
-                case Imply implication:
-                    pendingGoals.Push(implication.Antecedent);
-                    pendingGoals.Push(implication.Consequent);
-                    break;
-                case Exists exists:
-                    pendingGoals.Push(exists.Body);
-                    break;
-                case Forall forall:
-                    pendingGoals.Push(forall.Body);
-                    break;
-            }
-        }
         ValidateGoal(problem.Goal);
 
         if (problem.Metric is not null)
@@ -128,8 +100,10 @@ internal static class CorePddlSupportValidator
             case Exists existsExpression:
                 ValidateLogicalExpression(existsExpression.Body, context);
                 return;
-            case Comparison:
-                throw new NotImplementedException($"Numeric comparisons are not supported in the {context}.");
+            case Comparison comparison:
+                ValidateNumericExpression(comparison.Left);
+                ValidateNumericExpression(comparison.Right);
+                return;
             case PredicateCall:
             case Equality:
             case EmptyLogic:
@@ -145,6 +119,7 @@ internal static class CorePddlSupportValidator
 
     private static void ValidateEffect(
         IEffect effect,
+        bool isCanonical,
         bool actionCostsEnabled,
         bool isConditional,
         bool isQuantified,
@@ -157,6 +132,7 @@ internal static class CorePddlSupportValidator
                 {
                     ValidateEffect(
                         child,
+                        isCanonical,
                         actionCostsEnabled,
                         isConditional,
                         isQuantified,
@@ -167,38 +143,38 @@ internal static class CorePddlSupportValidator
                 ValidateLogicalExpression(conditionalEffect.Condition, $"condition in the {context}");
                 ValidateEffect(
                     conditionalEffect.Effect,
+                    isCanonical,
                     actionCostsEnabled,
-                    isConditional || !LogicalExpressionSemantics.IsAlwaysTrue(conditionalEffect.Condition),
+                    isConditional || !isCanonical || !LogicalExpressionSemantics.IsAlwaysTrue(conditionalEffect.Condition),
                     isQuantified,
                     context);
                 return;
             case ForallEffect forallEffect:
                 ValidateEffect(
                     forallEffect.Effect,
+                    isCanonical,
                     actionCostsEnabled,
                     isConditional,
                     isQuantified: true,
                     context);
                 return;
+            case Increase increase when IsTotalCost(increase.Fluent):
+                ValidateTotalCostIncrease(increase, actionCostsEnabled, isConditional, isQuantified);
+                return;
             case Increase increase:
-                ValidateTotalCostIncrease(
-                    increase,
-                    actionCostsEnabled,
-                    isConditional,
-                    isQuantified,
-                    context);
+                ValidateNumericUpdate(increase.Fluent, increase.Value);
                 return;
             case Assign assign:
-                ThrowUnsupportedNumericMutation("assign", assign.Fluent.Name, context);
+                ValidateNumericUpdate(assign.Fluent, assign.Value);
                 return;
             case Decrease decrease:
-                ThrowUnsupportedNumericMutation("decrease", decrease.Fluent.Name, context);
+                ValidateNumericUpdate(decrease.Fluent, decrease.Value);
                 return;
             case ScaleUp scaleUp:
-                ThrowUnsupportedNumericMutation("scale-up", scaleUp.Fluent.Name, context);
+                ValidateNumericUpdate(scaleUp.Fluent, scaleUp.Value);
                 return;
             case ScaleDown scaleDown:
-                ThrowUnsupportedNumericMutation("scale-down", scaleDown.Fluent.Name, context);
+                ValidateNumericUpdate(scaleDown.Fluent, scaleDown.Value);
                 return;
             case AddEffect:
             case DeleteEffect:
@@ -209,17 +185,19 @@ internal static class CorePddlSupportValidator
         }
     }
 
+    private static void ValidateNumericUpdate(FluentCall fluent, INumericExpression value)
+    {
+        if (IsTotalCost(fluent))
+            throw new NotSupportedException("Only increase is supported for total-cost.");
+        ValidateNumericExpression(value);
+    }
+
     private static void ValidateTotalCostIncrease(
         Increase increase,
         bool actionCostsEnabled,
         bool isConditional,
-        bool isQuantified,
-        string context)
+        bool isQuantified)
     {
-        if (!IsTotalCost(increase.Fluent))
-        {
-            ThrowUnsupportedNumericMutation("increase", increase.Fluent.Name, context);
-        }
         if (!actionCostsEnabled)
         {
             throw new NotSupportedException(
@@ -238,10 +216,10 @@ internal static class CorePddlSupportValidator
             throw new NotSupportedException("Quantified action costs are not supported.");
         }
 
-        ValidateActionCostExpression(increase.Value);
+        ValidateNumericExpression(increase.Value);
     }
 
-    private static void ValidateActionCostExpression(INumericExpression expression)
+    private static void ValidateNumericExpression(INumericExpression expression)
     {
         switch (expression)
         {
@@ -250,31 +228,31 @@ internal static class CorePddlSupportValidator
             case FluentCall fluentCall:
                 if (IsTotalCost(fluentCall))
                 {
-                    throw new NotSupportedException("Action costs may not depend on total-cost itself.");
+                    throw new NotSupportedException("total-cost can only be increased by action effects; it cannot be read.");
                 }
                 return;
             case Negate negate:
-                ValidateActionCostExpression(negate.Operand);
+                ValidateNumericExpression(negate.Operand);
                 return;
             case Add add:
-                ValidateActionCostExpression(add.Left);
-                ValidateActionCostExpression(add.Right);
+                ValidateNumericExpression(add.Left);
+                ValidateNumericExpression(add.Right);
                 return;
             case Subtract subtract:
-                ValidateActionCostExpression(subtract.Left);
-                ValidateActionCostExpression(subtract.Right);
+                ValidateNumericExpression(subtract.Left);
+                ValidateNumericExpression(subtract.Right);
                 return;
             case Multiply multiply:
-                ValidateActionCostExpression(multiply.Left);
-                ValidateActionCostExpression(multiply.Right);
+                ValidateNumericExpression(multiply.Left);
+                ValidateNumericExpression(multiply.Right);
                 return;
             case Divide divide:
-                ValidateActionCostExpression(divide.Left);
-                ValidateActionCostExpression(divide.Right);
+                ValidateNumericExpression(divide.Left);
+                ValidateNumericExpression(divide.Right);
                 return;
             default:
                 throw new NotSupportedException(
-                    $"Action cost expression '{expression.GetType().Name}' is not supported.");
+                    $"Numeric expression '{expression.GetType().Name}' is not supported.");
         }
     }
 
@@ -323,6 +301,10 @@ internal static class CorePddlSupportValidator
     {
         switch (goal)
         {
+            case Comparison comparison:
+                ValidateNumericExpression(comparison.Left);
+                ValidateNumericExpression(comparison.Right);
+                return;
             case EmptyLogic:
             case PredicateCall:
             case Equality:
@@ -338,20 +320,10 @@ internal static class CorePddlSupportValidator
                 return;
             default:
                 throw new NotSupportedException(
-                    "A Core problem goal must be a conjunction of positive or negative predicate literals.");
+                    "A Core problem goal must be a conjunction of predicate literals and numeric comparisons.");
         }
     }
 
-    private static void ThrowUnsupportedNumericMutation(
-        string operation,
-        string fluentName,
-        string context)
-    {
-        throw new NotImplementedException(
-            $"Numeric mutation '({operation} ({fluentName}) ...)' is not supported in the {context}. "
-            + "Only '(increase (total-cost) <expr>)' is supported.");
-    }
-
     private static bool IsTotalCost(FluentCall fluentCall)
-        => fluentCall.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase);
+        => NumericFunction.IsTotalCost(fluentCall.Name);
 }

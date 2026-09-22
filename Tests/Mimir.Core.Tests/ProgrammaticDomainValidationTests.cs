@@ -145,7 +145,7 @@ public sealed class ProgrammaticDomainValidationTests
         ArgumentException exception = Assert.Throws<ArgumentException>(
             () => CreateDomain(actions: [action], requirements: [":action-costs"]));
 
-        Assert.Contains("Undeclared numeric fluent 'foreign-cost'", exception.Message);
+        Assert.Contains("Undeclared numeric function 'foreign-cost'", exception.Message);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public sealed class ProgrammaticDomainValidationTests
                 actions: [action],
                 requirements: [":action-costs"]));
 
-        Assert.Contains("may not depend on total-cost", exception.Message);
+        Assert.Contains("cannot be referenced in numeric expressions", exception.Message);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public sealed class ProgrammaticDomainValidationTests
                 requirements: [":action-costs"]));
 
         Assert.Contains(
-            "Variable '?ITEM' in action cost must use the exact action parameter instance",
+            "Variable '?ITEM' must use the exact variable instance from the active scope",
             exception.Message);
     }
 

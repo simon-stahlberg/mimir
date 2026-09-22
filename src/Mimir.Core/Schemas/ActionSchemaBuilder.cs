@@ -69,11 +69,12 @@ public sealed class ActionSchemaBuilder
     private readonly List<BuilderParameterSpec> _parameters = new();
     private readonly HashSet<string> _parameterNames = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BuilderLiteralSpec> _preconditions = new();
+    private readonly List<LogicalExpressionSpec> _expressions = new();
+    private readonly List<BuilderNumericUpdateSpec> _numericUpdates = new();
     private readonly List<BuilderLiteralSpec> _effects = new();
     private readonly List<BuilderConditionalEffectSpec> _conditionalEffects = new();
-    private NumericExpressionSpec _cost = Numeric.Constant(1d);
+    private NumericExpressionSpec? _cost;
     private ConditionalEffectBuilder? _activeConditionalEffect;
-    private bool _hasExplicitCost;
     private bool _closed;
 
     internal ActionSchemaBuilder(ActionListBuilder parent, DomainBuilder domain, string name)
@@ -111,18 +112,23 @@ public sealed class ActionSchemaBuilder
     {
         EnsureAvailable();
         ArgumentNullException.ThrowIfNull(condition);
-        throw new NotImplementedException("Expression preconditions, including numeric comparisons, are not implemented.");
+        _expressions.Add(condition);
+        return this;
     }
 
-    public ActionSchemaBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    public ActionSchemaBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    public ActionSchemaBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    private ActionSchemaBuilder NumericUpdate(NumericFunctionSpec target, NumericExpressionSpec expression)
+    public ActionSchemaBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Assign, expression);
+    public ActionSchemaBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Increase, expression);
+    public ActionSchemaBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Decrease, expression);
+    public ActionSchemaBuilder ScaleUp(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.ScaleUp, expression);
+    public ActionSchemaBuilder ScaleDown(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.ScaleDown, expression);
+    internal ActionSchemaBuilder NumericUpdate(NumericFunctionSpec target, NumericUpdateOperator operation, NumericExpressionSpec expression)
     {
         EnsureAvailable();
         ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(expression);
-        throw new NotImplementedException("Numeric state updates are not implemented.");
+        if (!Enum.IsDefined(operation)) throw new ArgumentOutOfRangeException(nameof(operation));
+        _numericUpdates.Add(new BuilderNumericUpdateSpec(target, operation, expression));
+        return this;
     }
 
     public ActionSchemaBuilder AddEffect(string predicateName, params string[] arguments)
@@ -153,11 +159,10 @@ public sealed class ActionSchemaBuilder
     {
         EnsureAvailable();
         ArgumentNullException.ThrowIfNull(cost);
-        if (_hasExplicitCost)
+        if (_cost is not null)
             throw new InvalidOperationException("The action cost has already been set.");
 
         _cost = cost;
-        _hasExplicitCost = true;
         return this;
     }
 
@@ -191,7 +196,8 @@ public sealed class ActionSchemaBuilder
             _effects.ToArray(),
             _conditionalEffects.ToArray(),
             _cost,
-            _hasExplicitCost);
+            _expressions.ToArray(),
+            _numericUpdates.ToArray());
 
     private static BuilderLiteralSpec CreateLiteral(
         string predicateName,
@@ -228,6 +234,8 @@ public sealed class ConditionalEffectBuilder
     private readonly HashSet<string> _parameterNames = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BuilderLiteralSpec> _conditions = new();
     private BuilderLiteralSpec? _effect;
+    private readonly List<LogicalExpressionSpec> _expressions = new();
+    private BuilderNumericUpdateSpec? _numericUpdate;
     private bool _closed;
 
     internal ConditionalEffectBuilder(
@@ -266,17 +274,24 @@ public sealed class ConditionalEffectBuilder
     {
         EnsureOpen();
         ArgumentNullException.ThrowIfNull(condition);
-        throw new NotImplementedException("Numeric effect conditions are not implemented.");
+        _expressions.Add(condition);
+        return this;
     }
-    public ConditionalEffectBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    public ConditionalEffectBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    public ConditionalEffectBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, expression);
-    private ConditionalEffectBuilder NumericUpdate(NumericFunctionSpec target, NumericExpressionSpec expression)
+    public ConditionalEffectBuilder Assign(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Assign, expression);
+    public ConditionalEffectBuilder Increase(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Increase, expression);
+    public ConditionalEffectBuilder Decrease(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.Decrease, expression);
+    public ConditionalEffectBuilder ScaleUp(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.ScaleUp, expression);
+    public ConditionalEffectBuilder ScaleDown(NumericFunctionSpec target, NumericExpressionSpec expression) => NumericUpdate(target, NumericUpdateOperator.ScaleDown, expression);
+    internal ConditionalEffectBuilder NumericUpdate(NumericFunctionSpec target, NumericUpdateOperator operation, NumericExpressionSpec expression)
     {
         EnsureOpen();
         ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(expression);
-        throw new NotImplementedException("Numeric state updates are not implemented.");
+        if (!Enum.IsDefined(operation)) throw new ArgumentOutOfRangeException(nameof(operation));
+        if (_effect is not null || _numericUpdate is not null)
+            throw new InvalidOperationException("A conditional effect must contain exactly one effect.");
+        _numericUpdate = new BuilderNumericUpdateSpec(target, operation, expression);
+        return this;
     }
 
     public ConditionalEffectBuilder AddEffect(string predicateName, params string[] arguments)
@@ -288,7 +303,7 @@ public sealed class ConditionalEffectBuilder
         params string[] arguments)
     {
         EnsureOpen();
-        if (_effect is not null)
+        if (_effect is not null || _numericUpdate is not null)
             throw new InvalidOperationException("A conditional effect must contain exactly one effect literal.");
         _effect = CreateLiteral(predicateName, polarity, arguments);
         return this;
@@ -297,13 +312,13 @@ public sealed class ConditionalEffectBuilder
     public ActionSchemaBuilder Close()
     {
         EnsureOpen();
-        if (_effect is null)
+        if (_effect is null && _numericUpdate is null)
             throw new InvalidOperationException("A conditional effect must contain exactly one effect literal.");
 
         var effect = new BuilderConditionalEffectSpec(
             _parameters.ToArray(),
             _conditions.ToArray(),
-            _effect);
+            _effect, _expressions.ToArray(), _numericUpdate);
         _parent.CommitConditionalEffect(this, effect);
         _closed = true;
         return _parent;

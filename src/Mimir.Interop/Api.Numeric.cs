@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Mimir.Core.Schemas;
 using Mimir.Core.Grounding;
+using Mimir.Search.Evaluation;
 using GroundAction = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Interop;
@@ -100,20 +101,96 @@ public static partial class Exports
     public static double StateNumericValue(int state, int expression)
         => ReadValue(state, double.NaN, (ExtendedState value) => value.State.Value(RequireHandle<NumericExpression>(expression)));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_spec_comparison")]
-    public static int NumericSpecComparison(int left, int operation, int right)
-        => CreateHandle(() => Enum.IsDefined((ComparisonOperator)operation)
-            ? new LogicalExpressionSpec(new ComparisonLogicalExpressionNode(
-                RequireHandle<NumericExpressionSpec>(left).Node, (ComparisonOperator)operation,
-                RequireHandle<NumericExpressionSpec>(right).Node))
-            : throw new ArgumentOutOfRangeException(nameof(operation)));
-    [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_set_value")]
-    public static byte InitialStateSetValue(int builder, int target, double value)
-        => Mutate<InitialStateBuilder>(builder, initial => initial.SetValue(RequireHandle<NumericFunctionSpec>(target), value));
-
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_lifted_function_call")]
     public static int ProblemLiftedFunctionCall(int problem, int function, IntPtr arguments, int count)
         => CreateHandle(() => RequireHandle<Problem>(problem).NewFunctionCall(
             RequireHandle<NumericFunction>(function), ReadHandleArray<ITerm>(arguments, count, "arguments")));
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_is_ground")]
+    public static int NumericIsGround(int handle) => ReadValue(handle, -1, (object value) => value switch
+    {
+        NumericExpression expression => NumericEvaluation.IsGround(expression),
+        GroundNumericComparison or GroundNumericUpdate => true,
+        NumericComparison or NumericUpdate => false,
+        _ => throw new ArgumentException("Expected a numeric expression, comparison, or update.")
+    } ? 1 : 0);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_state_holds_comparison")]
+    public static int StateHoldsComparison(int state, int comparison)
+        => ReadValue(state, -1, (ExtendedState value) =>
+            value.State.Holds(RequireHandle<NumericComparison>(comparison)) ? 1 : 0);
+
+    private static IReadOnlyList<NumericComparison> NumericComparisons(object owner) => owner switch
+    {
+        ActionSchema action => action.NumericPreconditions,
+        GroundAction action => action.NumericPreconditions,
+        ConditionalEffect effect => effect.NumericConditions,
+        GroundConditionalEffect effect => effect.NumericConditions,
+        ConjunctiveCondition condition => condition.Comparisons,
+        GoalCondition goal => goal.Comparisons,
+        Problem problem => problem.NumericGoals,
+        _ => throw new ArgumentException("Expected an action, condition, or problem.")
+    };
+
+    private static IReadOnlyList<object> NumericUpdates(object owner) => owner switch
+    {
+        ActionSchema action => action.Effect.NumericUpdates,
+        GroundAction action => action.NumericUpdates,
+        ConditionalEffect effect => effect.NumericEffect is { } update ? [update] : [],
+        GroundConditionalEffect effect => effect.NumericEffect is { } update ? [update] : [],
+        _ => throw new ArgumentException("Expected an action or effect.")
+    };
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_count")]
+    public static int NumericComparisonCount(int owner) => ReadValue(owner, -1, (object value) => NumericComparisons(value).Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_get")]
+    public static int NumericComparisonGet(int owner, int index) => CreateHandle(() => NumericComparisons(RequireHandle<object>(owner))[index]);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_operand")]
+    public static int NumericComparisonOperand(int handle, int index) => CreateHandle(() => index switch
+    {
+        0 => RequireHandle<NumericComparison>(handle).Left,
+        1 => RequireHandle<NumericComparison>(handle).Right,
+        _ => throw new ArgumentOutOfRangeException(nameof(index))
+    });
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_operator")]
+    public static int NumericComparisonOperator(int handle) => ReadValue(handle, -1, (NumericComparison value) => (int)value.Operator);
+
+    // Comparisons over ground expressions are created as GroundNumericComparison so they can be used in goals.
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_create")]
+    public static int NumericComparisonCreate(int left, int operation, int right) => CreateHandle(() =>
+    {
+        NumericExpression leftExpression = RequireHandle<NumericExpression>(left);
+        NumericExpression rightExpression = RequireHandle<NumericExpression>(right);
+        var comparison = (ComparisonOperator)operation;
+        return NumericEvaluation.IsGround(leftExpression) && NumericEvaluation.IsGround(rightExpression)
+            ? new GroundNumericComparison(leftExpression, comparison, rightExpression)
+            : new NumericComparison(leftExpression, comparison, rightExpression);
+    });
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_count")]
+    public static int NumericUpdateCount(int owner) => ReadValue(owner, -1, (object value) => NumericUpdates(value).Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_get")]
+    public static int NumericUpdateGet(int owner, int index) => CreateHandle(() => NumericUpdates(RequireHandle<object>(owner))[index]);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_operand")]
+    public static int NumericUpdateOperand(int handle, int index) => CreateHandle(() => (RequireHandle<object>(handle), index) switch
+    {
+        (NumericUpdate update, 0) => update.Target,
+        (NumericUpdate update, 1) => update.Expression,
+        (GroundNumericUpdate update, 0) => update.Target,
+        (GroundNumericUpdate update, 1) => update.Expression,
+        _ => throw new ArgumentException("Expected a numeric update and operand index 0 or 1.")
+    });
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_operator")]
+    public static int NumericUpdateOperatorGet(int handle) => ReadValue(handle, -1, (object value) => value switch
+    {
+        NumericUpdate update => (int)update.Operator,
+        GroundNumericUpdate update => (int)update.Operator,
+        _ => throw new ArgumentException("Expected a numeric update.")
+    });
 }

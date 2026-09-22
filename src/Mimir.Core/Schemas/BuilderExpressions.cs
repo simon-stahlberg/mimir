@@ -113,14 +113,15 @@ public class NumericExpressionSpec
     public LogicalExpressionSpec LessThanOrEqual(NumericExpressionSpec right) => Compare(ComparisonOperator.LessThanOrEqual, right);
     public LogicalExpressionSpec GreaterThan(NumericExpressionSpec right) => Compare(ComparisonOperator.GreaterThan, right);
     public LogicalExpressionSpec GreaterThanOrEqual(NumericExpressionSpec right) => Compare(ComparisonOperator.GreaterThanOrEqual, right);
-    private LogicalExpressionSpec Compare(ComparisonOperator operation, NumericExpressionSpec right)
+    internal LogicalExpressionSpec Compare(ComparisonOperator operation, NumericExpressionSpec right)
     {
         ArgumentNullException.ThrowIfNull(right);
+        if (!Enum.IsDefined(operation)) throw new ArgumentOutOfRangeException(nameof(operation));
         return new(new ComparisonLogicalExpressionNode(Node, operation, right.Node));
     }
-    internal ActionCostNode Node { get; }
+    internal NumericExpressionNode Node { get; }
 
-    internal NumericExpressionSpec(ActionCostNode node)
+    internal NumericExpressionSpec(NumericExpressionNode node)
     {
         Node = node;
     }
@@ -128,7 +129,12 @@ public class NumericExpressionSpec
 
 public sealed class NumericFunctionSpec : NumericExpressionSpec
 {
-    internal NumericFunctionSpec(FunctionActionCostNode node) : base(node) { }
+    internal FunctionNumericNode FunctionNode { get; }
+
+    internal NumericFunctionSpec(FunctionNumericNode node) : base(node)
+    {
+        FunctionNode = node;
+    }
 }
 
 public static class Numeric
@@ -136,21 +142,21 @@ public static class Numeric
     public static NumericExpressionSpec Constant(double value)
     {
         decimal pddlValue = BuilderName.ToPddlNumber(value, nameof(value));
-        return new NumericExpressionSpec(new ConstantActionCostNode(value, pddlValue));
+        return new NumericExpressionSpec(new ConstantNumericNode(value, pddlValue));
     }
 
     public static NumericFunctionSpec Function(string functionName, params string[] arguments)
     {
         BuilderName.RequireName(functionName, nameof(functionName));
-        if (functionName.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+        if (NumericFunction.IsTotalCost(functionName))
         {
             throw new ArgumentException(
-                "Action costs may not depend on total-cost itself.",
+                "total-cost is maintained through action costs and cannot be referenced in numeric expressions.",
                 nameof(functionName));
         }
 
         return new NumericFunctionSpec(
-            new FunctionActionCostNode(
+            new FunctionNumericNode(
                 functionName,
                 BuilderName.CopyTerms(arguments, nameof(arguments))));
     }
@@ -167,14 +173,15 @@ public static class Numeric
     public static NumericExpressionSpec Divide(NumericExpressionSpec left, NumericExpressionSpec right)
         => Binary(NumericOperator.Divide, left, right);
 
-    private static NumericExpressionSpec Binary(
+    internal static NumericExpressionSpec Binary(
         NumericOperator operation,
         NumericExpressionSpec left,
         NumericExpressionSpec right)
     {
         ArgumentNullException.ThrowIfNull(left);
         ArgumentNullException.ThrowIfNull(right);
-        return new NumericExpressionSpec(new BinaryActionCostNode(operation, left.Node, right.Node));
+        if (!Enum.IsDefined(operation)) throw new ArgumentOutOfRangeException(nameof(operation));
+        return new NumericExpressionSpec(new BinaryNumericNode(operation, left.Node, right.Node));
     }
 }
 
@@ -310,15 +317,19 @@ internal sealed record BuilderLiteralSpec(
 internal sealed record BuilderConditionalEffectSpec(
     IReadOnlyList<BuilderParameterSpec> Parameters,
     IReadOnlyList<BuilderLiteralSpec> Conditions,
-    BuilderLiteralSpec Effect);
+    BuilderLiteralSpec? Effect,
+    IReadOnlyList<LogicalExpressionSpec> Expressions,
+    BuilderNumericUpdateSpec? NumericUpdate);
 internal sealed record BuilderActionSpec(
     string Name,
     IReadOnlyList<BuilderParameterSpec> Parameters,
     IReadOnlyList<BuilderLiteralSpec> Preconditions,
     IReadOnlyList<BuilderLiteralSpec> Effects,
     IReadOnlyList<BuilderConditionalEffectSpec> ConditionalEffects,
-    NumericExpressionSpec Cost,
-    bool HasExplicitCost);
+    NumericExpressionSpec? Cost,
+    IReadOnlyList<LogicalExpressionSpec> Expressions,
+    IReadOnlyList<BuilderNumericUpdateSpec> NumericUpdates);
+internal sealed record BuilderNumericUpdateSpec(NumericFunctionSpec Target, NumericUpdateOperator Operator, NumericExpressionSpec Expression);
 internal sealed record BuilderDerivedPredicateSpec(string PredicateName, LogicalExpressionSpec Body);
 
 internal abstract record LogicalExpressionNode;
@@ -343,14 +354,14 @@ internal sealed record ForallLogicalExpressionNode(
     IReadOnlyList<BuilderParameterSpec> Parameters,
     LogicalExpressionNode Body) : LogicalExpressionNode;
 
-internal abstract record ActionCostNode;
-internal sealed record ConstantActionCostNode(double Value, decimal PddlValue) : ActionCostNode;
-internal sealed record FunctionActionCostNode(
+internal abstract record NumericExpressionNode;
+internal sealed record ConstantNumericNode(double Value, decimal PddlValue) : NumericExpressionNode;
+internal sealed record FunctionNumericNode(
     string FunctionName,
-    IReadOnlyList<string> Arguments) : ActionCostNode;
-internal sealed record BinaryActionCostNode(
+    IReadOnlyList<string> Arguments) : NumericExpressionNode;
+internal sealed record BinaryNumericNode(
     NumericOperator Operator,
-    ActionCostNode Left,
-    ActionCostNode Right) : ActionCostNode;
+    NumericExpressionNode Left,
+    NumericExpressionNode Right) : NumericExpressionNode;
 
-internal sealed record ComparisonLogicalExpressionNode(ActionCostNode Left, ComparisonOperator Operator, ActionCostNode Right) : LogicalExpressionNode;
+internal sealed record ComparisonLogicalExpressionNode(NumericExpressionNode Left, ComparisonOperator Operator, NumericExpressionNode Right) : LogicalExpressionNode;

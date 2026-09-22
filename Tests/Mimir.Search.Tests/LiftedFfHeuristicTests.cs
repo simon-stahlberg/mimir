@@ -56,16 +56,11 @@ public class LiftedFfHeuristicTests
     }
 
     [Fact]
-    public void LiftedFfHeuristic_ThrowsWhenActionCostDivisionByZeroOccurs()
+    public void LiftedFfHeuristic_TreatsActionCostDivisionByZeroAsInapplicable()
     {
-        var problem = CreateProblemForLiftedFfHeuristic_ThrowsWhenActionCostDivisionByZeroOccurs();
+        var problem = CreateProblemForLiftedFfHeuristic_TreatsActionCostDivisionByZeroAsInapplicable();
 
-        var heuristic = new LiftedFfHeuristic(problem);
-        var error = Assert.Throws<InvalidOperationException>(() => heuristic.Evaluate(problem.InitialState.Expand()));
-
-        Assert.Contains("Failed to evaluate lifted action 'finish()'", error.Message);
-        Assert.NotNull(error.InnerException);
-        Assert.Contains("division by zero", error.InnerException!.Message, StringComparison.OrdinalIgnoreCase);
+        AssertMatchesGroundedFf(problem, problem.InitialState);
     }
 
     [Fact]
@@ -79,18 +74,11 @@ public class LiftedFfHeuristicTests
     }
 
     [Fact]
-    public void LiftedFfHeuristic_EvaluatesCostWhenBindingBecomesRelaxedReachable()
+    public void LiftedFfHeuristic_SkipsBindingsWithUndefinedCostLikeGroundedFf()
     {
         var problem = CreateProblemForLiftedFfHeuristic_EvaluatesCostWhenBindingBecomesRelaxedReachable();
 
-        var heuristic = new LiftedFfHeuristic(problem);
-
-        InvalidOperationException error = Assert.Throws<InvalidOperationException>(
-            () => heuristic.Evaluate(problem.InitialState.Expand()));
-
-        Assert.Contains("Failed to evaluate lifted action 'finish(bad)'", error.Message);
-        Assert.NotNull(error.InnerException);
-        Assert.Contains("missing an initialization", error.InnerException!.Message);
+        AssertMatchesGroundedFf(problem, problem.InitialState);
     }
 
     [Fact]
@@ -876,7 +864,7 @@ public class LiftedFfHeuristicTests
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForLiftedFfHeuristic_ThrowsWhenActionCostDivisionByZeroOccurs()
+    private static Problem CreateProblemForLiftedFfHeuristic_TreatsActionCostDivisionByZeroAsInapplicable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("divide-by-zero-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -939,7 +927,7 @@ public class LiftedFfHeuristicTests
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("enabled", "good");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "good");
@@ -989,7 +977,7 @@ public class LiftedFfHeuristicTests
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("start");
         initialState.AddFact("enabled", "good");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "bad");
@@ -2761,10 +2749,10 @@ public class LiftedFfHeuristicTests
         initialState.AddFact("start");
         initialState.AddFact("slow-route", "slow");
         initialState.AddFact("fast-route", "fast");
-        initialState.AddNumericInitialization("setup-cost", 100d, "slow");
-        initialState.AddNumericInitialization("finish-cost", 1d, "slow");
-        initialState.AddNumericInitialization("setup-cost", 1d, "fast");
-        initialState.AddNumericInitialization("finish-cost", 50d, "fast");
+        initialState.SetValue(Numeric.Function("setup-cost", "slow"), 100d);
+        initialState.SetValue(Numeric.Function("finish-cost", "slow"), 1d);
+        initialState.SetValue(Numeric.Function("setup-cost", "fast"), 1d);
+        initialState.SetValue(Numeric.Function("finish-cost", "fast"), 50d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("goal");
@@ -3190,12 +3178,12 @@ public class LiftedFfHeuristicTests
         initialState.AddFact("at", "a");
         initialState.AddFact("connected", "a", "b");
         initialState.AddFact("connected", "a", "c");
-        initialState.AddNumericInitialization("move-cost", 7d, "a", "b");
-        initialState.AddNumericInitialization("move-cost", 3d, "a", "c");
-        initialState.AddNumericInitialization("move-cost", 9d, "b", "a");
-        initialState.AddNumericInitialization("move-cost", 11d, "b", "c");
-        initialState.AddNumericInitialization("move-cost", 13d, "c", "a");
-        initialState.AddNumericInitialization("move-cost", 15d, "c", "b");
+        initialState.SetValue(Numeric.Function("move-cost", "a", "b"), 7d);
+        initialState.SetValue(Numeric.Function("move-cost", "a", "c"), 3d);
+        initialState.SetValue(Numeric.Function("move-cost", "b", "a"), 9d);
+        initialState.SetValue(Numeric.Function("move-cost", "b", "c"), 11d);
+        initialState.SetValue(Numeric.Function("move-cost", "c", "a"), 13d);
+        initialState.SetValue(Numeric.Function("move-cost", "c", "b"), 15d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("goal");

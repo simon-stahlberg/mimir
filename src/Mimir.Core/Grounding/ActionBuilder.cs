@@ -20,6 +20,7 @@ internal static class ActionBuilder
         AddReferencedVariables(
             schema.DerivedPreconditions,
             referencedVariables);
+        AddReferencedVariables(schema.NumericPreconditions, referencedVariables);
         return schema.Parameters
             .Select(referencedVariables.Contains)
             .ToArray();
@@ -32,7 +33,13 @@ internal static class ActionBuilder
         var referencedVariables = new HashSet<Variable>(ReferenceEqualityComparer.Instance);
         foreach (ConditionalEffect effect in schema.Effects)
         {
-            AddReferencedVariables(effect.EffectLiteral.Value.Arguments, referencedVariables);
+            if (effect.LiteralEffect is { } literal) AddReferencedVariables(literal.Value.Arguments, referencedVariables);
+            if (effect.NumericEffect is { } update)
+            {
+                AddReferencedVariables(update.Target, referencedVariables);
+                AddReferencedVariables(update.Expression, referencedVariables);
+            }
+            AddReferencedVariables(effect.NumericConditions, referencedVariables);
             AddReferencedVariables(effect.FluentConditions, referencedVariables);
             AddReferencedVariables(effect.StaticConditions, referencedVariables);
             AddReferencedVariables(effect.DerivedConditions, referencedVariables);
@@ -117,26 +124,7 @@ internal static class ActionBuilder
             double cost = 0d;
             if (effects is null)
             {
-                try
-                {
-                    cost = plan.Cost.Evaluate(problem, bindings, workspace);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    string groundedSignature = string.Join(
-                        ", ",
-                        ownedArguments.Select(argument => argument.Name));
-                    throw new InvalidOperationException(
-                        $"Failed to ground action '{plan.Schema.Name}({groundedSignature})' because its cost could not be evaluated.",
-                        ex);
-                }
-
-                if (!double.IsFinite(cost))
-                {
-                    throw new InvalidOperationException(
-                        $"Grounded action '{plan.Schema.Name}' has a non-finite cost.");
-                }
-
+                cost = plan.Cost.Evaluate(problem.Context, bindings, state: null);
                 if (cost < 0d)
                 {
                     throw new InvalidOperationException(
@@ -164,13 +152,19 @@ internal static class ActionBuilder
                     bindings,
                     workspace,
                     workspace.ActionDerivedConditions);
+                GroundNumericComparison[] comparisons = plan.NumericPreconditions.Length == 0
+                    ? Array.Empty<GroundNumericComparison>()
+                    : new GroundNumericComparison[plan.NumericPreconditions.Length];
+                for (int i = 0; i < comparisons.Length; i++)
+                    comparisons[i] = plan.NumericPreconditions[i].Ground(problem, bindings);
                 preconditions = new ActionPreconditions(
                     problem.Context,
                     positiveFluent,
                     negativeFluent,
                     positiveStatic,
                     negativeStatic,
-                    workspace.ActionDerivedConditions);
+                    workspace.ActionDerivedConditions,
+                    comparisons);
             }
 
             if (effects is null)
@@ -194,7 +188,8 @@ internal static class ActionBuilder
                     OffsetBitboard.FromSetBitIndices(workspace.AddEffectIndices),
                     OffsetBitboard.FromSetBitIndices(workspace.DeleteEffectIndices),
                     workspace.ConditionalEffects,
-                    cost);
+                    cost,
+                    workspace.NumericUpdates);
             }
 
             cache?.StorePreconditions(ownedArguments, preconditions);
@@ -216,7 +211,7 @@ internal static class ActionBuilder
     {
         if (parameterIndex == effect.QuantifiedVariables.Length)
         {
-            ProcessEffect(effect, problem.Context, bindings, workspace);
+            ProcessEffect(effect, problem, bindings, workspace);
             return;
         }
 
@@ -248,7 +243,8 @@ internal static class ActionBuilder
 
         var referencedVariables = new HashSet<Variable>(
             ReferenceEqualityComparer.Instance);
-        AddReferencedVariables(effect.EffectLiteral.Value.Arguments, referencedVariables);
+        AddReferencedVariables(effect.RequiredLiteralEffect.Value.Arguments, referencedVariables);
+        AddReferencedVariables(effect.NumericConditions, referencedVariables);
         AddReferencedVariables(effect.FluentConditions, referencedVariables);
         AddReferencedVariables(effect.StaticConditions, referencedVariables);
         AddReferencedVariables(effect.DerivedConditions, referencedVariables);
@@ -260,26 +256,26 @@ internal static class ActionBuilder
 
     private static void ProcessEffect(
         CompiledGroundingEffect effect,
-        InstanceContext context,
+        Problem problem,
         Constant?[] bindings,
         ActionGroundingWorkspace workspace)
     {
-        Fact<Fluent> fact = GroundFact(
-            effect.Target,
-            context,
-            bindings,
-            workspace);
-
+        InstanceContext context = problem.Context;
+        Fact<Fluent>? fact = effect.Target is { } targetAtom
+            ? GroundFact(targetAtom, context, bindings, workspace)
+            : null;
+        GroundNumericUpdate? update = effect.NumericUpdate?.Ground(problem, bindings);
+        GroundNumericComparison[] comparisons = effect.NumericConditions.Length == 0
+            ? Array.Empty<GroundNumericComparison>()
+            : new GroundNumericComparison[effect.NumericConditions.Length];
+        for (int i = 0; i < comparisons.Length; i++)
+            comparisons[i] = effect.NumericConditions[i].Ground(problem, bindings);
         if (!effect.IsConditional)
         {
-            List<int> target = effect.Polarity switch
-            {
-                Polarity.Positive => workspace.AddEffectIndices,
-                Polarity.Negative => workspace.DeleteEffectIndices,
-                _ => throw new InvalidOperationException(
-                    $"Effect has invalid polarity '{effect.Polarity}'.")
-            };
-            target.Add(fact.LocalIndex);
+            if (fact is not null)
+                (effect.Polarity == Polarity.Positive ? workspace.AddEffectIndices : workspace.DeleteEffectIndices).Add(fact.LocalIndex);
+            if (update is not null)
+                workspace.NumericUpdates.Add(update);
             return;
         }
 
@@ -309,7 +305,7 @@ internal static class ActionBuilder
             positiveStatic,
             negativeStatic,
             workspace.EffectDerivedConditions,
-            new Literal<Fact<Fluent>>(fact, effect.Polarity)));
+            fact is null ? null : new Literal<Fact<Fluent>>(fact, effect.Polarity), comparisons, update));
         workspace.EffectDerivedConditions.Clear();
     }
 
@@ -436,6 +432,17 @@ internal static class ActionBuilder
     {
         foreach (Literal<Atom<T>> literal in literals)
             AddReferencedVariables(literal.Value.Arguments, referencedVariables);
+    }
+
+    private static void AddReferencedVariables(
+        IReadOnlyList<NumericComparison> comparisons,
+        HashSet<Variable> referencedVariables)
+    {
+        foreach (NumericComparison comparison in comparisons)
+        {
+            AddReferencedVariables(comparison.Left, referencedVariables);
+            AddReferencedVariables(comparison.Right, referencedVariables);
+        }
     }
 
     private static void AddReferencedVariables(

@@ -105,6 +105,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
             KPartiteKClique.PartialCliqueConstraint<
                 BindingEnumeration<TCallbackState>>? partialConstraint =
                 compiledCondition.HasDeferredDerivedBinaryConstraints || positiveRelations is not null
+                    || compiledCondition.DeferredNumericConditions.Length != 0
                     ? TryExtendClique<TCallbackState>
                     : null;
 
@@ -338,6 +339,25 @@ public sealed partial class ConjunctiveConditionBindingGenerator
                 enumeration.State))
         {
             return false;
+        }
+
+        foreach (CompiledNumericComparison comparison in enumeration.Data.DeferredNumericConditions)
+        {
+            if (!comparison.VariableIndices.AsSpan().Contains(assignedPartitions[^1]))
+                continue;
+            bool ready = true;
+            foreach (int variableIndex in comparison.VariableIndices)
+            {
+                if (!assignedPartitions.Contains(variableIndex))
+                {
+                    ready = false;
+                    break;
+                }
+                int localIndex = clique[variableIndex] - enumeration.Data.CandidateDomainOffsets[variableIndex];
+                enumeration.Binding[variableIndex] = enumeration.Data.StaticCandidateDomains[variableIndex][localIndex];
+            }
+            if (ready && !comparison.Evaluate(enumeration.Data.Problem.Context, enumeration.Binding, enumeration.State.State))
+                return false;
         }
 
         if (!enumeration.Representative

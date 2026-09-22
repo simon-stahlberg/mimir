@@ -13,7 +13,6 @@ public partial class Problem
 {
     private static readonly object DynamicVariableRegistration = new();
 
-    internal readonly Dictionary<NumericFunctionKey, double> _numericFunctionValues = new();
     private readonly ConditionalWeakTable<Variable, object> _dynamicVariables = new();
     private readonly Lazy<IApplicableActionGenerator> _initialActionGenerator;
     internal const int StateGeneratorCacheCapacity = 16;
@@ -45,6 +44,12 @@ public partial class Problem
     }
 
     public IReadOnlyList<Literal<Fact>> Goal { get; }
+    public IReadOnlyList<GroundNumericComparison> NumericGoals { get; }
+    public bool HasNumericPlanning => NumericGoals.Count > 0 || Domain.DerivedPlan.HasNumericConditions || Domain.Actions.Any(action => action.HasNumericConditionsOrEffects);
+    internal void RequirePropositionalPlanning(string component)
+    {
+        if (HasNumericPlanning) throw new NotSupportedException($"{component} does not support numeric planning.");
+    }
     public IReadOnlyDictionary<string, Predicate> AllPredicates { get; }
 
     public static Problem FromFile(
@@ -92,31 +97,27 @@ public partial class Problem
     internal static Problem CreateProgrammatic(
         Domain domain,
         ProblemDefinition definition,
-        ProgrammaticProblemInputs inputs,
         ApplicableActionGeneratorType generatorType)
-    {
-        ArgumentNullException.ThrowIfNull(inputs);
-        return new Problem(domain, definition, sourcePath: null, generatorType, inputs);
-    }
+        => new(domain, definition, sourcePath: null, generatorType, isProgrammatic: true);
 
     private Problem(
         Domain domain,
         ProblemDefinition astProblem,
         string? sourcePath,
         ApplicableActionGeneratorType generatorType,
-        ProgrammaticProblemInputs? programmaticInputs = null)
+        bool isProgrammatic = false)
     {
         ArgumentNullException.ThrowIfNull(domain);
         ArgumentNullException.ThrowIfNull(astProblem);
         if (!Enum.IsDefined(generatorType))
             throw new ArgumentOutOfRangeException(nameof(generatorType), generatorType, null);
 
-        ProblemDefinition validatedProblem = programmaticInputs is null
-            ? PddlLoading.Execute(
+        ProblemDefinition validatedProblem = isProgrammatic
+            ? ValidateProgrammaticDefinition(domain, astProblem)
+            : PddlLoading.Execute(
                 PddlDocumentType.Problem,
                 sourcePath,
-                () => ValidateDefinition(domain, astProblem))
-            : ValidateProgrammaticDefinition(domain, astProblem);
+                () => ValidateDefinition(domain, astProblem));
 
         Domain = domain;
         Name = validatedProblem.Name;
@@ -124,12 +125,12 @@ public partial class Problem
             validatedProblem.Requirements.Select(requirement => requirement.ToPddlString()).ToArray());
         GeneratorType = generatorType;
 
-        PddlProblemTranslator builder = programmaticInputs is null
-            ? PddlLoading.Execute(
+        PddlProblemTranslator builder = isProgrammatic
+            ? new PddlProblemTranslator(domain, this, validatedProblem)
+            : PddlLoading.Execute(
                 PddlDocumentType.Problem,
                 sourcePath,
-                () => new PddlProblemTranslator(domain, this, validatedProblem))
-            : new PddlProblemTranslator(domain, this, validatedProblem, programmaticInputs);
+                () => new PddlProblemTranslator(domain, this, validatedProblem));
 
         Context = builder.Context;
         DeclaredObjects = Array.AsReadOnly(builder.DeclaredObjects.ToArray());
@@ -139,6 +140,9 @@ public partial class Problem
         AllPredicates = new ReadOnlyDictionary<string, Predicate>(
             builder.AllPredicates.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase));
         Goal = Array.AsReadOnly(builder.Goal.ToArray());
+        var bindings = new Dictionary<Variable, Constant>();
+        NumericGoals = Array.AsReadOnly(builder.NumericGoals.Select(comparison => new GroundNumericComparison(
+            comparison.Left.Ground(this, bindings), comparison.Operator, comparison.Right.Ground(this, bindings))).ToArray());
         _initialActionGenerator = new Lazy<IApplicableActionGenerator>(
             CreateInitialActionGenerator,
             LazyThreadSafetyMode.ExecutionAndPublication);
@@ -207,17 +211,17 @@ public partial class Problem
     {
         ArgumentNullException.ThrowIfNull(function);
         ArgumentNullException.ThrowIfNull(arguments);
-        if (function.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+        if (NumericFunction.IsTotalCost(function.Name))
         {
             throw new NotSupportedException(
                 "Cumulative total-cost is planner bookkeeping and cannot be queried as a problem numeric function value.");
         }
 
         ValidateNumericFunctionArguments(function, arguments);
-        if (_numericFunctionValues.TryGetValue(new NumericFunctionKey(function, arguments), out double value))
-            return value;
-
-        throw new InvalidOperationException($"Numeric function '{function.Name}' is missing an initialization for the provided arguments.");
+        NumericField field = Context.NumericLayout.Resolve(function, arguments);
+        if (field.Index is not null)
+            throw new InvalidOperationException("Read changing numeric values through State.Value.");
+        return field.InitialValue;
     }
 
     // -------- Factory helpers for runtime construction --------
@@ -273,9 +277,29 @@ public partial class Problem
     /// of typed literals. Each literal must be a <c>Literal&lt;Atom&lt;T&gt;&gt;</c>
     /// for T ∈ {Static, Fluent, Derived}.
     /// </summary>
+    public Mimir.Core.Grounding.Action GroundAction(ActionSchema schema, params Constant[] arguments)
+        => ActionBuilder.BuildAction(schema, arguments, this);
+
+    public GroundConjunctiveCondition GroundCondition(IEnumerable<Literal<Fact>> literals,
+        IReadOnlyList<GroundNumericComparison>? comparisons = null)
+    {
+        ArgumentNullException.ThrowIfNull(literals);
+        Literal<Fact>[] snapshot = literals.ToArray();
+        foreach (Literal<Fact> literal in snapshot)
+        {
+            ArgumentNullException.ThrowIfNull(literal);
+            if (!ReferenceEquals(literal.Value.Context, Context)) throw new ArgumentException("Literal belongs to a different problem.", nameof(literals));
+        }
+        GroundNumericComparison[] comparisonSnapshot = (comparisons ?? []).ToArray();
+        var noVariables = new HashSet<Variable>();
+        foreach (GroundNumericComparison comparison in comparisonSnapshot)
+            ValidateNumericComparison(comparison, noVariables, nameof(comparisons));
+        return new GroundConjunctiveCondition(this, snapshot, comparisonSnapshot);
+    }
+
     public ConjunctiveCondition NewConjunctiveCondition(
         IReadOnlyList<Variable> parameters,
-        IEnumerable<Literal> literals)
+        IEnumerable<Literal> literals, IReadOnlyList<NumericComparison>? comparisons = null)
     {
         ArgumentNullException.ThrowIfNull(parameters);
         ArgumentNullException.ThrowIfNull(literals);
@@ -316,7 +340,9 @@ public partial class Problem
             }
         }
 
-        return ConjunctiveCondition.Of(this, parameters, materializedLiterals);
+        foreach (NumericComparison comparison in comparisons ?? [])
+            ValidateNumericComparison(comparison, parameterSet, nameof(comparisons));
+        return ConjunctiveCondition.Of(this, parameters, materializedLiterals, comparisons);
     }
 
     private State BuildInitialState()
@@ -342,7 +368,9 @@ public partial class Problem
             int bitIndex = fact.LocalIndex % 64;
             bitboard[arrayIndex] |= 1UL << bitIndex;
         }
-        return new State(Context, bitboard);
+        ReadOnlySpan<double> numericValues = Context.NumericLayout.InitialValues;
+        return new State(Context, bitboard,
+            numericValues.IsEmpty ? Array.Empty<double>() : numericValues.ToArray(), takeOwnership: true);
     }
 
     internal void ValidateActionBinding(
@@ -357,6 +385,52 @@ public partial class Problem
 
     private bool ContainsDynamicVariable(Variable variable)
         => _dynamicVariables.TryGetValue(variable, out _);
+
+    internal void ValidateNumericComparison(
+        NumericComparison comparison,
+        IReadOnlySet<Variable> variables,
+        string parameterName)
+    {
+        ArgumentNullException.ThrowIfNull(comparison, parameterName);
+        ValidateNumericExpression(comparison.Left);
+        ValidateNumericExpression(comparison.Right);
+
+        void ValidateNumericExpression(NumericExpression expression)
+        {
+            switch (expression)
+            {
+                case NumericConstant:
+                    return;
+                case NumericBinaryExpression binary:
+                    ValidateNumericExpression(binary.Left);
+                    ValidateNumericExpression(binary.Right);
+                    return;
+                case GroundFunctionCall call:
+                    if (!ReferenceEquals(call.Context, Context))
+                        throw new ArgumentException("Numeric expression belongs to a different problem.", parameterName);
+                    return;
+                case FunctionCall call:
+                    if (!Domain.Contains(call.Function))
+                        throw new ArgumentException($"Numeric function '{call.Function.Name}' belongs to a different domain.", parameterName);
+                    if (call.Arguments.Count != call.Function.Parameters.Count)
+                        throw new ArgumentException($"Numeric function '{call.Function.Name}' has the wrong number of arguments.", parameterName);
+                    for (int i = 0; i < call.Arguments.Count; i++)
+                    {
+                        string type = call.Arguments[i] switch
+                        {
+                            Variable variable when variables.Contains(variable) => variable.Type,
+                            Constant constant when Context.ContainsObject(constant) => constant.Type,
+                            _ => throw new ArgumentException("Numeric argument is not part of this condition's scope.", parameterName)
+                        };
+                        if (!Domain.IsCompatible(type, call.Function.Parameters[i].Type))
+                            throw new ArgumentException("Numeric argument has an incompatible type.", parameterName);
+                    }
+                    return;
+                default:
+                    throw new ArgumentException("Unknown numeric expression.", parameterName);
+            }
+        }
+    }
 
     internal void ValidateConditionLiteral<T>(
         Literal<Atom<T>> literal,

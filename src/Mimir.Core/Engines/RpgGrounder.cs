@@ -53,6 +53,9 @@ public class RpgGrounder : IGrounder
                 _compiledAction.GroundingPlan,
                 arguments,
                 _problem);
+            // Action costs are state-independent, so an undefined cost makes the action inapplicable everywhere.
+            if (double.IsNaN(action.Cost))
+                return true;
             _reachableActions.Add(action);
 
             foreach (int localIndex in BitboardOps.EnumerateSetBits(action.AddEffects))
@@ -67,7 +70,7 @@ public class RpgGrounder : IGrounder
 
             foreach (GroundConditionalEffect conditionalEffect in action.ConditionalEffects)
             {
-                if (conditionalEffect.EffectLiteral.Polarity != Polarity.Positive)
+                if (conditionalEffect.LiteralEffect is not { IsPositive: true } literal)
                     continue;
 
                 if (!BitboardOps.StaticPreconditionHolds(
@@ -78,12 +81,15 @@ public class RpgGrounder : IGrounder
                     continue;
                 }
 
+                if (!StaticNumericGuardsHold(conditionalEffect, _relaxedState))
+                    continue;
+
                 if (_relaxedState.ContainsAll(
                         conditionalEffect.PositiveFluentConditions))
                 {
                     AddFact(
                         _relaxedState,
-                        conditionalEffect.EffectLiteral.Value,
+                        literal.Value,
                         _additionalFactSet,
                         _additionalFacts,
                         _addedPredicates);
@@ -215,7 +221,7 @@ public class RpgGrounder : IGrounder
                 // relaxed state, so they cannot soundly rule out the effect's reachability.
                 AddFact(
                     relaxedState,
-                    conditionalEffect.EffectLiteral.Value,
+                    conditionalEffect.RequiredLiteralEffect.Value,
                     additionalFactSet,
                     additionalFacts,
                     addedPredicates);
@@ -254,6 +260,17 @@ public class RpgGrounder : IGrounder
         }
 
         return reachableActions;
+    }
+
+    private static bool StaticNumericGuardsHold(GroundConditionalEffect effect, State state)
+    {
+        foreach (GroundNumericComparison comparison in effect.NumericConditions)
+        {
+            if (!NumericEvaluation.DependsOnState(comparison, state.Context.Problem.Domain.ChangingFunctions)
+                && !state.Holds(comparison))
+                return false;
+        }
+        return true;
     }
 
     private static void AddFact(
@@ -304,7 +321,9 @@ public class RpgGrounder : IGrounder
                     schema.Parameters,
                     positiveFluentPreconditions,
                     schema.StaticPreconditions,
-                    Array.Empty<Literal<Atom<Derived>>>()),
+                    Array.Empty<Literal<Atom<Derived>>>(),
+                    schema.NumericPreconditions.Where(comparison =>
+                        !NumericEvaluation.DependsOnState(comparison, problem.Domain.ChangingFunctions)).ToArray()),
             });
         }
 

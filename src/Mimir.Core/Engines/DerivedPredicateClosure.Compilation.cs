@@ -54,6 +54,11 @@ internal sealed partial class DerivedPredicateClosure
         }
     }
 
+    private sealed class CompiledComparisonExpression(CompiledNumericComparison comparison) : CompiledExpression
+    {
+        internal CompiledNumericComparison Comparison { get; } = comparison;
+    }
+
     private sealed class CompiledNotExpression : CompiledExpression
     {
         internal CompiledExpression Expression { get; }
@@ -225,6 +230,9 @@ internal sealed partial class DerivedPredicateClosure
     {
         switch (expression)
         {
+            case NumericComparison comparison:
+                var activeSlots = activeVariables.ToDictionary(variable => variable, variable => slotsByVariable[variable]);
+                return new CompiledComparisonExpression(new CompiledNumericComparison(comparison, activeSlots));
             case GroundedTrue:
                 return CompiledTrueExpression.Instance;
             case GroundedAtom atom:
@@ -470,12 +478,36 @@ internal sealed partial class DerivedPredicateClosure
         }
     }
 
+    private static int FindDeepestNumericVariable(NumericExpression expression,
+        IReadOnlyDictionary<Variable, int> variableDepths)
+    {
+        switch (expression)
+        {
+            case NumericConstant:
+                return -1;
+            case FunctionCall call:
+                int deepest = -1;
+                foreach (ITerm term in call.Arguments)
+                    if (term is Variable variable && variableDepths.TryGetValue(variable, out int depth))
+                        deepest = Math.Max(deepest, depth);
+                return deepest;
+            case NumericBinaryExpression binary:
+                return Math.Max(FindDeepestNumericVariable(binary.Left, variableDepths),
+                    FindDeepestNumericVariable(binary.Right, variableDepths));
+            default:
+                throw new InvalidOperationException($"Unsupported derived numeric expression '{expression.GetType().Name}'.");
+        }
+    }
+
     private static int FindDeepestVariable(
         IGroundedExpression expression,
         IReadOnlyDictionary<Variable, int> variableDepths)
     {
         switch (expression)
         {
+            case NumericComparison comparison:
+                return Math.Max(FindDeepestNumericVariable(comparison.Left, variableDepths),
+                    FindDeepestNumericVariable(comparison.Right, variableDepths));
             case GroundedTrue:
                 return -1;
             case GroundedAtom atom:

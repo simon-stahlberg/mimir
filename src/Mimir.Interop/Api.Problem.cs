@@ -293,26 +293,11 @@ public static partial class Exports
     public static int ProblemNewConjunctiveCondition(
         int problemHandle,
         IntPtr varHandlesPtr, int varCount,
-        IntPtr litHandlesPtr, int litCount)
-    {
-        var problem = ObjectRegistry.Get<Problem>(problemHandle);
-        if (problem == null) return 0;
-        var variables = ReadHandleArray<Variable>(varHandlesPtr, varCount);
-        if (variables == null || litCount < 0) return 0;
-        if (litCount > 0 && litHandlesPtr == IntPtr.Zero) return 0;
-        var literals = new List<Literal>(litCount);
-        unsafe
-        {
-            int* p = (int*)litHandlesPtr;
-            for (int i = 0; i < litCount; i++)
-            {
-                if (ObjectRegistry.GetRaw(p[i]) is not Literal literal) return 0;
-                literals.Add(literal);
-            }
-        }
-        return CreateHandle(() =>
-            problem.NewConjunctiveCondition(variables, literals));
-    }
+        IntPtr litHandlesPtr, int litCount, IntPtr comparisonHandles, int comparisonCount)
+        => CreateHandle(() => RequireHandle<Problem>(problemHandle).NewConjunctiveCondition(
+            ReadHandleArray<Variable>(varHandlesPtr, varCount, "variables"),
+            ReadHandleArray<Literal>(litHandlesPtr, litCount, "literals"),
+            ReadHandleArray<NumericComparison>(comparisonHandles, comparisonCount, "comparisons")));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_get_generator")]
     public static IntPtr ProblemGetGenerator(int handle)
@@ -351,15 +336,30 @@ public static partial class Exports
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_problem_new_state")]
-    public static int ProblemNewState(
+    public static unsafe int ProblemNewState(
         int problemHandle,
         IntPtr factHandlesPtr,
-        int factCount)
-    {
-        var problem = ObjectRegistry.Get<Problem>(problemHandle);
-        if (problem == null) return 0;
-        var facts = ReadHandleArray<Fact<Fluent>>(factHandlesPtr, factCount);
-        if (facts == null) return 0;
-        return CreateHandle(() => StateFactory.Default.Create(problem.Context, facts).Expand());
-    }
+        int factCount,
+        IntPtr numericHandlesPtr,
+        IntPtr numericValuesPtr,
+        int numericCount)
+        => CreateHandle(() =>
+        {
+            Problem problem = RequireHandle<Problem>(problemHandle);
+            Fact<Fluent>[] facts = ReadHandleArray<Fact<Fluent>>(factHandlesPtr, factCount, "facts");
+            GroundFunctionCall[] fields = ReadHandleArray<GroundFunctionCall>(numericHandlesPtr, numericCount, "numeric fields");
+            if (numericCount > 0 && numericValuesPtr == IntPtr.Zero)
+                throw new ArgumentException("Numeric values must be supplied.", nameof(numericValuesPtr));
+            if (numericCount == 0)
+                return StateFactory.Default.Create(problem.Context, facts).Expand();
+
+            var values = new Dictionary<GroundFunctionCall, double>(numericCount);
+            double* numbers = (double*)numericValuesPtr;
+            for (int index = 0; index < numericCount; index++)
+            {
+                if (!values.TryAdd(fields[index], numbers[index]))
+                    throw new ArgumentException("A numeric field was supplied more than once.");
+            }
+            return StateFactory.Default.Create(problem.Context, facts, values).Expand();
+        });
 }

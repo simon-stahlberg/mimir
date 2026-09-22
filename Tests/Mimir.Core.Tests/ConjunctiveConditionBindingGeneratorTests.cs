@@ -788,7 +788,7 @@ public class ConjunctiveConditionBindingGeneratorTests
 
         var generator = new ConjunctiveConditionBindingGenerator();
         var schema = Assert.Single(problem.Domain.Actions);
-        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions);
+        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions, []);
 
         var bindings = new List<string>();
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -810,7 +810,7 @@ public class ConjunctiveConditionBindingGeneratorTests
 
         var generator = new ConjunctiveConditionBindingGenerator();
         var schema = Assert.Single(problem.Domain.Actions);
-        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions);
+        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions, []);
 
         var bindings = new List<string>();
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), 2, binding =>
@@ -835,7 +835,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
         AssertStatefulCallbacks(problem, generator, condition);
     }
 
@@ -870,7 +870,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         Assert.Equal(1, generator.CountBindings(condition, problem.InitialState.Expand(), 1));
 
@@ -896,7 +896,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspect.Parameters,
             inspect.FluentPreconditions,
             inspect.StaticPreconditions,
-            inspect.DerivedPreconditions);
+            inspect.DerivedPreconditions, []);
         var groundedGenerator = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder());
         Mimir.Core.Grounding.Action activateB = groundedGenerator
             .GetApplicableActions(problem.InitialState.Expand())
@@ -918,7 +918,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspect.Parameters,
             inspect.FluentPreconditions,
             inspect.StaticPreconditions,
-            inspect.DerivedPreconditions);
+            inspect.DerivedPreconditions, []);
         var groundedGenerator = new GroundedApplicableActionGenerator(
             problem,
             problem.InitialState,
@@ -954,7 +954,7 @@ public class ConjunctiveConditionBindingGeneratorTests
 
         var generator = new ConjunctiveConditionBindingGenerator();
         var schema = Assert.Single(problem.Domain.Actions);
-        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions);
+        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions, []);
 
         int callbackCount = 0;
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -980,7 +980,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         int callbackCount = 0;
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1007,7 +1007,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         Assert.Throws<InvalidOperationException>(
             () => generator.EnumerateBindingsUsingFluentState(
@@ -1024,7 +1024,7 @@ public class ConjunctiveConditionBindingGeneratorTests
 
         var generator = new ConjunctiveConditionBindingGenerator();
         var schema = problem.Domain.Actions.Single(a => a.Name == "traverse");
-        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions);
+        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions, []);
 
         var bindings = new List<(string x, string y)>();
         generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1047,7 +1047,7 @@ public class ConjunctiveConditionBindingGeneratorTests
 
         var generator = new ConjunctiveConditionBindingGenerator();
         var schema = problem.Domain.Actions.Single(a => a.Name == "traverse");
-        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions);
+        var condition = generator.Compile(problem, schema.Parameters, schema.FluentPreconditions, schema.StaticPreconditions, schema.DerivedPreconditions, []);
 
         int callbackCount = 0;
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1095,7 +1095,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         Assert.Equal(isPositive ? 1 : 8, generator.CountBindings(condition, initialState.Expand()));
 
@@ -1127,7 +1127,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         Assert.Equal(1, generator.CountBindings(condition, problem.InitialState.Expand()));
 
@@ -1159,7 +1159,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         var bindings = new List<string>();
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1184,7 +1184,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspect.Parameters,
             inspect.FluentPreconditions,
             inspect.StaticPreconditions,
-            inspect.DerivedPreconditions);
+            inspect.DerivedPreconditions, []);
         var groundedGenerator = new GroundedApplicableActionGenerator(
             problem,
             problem.InitialState,
@@ -1230,7 +1230,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspect.Parameters,
             inspect.FluentPreconditions,
             inspect.StaticPreconditions,
-            inspect.DerivedPreconditions);
+            inspect.DerivedPreconditions, []);
         Mimir.Core.Schemas.Predicate<Fluent> active = problem.Domain.Fluents.Single(
             predicate => predicate.Name == "active");
         Fact<Fluent> activeB = problem.Context.RegisterFact(
@@ -1289,7 +1289,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspect.Parameters,
             inspect.FluentPreconditions,
             inspect.StaticPreconditions,
-            inspect.DerivedPreconditions);
+            inspect.DerivedPreconditions, []);
         Mimir.Core.Schemas.Predicate<Fluent> leftOk = problem.Domain.Fluents.Single(
             predicate => predicate.Name == "left-ok");
         Mimir.Core.Schemas.Predicate<Fluent> middleOk = problem.Domain.Fluents.Single(
@@ -1367,7 +1367,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         Assert.Equal(isPositive ? 0 : 27, generator.CountBindings(condition, initialState.Expand()));
 
@@ -1406,7 +1406,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         var bindings = new List<string>();
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1430,7 +1430,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         var bindings = new List<string>();
         int count = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1454,7 +1454,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             schema.Parameters,
             schema.FluentPreconditions,
             schema.StaticPreconditions,
-            schema.DerivedPreconditions);
+            schema.DerivedPreconditions, []);
 
         var allBindings = new List<string>();
         int allCount = generator.EnumerateBindings(condition, problem.InitialState.Expand(), binding =>
@@ -1516,7 +1516,7 @@ public class ConjunctiveConditionBindingGeneratorTests
             inspectSchema.Parameters,
             inspectSchema.FluentPreconditions,
             inspectSchema.StaticPreconditions,
-            inspectSchema.DerivedPreconditions);
+            inspectSchema.DerivedPreconditions, []);
 
         var groundedGenerator = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder());
         var activateO2 = groundedGenerator.GetApplicableActions(problem.InitialState.Expand())

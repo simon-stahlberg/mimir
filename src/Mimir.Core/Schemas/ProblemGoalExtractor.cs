@@ -11,16 +11,22 @@ internal static class ProblemGoalExtractor
         IReadOnlyDictionary<string, Predicate> allPredicates,
         IReadOnlyDictionary<string, Constant> objectLookup,
         InstanceContext context,
-        List<Literal<Fact>> results)
+        List<Literal<Fact>> results,
+        IReadOnlyDictionary<string, NumericFunction> functions, List<NumericComparison> comparisons)
     {
         switch (expression)
         {
+            case Comparison comparison:
+                var scope = new Dictionary<string, Variable>();
+                ITerm MapTerm(Mimir.Pddl.Ast.Models.Term term, Dictionary<string, Variable> _) => objectLookup[term.Name];
+                comparisons.Add(NumericExpressionTranslator.TranslateComparison(comparison, scope, functions, MapTerm));
+                return;
             case EmptyLogic:
                 return;
 
             case And and:
                 foreach (var child in and.Expressions)
-                    ExtractGoalLiterals(child, allPredicates, objectLookup, context, results);
+                    ExtractGoalLiterals(child, allPredicates, objectLookup, context, results, functions, comparisons);
                 return;
 
             case PredicateCall predicateCall:
@@ -65,7 +71,7 @@ internal static class ProblemGoalExtractor
 
             default:
                 throw new NotSupportedException(
-                    $"Core problem goals must be conjunctions of predicate literals; '{expression.GetType().Name}' cannot be represented.");
+                    $"Core problem goals must be conjunctions of predicate literals and numeric comparisons; '{expression.GetType().Name}' cannot be represented.");
         }
     }
 

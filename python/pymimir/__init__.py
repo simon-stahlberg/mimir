@@ -1,7 +1,7 @@
 """Mimir Python bindings.
 
-This package exposes a high-level planning API with Boolean state queries,
-static numeric expressions, and explicit errors for unsupported numeric planning.
+This package exposes a high-level planning API with propositional and numeric
+states, conditions, and effects. Both grounded and lifted generators support numerics.
 
 Load models with :class:`Problem.from_files`, construct prototype values through
 problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
@@ -83,7 +83,7 @@ from .heuristics import (
 )
 from .dead_ends import DeadEndDetector, H2DeadEndDetector, DisjunctiveDeadEndDetector
 from .state_space import StateLabel, StateSpace
-from .errors import MimirError, PddlError, StateSpaceLimitExceeded
+from .errors import MimirError, PddlError, StateSpaceLimitExceeded, UnsupportedError
 from .learning import (
     EncodingContext,
     RelationBuffer,
@@ -131,5 +131,5 @@ __all__ = [
     "encode_action_list", "encode_transition_effects", "encode_virtual_node",
     "encode_expressive_state", "encode_expressive_goal",
     # Errors
-    "MimirError", "PddlError", "StateSpaceLimitExceeded",
+    "MimirError", "PddlError", "StateSpaceLimitExceeded", "UnsupportedError",
 ]

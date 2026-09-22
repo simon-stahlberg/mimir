@@ -68,17 +68,21 @@ public static partial class Exports
 
     // -- Effects (conditional) --
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_effect_count")]
-    public static int ActionGetEffectCount(int handle)
-        => ReadValue(handle, -1, (ActionSchema action) => action.Effects.Count);
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_effect_literal_count")]
+    public static int ActionGetEffectLiteralCount(int handle)
+        => ReadValue(handle, -1, (ActionSchema action) => action.Effect.Literals.Count);
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_effect")]
-    public static int ActionGetEffect(int handle, int index)
-    {
-        var a = ObjectRegistry.Get<ActionSchema>(handle);
-        if (a == null || index < 0 || index >= a.Effects.Count) return 0;
-        return ObjectRegistry.Store(a.Effects[index]);
-    }
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_effect_literal")]
+    public static int ActionGetEffectLiteral(int handle, int index)
+        => CreateHandle(() => RequireHandle<ActionSchema>(handle).Effect.Literals[index]);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_conditional_effect_count")]
+    public static int ActionGetConditionalEffectCount(int handle)
+        => ReadValue(handle, -1, (ActionSchema action) => action.ConditionalEffects.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_conditional_effect")]
+    public static int ActionGetConditionalEffect(int handle, int index)
+        => CreateHandle(() => RequireHandle<ActionSchema>(handle).ConditionalEffects[index]);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_to_string")]
     public static IntPtr ActionToString(int handle)
@@ -91,11 +95,7 @@ public static partial class Exports
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_effect")]
     public static int ConditionalEffectGetEffect(int handle)
-    {
-        var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
-        if (ce == null) return 0;
-        return ObjectRegistry.Store(ce.EffectLiteral);
-    }
+        => CreateHandle(() => RequireHandle<ConditionalEffect>(handle).RequiredLiteralEffect);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_quantified_count")]
     public static int ConditionalEffectGetQuantifiedCount(int handle)

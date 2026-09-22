@@ -106,12 +106,13 @@ _bind("mimir_logic_forall", [_pointer, _pointer, _int, _int], _int)
 
 
 # Action-cost specifications.
-_bind("mimir_action_cost_constant", [_double], _int)
-_bind("mimir_action_cost_function", [_string, _pointer, _int], _int)
-_bind("mimir_action_cost_add", [_int, _int], _int)
-_bind("mimir_action_cost_subtract", [_int, _int], _int)
-_bind("mimir_action_cost_multiply", [_int, _int], _int)
-_bind("mimir_action_cost_divide", [_int, _int], _int)
+_bind("mimir_numeric_spec_constant", [_double], _int)
+_bind("mimir_numeric_spec_function", [_string, _pointer, _int], _int)
+_bind("mimir_numeric_spec_binary", [_int, _int, _int], _int)
+_bind("mimir_numeric_spec_compare", [_int, _int, _int], _int)
+_bind("mimir_builder_add_expression", [_int, _int], _byte)
+_bind("mimir_builder_numeric_update", [_int, _int, _int, _int], _byte)
+_bind("mimir_initial_state_set_value", [_int, _int, _double], _byte)
 
 
 # Problem and problem sections.
@@ -130,11 +131,6 @@ _bind("mimir_problem_object_list_builder_close", [_int], _byte)
 _bind(
     "mimir_initial_state_builder_add_fact",
     [_int, _string, _pointer, _int],
-    _byte,
-)
-_bind(
-    "mimir_initial_state_builder_add_numeric_initialization",
-    [_int, _string, _double, _pointer, _int],
     _byte,
 )
 _bind("mimir_initial_state_builder_close", [_int], _byte)

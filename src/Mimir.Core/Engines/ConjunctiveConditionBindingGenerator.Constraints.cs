@@ -162,6 +162,12 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         bool Evaluate(int leftLocalIndex, int rightLocalIndex, BindingEvaluationState state);
     }
 
+    private sealed class NumericUnaryConstraint(GroundNumericComparison[] comparisons) : IUnaryConstraint
+    {
+        public bool Evaluate(int localIndex, BindingEvaluationState state)
+            => state.State.Holds(comparisons[localIndex]);
+    }
+
     private sealed class FluentUnaryConstraint : IUnaryConstraint
     {
         private readonly int[] _localFactIds;

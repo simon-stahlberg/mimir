@@ -132,7 +132,7 @@ public sealed class PredicateListBuilder
     {
         EnsureOpen();
         name = BuilderName.RequireName(name, nameof(name));
-        if (name is "=" || name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+        if (name is "=" || NumericFunction.IsTotalCost(name))
             throw new ArgumentException($"The symbol '{name}' is reserved.", nameof(name));
         if (!_names.Add(name))
             throw new ArgumentException($"Predicate '{name}' was added more than once.", nameof(name));
@@ -174,7 +174,7 @@ public sealed class NumericFunctionListBuilder
     {
         EnsureOpen();
         name = BuilderName.RequireName(name, nameof(name));
-        if (name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
+        if (NumericFunction.IsTotalCost(name))
             throw new ArgumentException("The built-in total-cost function is reserved for planner bookkeeping.", nameof(name));
         if (!_names.Add(name))
             throw new ArgumentException($"Numeric function '{name}' was added more than once.", nameof(name));

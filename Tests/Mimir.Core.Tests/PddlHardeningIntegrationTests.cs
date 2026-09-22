@@ -83,7 +83,7 @@ public class PddlHardeningIntegrationTests
     }
 
     [Fact]
-    public void NumericComparisonGoalIsRejectedInsteadOfTreatedAsTrue()
+    public void NumericComparisonGoalOverUninitializedFieldsNeverHolds()
     {
         Domain domain = Domain.FromText("""
 (define (domain numeric-equality)
@@ -91,13 +91,14 @@ public class PddlHardeningIntegrationTests
   (:functions (left-value) (right-value)))
 """);
 
-        Assert.Throws<NotImplementedException>(() => Problem.FromText(domain, """
+        Problem problem = Problem.FromText(domain, """
 (define (problem numeric-equality-problem)
   (:domain numeric-equality)
   (:init)
   (:goal (= left-value right-value)))
-"""));
+""");
 
+        Assert.False(problem.InitialState.Holds(Assert.Single(problem.NumericGoals)));
     }
 
     [Fact]

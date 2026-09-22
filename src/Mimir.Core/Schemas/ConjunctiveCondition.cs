@@ -16,7 +16,7 @@ namespace Mimir.Core.Schemas;
 public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
 {
     public IReadOnlyList<Literal> Literals => Array.AsReadOnly(StaticLiterals.Cast<Literal>().Concat(FluentLiterals).Concat(DerivedLiterals).ToArray());
-    public IReadOnlyList<NumericComparison> Comparisons => Array.Empty<NumericComparison>();
+    public IReadOnlyList<NumericComparison> Comparisons { get; }
     public Problem Problem { get; }
     public IReadOnlyList<Variable> Parameters { get; }
     public IReadOnlyList<Literal<Atom<Static>>> StaticLiterals { get; }
@@ -27,9 +27,10 @@ public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
         IReadOnlyList<Variable> parameters,
         IReadOnlyList<Literal<Atom<Static>>> staticLiterals,
         IReadOnlyList<Literal<Atom<Fluent>>> fluentLiterals,
-        IReadOnlyList<Literal<Atom<Derived>>> derivedLiterals)
+        IReadOnlyList<Literal<Atom<Derived>>> derivedLiterals, IReadOnlyList<NumericComparison>? comparisons = null)
     {
         Problem = problem;
+        Comparisons = Array.AsReadOnly((comparisons ?? []).ToArray());
         Parameters = Array.AsReadOnly(parameters.ToArray());
         StaticLiterals = Array.AsReadOnly(staticLiterals.ToArray());
         FluentLiterals = Array.AsReadOnly(fluentLiterals.ToArray());
@@ -43,7 +44,7 @@ public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
     internal static ConjunctiveCondition Of(
         Problem problem,
         IReadOnlyList<Variable> parameters,
-        IEnumerable<Literal> literals)
+        IEnumerable<Literal> literals, IReadOnlyList<NumericComparison>? comparisons = null)
     {
         var statics = new List<Literal<Atom<Static>>>();
         var fluents = new List<Literal<Atom<Fluent>>>();
@@ -60,7 +61,7 @@ public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
                         $"ConjunctiveCondition.Of: unexpected literal type {lit?.GetType().FullName ?? "null"}.");
             }
         }
-        return new ConjunctiveCondition(problem, parameters, statics, fluents, deriveds);
+        return new ConjunctiveCondition(problem, parameters, statics, fluents, deriveds, comparisons);
     }
 
     public bool Equals(ConjunctiveCondition? other)
@@ -69,7 +70,8 @@ public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
         && ValueSequence.Equals(Parameters, other.Parameters)
         && ValueSequence.Equals(StaticLiterals, other.StaticLiterals)
         && ValueSequence.Equals(FluentLiterals, other.FluentLiterals)
-        && ValueSequence.Equals(DerivedLiterals, other.DerivedLiterals);
+        && ValueSequence.Equals(DerivedLiterals, other.DerivedLiterals)
+        && ValueSequence.Equals(Comparisons, other.Comparisons);
 
     public override bool Equals(object? obj) => Equals(obj as ConjunctiveCondition);
 
@@ -81,6 +83,7 @@ public sealed class ConjunctiveCondition : IEquatable<ConjunctiveCondition>
         ValueSequence.AddToHash(ref hash, StaticLiterals);
         ValueSequence.AddToHash(ref hash, FluentLiterals);
         ValueSequence.AddToHash(ref hash, DerivedLiterals);
+        ValueSequence.AddToHash(ref hash, Comparisons);
         return hash.ToHashCode();
     }
 }

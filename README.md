@@ -249,7 +249,12 @@ comparisons (`equal_to`, `less_than`, `less_than_or_equal`, `greater_than`,
 `greater_than_or_equal`). Equality and hashing compare expression values;
 use `state.holds` to evaluate a comparison. Ground references belong to a
 particular problem; foreign references and unresolved variables are rejected.
-Missing numeric initialization raises an error rather than returning zero.
+Numeric values follow PDDL 2.1: a function that was never initialized, or an
+expression that divides by zero, is undefined. `state.value` returns `NaN` for
+undefined values, every comparison involving one is false, and an action whose
+cost or numeric effect would be undefined is not applicable. Comparisons use an
+absolute tolerance of `1e-9` (`=` holds when `|a - b| <= 1e-9`, `<` requires
+`a < b - 1e-9`, and so on).
 
 Use `domain.functions` / `domain.function(name)` for declarations and
 `problem.lifted_function_call(function, *arguments)` for calls containing
@@ -285,23 +290,85 @@ action.with_cost(price * 2 + 1)
 initial.set_value(Numeric.function("price", "item1"), 2.5)
 ```
 
-Static numeric values, expression evaluation, and static action costs work.
-Numeric planning is not implemented: numeric action/goal conditions, numeric
-state updates (`assign`, `increase`, `decrease`), and custom numeric states
-raise `NotImplementedError`. Numeric comparisons can be evaluated directly
-against existing static values, but cannot yet be attached to search conditions.
-Supported loaded models therefore have empty `comparisons` and
-`numeric_updates` collections. Unsupported numeric PDDL also fails explicitly.
+Numeric models can be loaded, inspected, grounded, and searched with either
+the grounded or lifted applicable action generator.
+Action preconditions, conditional-effect guards, and derived predicate bodies
+can combine propositional literals and numeric comparisons using conjunctions,
+disjunctions, negations, implication, and existential or universal quantifiers.
+Goals remain conjunctions of predicate literals and positive numeric comparisons.
+Numeric effects support `assign`, `increase`, `decrease`, `scale-up`, and
+`scale-down`, including conditional and universally quantified effects.
+A disjunctive guard triggers its effect once, even when multiple branches hold.
+
+Each problem has a fixed numeric layout built from its initial assignments.
+Functions written by any ordinary numeric effect have mutable slots; other numeric
+values are shared by the problem. Every type-correct instance of a function that an
+`assign` effect targets also gets a slot, which starts undefined until an
+assignment defines it. Mutable values occupy an immutable dense array on each state
+and participate in equality and hashing. They are rounded to the `1e-9` comparison
+grid when a state is created, so states that differ only by floating-point noise
+are equal. States with no mutable numeric fields use `Array.Empty<double>()`.
+
+All effect guards and right-hand sides read the source state. Triggered increases
+and decreases of the same field are combined. An action is not applicable in a
+state where one of its numeric effects is undefined: the right-hand side is
+undefined, a relative update (`increase`, `decrease`, `scale-up`, `scale-down`)
+targets an undefined field, or two triggered effects write the same field and at
+least one of them assigns or scales. Transitions without triggered numeric updates
+share the source state's numeric storage.
+
+`problem.state(..., numeric_values=mapping)` requires a complete valuation of
+mutable fields; C# `StateFactory.Create` accepts the corresponding dictionary.
+Pass `NaN` for an undefined field. Missing assignments, foreign references,
+infinite values, and static-field overrides are rejected. Empty mappings work when
+no mutable fields exist.
+
+Only `minimize (total-cost)` is supported as a metric. Accumulated cost is search
+bookkeeping and is not part of state identity. Action costs may read static
+numeric functions but not mutable ones: a problem whose cost expression depends on
+a changing fluent is rejected at load with an unsupported-feature error. `cost` /
+`Cost` is therefore a constant per grounded action. With `:action-costs`, an action
+without a `total-cost` increase costs 0, both in PDDL and in `DomainBuilder`;
+without the requirement every action costs 1. Conditional and quantified
+`total-cost` updates remain unsupported. Explicit `when` guards are rejected even
+if they simplify to true.
+
+```python
+fuel = problem.function_call("fuel", "truck1")
+action = problem.action("drive", "truck1")
+state = problem.initial_state
+if action.is_applicable(state):
+    step_cost = action.cost
+    successor = action.apply(state)
+    remaining = successor.value(fuel)
+    finished = successor.holds(problem.goal)
+```
+
+C# can explicitly ground actions with `problem.GroundAction(schema, arguments)`.
+Explicit grounding and both generators share compiled grounding plans and component
+caches. Lifted condition bindings evaluate numeric comparisons during binding search.
+Grounded reachability conservatively ignores changing numeric guards, then checks
+numeric preconditions against the current state when generating applicable actions.
+Complex conditions reuse derived-predicate evaluation; derived predicates that read
+changing numeric functions, and predicates depending on them, are reevaluated per state.
+
+BFS, uniform-cost search, greedy best-first search with goal counting, and A* with
+the blind heuristic support numeric problems. Iterated width and the
+relaxed-plan, `h^2`, and lifted FF heuristics do not, and fail with
+`NotSupportedException` in C# or `pymimir.UnsupportedError` in Python (a subclass
+of both `MimirError` and `NotImplementedError`). `NumericBaselineTests` compares
+complete BFS layers against recorded C++ results; hydropower has one state fewer
+in its last recorded layer because C++ compares doubles exactly.
 
 C# exposes the same concepts using `State.Value`, `State.Holds`,
 `Problem.Atom`, `Problem.FunctionCall`, and PascalCase inspection properties.
 `Numeric.Function` creates builder references, arithmetic composes expressions,
-and unsupported planning operations throw `NotImplementedException`.
+and unsupported planning operations throw `NotSupportedException`.
 
 This API replaces `ActionCost` / `ActionCostSpec` with `Numeric` /
 `NumericExpressionSpec`, `problem.fact` with `problem.atom`, and `.terms` /
 `.objects` with `.arguments`. The previous typed `problem.atom` factory is
-now `problem.lifted_atom`. Rebuild the native library for ABI version 21.
+now `problem.lifted_atom`. Rebuild the native library for ABI version 24.
 
 ## Learning encodings
 

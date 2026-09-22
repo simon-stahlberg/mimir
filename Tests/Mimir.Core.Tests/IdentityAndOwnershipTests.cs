@@ -267,8 +267,8 @@ public class IdentityAndOwnershipTests
             .Objects().Add(objectName, "thing").Close()
             .InitialState()
                 .AddFact("present", objectName)
-                .AddNumericInitialization("weight", 1d, objectName)
-                .AddNumericInitialization("weight", 1d, "shared")
+                .SetValue(Numeric.Function("weight", objectName), 1d)
+                .SetValue(Numeric.Function("weight", "shared"), 1d)
                 .Close()
             .Goal().Add("present", objectName).Close()
             .Build();

@@ -64,28 +64,13 @@ public sealed class InitialStateBuilder
         return this;
     }
 
+    // Numeric.Function already validated the name and rejected total-cost.
     public InitialStateBuilder SetValue(NumericFunctionSpec target, double value)
     {
-        ArgumentNullException.ThrowIfNull(target);
-        var call = (FunctionActionCostNode)target.Node;
-        return AddNumericInitialization(call.FunctionName, value, call.Arguments.ToArray());
-    }
-
-    public InitialStateBuilder AddNumericInitialization(
-        string functionName,
-        double value,
-        params string[] arguments)
-    {
         EnsureOpen();
-        functionName = BuilderName.RequireName(functionName, nameof(functionName));
-        if (functionName.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException(
-                "The built-in total-cost function is reserved for planner bookkeeping.",
-                nameof(functionName));
-        }
-
-        string[] copy = BuilderName.CopyTerms(arguments, nameof(arguments));
+        ArgumentNullException.ThrowIfNull(target);
+        string functionName = target.FunctionNode.FunctionName;
+        string[] copy = target.FunctionNode.Arguments.ToArray();
         decimal pddlValue = BuilderName.ToPddlNumber(value, nameof(value));
         _parent.ValidateNumericInitialization(functionName, copy);
         string key = string.Join('\0', new[] { functionName }.Concat(copy));
@@ -93,7 +78,7 @@ public sealed class InitialStateBuilder
         {
             throw new ArgumentException(
                 $"Numeric function '{functionName}' was initialized more than once for the same arguments.",
-                nameof(arguments));
+                nameof(target));
         }
 
         _numericInitializations.Add(
@@ -119,6 +104,7 @@ public sealed class GoalBuilder
 {
     private readonly ProblemBuilder _parent;
     private readonly List<BuilderProblemGoalSpec> _goals = new();
+    private readonly List<LogicalExpressionSpec> _expressions = new();
     private bool _closed;
 
     internal GoalBuilder(ProblemBuilder parent)
@@ -130,7 +116,8 @@ public sealed class GoalBuilder
     {
         EnsureOpen();
         ArgumentNullException.ThrowIfNull(condition);
-        throw new NotImplementedException("Numeric goals are not implemented.");
+        _expressions.Add(condition);
+        return this;
     }
 
     public GoalBuilder Add(string predicateName, params string[] arguments)
@@ -154,7 +141,7 @@ public sealed class GoalBuilder
     public ProblemBuilder Close()
     {
         EnsureOpen();
-        _parent.CommitGoal(this, _goals);
+        _parent.CommitGoal(this, _goals, _expressions);
         _closed = true;
         return _parent;
     }
@@ -179,14 +166,3 @@ internal sealed record BuilderProblemNumericSpec(
     IReadOnlyList<string> Arguments,
     double Value,
     decimal PddlValue);
-
-internal sealed class ProgrammaticProblemInputs
-{
-    internal IReadOnlyList<BuilderProblemNumericSpec> NumericInitializations { get; }
-
-    internal ProgrammaticProblemInputs(
-        IReadOnlyList<BuilderProblemNumericSpec> numericInitializations)
-    {
-        NumericInitializations = Array.AsReadOnly(numericInitializations.ToArray());
-    }
-}

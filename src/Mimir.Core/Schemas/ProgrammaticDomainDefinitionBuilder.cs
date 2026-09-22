@@ -82,14 +82,14 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
                 nameof(action));
         }
 
-        ValidateActionCostExpression(action.CostExpression, action.Parameters);
         HashSet<Variable> actionScope = CreateVariableScope(action.Parameters);
+        INumericExpression cost = BuildNumericExpression(action.CostExpression, actionScope);
 
         ILogicalExpression precondition = BuildCondition(
             action.FluentPreconditions,
             action.StaticPreconditions,
             action.DerivedPreconditions,
-            actionScope);
+            actionScope, action.NumericPreconditions);
         ImmutableArray<IEffect>.Builder effects = ImmutableArray.CreateBuilder<IEffect>(
             action.Effects.Count + (_actionCostsEnabled ? 1 : 0));
 
@@ -101,8 +101,8 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             effects.Add(new PddlConditionalEffect(
                 new EmptyLogic(),
                 new Increase(
-                    new FluentCall("total-cost", ImmutableArray<PddlTerm>.Empty),
-                    BuildActionCostExpression(action.CostExpression, actionScope))));
+                    new FluentCall(NumericFunction.TotalCostName, ImmutableArray<PddlTerm>.Empty),
+                    cost)));
         }
         return new ActionDefinition(
             action.Name,
@@ -137,6 +137,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
 
         return expression switch
         {
+            NumericComparison comparison => BuildComparison(comparison, variableScope),
             GroundedTrue => new EmptyLogic(),
             GroundedAtom atom => BuildAtomExpression(atom.Predicate, atom.Arguments, variableScope),
             GroundedNot not => new Not(BuildExpression(not.Expression, variableScope)),
@@ -159,6 +160,20 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
                 $"Unsupported grounded expression '{expression.GetType().Name}'.")
         };
     }
+
+    private Comparison BuildComparison(NumericComparison comparison, IReadOnlySet<Variable> scope)
+        => new(
+            comparison.Operator switch
+            {
+                ComparisonOperator.Equal => Mimir.Pddl.Ast.Expressions.ComparisonOperator.Equal,
+                ComparisonOperator.LessThan => Mimir.Pddl.Ast.Expressions.ComparisonOperator.LessThan,
+                ComparisonOperator.LessThanOrEqual => Mimir.Pddl.Ast.Expressions.ComparisonOperator.LessThanOrEqual,
+                ComparisonOperator.GreaterThan => Mimir.Pddl.Ast.Expressions.ComparisonOperator.GreaterThan,
+                ComparisonOperator.GreaterThanOrEqual => Mimir.Pddl.Ast.Expressions.ComparisonOperator.GreaterThanOrEqual,
+                _ => throw new InvalidOperationException($"Unsupported comparison operator '{comparison.Operator}'.")
+            },
+            BuildNumericExpression(comparison.Left, scope),
+            BuildNumericExpression(comparison.Right, scope));
 
     private ILogicalExpression BuildAtomExpression(
         Predicate predicate,
@@ -195,7 +210,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         IReadOnlyList<Literal<Atom<Fluent>>> fluentLiterals,
         IReadOnlyList<Literal<Atom<Static>>> staticLiterals,
         IReadOnlyList<Literal<Atom<Derived>>> derivedLiterals,
-        IReadOnlySet<Variable> variableScope)
+        IReadOnlySet<Variable> variableScope, IReadOnlyList<NumericComparison>? comparisons = null)
     {
         var expressions = new List<ILogicalExpression>(
             fluentLiterals.Count + staticLiterals.Count + derivedLiterals.Count);
@@ -203,6 +218,8 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         AddLiterals(fluentLiterals, expressions, variableScope);
         AddLiterals(staticLiterals, expressions, variableScope);
         AddLiterals(derivedLiterals, expressions, variableScope);
+        foreach (NumericComparison comparison in comparisons ?? [])
+            expressions.Add(BuildComparison(comparison, variableScope));
 
         return expressions.Count switch
         {
@@ -245,19 +262,20 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             effect.FluentConditions,
             effect.StaticConditions,
             effect.DerivedConditions,
-            effectScope);
-        IEffect literalEffect = effect.EffectLiteral.Polarity switch
+            effectScope, effect.NumericConditions);
+        IEffect literalEffect = effect.NumericEffect is { } numeric
+            ? BuildNumericUpdate(numeric, effectScope) : effect.RequiredLiteralEffect.Polarity switch
         {
             Polarity.Positive => new AddEffect(BuildPredicateCall(
-                effect.EffectLiteral.Value.Predicate,
-                effect.EffectLiteral.Value.Arguments,
+                effect.RequiredLiteralEffect.Value.Predicate,
+                effect.RequiredLiteralEffect.Value.Arguments,
                 effectScope)),
             Polarity.Negative => new DeleteEffect(BuildPredicateCall(
-                effect.EffectLiteral.Value.Predicate,
-                effect.EffectLiteral.Value.Arguments,
+                effect.RequiredLiteralEffect.Value.Predicate,
+                effect.RequiredLiteralEffect.Value.Arguments,
                 effectScope)),
             _ => throw new InvalidOperationException(
-                $"Unsupported effect polarity '{effect.EffectLiteral.Polarity}'.")
+                $"Unsupported effect polarity '{effect.RequiredLiteralEffect.Polarity}'.")
         };
 
         if (effect.QuantifiedVariables.Count == 0)
@@ -274,7 +292,22 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
                 quantifiedEffect));
     }
 
-    private INumericExpression BuildActionCostExpression(
+    private IEffect BuildNumericUpdate(NumericUpdate update, IReadOnlySet<Variable> scope)
+    {
+        FluentCall target = BuildNumericFunctionCall(update.Target, scope);
+        INumericExpression value = BuildNumericExpression(update.Expression, scope);
+        return update.Operator switch
+        {
+            NumericUpdateOperator.Assign => new Assign(target, value),
+            NumericUpdateOperator.Increase => new Increase(target, value),
+            NumericUpdateOperator.Decrease => new Decrease(target, value),
+            NumericUpdateOperator.ScaleUp => new ScaleUp(target, value),
+            NumericUpdateOperator.ScaleDown => new ScaleDown(target, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(update))
+        };
+    }
+
+    private INumericExpression BuildNumericExpression(
         NumericExpression expression,
         IReadOnlySet<Variable> variableScope)
     {
@@ -286,23 +319,23 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             NumericBinaryExpression binary => binary.Operator switch
             {
                 NumericOperator.Add => new Add(
-                    BuildActionCostExpression(binary.Left, variableScope),
-                    BuildActionCostExpression(binary.Right, variableScope)),
+                    BuildNumericExpression(binary.Left, variableScope),
+                    BuildNumericExpression(binary.Right, variableScope)),
                 NumericOperator.Subtract => new Subtract(
-                    BuildActionCostExpression(binary.Left, variableScope),
-                    BuildActionCostExpression(binary.Right, variableScope)),
+                    BuildNumericExpression(binary.Left, variableScope),
+                    BuildNumericExpression(binary.Right, variableScope)),
                 NumericOperator.Multiply => new Multiply(
-                    BuildActionCostExpression(binary.Left, variableScope),
-                    BuildActionCostExpression(binary.Right, variableScope)),
+                    BuildNumericExpression(binary.Left, variableScope),
+                    BuildNumericExpression(binary.Right, variableScope)),
                 NumericOperator.Divide => new Divide(
-                    BuildActionCostExpression(binary.Left, variableScope),
-                    BuildActionCostExpression(binary.Right, variableScope)),
+                    BuildNumericExpression(binary.Left, variableScope),
+                    BuildNumericExpression(binary.Right, variableScope)),
                 _ => throw new InvalidOperationException(
-                    $"Unsupported action cost operator '{binary.Operator}'.")
+                    $"Unsupported numeric operator '{binary.Operator}'.")
             },
             FunctionCall function => BuildNumericFunctionCall(function, variableScope),
             _ => throw new InvalidOperationException(
-                $"Unsupported action cost expression '{expression.GetType().Name}'.")
+                $"Unsupported numeric expression '{expression.GetType().Name}'.")
         };
     }
 
@@ -310,12 +343,39 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         FunctionCall expression,
         IReadOnlySet<Variable> variableScope)
     {
-        if (expression.Function == null)
-            throw new ArgumentException("Action cost numeric function cannot be null.", nameof(expression));
+        NumericFunction function = expression.Function;
+        if (NumericFunction.IsTotalCost(function.Name))
+            throw new ArgumentException("total-cost is maintained through action costs and cannot be referenced in numeric expressions.", nameof(expression));
+        if (!_domain.Functions.Contains(function))
+        {
+            bool sameName = _domain.Functions.Any(declared => declared.Name.Equals(function.Name, StringComparison.OrdinalIgnoreCase));
+            throw new ArgumentException(sameName
+                ? $"Numeric function '{function.Name}' must use the exact declared instance."
+                : $"Undeclared numeric function '{function.Name}'.", nameof(expression));
+        }
+        if (function.Parameters.Count != expression.Arguments.Count)
+        {
+            throw new ArgumentException(
+                $"Numeric function '{function.Name}' expects {function.Parameters.Count} arguments, got {expression.Arguments.Count}.",
+                nameof(expression));
+        }
 
-        return new FluentCall(
-            expression.Function.Name,
-            expression.Arguments.Select(term => BuildTerm(term, variableScope)).ToImmutableArray());
+        var arguments = ImmutableArray.CreateBuilder<PddlTerm>(expression.Arguments.Count);
+        for (int i = 0; i < expression.Arguments.Count; i++)
+        {
+            ITerm argument = expression.Arguments[i];
+            arguments.Add(BuildTerm(argument, variableScope));
+            string actualType = argument is Variable variable ? variable.Type : ((Constant)argument).Type;
+            if (!_domain.IsCompatible(actualType, function.Parameters[i].Type))
+            {
+                throw new ArgumentException(
+                    $"Type mismatch for '{argument.Name}' in numeric function '{function.Name}'. " +
+                    $"Expected '{function.Parameters[i].Type}', got '{actualType}'.",
+                    nameof(expression));
+            }
+        }
+
+        return new FluentCall(function.Name, arguments.MoveToImmutable());
     }
 
     private static NumberLiteral BuildNumberLiteral(double value)
@@ -327,120 +387,9 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         catch (OverflowException exception)
         {
             throw new ArgumentException(
-                $"Action cost '{value}' cannot be represented as a PDDL number.",
+                $"Numeric value '{value}' cannot be represented as a PDDL number.",
                 nameof(value),
                 exception);
-        }
-    }
-
-    private void ValidateActionCostExpression(
-        NumericExpression expression,
-        IReadOnlyList<Variable> actionParameters)
-    {
-        ArgumentNullException.ThrowIfNull(expression);
-
-        switch (expression)
-        {
-            case NumericConstant constant:
-                BuildNumberLiteral(constant.Value);
-                return;
-            case NumericBinaryExpression binary:
-                if (!Enum.IsDefined(binary.Operator))
-                {
-                    throw new InvalidOperationException(
-                        $"Unsupported action cost operator '{binary.Operator}'.");
-                }
-                ValidateActionCostExpression(binary.Left, actionParameters);
-                ValidateActionCostExpression(binary.Right, actionParameters);
-                return;
-            case FunctionCall functionExpression:
-                ValidateNumericFunctionCost(functionExpression, actionParameters);
-                return;
-            default:
-                throw new InvalidOperationException(
-                    $"Unsupported action cost expression '{expression.GetType().Name}'.");
-        }
-    }
-
-    private void ValidateNumericFunctionCost(
-        FunctionCall expression,
-        IReadOnlyList<Variable> actionParameters)
-    {
-        if (expression.Function == null)
-            throw new ArgumentException("Action cost numeric function cannot be null.", nameof(expression));
-
-        if (expression.Function.Name.Equals("total-cost", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Action costs may not depend on total-cost itself.", nameof(expression));
-
-        NumericFunction? declaredFunction = _domain.Functions.FirstOrDefault(function =>
-            function.Name.Equals(expression.Function.Name, StringComparison.OrdinalIgnoreCase));
-        if (declaredFunction == null)
-        {
-            throw new ArgumentException(
-                $"Undeclared numeric fluent '{expression.Function.Name}' in action cost.");
-        }
-        if (!ReferenceEquals(declaredFunction, expression.Function))
-        {
-            throw new ArgumentException(
-                $"Numeric function '{expression.Function.Name}' must use the exact declared instance.");
-        }
-
-        if (declaredFunction.Parameters.Count != expression.Arguments.Count)
-        {
-            throw new ArgumentException(
-                $"Arity mismatch for numeric fluent '{expression.Function.Name}' in action cost. " +
-                $"Expected {declaredFunction.Parameters.Count}, got {expression.Arguments.Count}.");
-        }
-
-        for (int i = 0; i < expression.Arguments.Count; i++)
-        {
-            ValidateCostTerm(
-                expression.Arguments[i],
-                declaredFunction.Parameters[i].Type,
-                actionParameters);
-        }
-    }
-
-    private void ValidateCostTerm(
-        ITerm term,
-        string expectedType,
-        IReadOnlyList<Variable> actionParameters)
-    {
-        ArgumentNullException.ThrowIfNull(term);
-
-        string actualType;
-        if (term is Variable variable)
-        {
-            Variable? declaredVariable = actionParameters.FirstOrDefault(parameter =>
-                parameter.Name.Equals(variable.Name, StringComparison.OrdinalIgnoreCase));
-            if (declaredVariable == null)
-                throw new ArgumentException($"Undeclared variable '{variable.Name}' in action cost.");
-            if (!ReferenceEquals(declaredVariable, variable))
-                throw new ArgumentException(
-                    $"Variable '{variable.Name}' in action cost must use the exact action parameter instance.");
-            actualType = declaredVariable.Type;
-        }
-        else if (term is Constant constant)
-        {
-            Constant? declaredConstant = _domain.Constants.FirstOrDefault(candidate =>
-                candidate.Name.Equals(constant.Name, StringComparison.OrdinalIgnoreCase));
-            if (declaredConstant == null)
-                throw new ArgumentException($"Undeclared constant '{constant.Name}' in action cost.");
-            if (!ReferenceEquals(declaredConstant, constant))
-                throw new ArgumentException(
-                    $"Constant '{constant.Name}' must use the exact declared instance.");
-            actualType = declaredConstant.Type;
-        }
-        else
-        {
-            throw new InvalidOperationException($"Unsupported term '{term.GetType().Name}'.");
-        }
-
-        if (!_domain.IsCompatible(actualType, expectedType))
-        {
-            throw new ArgumentException(
-                $"Type mismatch for '{term.Name}' in action cost. " +
-                $"Expected '{expectedType}', got '{actualType}'.");
         }
     }
 

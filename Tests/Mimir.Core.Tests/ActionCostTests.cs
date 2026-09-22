@@ -84,8 +84,8 @@ public sealed class ActionCostTests : IDisposable
         objects.Add("b", "item");
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
-        initialState.AddNumericInitialization("price", 2d, "a");
-        initialState.AddNumericInitialization("price", 5d, "b");
+        initialState.SetValue(Numeric.Function("price", "a"), 2d);
+        initialState.SetValue(Numeric.Function("price", "b"), 5d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done");
@@ -119,7 +119,7 @@ public sealed class ActionCostTests : IDisposable
         objects.Add("d", "item");
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
-        initialState.AddNumericInitialization("route-cost", 9d, "a", "b", "c", "d");
+        initialState.SetValue(Numeric.Function("route-cost", "a", "b", "c", "d"), 9d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done");
@@ -191,10 +191,10 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("at", "a");
-        initialState.AddNumericInitialization("distance", 0d, "a", "a");
-        initialState.AddNumericInitialization("distance", 2.5d, "a", "b");
-        initialState.AddNumericInitialization("distance", 4d, "b", "a");
-        initialState.AddNumericInitialization("distance", 0d, "b", "b");
+        initialState.SetValue(Numeric.Function("distance", "a", "a"), 0d);
+        initialState.SetValue(Numeric.Function("distance", "a", "b"), 2.5d);
+        initialState.SetValue(Numeric.Function("distance", "b", "a"), 4d);
+        initialState.SetValue(Numeric.Function("distance", "b", "b"), 0d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("visited", "b");
@@ -241,12 +241,12 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("at", "depot");
-        initialState.AddNumericInitialization("entry-fee", 4d, "depot");
-        initialState.AddNumericInitialization("entry-fee", 0d, "site");
-        initialState.AddNumericInitialization("distance", 0d, "depot", "depot");
-        initialState.AddNumericInitialization("distance", 7d, "depot", "site");
-        initialState.AddNumericInitialization("distance", 7d, "site", "depot");
-        initialState.AddNumericInitialization("distance", 0d, "site", "site");
+        initialState.SetValue(Numeric.Function("entry-fee", "depot"), 4d);
+        initialState.SetValue(Numeric.Function("entry-fee", "site"), 0d);
+        initialState.SetValue(Numeric.Function("distance", "depot", "depot"), 0d);
+        initialState.SetValue(Numeric.Function("distance", "depot", "site"), 7d);
+        initialState.SetValue(Numeric.Function("distance", "site", "depot"), 7d);
+        initialState.SetValue(Numeric.Function("distance", "site", "site"), 0d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("visited", "site");
@@ -294,8 +294,8 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("ready", "van1");
-        initialState.AddNumericInitialization("rate", 3.25d, "van1", "home");
-        initialState.AddNumericInitialization("fee", 9d, "pkg1");
+        initialState.SetValue(Numeric.Function("rate", "van1", "home"), 3.25d);
+        initialState.SetValue(Numeric.Function("fee", "pkg1"), 9d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "van1");
@@ -338,9 +338,9 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("ready");
-        initialState.AddNumericInitialization("distance", 2d, "a");
-        initialState.AddNumericInitialization("distance", 5.5d, "b");
-        initialState.AddNumericInitialization("distance", 8d, "c");
+        initialState.SetValue(Numeric.Function("distance", "a"), 2d);
+        initialState.SetValue(Numeric.Function("distance", "b"), 5.5d);
+        initialState.SetValue(Numeric.Function("distance", "c"), 8d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("visited", "a");
@@ -387,7 +387,7 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("at", "a");
-        initialState.AddNumericInitialization("distance", 2d, "a", "b");
+        initialState.SetValue(Numeric.Function("distance", "a", "b"), 2d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("visited", "b");
@@ -432,7 +432,7 @@ public sealed class ActionCostTests : IDisposable
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("ready");
         initialState.AddFact("allowed", "b");
-        initialState.AddNumericInitialization("distance", 7d, "b");
+        initialState.SetValue(Numeric.Function("distance", "b"), 7d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("visited", "b");
@@ -474,7 +474,7 @@ public sealed class ActionCostTests : IDisposable
         objects.Close();
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("enabled", "good");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "good");
@@ -529,7 +529,7 @@ public sealed class ActionCostTests : IDisposable
         initialState.AddFact("source", "good");
         initialState.AddFact("source", "bad");
         initialState.AddFact("allowed", "good");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "good");
@@ -585,7 +585,7 @@ public sealed class ActionCostTests : IDisposable
         initialState.AddFact("source", "bad");
         initialState.AddFact("allowed", "good");
         initialState.AddFact("allowed", "bad");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "bad");
@@ -634,7 +634,7 @@ public sealed class ActionCostTests : IDisposable
         InitialStateBuilder initialState = problemBuilder.InitialState();
         initialState.AddFact("start");
         initialState.AddFact("enabled", "good");
-        initialState.AddNumericInitialization("item-cost", 4d, "good");
+        initialState.SetValue(Numeric.Function("item-cost", "good"), 4d);
         initialState.Close();
         GoalBuilder goals = problemBuilder.Goal();
         goals.Add("done", "bad");
@@ -839,8 +839,7 @@ public sealed class ActionCostTests : IDisposable
         Assert.Equal(9d, problem.GetNumericFunctionValue(routeCost, ordered));
 
         Constant[] reordered = [ordered[0], ordered[1], ordered[3], ordered[2]];
-        Assert.Throws<InvalidOperationException>(
-            () => problem.GetNumericFunctionValue(routeCost, reordered));
+        Assert.True(double.IsNaN(problem.GetNumericFunctionValue(routeCost, reordered)));
     }
 
       [Theory]
@@ -937,6 +936,26 @@ public sealed class ActionCostTests : IDisposable
                 .GetApplicableActions(problem.InitialState.Expand()));
 
         Assert.Equal(0d, action.Cost);
+    }
+
+    [Fact]
+    public void BuilderActionsWithoutExplicitCostDefaultToZeroUnderActionCostsLikePddl()
+    {
+        var builder = new DomainBuilder("declared-costs");
+        builder.Requirements().Add(":strips").Add(":action-costs").Close();
+        builder.Predicates().Add("ready").Add("done").Close();
+        ActionListBuilder actions = builder.Actions();
+        ActionSchemaBuilder finish = actions.Add("finish");
+        finish.AddPrecondition("ready");
+        finish.AddEffect("done");
+        finish.Close();
+        actions.Close();
+        Domain domain = builder.Build();
+        var problemBuilder = new ProblemBuilder(domain, "p");
+        problemBuilder.InitialState().AddFact("ready").Close();
+        Problem problem = problemBuilder.Build();
+
+        Assert.Equal(0d, problem.GroundAction(domain.Actions[0]).Cost);
     }
 
     [Fact]
@@ -1039,16 +1058,19 @@ public sealed class ActionCostTests : IDisposable
     }
 
     [Fact]
-    public void Actions_ThrowWhenGroundedCostFunctionValueIsMissing()
+    public void Actions_WithUndefinedCostFunctionValueAreInapplicable()
     {
         var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating0();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
-
-        Assert.Contains("Failed to ground action 'move", exception.Message);
-        Assert.NotNull(exception.InnerException);
-        Assert.Contains("Numeric function 'distance' is missing an initialization", exception.InnerException!.Message);
+        foreach (IApplicableActionGenerator generator in Generators(problem))
+        {
+            GroundAction action = Assert.Single(generator.GetApplicableActions(problem.InitialState.Expand()));
+            Assert.Equal("b", action.Arguments[1].Name);
+            Assert.Equal(2d, action.Cost);
+        }
+        GroundAction undefined = problem.GroundAction(problem.Domain.Actions[0], problem.ObjectLookup["a"], problem.ObjectLookup["a"]);
+        Assert.True(double.IsNaN(undefined.Cost));
+        Assert.False(undefined.IsApplicable(problem.InitialState.Expand()));
     }
 
     [Fact]
@@ -1099,29 +1121,23 @@ public sealed class ActionCostTests : IDisposable
     }
 
     [Fact]
-    public void Actions_ThrowWhenMissingCostBindingIsReachedByConditionalEffect()
+    public void Actions_WithUndefinedCostAreDroppedWhenReachedByConditionalEffect()
     {
         var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating4();
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-            () => new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
-
-        Assert.Contains("Failed to ground action 'finish(bad)'", exception.Message);
-        Assert.NotNull(exception.InnerException);
-        Assert.Contains("missing an initialization", exception.InnerException!.Message);
+        GroundAction finish = Assert.Single(new RpgGrounder().Ground(problem, problem.InitialState),
+            action => action.Schema.Name == "finish");
+        Assert.Equal("good", finish.Arguments[0].Name);
     }
 
     [Fact]
-    public void Actions_ThrowWhenMissingCostBindingBecomesRelaxedReachable()
+    public void Actions_WithUndefinedCostAreDroppedWhenRelaxedReachable()
     {
         var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating5();
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() =>
-            new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
-
-        Assert.Contains("Failed to ground action 'finish(bad)'", exception.Message);
-        Assert.NotNull(exception.InnerException);
-        Assert.Contains("missing an initialization", exception.InnerException!.Message);
+        GroundAction finish = Assert.Single(new RpgGrounder().Ground(problem, problem.InitialState),
+            action => action.Schema.Name == "finish");
+        Assert.Equal("good", finish.Arguments[0].Name);
     }
 
     [Fact]
@@ -1148,31 +1164,28 @@ public sealed class ActionCostTests : IDisposable
     }
 
     [Fact]
-    public void Actions_ThrowWhenGroundedCostIsNonFinite()
+    public void Actions_WithOverflowingCostAreInapplicable()
     {
         var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating8();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
-
-        Assert.Contains("non-finite cost", exception.Message, StringComparison.OrdinalIgnoreCase);
+        foreach (IApplicableActionGenerator generator in Generators(problem))
+            Assert.Empty(generator.GetApplicableActions(problem.InitialState.Expand()));
     }
 
     [Fact]
-    public void Actions_ThrowWhenGroundedCostDivisionByZeroOccurs()
+    public void Actions_WithCostDivisionByZeroAreInapplicable()
     {
         var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating9();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
-
-        Assert.Contains("Failed to ground action 'finish()'", exception.Message);
-        Assert.NotNull(exception.InnerException);
-        Assert.Contains("division by zero", exception.InnerException!.Message, StringComparison.OrdinalIgnoreCase);
+        foreach (IApplicableActionGenerator generator in Generators(problem))
+            Assert.Empty(generator.GetApplicableActions(problem.InitialState.Expand()));
     }
 
+    private static IApplicableActionGenerator[] Generators(Problem problem)
+        => [new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()), new CliqueApplicableActionGenerator(problem)];
+
     [Fact]
-    public void Domain_RejectsOrdinaryNumericIncrease()
+    public void Domain_AllowsOrdinaryNumericIncrease()
     {
         var domainPddl = """
 (define (domain mutable-cost)
@@ -1192,14 +1205,12 @@ public sealed class ActionCostTests : IDisposable
       (done)
       (increase (total-cost) (energy)))))
 """;
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => Domain.FromFile(WriteTempFile(domainPddl)));
-
-        Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
+        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
     }
 
     [Fact]
-    public void Domain_RejectsOrdinaryNumericDecreaseBeforeTranslatingActionCost()
+    public void Domain_AllowsOrdinaryNumericDecreaseBeforeTranslatingActionCost()
     {
         var domainPddl = """
 (define (domain same-action-mutable-cost)
@@ -1216,10 +1227,8 @@ public sealed class ActionCostTests : IDisposable
       (increase (total-cost) (fuel)))))
 """;
 
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => Domain.FromFile(WriteTempFile(domainPddl)));
-
-        Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
+        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
     }
 
     [Fact]
@@ -1269,7 +1278,7 @@ public sealed class ActionCostTests : IDisposable
     }
 
     [Fact]
-    public void Domain_RejectsOrdinaryNumericMutationInConditionalEffect()
+    public void Domain_AllowsOrdinaryNumericMutationInConditionalEffect()
     {
         var domainPddl = """
 (define (domain cond-mutable)
@@ -1285,10 +1294,8 @@ public sealed class ActionCostTests : IDisposable
       (when (flag) (increase (battery) 1))
       (increase (total-cost) 1))))
 """;
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => Domain.FromFile(WriteTempFile(domainPddl)));
-
-        Assert.Contains("Numeric mutation", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
+        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
     }
 
     [Fact]
@@ -1341,10 +1348,9 @@ public sealed class ActionCostTests : IDisposable
     [InlineData("(imply (or) (ready ?x))")]
     [InlineData("(forall (?other - item) (and))")]
     [InlineData("(= ?x ?X)")]
-    [InlineData("(or (and) (< (score) 1))")]
-    public void StructurallyTrueActionCostConditions_AreUnconditional(string condition)
+    public void StructurallyTrueActionCostConditions_AreRejectedBeforeNormalization(string condition)
     {
-        Problem problem = CreateProblem(
+        PddlLoadException exception = Assert.Throws<PddlLoadException>(() => CreateProblem(
             $$"""
 (define (domain structurally-unconditional-cost)
   (:requirements :adl :action-costs :numeric-fluents)
@@ -1366,13 +1372,9 @@ public sealed class ActionCostTests : IDisposable
   (:init (ready value) (= (score) 0) (= (total-cost) 0))
   (:goal (done value))
   (:metric minimize (total-cost)))
-""");
+"""));
 
-        GroundAction action = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder())
-            .GetApplicableActions(problem.InitialState.Expand())
-            .Single();
-
-        Assert.Equal(2d, action.Cost);
+        Assert.Contains("Conditional action costs", exception.Message);
     }
 
     [Theory]

@@ -215,16 +215,26 @@ public class ProblemTests
     [InlineData("refuel")]
     [InlineData("refuel-adl")]
     [InlineData("zenotravel")]
-    public void RejectsBenchmarksWithUnsupportedNumericFragments(string domainDir)
+    public void NumericBenchmarksRespectMetricAndGeneratorBoundaries(string domainDir)
     {
         string domainPath = Path.Combine(BasePath, domainDir, "domain.pddl");
         string problemPath = Path.Combine(BasePath, domainDir, "p01.pddl");
 
-        Assert.Throws<NotImplementedException>(() =>
+        Domain domain = Domain.FromFile(domainPath);
+        if (domainDir == "refuel-adl")
         {
-            var domain = Domain.FromFile(domainPath);
-            _ = Problem.FromFile(domain, problemPath);
-        });
+            Assert.Equal(PddlLoadErrorCode.UnsupportedFeature,
+                Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath)).ErrorCode);
+            return;
+        }
+        if (domainDir == "zenotravel")
+        {
+            Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath));
+            return;
+        }
+        Problem problem = Problem.FromFile(domain, problemPath);
+        Assert.True(problem.HasNumericPlanning);
+        Assert.NotEmpty(problem.GetApplicableActionGenerator(problem.InitialState).GetApplicableActions(problem.InitialState.Expand()));
 
     }
 

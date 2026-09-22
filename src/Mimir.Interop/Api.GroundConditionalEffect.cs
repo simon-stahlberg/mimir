@@ -9,11 +9,7 @@ public static partial class Exports
 {
     [UnmanagedCallersOnly(EntryPoint = "mimir_ground_conditional_effect_get_effect")]
     public static int GroundConditionalEffectGetEffect(int handle)
-    {
-        var ce = ObjectRegistry.Get<GroundConditionalEffect>(handle);
-        if (ce == null) return 0;
-        return ObjectRegistry.Store(ce.EffectLiteral);
-    }
+        => CreateHandle(() => RequireHandle<GroundConditionalEffect>(handle).RequiredLiteralEffect);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_ground_conditional_effect_get_positive_fluent_count")]
     public static int GceGetPositiveFluentCount(int handle)

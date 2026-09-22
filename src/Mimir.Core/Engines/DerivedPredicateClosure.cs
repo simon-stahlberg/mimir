@@ -538,6 +538,8 @@ internal sealed partial class DerivedPredicateClosure
     {
         switch (expression)
         {
+            case CompiledComparisonExpression comparison:
+                return comparison.Comparison.Evaluate(_context, bindings, state);
             case CompiledTrueExpression:
                 return true;
             case CompiledAtomExpression atom:

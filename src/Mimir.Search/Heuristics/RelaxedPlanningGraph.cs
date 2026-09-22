@@ -92,7 +92,7 @@ internal sealed class GroundedRelaxedPlanningGraph
 
             foreach (var condEff in action.ConditionalEffects)
             {
-                if (!condEff.EffectLiteral.IsPositive)
+                if (!condEff.RequiredLiteralEffect.IsPositive)
                     continue;
 
                 bool conditionalStaticOk = BitboardOps.StaticPreconditionHolds(
@@ -103,7 +103,7 @@ internal sealed class GroundedRelaxedPlanningGraph
                 supportOptions.Add(new RelaxedSupportOption(
                     a,
                     UnionSorted(_actionPosFluentPreconds[a], BitboardOps.DecodeSetBits(condEff.PositiveFluentConditions)),
-                    [GetFluentIndex(condEff.EffectLiteral.Value)],
+                    [GetFluentIndex(condEff.RequiredLiteralEffect.Value)],
                     actionStaticOk && conditionalStaticOk,
                     condEff));
             }
@@ -233,6 +233,7 @@ internal sealed class GroundedRelaxedPlanningGraph
 
     private static void EnsureSupportedDomain(Problem problem)
     {
+        problem.RequirePropositionalPlanning("Grounded RPG heuristics");
         foreach (ActionSchema action in problem.Domain.Actions)
         {
             if (action.DerivedPreconditions.Count > 0)
@@ -260,6 +261,8 @@ internal sealed class GroundedRelaxedPlanningGraph
     internal void EnsureSupportedGoal(GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
+        if (goal.Comparisons.Count > 0)
+            throw new NotSupportedException("Grounded RPG heuristics do not support numeric goals.");
         if (!ReferenceEquals(goal.Problem, _problem))
             throw new ArgumentException("Goal belongs to a different problem instance than this heuristic.", nameof(goal));
 

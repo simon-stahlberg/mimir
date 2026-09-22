@@ -17,7 +17,7 @@ public sealed class CorePddlSupportValidatorTests
     [InlineData("decrease")]
     [InlineData("scale-up")]
     [InlineData("scale-down")]
-    public void ValidateDomain_RejectsOrdinaryNumericMutations(string operation)
+    public void ValidateDomain_AllowsOrdinaryNumericMutations(string operation)
     {
         DomainDefinition domain = ParseDomain($$"""
 (define (domain numeric-mutation)
@@ -29,10 +29,7 @@ public sealed class CorePddlSupportValidatorTests
     :effect ({{operation}} (fuel) 1)))
 """);
 
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => CorePddlSupportValidator.ValidateDomain(domain));
-
-        Assert.Contains("Numeric mutation", exception.Message);
+        CorePddlSupportValidator.ValidateDomain(domain);
     }
 
     [Theory]
@@ -46,7 +43,7 @@ public sealed class CorePddlSupportValidatorTests
     [InlineData("decrease", "quantified")]
     [InlineData("scale-up", "quantified")]
     [InlineData("scale-down", "quantified")]
-    public void ValidateDomain_RejectsNestedOrdinaryNumericMutations(
+    public void ValidateDomain_AllowsNestedOrdinaryNumericMutations(
         string operation,
         string nesting)
     {
@@ -65,10 +62,7 @@ public sealed class CorePddlSupportValidatorTests
     :effect {{effect}}))
 """);
 
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => CorePddlSupportValidator.ValidateDomain(domain));
-
-        Assert.Contains("Numeric mutation", exception.Message);
+        CorePddlSupportValidator.ValidateDomain(domain);
     }
 
     [Fact]
@@ -141,7 +135,7 @@ public sealed class CorePddlSupportValidatorTests
         NotSupportedException exception = Assert.Throws<NotSupportedException>(
             () => CorePddlSupportValidator.ValidateDomain(domain));
 
-        Assert.Contains("depend on total-cost", exception.Message);
+        Assert.Contains("cannot be read", exception.Message);
     }
 
     [Fact]
@@ -219,7 +213,7 @@ public sealed class CorePddlSupportValidatorTests
     [Theory]
     [InlineData(":precondition (> (fuel) 0) :effect (done)")]
     [InlineData(":precondition () :effect (when (> (fuel) 0) (done))")]
-    public void ValidateDomain_RejectsNumericComparisonsInActions(string actionBody)
+    public void ValidateDomain_AllowsNumericComparisonsInActions(string actionBody)
     {
         DomainDefinition domain = ParseDomain($$"""
 (define (domain numeric-condition)
@@ -229,14 +223,11 @@ public sealed class CorePddlSupportValidatorTests
   (:action act :parameters () {{actionBody}}))
 """);
 
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => CorePddlSupportValidator.ValidateDomain(domain));
-
-        Assert.Contains("Numeric comparisons", exception.Message);
+        CorePddlSupportValidator.ValidateDomain(domain);
     }
 
     [Fact]
-    public void ValidateDomain_RejectsNumericComparisonInDerivedPredicate()
+    public void ValidateDomain_AllowsNumericComparisonInDerivedPredicate()
     {
         DomainDefinition domain = ParseDomain("""
 (define (domain numeric-derived)
@@ -245,10 +236,7 @@ public sealed class CorePddlSupportValidatorTests
   (:derived (has-fuel) (> (fuel) 0)))
 """);
 
-        NotImplementedException exception = Assert.Throws<NotImplementedException>(
-            () => CorePddlSupportValidator.ValidateDomain(domain));
-
-        Assert.Contains("Numeric comparisons", exception.Message);
+        CorePddlSupportValidator.ValidateDomain(domain);
     }
 
     [Theory]
@@ -256,7 +244,6 @@ public sealed class CorePddlSupportValidatorTests
     [InlineData("(imply (p) (q))")]
     [InlineData("(forall (?x) (p))")]
     [InlineData("(= a b)")]
-    [InlineData("(> (fuel) 0)")]
     [InlineData("(not (and (p) (q)))")]
     public void ValidateProblem_RejectsGoalsThatAreNotLiteralConjunctions(string goal)
     {
@@ -274,11 +261,6 @@ public sealed class CorePddlSupportValidatorTests
   (:goal {{goal}}))
 """);
 
-        if (goal == "(> (fuel) 0)")
-        {
-            Assert.Throws<NotImplementedException>(() => CorePddlSupportValidator.ValidateProblem(domain, problem));
-            return;
-        }
         Assert.Throws<NotSupportedException>(() => CorePddlSupportValidator.ValidateProblem(domain, problem));
     }
 

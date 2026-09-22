@@ -392,8 +392,8 @@ public class WeightedSearchTests
                 .AddFact("start")
                 .AddFact("direct-ticket", "expensive")
                 .AddFact("via-ticket", "cheap")
-                .AddNumericInitialization("price", 3d, "expensive")
-                .AddNumericInitialization("price", 1d, "cheap")
+                .SetValue(Numeric.Function("price", "expensive"), 3d)
+                .SetValue(Numeric.Function("price", "cheap"), 1d)
                 .Close()
             .Goal().Add("goal").Close()
             .Build();

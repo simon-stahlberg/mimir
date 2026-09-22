@@ -204,13 +204,13 @@ def test_callback_objects_can_outlive_batch_and_are_released(graph):
 
 @pytest.mark.parametrize("failure_index", [1, 2, 3, 4])
 def test_wrapper_failure_releases_adopted_and_unadopted_handles(graph, monkeypatch, failure_index):
-    import pymimir.model as model
+    import pymimir._base as handles
     import pymimir.q_search as q_search
     problem, heuristic = graph([(0, 2, 1), (0, 3, 1)])
     start, goal = problem.initial_state, problem.goal
     allocated, released = [], []
     original_callback = q_search.QHEURISTIC_CALLBACK
-    original_finalizer = model._create_finalizer
+    original_finalizer = handles._create_finalizer
     original_free = lib.mimir_free_handle
     calls = 0
     def callback(function):
@@ -229,7 +229,7 @@ def test_wrapper_failure_releases_adopted_and_unadopted_handles(graph, monkeypat
         released.append(handle)
         original_free(handle)
     monkeypatch.setattr(q_search, "QHEURISTIC_CALLBACK", callback)
-    monkeypatch.setattr(model, "_create_finalizer", create_finalizer)
+    monkeypatch.setattr(handles, "_create_finalizer", create_finalizer)
     monkeypatch.setattr(lib, "mimir_free_handle", release)
     with pytest.raises(RuntimeError, match="wrapper failed"):
         mm.qgbfs(problem, heuristic, start_state=start, goal=goal)
@@ -298,12 +298,12 @@ def test_invalid_search_arguments_fail_explicitly(graph, kwargs):
 
 @pytest.mark.parametrize("failure_index", [1, 2])
 def test_result_wrapping_failure_releases_path_handles(graph, monkeypatch, failure_index):
-    import pymimir.model as model
+    import pymimir._base as handles
     problem, heuristic = graph([(0, 1, 5)])
     allocated, released = [], []
     original_copy = lib.mimir_plan_result_copy_scored_path
     original_free = lib.mimir_free_handle
-    original_finalizer = model._create_finalizer
+    original_finalizer = handles._create_finalizer
     wrappers = 0
     def copy(*args):
         count = original_copy(*args)
@@ -322,7 +322,7 @@ def test_result_wrapping_failure_releases_path_handles(graph, monkeypatch, failu
         return original_finalizer(*args)
     monkeypatch.setattr(lib, "mimir_plan_result_copy_scored_path", copy)
     monkeypatch.setattr(lib, "mimir_free_handle", release)
-    monkeypatch.setattr(model, "_create_finalizer", finalizer)
+    monkeypatch.setattr(handles, "_create_finalizer", finalizer)
     with pytest.raises(RuntimeError, match="path wrapper failed"):
         mm.qgbfs(problem, heuristic)
     gc.collect()

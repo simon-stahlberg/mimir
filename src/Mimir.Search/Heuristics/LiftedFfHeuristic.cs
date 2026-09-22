@@ -44,7 +44,8 @@ public sealed class LiftedFfHeuristic : IHeuristic
         public required CompiledConjunctiveCondition Precondition { get; init; }
         public required CompiledFluentAtom[] PositiveFluentPreconditions { get; init; }
         public required CompiledFluentAtom[] PositiveEffects { get; init; }
-        public required CompiledActionCostExpression CostExpression { get; init; }
+        public required CompiledNumericExpression CostExpression { get; init; }
+        public required Constant?[] CostBindings { get; init; }
 
         public Fact<Fluent>[] ResolveDistinctPositivePreconditions(Problem problem, ReadOnlySpan<Constant> binding)
         {
@@ -61,101 +62,6 @@ public sealed class LiftedFfHeuristic : IHeuristic
             }
 
             return facts.ToArray();
-        }
-    }
-
-    private abstract class CompiledActionCostExpression
-    {
-        public abstract double Evaluate(Problem problem, ReadOnlySpan<Constant> binding);
-    }
-
-    private sealed class ConstantCompiledActionCostExpression(double value) : CompiledActionCostExpression
-    {
-        public override double Evaluate(Problem problem, ReadOnlySpan<Constant> binding) => value;
-    }
-
-    private sealed class BinaryCompiledActionCostExpression(
-        NumericOperator op,
-        CompiledActionCostExpression left,
-        CompiledActionCostExpression right) : CompiledActionCostExpression
-    {
-        public override double Evaluate(Problem problem, ReadOnlySpan<Constant> binding)
-        {
-            double leftValue = left.Evaluate(problem, binding);
-            double rightValue = right.Evaluate(problem, binding);
-
-            return op switch
-            {
-                NumericOperator.Add => leftValue + rightValue,
-                NumericOperator.Subtract => leftValue - rightValue,
-                NumericOperator.Multiply => leftValue * rightValue,
-                NumericOperator.Divide => rightValue == 0d
-                    ? throw new InvalidOperationException("Action cost division by zero is not supported.")
-                    : leftValue / rightValue,
-                _ => throw new InvalidOperationException($"Unsupported action cost operator '{op}'.")
-            };
-        }
-    }
-
-    private sealed class NumericFunctionCompiledActionCostExpression : CompiledActionCostExpression
-    {
-        private readonly NumericFunction _function;
-        private readonly int[] _variableSlots;
-        private readonly Constant?[] _constantArguments;
-        private readonly Constant[]? _scratchArgs;
-
-        public NumericFunctionCompiledActionCostExpression(
-            NumericFunction function,
-            IReadOnlyList<ITerm> arguments,
-            IReadOnlyDictionary<Variable, int> parameterSlots)
-        {
-            _function = function;
-            _variableSlots = new int[arguments.Count];
-            _constantArguments = new Constant?[arguments.Count];
-            if (arguments.Count > 0)
-                _scratchArgs = new Constant[arguments.Count];
-
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                _variableSlots[i] = -1;
-                if (arguments[i] is Variable variable)
-                {
-                    _variableSlots[i] = parameterSlots[variable];
-                }
-                else
-                {
-                    _constantArguments[i] = (Constant)arguments[i];
-                }
-            }
-        }
-
-        public override double Evaluate(Problem problem, ReadOnlySpan<Constant> binding)
-        {
-            switch (_variableSlots.Length)
-            {
-                case 0:
-                    return problem.GetNumericFunctionValue(_function, Array.Empty<Constant>());
-                case 1:
-                    return problem.GetNumericFunctionValue(_function, new[] { ResolveArgument(0, binding) });
-                case 2:
-                    return problem.GetNumericFunctionValue(_function, new[] { ResolveArgument(0, binding), ResolveArgument(1, binding) });
-                case 3:
-                    return problem.GetNumericFunctionValue(_function, new[] { ResolveArgument(0, binding), ResolveArgument(1, binding), ResolveArgument(2, binding) });
-                default:
-                {
-                    var scratchArgs = _scratchArgs!;
-                    for (int i = 0; i < _variableSlots.Length; i++)
-                        scratchArgs[i] = ResolveArgument(i, binding);
-
-                    return problem.GetNumericFunctionValue(_function, scratchArgs);
-                }
-            }
-        }
-
-        private Constant ResolveArgument(int argumentIndex, ReadOnlySpan<Constant> binding)
-        {
-            int variableSlot = _variableSlots[argumentIndex];
-            return variableSlot >= 0 ? binding[variableSlot] : _constantArguments[argumentIndex]!;
         }
     }
 
@@ -441,6 +347,7 @@ public sealed class LiftedFfHeuristic : IHeuristic
     public LiftedFfHeuristic(Problem problem, GoalCondition? goal = null)
     {
         _problem = problem ?? throw new ArgumentNullException(nameof(problem));
+        problem.RequirePropositionalPlanning("Lifted FF");
         _bindingGenerator = new ConjunctiveConditionBindingGenerator();
         _actions = CompileActions(problem);
         _currentGoal = CompileGoal(goal ?? GoalCondition.FromProblem(problem), nameof(goal));
@@ -490,6 +397,9 @@ public sealed class LiftedFfHeuristic : IHeuristic
                 _bindingGenerator.EnumerateBindingsUsingFluentState(action.Precondition, relaxedState, binding =>
                 {
                     double supportCost = EvaluateActionCost(action, binding);
+                    // An undefined cost makes the binding inapplicable.
+                    if (double.IsNaN(supportCost))
+                        return true;
                     foreach (Fact<Fluent> precondition in action.ResolveDistinctPositivePreconditions(_problem, binding))
                     {
                         double preconditionCost = factCosts[precondition.LocalIndex];
@@ -592,15 +502,17 @@ public sealed class LiftedFfHeuristic : IHeuristic
                     schema.Parameters,
                     positiveFluentPreconditions,
                     staticPreconditions,
-                    Array.Empty<Literal<Atom<Derived>>>()),
+                    Array.Empty<Literal<Atom<Derived>>>(),
+                    schema.NumericPreconditions),
                 PositiveFluentPreconditions = positiveFluentPreconditions
                     .Select(literal => new CompiledFluentAtom(literal.Value.Predicate, literal.Value.Arguments, parameterSlots))
                     .ToArray(),
                 PositiveEffects = schema.Effects
-                    .Where(effect => effect.EffectLiteral.Polarity == Polarity.Positive)
-                    .Select(effect => new CompiledFluentAtom(effect.EffectLiteral.Value.Predicate, effect.EffectLiteral.Value.Arguments, parameterSlots))
+                    .Where(effect => effect.RequiredLiteralEffect.Polarity == Polarity.Positive)
+                    .Select(effect => new CompiledFluentAtom(effect.RequiredLiteralEffect.Value.Predicate, effect.RequiredLiteralEffect.Value.Arguments, parameterSlots))
                     .ToArray(),
-                CostExpression = CompileCostExpression(schema.CostExpression, parameterSlots)
+                CostExpression = CompiledNumericExpression.Compile(schema.CostExpression, parameterSlots),
+                CostBindings = new Constant?[schema.Parameters.Count]
             };
 
             if (compiledAction.PositiveEffects.Length == 0)
@@ -614,6 +526,7 @@ public sealed class LiftedFfHeuristic : IHeuristic
 
     private static Fact<Fluent>[] CompileGoals(GoalCondition goal)
     {
+        if (goal.Comparisons.Count > 0) throw new NotSupportedException("Lifted FF does not support numeric goals.");
         var goalLiterals = goal.GoalLiterals;
         if (goalLiterals == null)
             throw new NotSupportedException("Lifted FF v1 only supports positive conjunctive fluent goals.");
@@ -747,54 +660,14 @@ public sealed class LiftedFfHeuristic : IHeuristic
 
     private double EvaluateActionCost(CompiledRelaxedAction action, ReadOnlySpan<Constant> binding)
     {
-        double cost;
-        try
-        {
-            cost = action.CostExpression.Evaluate(_problem, binding);
-        }
-        catch (InvalidOperationException ex)
-        {
-            throw new InvalidOperationException(
-                $"Failed to evaluate lifted action '{action.Schema.Name}({FormatBinding(binding)})' because its cost could not be evaluated.",
-                ex);
-        }
+        Constant?[] bindings = action.CostBindings;
+        for (int i = 0; i < binding.Length; i++)
+            bindings[i] = binding[i];
 
-        if (double.IsNaN(cost) || double.IsInfinity(cost))
-            throw new InvalidOperationException($"Lifted action '{action.Schema.Name}' has a non-finite cost.");
+        double cost = action.CostExpression.Evaluate(_problem.Context, bindings, state: null);
         if (cost < 0d)
             throw new InvalidOperationException($"Lifted action '{action.Schema.Name}' has a negative cost ({cost}).");
 
         return cost;
-    }
-
-    private static string FormatBinding(ReadOnlySpan<Constant> binding)
-    {
-        if (binding.Length == 0)
-            return string.Empty;
-
-        var names = new string[binding.Length];
-        for (int i = 0; i < binding.Length; i++)
-            names[i] = binding[i].Name;
-
-        return string.Join(", ", names);
-    }
-
-    private static CompiledActionCostExpression CompileCostExpression(
-        NumericExpression expression,
-        IReadOnlyDictionary<Variable, int> parameterSlots)
-    {
-        return expression switch
-        {
-            NumericConstant constant => new ConstantCompiledActionCostExpression(constant.Value),
-            NumericBinaryExpression binary => new BinaryCompiledActionCostExpression(
-                binary.Operator,
-                CompileCostExpression(binary.Left, parameterSlots),
-                CompileCostExpression(binary.Right, parameterSlots)),
-            FunctionCall function => new NumericFunctionCompiledActionCostExpression(
-                function.Function,
-                function.Arguments,
-                parameterSlots),
-            _ => throw new NotSupportedException($"Unsupported action cost expression '{expression.GetType().Name}'.")
-        };
     }
 }

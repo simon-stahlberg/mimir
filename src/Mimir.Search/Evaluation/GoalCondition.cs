@@ -10,22 +10,25 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
     public Problem Problem { get; }
     public IGroundedExpression? Expression { get; }
     internal IReadOnlyList<Literal<Fact>> GoalLiterals { get; }
+    public IReadOnlyList<GroundNumericComparison> Comparisons { get; }
 
     private GoalCondition(
         Problem problem,
         IGroundedExpression? expression,
-        IReadOnlyList<Literal<Fact>> goalLiterals)
+        IReadOnlyList<Literal<Fact>> goalLiterals,
+        IReadOnlyList<GroundNumericComparison>? comparisons = null)
     {
         Problem = problem;
         Expression = expression;
         GoalLiterals = Normalize(goalLiterals);
+        Comparisons = Array.AsReadOnly((comparisons ?? []).Distinct().ToArray());
     }
 
     public static GoalCondition FromProblem(Problem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
 
-        return new GoalCondition(problem, expression: null, problem.Goal);
+        return new GoalCondition(problem, expression: null, problem.Goal, problem.NumericGoals);
     }
 
     public static GoalCondition FromExpression(Problem problem, IGroundedExpression expression)
@@ -34,18 +37,19 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         ArgumentNullException.ThrowIfNull(expression);
 
         var atoms = new List<(GroundedAtom Atom, Polarity Polarity)>();
-        CollectAtoms(problem, expression, atoms, nameof(expression));
+        var comparisons = new List<GroundNumericComparison>();
+        CollectAtoms(problem, expression, atoms, comparisons, nameof(expression));
         Literal<Fact>[] literals = atoms
             .Select(atom => new Literal<Fact>(
                 RegisterFact(problem, atom.Atom),
                 atom.Polarity))
             .ToArray();
-        return new GoalCondition(problem, expression, literals);
+        return new GoalCondition(problem, expression, literals, comparisons);
     }
 
     public static GoalCondition FromLiterals(
         Problem problem,
-        IReadOnlyList<Literal<Fact>> literals)
+        IReadOnlyList<Literal<Fact>> literals, IReadOnlyList<GroundNumericComparison>? comparisons = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(literals);
@@ -60,7 +64,10 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
             }
         }
 
-        return new GoalCondition(problem, expression: null, literals);
+        var noVariables = new HashSet<Variable>();
+        foreach (GroundNumericComparison comparison in comparisons ?? [])
+            problem.ValidateNumericComparison(comparison, noVariables, nameof(comparisons));
+        return new GoalCondition(problem, expression: null, literals, comparisons);
     }
 
     public static GoalCondition Always(Problem problem)
@@ -81,6 +88,12 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
                 return false;
         }
 
+        for (int i = 0; i < Comparisons.Count; i++)
+        {
+            if (!state.State.Holds(Comparisons[i]))
+                return false;
+        }
+
         return true;
     }
 
@@ -94,6 +107,12 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
             Literal<Fact> goalLiteral = GoalLiterals[i];
             bool holds = state.IsTrue(goalLiteral.Value);
             if (goalLiteral.IsPositive != holds)
+                unsatisfied++;
+        }
+
+        for (int i = 0; i < Comparisons.Count; i++)
+        {
+            if (!state.State.Holds(Comparisons[i]))
                 unsatisfied++;
         }
 
@@ -112,7 +131,25 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         if (other is null || !ReferenceEquals(Problem, other.Problem))
             return false;
 
-        return GoalLiterals.SequenceEqual(other.GoalLiterals);
+        return GoalLiterals.SequenceEqual(other.GoalLiterals) && HasSameComparisons(other);
+    }
+
+    // Comparisons have no canonical order, so they are compared as sets; both lists are already distinct.
+    private bool HasSameComparisons(GoalCondition other)
+    {
+        if (Comparisons.Count != other.Comparisons.Count)
+            return false;
+
+        foreach (GroundNumericComparison comparison in Comparisons)
+        {
+            bool found = false;
+            foreach (GroundNumericComparison candidate in other.Comparisons)
+                found |= comparison.Equals(candidate);
+            if (!found)
+                return false;
+        }
+
+        return true;
     }
 
     public override bool Equals(object? obj) => Equals(obj as GoalCondition);
@@ -124,6 +161,10 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         foreach (Literal<Fact> literal in GoalLiterals)
             hash.Add(literal);
 
+        int comparisonHash = 0;
+        foreach (GroundNumericComparison comparison in Comparisons)
+            comparisonHash ^= comparison.GetHashCode();
+        hash.Add(comparisonHash);
         return hash.ToHashCode();
     }
 
@@ -142,16 +183,22 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         Problem problem,
         IGroundedExpression expression,
         List<(GroundedAtom Atom, Polarity Polarity)> atoms,
+        List<GroundNumericComparison> comparisons,
         string parameterName)
     {
         switch (expression)
         {
+            case NumericComparison comparison:
+                var bindings = new Dictionary<Variable, Constant>();
+                comparisons.Add(new GroundNumericComparison(comparison.Left.Ground(problem, bindings),
+                    comparison.Operator, comparison.Right.Ground(problem, bindings)));
+                return;
             case GroundedTrue:
                 return;
 
             case GroundedAnd and:
                 foreach (IGroundedExpression child in and.Expressions)
-                    CollectAtoms(problem, child, atoms, parameterName);
+                    CollectAtoms(problem, child, atoms, comparisons, parameterName);
                 return;
 
             case GroundedAtom atom:
@@ -166,7 +213,7 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
 
             default:
                 throw new ArgumentException(
-                    "Goal conditions must be conjunctions of ground literals.",
+                    "Goal conditions must be conjunctions of ground literals and numeric comparisons.",
                     parameterName);
         }
     }
