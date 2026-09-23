@@ -94,19 +94,13 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
             }
         }
 
-        List<GroundConditionalNumericEffect>? triggeredNumericEffects = null;
-        foreach (GroundConditionalNumericEffect effect in action.ConditionalNumericEffects)
-        {
-            if (effect.IsSatisfied(this))
-                (triggeredNumericEffects ??= new List<GroundConditionalNumericEffect>()).Add(effect);
-        }
-
         var result = new ulong[length];
         State.Bitboard.CopyTo(result);
 
         ApplyDeletes(action, triggeredEffects, result);
         ApplyAdds(action, triggeredEffects, result);
-        double[]? numericValues = NumericStateTransition.Apply(State, action.NumericEffects, triggeredNumericEffects);
+        if (!NumericStateTransition.TryApply(this, action, out double[]? numericValues))
+            throw new InvalidOperationException("The action is not applicable: its numeric effects are undefined in this state.");
         if (numericValues is not null)
             return new State(State.Context, State.TrimTrailingZeros(result), numericValues, takeOwnership: true);
         return new State(

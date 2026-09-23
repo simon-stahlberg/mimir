@@ -134,7 +134,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         private bool Collect(ReadOnlySpan<Constant> binding)
         {
             GroundAction action = _generator.GetOrBuildAction(_schemaCache, binding);
-            if (!action.AreNumericEffectsDefined(_state))
+            if (!action.IsTransitionDefined(_state))
                 return true;
             _actions.Add(action);
             return _actions.Count < _maxActions;

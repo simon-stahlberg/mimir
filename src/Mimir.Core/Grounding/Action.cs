@@ -176,7 +176,6 @@ internal sealed class ActionEffects :
     public double Cost { get; }
     internal IReadOnlyList<GroundNumericUpdate> NumericEffects { get; }
     internal IReadOnlyList<GroundConditionalNumericEffect> ConditionalNumericEffects { get; }
-    internal bool HasNumericEffects => NumericEffects.Count > 0 || ConditionalNumericEffects.Count > 0;
 
     public ActionEffects(
         OffsetBitboard add,
@@ -338,23 +337,13 @@ public class Action : IEquatable<Action>
         if (!AreNumericPreconditionsSatisfied(compactState)) return false;
         return AreStaticDerivedPreconditionsSatisfied()
             && AreStateDependentDerivedPreconditionsSatisfied(state)
-            && AreNumericEffectsDefined(state);
+            && IsTransitionDefined(state);
     }
 
-    // Checked after the preconditions because triggered conditional effects are only meaningful in states
-    // where the action's preconditions hold.
-    internal bool AreNumericEffectsDefined(ExtendedState state)
-    {
-        if (double.IsNaN(Cost)) return false;
-        if (!_effects.HasNumericEffects) return true;
-        List<GroundConditionalNumericEffect>? triggered = null;
-        foreach (GroundConditionalNumericEffect effect in _effects.ConditionalNumericEffects)
-        {
-            if (effect.IsSatisfied(state))
-                (triggered ??= new List<GroundConditionalNumericEffect>()).Add(effect);
-        }
-        return NumericStateTransition.IsDefined(state.State, _effects.NumericEffects, triggered);
-    }
+    // PDDL 2.1 makes an action inapplicable when its cost or a numeric effect is undefined. Checked after the
+    // preconditions because triggered conditional effects are only meaningful where the preconditions hold.
+    internal bool IsTransitionDefined(ExtendedState state)
+        => !double.IsNaN(Cost) && NumericStateTransition.TryApply(state, this, out _);
 
     internal bool AreNumericPreconditionsSatisfied(State state)
     {

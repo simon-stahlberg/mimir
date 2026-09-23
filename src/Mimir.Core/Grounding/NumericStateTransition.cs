@@ -6,38 +6,31 @@ namespace Mimir.Core.Grounding;
 // undefined fluent, or when two effects write the same fluent incompatibly (only increase/decrease combine).
 internal static class NumericStateTransition
 {
-    internal static bool IsDefined(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalNumericEffect>? triggered)
-        => TryCollectWrites(source, unconditional, triggered, out _);
-
-    internal static double[]? Apply(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalNumericEffect>? triggered)
+    // values is null when the action writes no numeric fluent in this state.
+    internal static bool TryApply(ExtendedState state, Action action, out double[]? values)
     {
-        if (!TryCollectWrites(source, unconditional, triggered, out List<NumericWrite>? writes))
-            throw new InvalidOperationException("The action is not applicable: its numeric effects are undefined in this state.");
-        if (writes is null) return null;
-        double[] values = source.NumericValues.ToArray();
+        values = null;
+        State source = state.State;
+        List<NumericWrite>? writes = null;
+        IReadOnlyList<GroundNumericUpdate> unconditional = action.NumericEffects;
+        for (int i = 0; i < unconditional.Count; i++)
+        {
+            if (!TryCollect(source, unconditional[i], ref writes)) return false;
+        }
+
+        IReadOnlyList<GroundConditionalNumericEffect> conditional = action.ConditionalNumericEffects;
+        for (int i = 0; i < conditional.Count; i++)
+        {
+            if (conditional[i].IsSatisfied(state) && !TryCollect(source, conditional[i].Effect, ref writes)) return false;
+        }
+
+        if (writes is null) return true;
+        values = source.NumericValues.ToArray();
         foreach (NumericWrite write in writes)
         {
             values[write.Index] = write.Additive
                 ? NumericEvaluation.Apply(NumericOperator.Add, values[write.Index], write.Value)
                 : write.Value;
-        }
-        return values;
-    }
-
-    private static bool TryCollectWrites(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalNumericEffect>? triggered, out List<NumericWrite>? writes)
-    {
-        writes = null;
-        for (int i = 0; i < unconditional.Count; i++)
-        {
-            if (!TryCollect(source, unconditional[i], ref writes)) return false;
-        }
-        if (triggered is null) return true;
-        for (int i = 0; i < triggered.Count; i++)
-        {
-            if (!TryCollect(source, triggered[i].Effect, ref writes)) return false;
         }
         return true;
     }

@@ -230,7 +230,7 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
                 if (!candidate.Action.AreStateDependentDerivedPreconditionsSatisfied(state))
                     continue;
 
-                if (!candidate.Action.AreNumericEffectsDefined(state))
+                if (!candidate.Action.IsTransitionDefined(state))
                     continue;
 
                 if (groupIndex >= 0)
