@@ -342,21 +342,21 @@ public class DomainTests
         Assert.Single(eff0.QuantifiedVariables);
         Assert.Equal("?p", eff0.QuantifiedVariables[0].Name);
         Assert.Equal("passenger", eff0.QuantifiedVariables[0].Type);
-        Assert.Equal("boarded", eff0.LiteralEffect!.Value.Predicate.Name);
-        Assert.True(eff0.LiteralEffect!.IsNegative);
+        Assert.Equal("boarded", eff0.Effect.Value.Predicate.Name);
+        Assert.True(eff0.Effect.IsNegative);
         Assert.Single(eff0.FluentConditions);  // boarded(?p)
         Assert.Single(eff0.StaticConditions);   // destin(?p, ?f)
 
         // Effect 2: same forall, adds served(?p)
         var eff1 = stop.Effects[1];
-        Assert.Equal("served", eff1.LiteralEffect!.Value.Predicate.Name);
-        Assert.True(eff1.LiteralEffect!.IsPositive);
+        Assert.Equal("served", eff1.Effect.Value.Predicate.Name);
+        Assert.True(eff1.Effect.IsPositive);
 
         // Effect 3: (forall (?p) (when (origin ?p ?f) (not (served ?p))) (boarded ?p))
         var eff2 = stop.Effects[2];
         Assert.Single(eff2.QuantifiedVariables);
-        Assert.Equal("boarded", eff2.LiteralEffect!.Value.Predicate.Name);
-        Assert.True(eff2.LiteralEffect!.IsPositive);
+        Assert.Equal("boarded", eff2.Effect.Value.Predicate.Name);
+        Assert.True(eff2.Effect.IsPositive);
         Assert.Single(eff2.FluentConditions);  // NOT served(?p)
         Assert.True(eff2.FluentConditions[0].IsNegative);
         Assert.Single(eff2.StaticConditions);   // origin(?p, ?f)
@@ -407,6 +407,6 @@ public class DomainTests
         IReadOnlyList<ConditionalEffect> effects, string predicateName, Polarity polarity)
     {
         Assert.Contains(effects, e =>
-            e.LiteralEffect!.Value.Predicate.Name == predicateName && e.LiteralEffect!.Polarity == polarity);
+            e.Effect.Value.Predicate.Name == predicateName && e.Effect.Polarity == polarity);
     }
 }

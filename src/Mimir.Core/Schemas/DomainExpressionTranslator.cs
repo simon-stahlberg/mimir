@@ -118,7 +118,7 @@ internal static class DomainExpressionTranslator
         Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
-        List<ConditionalEffect> results,
+        List<ConditionalEffectBase> results,
         IReadOnlyDictionary<string, NumericFunction> functions)
         => ExtractEffects(effect, quantified, scope, predicates, mapTerm, extendScope, results, functions,
             EffectCondition.Empty);
@@ -139,7 +139,7 @@ internal static class DomainExpressionTranslator
         Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
-        List<ConditionalEffect> results,
+        List<ConditionalEffectBase> results,
         IReadOnlyDictionary<string, NumericFunction> functions,
         EffectCondition outerCondition)
     {
@@ -180,12 +180,12 @@ internal static class DomainExpressionTranslator
         {
             var target = (FunctionCall)NumericExpressionTranslator.TranslateExpression(numeric.Target, scope, functions, mapTerm);
             NumericExpression value = NumericExpressionTranslator.TranslateExpression(numeric.Value, scope, functions, mapTerm);
-            results.Add(new ConditionalEffect(quantified, fluent, statics, derived, null, comparisons,
+            results.Add(new ConditionalNumericEffect(quantified, fluent, statics, derived, comparisons,
                 new NumericUpdate(target, numeric.Operator, value)));
             return;
         }
         Literal<Atom<Fluent>> literal = ExtractEffectLiteral(effect, predicates, scope, mapTerm);
-        results.Add(new ConditionalEffect(quantified, fluent, statics, derived, literal, comparisons));
+        results.Add(new ConditionalEffect(quantified, fluent, statics, derived, comparisons, literal));
     }
 
     private static GroundedAtom TranslateAtom(

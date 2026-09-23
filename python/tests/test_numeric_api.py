@@ -180,10 +180,12 @@ def test_numeric_pddl_updates_and_conditional_inspection(operation, expected):
     problem = m.Problem.from_pddl(domain, """(define (problem p) (:domain numerical)
         (:init (= (fuel) 4)) (:goal (> (fuel) 0)))""")
     action = problem.action("act")
-    assert len(domain.action("act").conditional_effects) == 1
-    assert len(domain.action("act").conditional_effects[0].effect.numeric_updates) == 1
-    assert len(action.conditional_effects[0].effect.numeric_updates) == 1
-    assert action.conditional_effects[0].effect.literals == ()
+    assert domain.action("act").conditional_effects == ()
+    assert len(domain.action("act").conditional_numeric_effects) == 1
+    assert len(domain.action("act").conditional_numeric_effects[0].effect.numeric_updates) == 1
+    assert action.conditional_effects == ()
+    assert len(action.conditional_numeric_effects[0].effect.numeric_updates) == 1
+    assert action.conditional_numeric_effects[0].effect.literals == ()
     # State values are stored on the 1e-9 comparison grid.
     assert action.apply(problem.initial_state).value(problem.function_call("fuel")) == pytest.approx(expected, abs=1e-9)
 
@@ -306,7 +308,8 @@ def test_rich_numeric_builders_and_derived_conditions(generator):
     assert choose_action not in next_state.applicable_actions()
     assert initial.value(problem.atom("available", "a"))
     assert len(domain.action("choose").precondition.literals) > 0
-    assert len(choose_action.conditional_effects) == 1
+    assert choose_action.conditional_effects == ()
+    assert len(choose_action.conditional_numeric_effects) == 1
 
 
 @pytest.mark.parametrize("guard", ["(and)", "(or)", "(or (and) (> (fuel) 0))", "(> (fuel) 0)"])

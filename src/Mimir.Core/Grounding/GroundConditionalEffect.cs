@@ -4,12 +4,10 @@ using Schemas;
 using System.Runtime.CompilerServices;
 using Mimir.Core;
 
-public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
+public abstract class GroundConditionalEffectBase
 {
     public InstanceContext Context { get; }
     public IReadOnlyList<GroundNumericComparison> NumericConditions { get; }
-    public GroundNumericUpdate? NumericEffect { get; }
-    public Literal<Fact<Fluent>>? LiteralEffect { get; }
     internal OffsetBitboard PositiveFluentConditions { get; }
     internal OffsetBitboard NegativeFluentConditions { get; }
     internal OffsetBitboard PositiveStaticConditions { get; }
@@ -19,27 +17,19 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
     public GroundConjunctiveCondition Condition => new(Context.Problem,
         GroundConditionLiterals.Read(Context, PositiveFluentConditions, NegativeFluentConditions,
             PositiveStaticConditions, NegativeStaticConditions, DerivedConditions), NumericConditions);
-    public GroundActionEffect Effect => new(LiteralEffect is null ? [] : [new Literal<Fact>(LiteralEffect.Value, LiteralEffect.Polarity)], NumericEffect is null ? [] : [NumericEffect]);
-    // For code paths that only accept propositional effects (e.g. heuristics on non-numeric problems).
-    internal Literal<Fact<Fluent>> RequiredLiteralEffect => LiteralEffect ?? throw new InvalidOperationException("This effect is numeric.");
 
-    internal GroundConditionalEffect(
+    private protected GroundConditionalEffectBase(
         InstanceContext context,
         OffsetBitboard positiveFluentConditions,
         OffsetBitboard negativeFluentConditions,
         OffsetBitboard positiveStaticConditions,
         OffsetBitboard negativeStaticConditions,
         IReadOnlyList<Literal<Fact<Derived>>> derivedConditions,
-        Literal<Fact<Fluent>>? effect,
-        IReadOnlyList<GroundNumericComparison>? numericConditions = null,
-        GroundNumericUpdate? numericEffect = null)
+        IReadOnlyList<GroundNumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(derivedConditions);
-        if (effect is null && numericEffect is null)
-            throw new ArgumentNullException(nameof(effect), "An effect needs a literal or a numeric update.");
-        if (effect is not null && numericEffect is not null)
-            throw new ArgumentException("An effect cannot contain both a literal and a numeric update.");
+        ArgumentNullException.ThrowIfNull(numericConditions);
 
         Context = context;
         PositiveFluentConditions = positiveFluentConditions;
@@ -47,10 +37,7 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
         PositiveStaticConditions = positiveStaticConditions;
         NegativeStaticConditions = negativeStaticConditions;
         DerivedConditions = Array.AsReadOnly(derivedConditions.ToArray());
-        LiteralEffect = effect;
-        NumericEffect = numericEffect;
-        NumericConditions = numericConditions is null || numericConditions.Count == 0
-            ? Array.Empty<GroundNumericComparison>() : Array.AsReadOnly(numericConditions.ToArray());
+        NumericConditions = Array.AsReadOnly(numericConditions.ToArray());
     }
 
     public bool IsSatisfied(ExtendedState state)
@@ -88,32 +75,89 @@ public class GroundConditionalEffect : IEquatable<GroundConditionalEffect>
         return true;
     }
 
-    public bool Equals(GroundConditionalEffect? other)
-        => other is not null
-        && ReferenceEquals(Context, other.Context)
+    private protected bool ConditionEquals(GroundConditionalEffectBase other)
+        => ReferenceEquals(Context, other.Context)
         && PositiveFluentConditions.Equals(other.PositiveFluentConditions)
         && NegativeFluentConditions.Equals(other.NegativeFluentConditions)
         && PositiveStaticConditions.Equals(other.PositiveStaticConditions)
         && NegativeStaticConditions.Equals(other.NegativeStaticConditions)
         && ValueSequence.Equals(DerivedConditions, other.DerivedConditions)
-        && Equals(LiteralEffect, other.LiteralEffect)
-        && Equals(NumericEffect, other.NumericEffect)
         && ValueSequence.Equals(NumericConditions, other.NumericConditions);
 
-    public override bool Equals(object? obj) => Equals(obj as GroundConditionalEffect);
-
-    public override int GetHashCode()
+    private protected void AddConditionToHash(ref HashCode hash)
     {
-        var hash = new HashCode();
         hash.Add(RuntimeHelpers.GetHashCode(Context));
         hash.Add(PositiveFluentConditions);
         hash.Add(NegativeFluentConditions);
         hash.Add(PositiveStaticConditions);
         hash.Add(NegativeStaticConditions);
         ValueSequence.AddToHash(ref hash, DerivedConditions);
-        hash.Add(LiteralEffect);
-        hash.Add(NumericEffect);
         ValueSequence.AddToHash(ref hash, NumericConditions);
+    }
+}
+
+public sealed class GroundConditionalEffect : GroundConditionalEffectBase, IEquatable<GroundConditionalEffect>
+{
+    public Literal<Fact<Fluent>> Effect { get; }
+
+    internal GroundConditionalEffect(
+        InstanceContext context,
+        OffsetBitboard positiveFluentConditions,
+        OffsetBitboard negativeFluentConditions,
+        OffsetBitboard positiveStaticConditions,
+        OffsetBitboard negativeStaticConditions,
+        IReadOnlyList<Literal<Fact<Derived>>> derivedConditions,
+        IReadOnlyList<GroundNumericComparison> numericConditions,
+        Literal<Fact<Fluent>> effect)
+        : base(context, positiveFluentConditions, negativeFluentConditions, positiveStaticConditions,
+            negativeStaticConditions, derivedConditions, numericConditions)
+    {
+        Effect = effect ?? throw new ArgumentNullException(nameof(effect));
+    }
+
+    public bool Equals(GroundConditionalEffect? other)
+        => other is not null && ConditionEquals(other) && Effect.Equals(other.Effect);
+
+    public override bool Equals(object? obj) => Equals(obj as GroundConditionalEffect);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        AddConditionToHash(ref hash);
+        hash.Add(Effect);
+        return hash.ToHashCode();
+    }
+}
+
+public sealed class GroundConditionalNumericEffect : GroundConditionalEffectBase, IEquatable<GroundConditionalNumericEffect>
+{
+    public GroundNumericUpdate Effect { get; }
+
+    internal GroundConditionalNumericEffect(
+        InstanceContext context,
+        OffsetBitboard positiveFluentConditions,
+        OffsetBitboard negativeFluentConditions,
+        OffsetBitboard positiveStaticConditions,
+        OffsetBitboard negativeStaticConditions,
+        IReadOnlyList<Literal<Fact<Derived>>> derivedConditions,
+        IReadOnlyList<GroundNumericComparison> numericConditions,
+        GroundNumericUpdate effect)
+        : base(context, positiveFluentConditions, negativeFluentConditions, positiveStaticConditions,
+            negativeStaticConditions, derivedConditions, numericConditions)
+    {
+        Effect = effect ?? throw new ArgumentNullException(nameof(effect));
+    }
+
+    public bool Equals(GroundConditionalNumericEffect? other)
+        => other is not null && ConditionEquals(other) && Effect.Equals(other.Effect);
+
+    public override bool Equals(object? obj) => Equals(obj as GroundConditionalNumericEffect);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        AddConditionToHash(ref hash);
+        hash.Add(Effect);
         return hash.ToHashCode();
     }
 }

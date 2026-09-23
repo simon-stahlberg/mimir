@@ -449,7 +449,7 @@ public class BuilderParityTests
             .Concat(effect.StaticConditions.Select(FormatLiteral))
             .Concat(effect.DerivedConditions.Select(FormatLiteral));
         return $"forall({FormatVariables(effect.QuantifiedVariables)})" +
-               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.LiteralEffect!)}";
+               $" when[{string.Join(',', conditions)}] {FormatLiteral(effect.Effect)}";
     }
 
     private static string FormatExpression(IGroundedExpression expression)

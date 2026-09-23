@@ -55,7 +55,7 @@ public class BuilderGuardTests
             ready,
             Assert.Single(action.StaticPreconditions, literal => literal.Value.Predicate.Name == "ready")
                 .Value.Predicate);
-        Assert.Same(marked, Assert.Single(action.Effects).LiteralEffect!.Value.Predicate);
+        Assert.Same(marked, Assert.Single(action.Effects).Effect.Value.Predicate);
         Assert.Same(eligible, Assert.Single(action.DerivedPreconditions).Value.Predicate);
         Assert.Same(ready, ((GroundedAtom)domain.DerivedDefinitions["eligible"]).Predicate);
         Assert.Same(domain.EqualityPredicate, action.StaticPreconditions[1].Value.Predicate);

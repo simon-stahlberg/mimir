@@ -22,6 +22,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(state.Expand()));
@@ -43,6 +44,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.False(effect.IsSatisfied(emptyState.Expand()));
@@ -64,6 +66,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.False(effect.IsSatisfied(state.Expand()));
@@ -85,6 +88,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(emptyState.Expand()));
@@ -105,6 +109,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(emptyState.Expand()));
@@ -126,6 +131,7 @@ public class ConditionalEffectTests
             CreateStaticMask(cond),
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(StateFactory.Default.CreateEmpty(context).Expand()));
@@ -146,6 +152,7 @@ public class ConditionalEffectTests
             CreateStaticMask(cond),
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.False(effect.IsSatisfied(StateFactory.Default.CreateEmpty(context).Expand()));
@@ -167,6 +174,7 @@ public class ConditionalEffectTests
             default,
             CreateStaticMask(cond),
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.False(effect.IsSatisfied(StateFactory.Default.CreateEmpty(context).Expand()));
@@ -187,6 +195,7 @@ public class ConditionalEffectTests
             default,
             CreateStaticMask(cond),
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(StateFactory.Default.CreateEmpty(context).Expand()));
@@ -205,6 +214,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
         TestProblemFixture foreignFixture = TestProblemFixture.Create(["p", "q"]);
         State foreignState = StateFactory.Default.CreateEmpty(foreignFixture.Context);
@@ -228,6 +238,7 @@ public class ConditionalEffectTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, Polarity.Positive));
 
         Assert.True(effect.IsSatisfied(state.Expand()));

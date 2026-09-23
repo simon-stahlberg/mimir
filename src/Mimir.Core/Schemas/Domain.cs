@@ -56,10 +56,8 @@ public partial class Domain
         var functions = new HashSet<NumericFunction>();
         foreach (ActionSchema action in actions)
         {
-            foreach (ConditionalEffect effect in action.Effects)
-            {
-                if (effect.NumericEffect is { } update) functions.Add(update.Target.Function);
-            }
+            foreach (ConditionalNumericEffect effect in action.NumericEffects)
+                functions.Add(effect.Effect.Target.Function);
         }
         return functions;
     }
@@ -301,7 +299,7 @@ public partial class Domain
         {
             _actionSet.Add(action);
             AddVariables(action.Parameters);
-            foreach (ConditionalEffect effect in action.Effects)
+            foreach (ConditionalEffectBase effect in action.Effects.Concat<ConditionalEffectBase>(action.NumericEffects))
                 AddVariables(effect.QuantifiedVariables);
         }
 

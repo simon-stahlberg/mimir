@@ -37,6 +37,7 @@ public class PublicSurfaceTests
                 Array.Empty<Literal<Atom<Fluent>>>(),
                 Array.Empty<Literal<Atom<Static>>>(),
                 Array.Empty<Literal<Atom<Derived>>>(),
+                [],
                 literal)
         };
         var actionSchema = new ActionSchema(
@@ -45,7 +46,9 @@ public class PublicSurfaceTests
             fluentPreconditions,
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             effects,
+            [],
             new NumericConstant(1d));
         TestProblemFixture fixture = TestProblemFixture.Create(["fixture"]);
         var condition = new ConjunctiveCondition(

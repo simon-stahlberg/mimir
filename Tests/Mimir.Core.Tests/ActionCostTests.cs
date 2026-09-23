@@ -1206,7 +1206,7 @@ public sealed class ActionCostTests : IDisposable
       (increase (total-cost) (energy)))))
 """;
         Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
-        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
+        Assert.NotEmpty(domain.Actions.SelectMany(action => action.NumericEffects));
     }
 
     [Fact]
@@ -1228,7 +1228,7 @@ public sealed class ActionCostTests : IDisposable
 """;
 
         Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
-        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
+        Assert.NotEmpty(domain.Actions.SelectMany(action => action.NumericEffects));
     }
 
     [Fact]
@@ -1295,7 +1295,7 @@ public sealed class ActionCostTests : IDisposable
       (increase (total-cost) 1))))
 """;
         Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
-        Assert.Contains(domain.Actions.SelectMany(action => action.Effects), effect => effect.NumericEffect is not null);
+        Assert.NotEmpty(domain.Actions.SelectMany(action => action.NumericEffects));
     }
 
     [Fact]

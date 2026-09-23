@@ -61,7 +61,8 @@ public class NumericApiTests
         Assert.Empty(action.Effect.NumericUpdates);
         ConditionalEffect conditional = Assert.Single(schema.ConditionalEffects);
         Assert.Single(conditional.Condition.Literals);
-        Assert.Single(conditional.Effect.Literals);
+        Assert.Equal("ready", conditional.Effect.Value.Predicate.Name);
+        Assert.True(conditional.Effect.IsPositive);
         NumericBinaryExpression lifted = Assert.IsType<NumericBinaryExpression>(schema.CostExpression);
         NumericBinaryExpression grounded = Assert.IsType<NumericBinaryExpression>(action.CostExpression);
         Assert.Same(schema.Parameters[0], Assert.Single(Assert.IsType<FunctionCall>(lifted.Left).Arguments));

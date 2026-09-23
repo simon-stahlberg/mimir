@@ -219,7 +219,7 @@ internal sealed class PddlDomainTranslator
             IReadOnlyList<Literal<Atom<Fluent>>> FluentPreconditions,
             IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions,
             IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions,
-            IReadOnlyList<ConditionalEffect> Effects,
+            IReadOnlyList<ConditionalEffectBase> Effects,
             IReadOnlyList<NumericComparison> Comparisons,
             NumericExpression? ExplicitCostExpression)>();
 
@@ -246,7 +246,7 @@ internal sealed class PddlDomainTranslator
                     dPre, allFunctions, comparisons);
             }
 
-            var effects = new List<ConditionalEffect>();
+            var effects = new List<ConditionalEffectBase>();
 
             if (action.Effect is not null)
             {
@@ -290,8 +290,10 @@ internal sealed class PddlDomainTranslator
                 pendingAction.FluentPreconditions,
                 pendingAction.StaticPreconditions,
                 pendingAction.DerivedPreconditions,
-                pendingAction.Effects,
-                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost), pendingAction.Comparisons));
+                pendingAction.Comparisons,
+                pendingAction.Effects.OfType<ConditionalEffect>().ToArray(),
+                pendingAction.Effects.OfType<ConditionalNumericEffect>().ToArray(),
+                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost)));
         }
 
         Actions = actionsList;

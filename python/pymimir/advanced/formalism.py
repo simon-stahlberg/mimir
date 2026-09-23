@@ -168,6 +168,8 @@ _bind("mimir_action_get_effect_literal_count", [_int], _int)
 _bind("mimir_action_get_effect_literal", [_int, _int], _int)
 _bind("mimir_action_get_conditional_effect_count", [_int], _int)
 _bind("mimir_action_get_conditional_effect", [_int, _int], _int)
+_bind("mimir_action_get_conditional_numeric_effect_count", [_int], _int)
+_bind("mimir_action_get_conditional_numeric_effect", [_int, _int], _int)
 _bind("mimir_action_to_string", [_int], _ptr)
 
 
@@ -209,6 +211,8 @@ _bind("mimir_ground_action_get_derived_precondition_count", [_int], _int)
 _bind("mimir_ground_action_get_derived_precondition", [_int, _int], _int)
 _bind("mimir_ground_action_get_conditional_effect_count", [_int], _int)
 _bind("mimir_ground_action_get_conditional_effect", [_int, _int], _int)
+_bind("mimir_ground_action_get_conditional_numeric_effect_count", [_int], _int)
+_bind("mimir_ground_action_get_conditional_numeric_effect", [_int, _int], _int)
 
 
 # ----- Ground conditional effect -----

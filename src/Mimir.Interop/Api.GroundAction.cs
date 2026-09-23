@@ -178,6 +178,14 @@ public static partial class Exports
         return ObjectRegistry.Store(a.ConditionalEffects[index]);
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_ground_action_get_conditional_numeric_effect_count")]
+    public static int GroundActionGetConditionalNumericEffectCount(int handle)
+        => ReadValue(handle, -1, (GroundAction action) => action.ConditionalNumericEffects.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_ground_action_get_conditional_numeric_effect")]
+    public static int GroundActionGetConditionalNumericEffect(int handle, int index)
+        => CreateHandle(() => RequireHandle<GroundAction>(handle).ConditionalNumericEffects[index]);
+
     // PopCount / NthSetBit live in Mimir.Core.Grounding.BitboardOps. Forwarders
     // keep this file's call-sites short.
     private static int PopCount(ulong[] bits) => BitboardOps.PopCount(bits);

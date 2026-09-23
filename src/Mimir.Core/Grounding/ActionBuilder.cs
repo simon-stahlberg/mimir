@@ -33,16 +33,15 @@ internal static class ActionBuilder
         var referencedVariables = new HashSet<Variable>(ReferenceEqualityComparer.Instance);
         foreach (ConditionalEffect effect in schema.Effects)
         {
-            if (effect.LiteralEffect is { } literal) AddReferencedVariables(literal.Value.Arguments, referencedVariables);
-            if (effect.NumericEffect is { } update)
-            {
-                AddReferencedVariables(update.Target, referencedVariables);
-                AddReferencedVariables(update.Expression, referencedVariables);
-            }
-            AddReferencedVariables(effect.NumericConditions, referencedVariables);
-            AddReferencedVariables(effect.FluentConditions, referencedVariables);
-            AddReferencedVariables(effect.StaticConditions, referencedVariables);
-            AddReferencedVariables(effect.DerivedConditions, referencedVariables);
+            AddReferencedVariables(effect.Effect.Value.Arguments, referencedVariables);
+            AddConditionVariables(effect, referencedVariables);
+        }
+
+        foreach (ConditionalNumericEffect effect in schema.NumericEffects)
+        {
+            AddReferencedVariables(effect.Effect.Target, referencedVariables);
+            AddReferencedVariables(effect.Effect.Expression, referencedVariables);
+            AddConditionVariables(effect, referencedVariables);
         }
 
         AddReferencedVariables(schema.CostExpression, referencedVariables);
@@ -169,27 +168,25 @@ internal static class ActionBuilder
 
             if (effects is null)
             {
-                for (int i = 0; i < plan.Effects.Length; i++)
+                foreach (CompiledGroundingEffect effect in plan.Effects)
                 {
-                    CompiledGroundingEffect effect = plan.Effects[i];
-                    if (effect.IsSuppressed)
-                        continue;
+                    if (!effect.IsSuppressed)
+                        ProcessQuantifiedEffect(effect, parameterIndex: 0, problem, bindings, workspace);
+                }
 
-                    ProcessQuantifiedEffect(
-                        effect,
-                        parameterIndex: 0,
-                        problem,
-                        bindings,
-                        workspace);
+                foreach (CompiledGroundingNumericEffect effect in plan.NumericEffects)
+                {
+                    if (!effect.IsSuppressed)
+                        ProcessQuantifiedEffect(effect, parameterIndex: 0, problem, bindings, workspace);
                 }
 
                 effects = new ActionEffects(
-                    plan.Schema,
                     OffsetBitboard.FromSetBitIndices(workspace.AddEffectIndices),
                     OffsetBitboard.FromSetBitIndices(workspace.DeleteEffectIndices),
                     workspace.ConditionalEffects,
-                    cost,
-                    workspace.NumericUpdates);
+                    workspace.NumericEffects,
+                    workspace.ConditionalNumericEffects,
+                    cost);
             }
 
             cache?.StorePreconditions(ownedArguments, preconditions);
@@ -203,7 +200,7 @@ internal static class ActionBuilder
     }
 
     private static void ProcessQuantifiedEffect(
-        CompiledGroundingEffect effect,
+        CompiledGroundingEffectBase effect,
         int parameterIndex,
         Problem problem,
         Constant?[] bindings,
@@ -243,11 +240,8 @@ internal static class ActionBuilder
 
         var referencedVariables = new HashSet<Variable>(
             ReferenceEqualityComparer.Instance);
-        AddReferencedVariables(effect.RequiredLiteralEffect.Value.Arguments, referencedVariables);
-        AddReferencedVariables(effect.NumericConditions, referencedVariables);
-        AddReferencedVariables(effect.FluentConditions, referencedVariables);
-        AddReferencedVariables(effect.StaticConditions, referencedVariables);
-        AddReferencedVariables(effect.DerivedConditions, referencedVariables);
+        AddReferencedVariables(effect.Effect.Value.Arguments, referencedVariables);
+        AddConditionVariables(effect, referencedVariables);
 
         return effect.QuantifiedVariables
             .Where(referencedVariables.Contains)
@@ -255,30 +249,91 @@ internal static class ActionBuilder
     }
 
     private static void ProcessEffect(
+        CompiledGroundingEffectBase effect,
+        Problem problem,
+        Constant?[] bindings,
+        ActionGroundingWorkspace workspace)
+    {
+        switch (effect)
+        {
+            case CompiledGroundingEffect literal:
+                ProcessLiteralEffect(literal, problem.Context, bindings, workspace);
+                return;
+            case CompiledGroundingNumericEffect numeric:
+                ProcessNumericEffect(numeric, problem, bindings, workspace);
+                return;
+            default:
+                throw new InvalidOperationException($"Unknown compiled effect '{effect.GetType().Name}'.");
+        }
+    }
+
+    private static void ProcessLiteralEffect(
         CompiledGroundingEffect effect,
+        InstanceContext context,
+        Constant?[] bindings,
+        ActionGroundingWorkspace workspace)
+    {
+        Fact<Fluent> fact = GroundFact(effect.Target, context, bindings, workspace);
+        if (!effect.IsConditional)
+        {
+            (effect.Polarity == Polarity.Positive ? workspace.AddEffectIndices : workspace.DeleteEffectIndices).Add(fact.LocalIndex);
+            return;
+        }
+
+        GroundedEffectCondition condition = GroundEffectCondition(effect, context.Problem, bindings, workspace);
+        workspace.ConditionalEffects.Add(new GroundConditionalEffect(
+            context,
+            condition.PositiveFluent,
+            condition.NegativeFluent,
+            condition.PositiveStatic,
+            condition.NegativeStatic,
+            workspace.EffectDerivedConditions,
+            condition.NumericConditions,
+            new Literal<Fact<Fluent>>(fact, effect.Polarity)));
+        workspace.EffectDerivedConditions.Clear();
+    }
+
+    private static void ProcessNumericEffect(
+        CompiledGroundingNumericEffect effect,
+        Problem problem,
+        Constant?[] bindings,
+        ActionGroundingWorkspace workspace)
+    {
+        GroundNumericUpdate update = effect.Update.Ground(problem, bindings);
+        if (!effect.IsConditional)
+        {
+            workspace.NumericEffects.Add(update);
+            return;
+        }
+
+        GroundedEffectCondition condition = GroundEffectCondition(effect, problem, bindings, workspace);
+        workspace.ConditionalNumericEffects.Add(new GroundConditionalNumericEffect(
+            problem.Context,
+            condition.PositiveFluent,
+            condition.NegativeFluent,
+            condition.PositiveStatic,
+            condition.NegativeStatic,
+            workspace.EffectDerivedConditions,
+            condition.NumericConditions,
+            update));
+        workspace.EffectDerivedConditions.Clear();
+    }
+
+    private readonly record struct GroundedEffectCondition(
+        OffsetBitboard PositiveFluent,
+        OffsetBitboard NegativeFluent,
+        OffsetBitboard PositiveStatic,
+        OffsetBitboard NegativeStatic,
+        GroundNumericComparison[] NumericConditions);
+
+    // Derived conditions are written to workspace.EffectDerivedConditions; the caller clears it after use.
+    private static GroundedEffectCondition GroundEffectCondition(
+        CompiledGroundingEffectBase effect,
         Problem problem,
         Constant?[] bindings,
         ActionGroundingWorkspace workspace)
     {
         InstanceContext context = problem.Context;
-        Fact<Fluent>? fact = effect.Target is { } targetAtom
-            ? GroundFact(targetAtom, context, bindings, workspace)
-            : null;
-        GroundNumericUpdate? update = effect.NumericUpdate?.Ground(problem, bindings);
-        GroundNumericComparison[] comparisons = effect.NumericConditions.Length == 0
-            ? Array.Empty<GroundNumericComparison>()
-            : new GroundNumericComparison[effect.NumericConditions.Length];
-        for (int i = 0; i < comparisons.Length; i++)
-            comparisons[i] = effect.NumericConditions[i].Ground(problem, bindings);
-        if (!effect.IsConditional)
-        {
-            if (fact is not null)
-                (effect.Polarity == Polarity.Positive ? workspace.AddEffectIndices : workspace.DeleteEffectIndices).Add(fact.LocalIndex);
-            if (update is not null)
-                workspace.NumericUpdates.Add(update);
-            return;
-        }
-
         (OffsetBitboard positiveFluent, OffsetBitboard negativeFluent) =
             BuildBitboards(
                 effect.FluentConditions,
@@ -298,15 +353,10 @@ internal static class ActionBuilder
             workspace,
             workspace.EffectDerivedConditions);
 
-        workspace.ConditionalEffects.Add(new GroundConditionalEffect(
-            context,
-            positiveFluent,
-            negativeFluent,
-            positiveStatic,
-            negativeStatic,
-            workspace.EffectDerivedConditions,
-            fact is null ? null : new Literal<Fact<Fluent>>(fact, effect.Polarity), comparisons, update));
-        workspace.EffectDerivedConditions.Clear();
+        var comparisons = new GroundNumericComparison[effect.NumericConditions.Length];
+        for (int i = 0; i < comparisons.Length; i++)
+            comparisons[i] = effect.NumericConditions[i].Ground(problem, bindings);
+        return new GroundedEffectCondition(positiveFluent, negativeFluent, positiveStatic, negativeStatic, comparisons);
     }
 
     private static (
@@ -412,6 +462,16 @@ internal static class ActionBuilder
             arguments[i] = terms[i].Resolve(bindings);
 
         return arguments;
+    }
+
+    private static void AddConditionVariables(
+        ConditionalEffectBase effect,
+        HashSet<Variable> referencedVariables)
+    {
+        AddReferencedVariables(effect.NumericConditions, referencedVariables);
+        AddReferencedVariables(effect.FluentConditions, referencedVariables);
+        AddReferencedVariables(effect.StaticConditions, referencedVariables);
+        AddReferencedVariables(effect.DerivedConditions, referencedVariables);
     }
 
     private static void AddReferencedVariables(

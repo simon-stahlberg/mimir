@@ -124,8 +124,8 @@ public static partial class Exports
     {
         ActionSchema action => action.NumericPreconditions,
         GroundAction action => action.NumericPreconditions,
-        ConditionalEffect effect => effect.NumericConditions,
-        GroundConditionalEffect effect => effect.NumericConditions,
+        ConditionalEffectBase effect => effect.NumericConditions,
+        GroundConditionalEffectBase effect => effect.NumericConditions,
         ConjunctiveCondition condition => condition.Comparisons,
         GoalCondition goal => goal.Comparisons,
         Problem problem => problem.NumericGoals,
@@ -135,9 +135,9 @@ public static partial class Exports
     private static IReadOnlyList<object> NumericUpdates(object owner) => owner switch
     {
         ActionSchema action => action.Effect.NumericUpdates,
-        GroundAction action => action.NumericUpdates,
-        ConditionalEffect effect => effect.NumericEffect is { } update ? [update] : [],
-        GroundConditionalEffect effect => effect.NumericEffect is { } update ? [update] : [],
+        GroundAction action => action.NumericEffects,
+        ConditionalNumericEffect effect => [effect.Effect],
+        GroundConditionalNumericEffect effect => [effect.Effect],
         _ => throw new ArgumentException("Expected an action or effect.")
     };
 

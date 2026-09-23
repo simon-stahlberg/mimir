@@ -92,7 +92,7 @@ internal sealed class GroundedRelaxedPlanningGraph
 
             foreach (var condEff in action.ConditionalEffects)
             {
-                if (!condEff.RequiredLiteralEffect.IsPositive)
+                if (!condEff.Effect.IsPositive)
                     continue;
 
                 bool conditionalStaticOk = BitboardOps.StaticPreconditionHolds(
@@ -103,7 +103,7 @@ internal sealed class GroundedRelaxedPlanningGraph
                 supportOptions.Add(new RelaxedSupportOption(
                     a,
                     UnionSorted(_actionPosFluentPreconds[a], BitboardOps.DecodeSetBits(condEff.PositiveFluentConditions)),
-                    [GetFluentIndex(condEff.RequiredLiteralEffect.Value)],
+                    [GetFluentIndex(condEff.Effect.Value)],
                     actionStaticOk && conditionalStaticOk,
                     condEff));
             }

@@ -7,11 +7,11 @@ namespace Mimir.Core.Grounding;
 internal static class NumericStateTransition
 {
     internal static bool IsDefined(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalEffect>? triggered)
+        IReadOnlyList<GroundConditionalNumericEffect>? triggered)
         => TryCollectWrites(source, unconditional, triggered, out _);
 
     internal static double[]? Apply(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalEffect>? triggered)
+        IReadOnlyList<GroundConditionalNumericEffect>? triggered)
     {
         if (!TryCollectWrites(source, unconditional, triggered, out List<NumericWrite>? writes))
             throw new InvalidOperationException("The action is not applicable: its numeric effects are undefined in this state.");
@@ -27,7 +27,7 @@ internal static class NumericStateTransition
     }
 
     private static bool TryCollectWrites(State source, IReadOnlyList<GroundNumericUpdate> unconditional,
-        IReadOnlyList<GroundConditionalEffect>? triggered, out List<NumericWrite>? writes)
+        IReadOnlyList<GroundConditionalNumericEffect>? triggered, out List<NumericWrite>? writes)
     {
         writes = null;
         for (int i = 0; i < unconditional.Count; i++)
@@ -37,7 +37,7 @@ internal static class NumericStateTransition
         if (triggered is null) return true;
         for (int i = 0; i < triggered.Count; i++)
         {
-            if (triggered[i].NumericEffect is { } update && !TryCollect(source, update, ref writes)) return false;
+            if (!TryCollect(source, triggered[i].Effect, ref writes)) return false;
         }
         return true;
     }

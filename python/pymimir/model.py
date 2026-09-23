@@ -9,7 +9,7 @@ from typing import cast
 from enum import Enum
 from functools import cached_property
 from types import MappingProxyType
-from typing import Literal as TypingLiteral, TypeAlias, overload
+from typing import Literal as TypingLiteral, TypeAlias, TypeVar, overload
 
 from .advanced import (
     free_handle,
@@ -351,8 +351,8 @@ class Effect:
         return hash(("Effect", self._owner, tuple(self._parameters), tuple(self._literals), self.numeric_updates))
 
 
-class ConditionalEffect(_Handle):
-    """A lifted ``(forall ... when condition effect)`` clause."""
+class _ConditionalEffectBase(_Handle):
+    """The ``(forall ... (when condition ...))`` part shared by literal and numeric conditional effects."""
 
     @property
     def condition(self) -> "ConjunctiveCondition":
@@ -364,18 +364,7 @@ class ConditionalEffect(_Handle):
 
     @property
     def effect(self) -> Effect:
-        if self._owner is None:
-            raise RuntimeError("conditional effect has no owner")
-        literal = self.effect_literal
-        updates = cast(tuple[NumericUpdate, ...], _read_updates(self._handle, self._owner))
-        return Effect._from_parts(self.quantified_variables, () if literal is None else (literal,), self._owner, updates)
-
-    @property
-    def effect_literal(self) -> Literal | None:
-        """The literal this clause adds or deletes, or ``None`` when it is a numeric update."""
-        if lib.mimir_numeric_update_count(self._handle):
-            return None
-        return Literal._from_handle(lib.mimir_conditional_effect_get_effect(self._handle), self._owner)
+        raise NotImplementedError
 
     @property
     def quantified_variables(self) -> tuple[Variable, ...]:
@@ -410,6 +399,31 @@ class ConditionalEffect(_Handle):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+class ConditionalEffect(_ConditionalEffectBase):
+    """A lifted ``(forall ... (when condition literal))`` clause."""
+
+    @property
+    def effect(self) -> Effect:
+        if self._owner is None:
+            raise RuntimeError("conditional effect has no owner")
+        return Effect._from_parts(self.quantified_variables, (self._effect_literal,), self._owner)
+
+    @property
+    def _effect_literal(self) -> Literal:
+        return Literal._from_handle(lib.mimir_conditional_effect_get_effect(self._handle), self._owner)
+
+
+class ConditionalNumericEffect(_ConditionalEffectBase):
+    """A lifted ``(forall ... (when condition numeric-update))`` clause."""
+
+    @property
+    def effect(self) -> Effect:
+        if self._owner is None:
+            raise RuntimeError("conditional effect has no owner")
+        updates = cast(tuple[NumericUpdate, ...], _read_updates(self._handle, self._owner))
+        return Effect._from_parts(self.quantified_variables, (), self._owner, updates)
 
 # =============================================================================
 # Ground effect and GroundConditionalEffect
@@ -515,8 +529,11 @@ class GroundEffect:
         ))
 
 
-class GroundConditionalEffect(_Handle):
-    """A grounded conditional effect: a list of condition ground literals + an effect ground literal."""
+_GroundConditionalEffectT = TypeVar("_GroundConditionalEffectT", bound="_GroundConditionalEffectBase")
+
+
+class _GroundConditionalEffectBase(_Handle):
+    """The condition part shared by grounded literal and numeric conditional effects."""
 
     def __init__(self) -> None:
         raise TypeError("ground conditional effects are created by grounded actions")
@@ -525,10 +542,10 @@ class GroundConditionalEffect(_Handle):
 
     @classmethod
     def _from_handle(
-        cls,
+        cls: type[_GroundConditionalEffectT],
         handle: int,
         owner: Domain | Problem | None = None,
-    ) -> "GroundConditionalEffect":
+    ) -> _GroundConditionalEffectT:
         value = cls._allocate_for_handle(handle)
         try:
             if not isinstance(owner, Problem):
@@ -545,22 +562,8 @@ class GroundConditionalEffect(_Handle):
         return self._problem
 
     @property
-    def effect_literal(self) -> GroundLiteral | None:
-        """The literal this clause adds or deletes, or ``None`` when it is a numeric update."""
-        if lib.mimir_numeric_update_count(self._handle):
-            return None
-        return GroundLiteral._from_handle(lib.mimir_ground_conditional_effect_get_effect(self._handle), self._problem)
-
-    @property
     def effect(self) -> GroundEffect:
-        literal = self.effect_literal
-        if literal is None:
-            updates = cast(tuple[GroundNumericUpdate, ...], _read_updates(self._handle, self._problem))
-            return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(), numeric_updates=updates)
-        atom = literal.atom
-        if literal.is_positive:
-            return GroundEffect._from_parts(self._problem, add_atoms=(atom,), delete_atoms=())
-        return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(atom,))
+        raise NotImplementedError
 
     @property
     def condition(self) -> "GroundConjunctiveCondition":
@@ -615,6 +618,31 @@ class GroundConditionalEffect(_Handle):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+class GroundConditionalEffect(_GroundConditionalEffectBase):
+    """A grounded conditional effect: condition ground literals plus one effect ground literal."""
+
+    @property
+    def _effect_literal(self) -> GroundLiteral:
+        return GroundLiteral._from_handle(lib.mimir_ground_conditional_effect_get_effect(self._handle), self._problem)
+
+    @property
+    def effect(self) -> GroundEffect:
+        literal = self._effect_literal
+        atom = literal.atom
+        if literal.is_positive:
+            return GroundEffect._from_parts(self._problem, add_atoms=(atom,), delete_atoms=())
+        return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(atom,))
+
+
+class GroundConditionalNumericEffect(_GroundConditionalEffectBase):
+    """A grounded conditional effect: condition ground literals plus one ground numeric update."""
+
+    @property
+    def effect(self) -> GroundEffect:
+        updates = cast(tuple[GroundNumericUpdate, ...], _read_updates(self._handle, self._problem))
+        return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(), numeric_updates=updates)
 
 # =============================================================================
 # Action (schema) and GroundAction
@@ -676,6 +704,14 @@ class Action(_Handle):
     def conditional_effects(self) -> tuple[ConditionalEffect, ...]:
         n = lib.mimir_action_get_conditional_effect_count(self._handle)
         return tuple(ConditionalEffect._from_handle(lib.mimir_action_get_conditional_effect(self._handle, i), self._owner) for i in range(n))
+
+    @cached_property
+    def conditional_numeric_effects(self) -> tuple[ConditionalNumericEffect, ...]:
+        n = lib.mimir_action_get_conditional_numeric_effect_count(self._handle)
+        return tuple(
+            ConditionalNumericEffect._from_handle(lib.mimir_action_get_conditional_numeric_effect(self._handle, i), self._owner)
+            for i in range(n)
+        )
 
     @cached_property
     def cost_expression(self) -> NumericExpression:
@@ -745,6 +781,16 @@ class GroundAction(_Handle):
     def conditional_effects(self) -> tuple[GroundConditionalEffect, ...]:
         n = lib.mimir_ground_action_get_conditional_effect_count(self._handle)
         return tuple(GroundConditionalEffect._from_handle(lib.mimir_ground_action_get_conditional_effect(self._handle, i), self._problem) for i in range(n))
+
+    @cached_property
+    def conditional_numeric_effects(self) -> tuple[GroundConditionalNumericEffect, ...]:
+        n = lib.mimir_ground_action_get_conditional_numeric_effect_count(self._handle)
+        return tuple(
+            GroundConditionalNumericEffect._from_handle(
+                lib.mimir_ground_action_get_conditional_numeric_effect(self._handle, i), self._problem
+            )
+            for i in range(n)
+        )
 
     def is_applicable(self, state: "State") -> bool:
         if not isinstance(state, State):
@@ -1999,7 +2045,8 @@ __all__ = [
     "Predicate",
     "Atom", "GroundAtom",
     "Literal", "GroundLiteral",
-    "Effect", "ConditionalEffect", "GroundEffect", "GroundConditionalEffect",
+    "Effect", "ConditionalEffect", "ConditionalNumericEffect", "GroundEffect",
+    "GroundConditionalEffect", "GroundConditionalNumericEffect",
     "Action", "GroundAction",
     "Domain", "Problem", "State",
     "ConjunctiveCondition", "GroundConjunctiveCondition", "PredicateType", "ActionGenerator",

@@ -18,6 +18,7 @@ internal sealed class ActionGroundingPlan
     public CompiledGroundingLiteral<Static>[] StaticPreconditions { get; }
     public CompiledGroundingLiteral<Derived>[] DerivedPreconditions { get; }
     public CompiledGroundingEffect[] Effects { get; }
+    public CompiledGroundingNumericEffect[] NumericEffects { get; }
     public CompiledNumericComparison[] NumericPreconditions { get; }
 
     private ActionGroundingPlan(
@@ -34,6 +35,7 @@ internal sealed class ActionGroundingPlan
         CompiledGroundingLiteral<Static>[] staticPreconditions,
         CompiledGroundingLiteral<Derived>[] derivedPreconditions,
         CompiledGroundingEffect[] effects,
+        CompiledGroundingNumericEffect[] numericEffects,
         CompiledNumericComparison[] numericPreconditions)
     {
         Context = context;
@@ -50,6 +52,7 @@ internal sealed class ActionGroundingPlan
         StaticPreconditions = staticPreconditions;
         DerivedPreconditions = derivedPreconditions;
         Effects = effects;
+        NumericEffects = numericEffects;
         NumericPreconditions = numericPreconditions;
     }
 
@@ -87,10 +90,8 @@ internal sealed class ActionGroundingPlan
             schema.StaticPreconditions.Count);
         int maximumDerivedConditionCount =
             schema.DerivedPreconditions.Count;
-        var effects = new CompiledGroundingEffect[schema.Effects.Count];
-        for (int i = 0; i < effects.Length; i++)
+        foreach (ConditionalEffectBase effect in schema.Effects.Concat<ConditionalEffectBase>(schema.NumericEffects))
         {
-            ConditionalEffect effect = schema.Effects[i];
             maximumConditionCount = Math.Max(
                 maximumConditionCount,
                 Math.Max(
@@ -99,9 +100,26 @@ internal sealed class ActionGroundingPlan
             maximumDerivedConditionCount = Math.Max(
                 maximumDerivedConditionCount,
                 effect.DerivedConditions.Count);
+        }
+
+        var effects = new CompiledGroundingEffect[schema.Effects.Count];
+        for (int i = 0; i < effects.Length; i++)
+        {
             effects[i] = CompileEffect(
                 context,
-                effect,
+                schema.Effects[i],
+                parameterSlots,
+                schema.Parameters.Count,
+                ref maximumBindingCount,
+                ref maximumArgumentCount);
+        }
+
+        var numericEffects = new CompiledGroundingNumericEffect[schema.NumericEffects.Count];
+        for (int i = 0; i < numericEffects.Length; i++)
+        {
+            numericEffects[i] = CompileNumericEffect(
+                context,
+                schema.NumericEffects[i],
                 parameterSlots,
                 schema.Parameters.Count,
                 ref maximumBindingCount,
@@ -122,6 +140,7 @@ internal sealed class ActionGroundingPlan
             staticPreconditions,
             derivedPreconditions,
             effects,
+            numericEffects,
             CompiledNumericComparison.Compile(schema.NumericPreconditions, parameterSlots));
     }
 
@@ -133,12 +152,64 @@ internal sealed class ActionGroundingPlan
         ref int maximumBindingCount,
         ref int maximumArgumentCount)
     {
+        (bool suppressed, CompiledGroundingQuantifiedVariable[] quantifiedVariables, Dictionary<Variable, int> effectSlots) =
+            CompileQuantification(
+                context,
+                effect,
+                ActionBuilder.GetReferencedQuantifiedVariables(effect),
+                parameterSlots,
+                parameterCount,
+                ref maximumBindingCount);
+
+        return new CompiledGroundingEffect(
+            suppressed,
+            quantifiedVariables,
+            CompileLiterals(effect.FluentConditions, effectSlots, ref maximumArgumentCount),
+            CompileLiterals(effect.StaticConditions, effectSlots, ref maximumArgumentCount),
+            CompileLiterals(effect.DerivedConditions, effectSlots, ref maximumArgumentCount),
+            CompiledNumericComparison.Compile(effect.NumericConditions, effectSlots),
+            CompileAtom(effect.Effect.Value, effectSlots, ref maximumArgumentCount),
+            effect.Effect.Polarity);
+    }
+
+    private static CompiledGroundingNumericEffect CompileNumericEffect(
+        InstanceContext context,
+        ConditionalNumericEffect effect,
+        Dictionary<Variable, int> parameterSlots,
+        int parameterCount,
+        ref int maximumBindingCount,
+        ref int maximumArgumentCount)
+    {
         // Each binding of a quantified numeric update contributes its own write (forall + increase sums), so
         // unreferenced quantified variables cannot be collapsed as they can for idempotent literal effects.
-        Variable[] referencedVariables =
-            effect.NumericEffect is null
-                ? ActionBuilder.GetReferencedQuantifiedVariables(effect)
-                : effect.QuantifiedVariables.ToArray();
+        (bool suppressed, CompiledGroundingQuantifiedVariable[] quantifiedVariables, Dictionary<Variable, int> effectSlots) =
+            CompileQuantification(
+                context,
+                effect,
+                effect.QuantifiedVariables.ToArray(),
+                parameterSlots,
+                parameterCount,
+                ref maximumBindingCount);
+
+        return new CompiledGroundingNumericEffect(
+            suppressed,
+            quantifiedVariables,
+            CompileLiterals(effect.FluentConditions, effectSlots, ref maximumArgumentCount),
+            CompileLiterals(effect.StaticConditions, effectSlots, ref maximumArgumentCount),
+            CompileLiterals(effect.DerivedConditions, effectSlots, ref maximumArgumentCount),
+            CompiledNumericComparison.Compile(effect.NumericConditions, effectSlots),
+            new CompiledNumericUpdate(effect.Effect, effectSlots));
+    }
+
+    private static (bool Suppressed, CompiledGroundingQuantifiedVariable[] QuantifiedVariables, Dictionary<Variable, int> Slots)
+        CompileQuantification(
+            InstanceContext context,
+            ConditionalEffectBase effect,
+            Variable[] referencedVariables,
+            Dictionary<Variable, int> parameterSlots,
+            int parameterCount,
+            ref int maximumBindingCount)
+    {
         bool suppressed = false;
         for (int i = 0; i < effect.QuantifiedVariables.Count; i++)
         {
@@ -171,26 +242,7 @@ internal sealed class ActionGroundingPlan
         maximumBindingCount = Math.Max(
             maximumBindingCount,
             parameterCount + referencedVariables.Length);
-
-        return new CompiledGroundingEffect(
-            suppressed,
-            quantifiedVariables,
-            effect.LiteralEffect is { } literal ? CompileAtom(literal.Value, effectSlots, ref maximumArgumentCount) : null,
-            effect.LiteralEffect?.Polarity ?? Polarity.Positive,
-            CompileLiterals(
-                effect.FluentConditions,
-                effectSlots,
-                ref maximumArgumentCount),
-            CompileLiterals(
-                effect.StaticConditions,
-                effectSlots,
-                ref maximumArgumentCount),
-            CompileLiterals(
-                effect.DerivedConditions,
-                effectSlots,
-                ref maximumArgumentCount),
-            CompiledNumericComparison.Compile(effect.NumericConditions, effectSlots),
-            effect.NumericEffect is { } update ? new CompiledNumericUpdate(update, effectSlots) : null);
+        return (suppressed, quantifiedVariables, effectSlots);
     }
 
     private static CompiledGroundingLiteral<T>[] CompileLiterals<T>(
@@ -303,42 +355,72 @@ internal readonly struct CompiledGroundingQuantifiedVariable
     }
 }
 
-internal sealed class CompiledGroundingEffect
+internal abstract class CompiledGroundingEffectBase
 {
     public bool IsSuppressed { get; }
     public CompiledGroundingQuantifiedVariable[] QuantifiedVariables { get; }
-    public CompiledGroundingAtom<Fluent>? Target { get; }
-    public CompiledNumericComparison[] NumericConditions { get; }
-    public CompiledNumericUpdate? NumericUpdate { get; }
-    public Polarity Polarity { get; }
     public CompiledGroundingLiteral<Fluent>[] FluentConditions { get; }
     public CompiledGroundingLiteral<Static>[] StaticConditions { get; }
     public CompiledGroundingLiteral<Derived>[] DerivedConditions { get; }
+    public CompiledNumericComparison[] NumericConditions { get; }
     public bool IsConditional => FluentConditions.Length != 0
         || StaticConditions.Length != 0
         || DerivedConditions.Length != 0
         || NumericConditions.Length != 0;
 
-    public CompiledGroundingEffect(
+    protected CompiledGroundingEffectBase(
         bool isSuppressed,
         CompiledGroundingQuantifiedVariable[] quantifiedVariables,
-        CompiledGroundingAtom<Fluent>? target,
-        Polarity polarity,
         CompiledGroundingLiteral<Fluent>[] fluentConditions,
         CompiledGroundingLiteral<Static>[] staticConditions,
         CompiledGroundingLiteral<Derived>[] derivedConditions,
-        CompiledNumericComparison[] numericConditions,
-        CompiledNumericUpdate? numericUpdate)
+        CompiledNumericComparison[] numericConditions)
     {
         IsSuppressed = isSuppressed;
         QuantifiedVariables = quantifiedVariables;
-        Target = target;
-        Polarity = polarity;
         FluentConditions = fluentConditions;
         StaticConditions = staticConditions;
         DerivedConditions = derivedConditions;
         NumericConditions = numericConditions;
-        NumericUpdate = numericUpdate;
+    }
+}
+
+internal sealed class CompiledGroundingEffect : CompiledGroundingEffectBase
+{
+    public CompiledGroundingAtom<Fluent> Target { get; }
+    public Polarity Polarity { get; }
+
+    public CompiledGroundingEffect(
+        bool isSuppressed,
+        CompiledGroundingQuantifiedVariable[] quantifiedVariables,
+        CompiledGroundingLiteral<Fluent>[] fluentConditions,
+        CompiledGroundingLiteral<Static>[] staticConditions,
+        CompiledGroundingLiteral<Derived>[] derivedConditions,
+        CompiledNumericComparison[] numericConditions,
+        CompiledGroundingAtom<Fluent> target,
+        Polarity polarity)
+        : base(isSuppressed, quantifiedVariables, fluentConditions, staticConditions, derivedConditions, numericConditions)
+    {
+        Target = target;
+        Polarity = polarity;
+    }
+}
+
+internal sealed class CompiledGroundingNumericEffect : CompiledGroundingEffectBase
+{
+    public CompiledNumericUpdate Update { get; }
+
+    public CompiledGroundingNumericEffect(
+        bool isSuppressed,
+        CompiledGroundingQuantifiedVariable[] quantifiedVariables,
+        CompiledGroundingLiteral<Fluent>[] fluentConditions,
+        CompiledGroundingLiteral<Static>[] staticConditions,
+        CompiledGroundingLiteral<Derived>[] derivedConditions,
+        CompiledNumericComparison[] numericConditions,
+        CompiledNumericUpdate update)
+        : base(isSuppressed, quantifiedVariables, fluentConditions, staticConditions, derivedConditions, numericConditions)
+    {
+        Update = update;
     }
 }
 
@@ -355,7 +437,8 @@ internal sealed class ActionGroundingWorkspace
     public List<Literal<Fact<Derived>>> ActionDerivedConditions { get; } = new();
     public List<Literal<Fact<Derived>>> EffectDerivedConditions { get; } = new();
     public List<GroundConditionalEffect> ConditionalEffects { get; } = new();
-    public List<GroundNumericUpdate> NumericUpdates { get; } = new();
+    public List<GroundNumericUpdate> NumericEffects { get; } = new();
+    public List<GroundConditionalNumericEffect> ConditionalNumericEffects { get; } = new();
 
     public void Prepare(ActionGroundingPlan plan)
     {
@@ -404,6 +487,7 @@ internal sealed class ActionGroundingWorkspace
         ActionDerivedConditions.Clear();
         EffectDerivedConditions.Clear();
         ConditionalEffects.Clear();
-        NumericUpdates.Clear();
+        NumericEffects.Clear();
+        ConditionalNumericEffects.Clear();
     }
 }

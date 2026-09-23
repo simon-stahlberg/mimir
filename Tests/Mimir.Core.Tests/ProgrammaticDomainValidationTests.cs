@@ -72,6 +72,7 @@ public sealed class ProgrammaticDomainValidationTests
             Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             effectLiteral);
         ActionSchema action = CreateAction("mark", effects: [effect]);
 
@@ -96,6 +97,7 @@ public sealed class ProgrammaticDomainValidationTests
             Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             effectLiteral);
         ActionSchema action = CreateAction("mark", effects: [effect], parameters: [actionParameter]);
 
@@ -122,6 +124,7 @@ public sealed class ProgrammaticDomainValidationTests
             Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             effectLiteral);
         ActionSchema action = CreateAction("mark", effects: [effect]);
 
@@ -340,7 +343,9 @@ public sealed class ProgrammaticDomainValidationTests
             fluentPreconditions ?? Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             effects ?? Array.Empty<CoreConditionalEffect>(),
+            [],
             costExpression ?? new NumericConstant(1d));
     }
 

@@ -115,6 +115,7 @@ public class StateTests
                 default,
                 default,
                 Array.Empty<Literal<Fact<Derived>>>(),
+                [],
                 new Literal<Fact<Fluent>>(fixture.LowFact, Polarity.Positive)),
             new(
                 fixture.Owner.Context,
@@ -123,6 +124,7 @@ public class StateTests
                 default,
                 default,
                 Array.Empty<Literal<Fact<Derived>>>(),
+                [],
                 new Literal<Fact<Fluent>>(fixture.HighFact, Polarity.Positive))
         };
         var action = CreateAction(
@@ -336,6 +338,7 @@ public class StateTests
             default,
             default,
             Array.Empty<Literal<Fact<Derived>>>(),
+            [],
             new Literal<Fact<Fluent>>(effectFact, polarity));
     }
 

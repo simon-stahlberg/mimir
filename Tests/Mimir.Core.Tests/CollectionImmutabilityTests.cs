@@ -31,6 +31,7 @@ public class CollectionImmutabilityTests
             [fluentLiteral],
             [staticLiteral],
             [derivedLiteral],
+            [],
             fluentLiteral);
         var schema = new ActionSchema(
             "act",
@@ -38,7 +39,9 @@ public class CollectionImmutabilityTests
             [fluentLiteral],
             [staticLiteral],
             [derivedLiteral],
+            [],
             [effect],
+            [],
             new NumericConstant(1d));
 
         AssertReadOnly(fluentPredicate.Parameters);

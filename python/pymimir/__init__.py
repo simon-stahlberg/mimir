@@ -36,12 +36,14 @@ from .model import (
     ActionGenerator,
     Atom,
     ConditionalEffect,
+    ConditionalNumericEffect,
     ConjunctiveCondition,
     Domain,
     Effect,
     GroundAction,
     GroundAtom,
     GroundConditionalEffect,
+    GroundConditionalNumericEffect,
     GroundConjunctiveCondition,
     GroundEffect,
     GroundLiteral,
@@ -102,8 +104,8 @@ __version__: str = "0.14.0b5"
 __all__ = [
     # Model
     "model", "Variable", "Object", "Term", "Predicate", "Atom", "GroundAtom",
-    "Literal", "GroundLiteral", "Effect", "ConditionalEffect", "GroundEffect",
-    "GroundConditionalEffect", "Action", "GroundAction", "Domain", "Problem", "State",
+    "Literal", "GroundLiteral", "Effect", "ConditionalEffect", "ConditionalNumericEffect", "GroundEffect",
+    "GroundConditionalEffect", "GroundConditionalNumericEffect", "Action", "GroundAction", "Domain", "Problem", "State",
     "ConjunctiveCondition", "GroundConjunctiveCondition", "PredicateType", "ActionGenerator",
     # Builders
     "builders", "DomainBuilder", "RequirementListBuilder", "TypeListBuilder",

@@ -651,8 +651,10 @@ def test_effect_views_are_typed_read_only_values(blocks):
     for effect_type in (
         pymimir.model.Effect,
         pymimir.model.ConditionalEffect,
+        pymimir.model.ConditionalNumericEffect,
         pymimir.model.GroundEffect,
         pymimir.model.GroundConditionalEffect,
+        pymimir.model.GroundConditionalNumericEffect,
     ):
         with pytest.raises(TypeError):
             effect_type()

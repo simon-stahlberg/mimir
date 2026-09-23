@@ -174,29 +174,27 @@ internal sealed class ActionEffects :
     internal OffsetBitboard Add { get; }
     internal OffsetBitboard Delete { get; }
     public double Cost { get; }
-    internal IReadOnlyList<GroundNumericUpdate> NumericUpdates { get; }
-    internal bool HasNumericEffects { get; }
+    internal IReadOnlyList<GroundNumericUpdate> NumericEffects { get; }
+    internal IReadOnlyList<GroundConditionalNumericEffect> ConditionalNumericEffects { get; }
+    internal bool HasNumericEffects => NumericEffects.Count > 0 || ConditionalNumericEffects.Count > 0;
 
     public ActionEffects(
-        ActionSchema schema,
         OffsetBitboard add,
         OffsetBitboard delete,
         IReadOnlyList<GroundConditionalEffect> conditionalEffects,
-        double cost,
-        IReadOnlyList<GroundNumericUpdate> numericUpdates)
+        IReadOnlyList<GroundNumericUpdate> numericEffects,
+        IReadOnlyList<GroundConditionalNumericEffect> conditionalNumericEffects,
+        double cost)
         : base(GetConditionalEffects(conditionalEffects))
     {
-        ArgumentNullException.ThrowIfNull(schema);
-        ArgumentNullException.ThrowIfNull(numericUpdates);
+        ArgumentNullException.ThrowIfNull(numericEffects);
+        ArgumentNullException.ThrowIfNull(conditionalNumericEffects);
 
         Add = add;
         Delete = delete;
         Cost = cost;
-        NumericUpdates = numericUpdates.Count == 0
-            ? Array.Empty<GroundNumericUpdate>() : Array.AsReadOnly(numericUpdates.ToArray());
-        HasNumericEffects = NumericUpdates.Count > 0;
-        foreach (GroundConditionalEffect effect in this)
-            HasNumericEffects |= effect.NumericEffect is not null;
+        NumericEffects = Array.AsReadOnly(numericEffects.ToArray());
+        ConditionalNumericEffects = Array.AsReadOnly(conditionalNumericEffects.ToArray());
     }
 
     private static GroundConditionalEffect[] GetConditionalEffects(
@@ -214,7 +212,7 @@ public class Action : IEquatable<Action>
             PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions), _preconditions.Comparisons);
 
     public GroundActionEffect Effect => new(GroundConditionLiterals.Read(Context,
-        AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()), _effects.NumericUpdates);
+        AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()), _effects.NumericEffects);
 
     public NumericExpression CostExpression => Schema.CostExpression.Ground(Context.Problem,
         Schema.Parameters.Zip(Arguments).ToDictionary(pair => pair.First, pair => pair.Second));
@@ -238,7 +236,7 @@ public class Action : IEquatable<Action>
     internal OffsetBitboard NegativeStaticPreconditions
         => _preconditions.NegativeStatic;
     internal IReadOnlyList<GroundNumericComparison> NumericPreconditions => _preconditions.Comparisons;
-    internal IReadOnlyList<GroundNumericUpdate> NumericUpdates => _effects.NumericUpdates;
+    internal IReadOnlyList<GroundNumericUpdate> NumericEffects => _effects.NumericEffects;
     internal OffsetBitboard AddEffects => _effects.Add;
     internal OffsetBitboard DeleteEffects => _effects.Delete;
     internal ActionBinding BindingComponent => _binding;
@@ -250,6 +248,9 @@ public class Action : IEquatable<Action>
 
     public IReadOnlyList<GroundConditionalEffect> ConditionalEffects
         => _effects;
+
+    public IReadOnlyList<GroundConditionalNumericEffect> ConditionalNumericEffects
+        => _effects.ConditionalNumericEffects;
 
     internal Action(
         InstanceContext context,
@@ -279,12 +280,12 @@ public class Action : IEquatable<Action>
             negativeStaticPreconditions,
             derivedPreconditions);
         _effects = new ActionEffects(
-            schema,
             addEffects,
             deleteEffects,
             conditionalEffects,
-            cost,
-            Array.Empty<GroundNumericUpdate>());
+            Array.Empty<GroundNumericUpdate>(),
+            Array.Empty<GroundConditionalNumericEffect>(),
+            cost);
     }
 
     internal Action(
@@ -346,13 +347,13 @@ public class Action : IEquatable<Action>
     {
         if (double.IsNaN(Cost)) return false;
         if (!_effects.HasNumericEffects) return true;
-        List<GroundConditionalEffect>? triggered = null;
-        foreach (GroundConditionalEffect effect in _effects)
+        List<GroundConditionalNumericEffect>? triggered = null;
+        foreach (GroundConditionalNumericEffect effect in _effects.ConditionalNumericEffects)
         {
-            if (effect.NumericEffect is not null && effect.IsSatisfied(state))
-                (triggered ??= new List<GroundConditionalEffect>()).Add(effect);
+            if (effect.IsSatisfied(state))
+                (triggered ??= new List<GroundConditionalNumericEffect>()).Add(effect);
         }
-        return NumericStateTransition.IsDefined(state.State, _effects.NumericUpdates, triggered);
+        return NumericStateTransition.IsDefined(state.State, _effects.NumericEffects, triggered);
     }
 
     internal bool AreNumericPreconditionsSatisfied(State state)

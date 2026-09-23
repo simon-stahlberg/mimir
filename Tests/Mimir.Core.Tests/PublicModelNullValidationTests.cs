@@ -92,38 +92,38 @@ public class PublicModelNullValidationTests
 
         AssertParam<ArgumentNullException>("parameters", () => new ActionSchema(
             "a", null!, parts.FluentLiterals, parts.StaticLiterals, parts.DerivedLiterals,
-            parts.Effects, parts.Cost));
+            [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentNullException>("fluentPreconditions", () => new ActionSchema(
             "a", parts.Parameters, null!, parts.StaticLiterals, parts.DerivedLiterals,
-            parts.Effects, parts.Cost));
+            [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentNullException>("staticPreconditions", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, null!, parts.DerivedLiterals,
-            parts.Effects, parts.Cost));
+            [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentNullException>("derivedPreconditions", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, parts.StaticLiterals, null!,
-            parts.Effects, parts.Cost));
+            [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentNullException>("effects", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, parts.StaticLiterals, parts.DerivedLiterals,
-            null!, parts.Cost));
+            [], null!, [], parts.Cost));
         AssertParam<ArgumentNullException>("costExpression", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, parts.StaticLiterals, parts.DerivedLiterals,
-            parts.Effects, null!));
+            [], parts.Effects, [], null!));
 
         AssertParam<ArgumentException>("parameters", () => new ActionSchema(
             "a", new Variable[] { null! }, parts.FluentLiterals, parts.StaticLiterals,
-            parts.DerivedLiterals, parts.Effects, parts.Cost));
+            parts.DerivedLiterals, [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentException>("fluentPreconditions", () => new ActionSchema(
             "a", parts.Parameters, new Literal<Atom<Fluent>>[] { null! }, parts.StaticLiterals,
-            parts.DerivedLiterals, parts.Effects, parts.Cost));
+            parts.DerivedLiterals, [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentException>("staticPreconditions", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, new Literal<Atom<Static>>[] { null! },
-            parts.DerivedLiterals, parts.Effects, parts.Cost));
+            parts.DerivedLiterals, [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentException>("derivedPreconditions", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, parts.StaticLiterals,
-            new Literal<Atom<Derived>>[] { null! }, parts.Effects, parts.Cost));
+            new Literal<Atom<Derived>>[] { null! }, [], parts.Effects, [], parts.Cost));
         AssertParam<ArgumentException>("effects", () => new ActionSchema(
             "a", parts.Parameters, parts.FluentLiterals, parts.StaticLiterals,
-            parts.DerivedLiterals, new ConditionalEffect[] { null! }, parts.Cost));
+            parts.DerivedLiterals, [], new ConditionalEffect[] { null! }, [], parts.Cost));
     }
 
     [Fact]
@@ -133,32 +133,37 @@ public class PublicModelNullValidationTests
 
         AssertParam<ArgumentNullException>("quantifiedVariables", () => new ConditionalEffect(
             null!, parts.FluentLiterals, parts.StaticLiterals, parts.DerivedLiterals,
+            [],
             parts.FluentLiterals[0]));
         AssertParam<ArgumentNullException>("fluentConditions", () => new ConditionalEffect(
             parts.Parameters, null!, parts.StaticLiterals, parts.DerivedLiterals,
+            [],
             parts.FluentLiterals[0]));
         AssertParam<ArgumentNullException>("staticConditions", () => new ConditionalEffect(
             parts.Parameters, parts.FluentLiterals, null!, parts.DerivedLiterals,
+            [],
             parts.FluentLiterals[0]));
         AssertParam<ArgumentNullException>("derivedConditions", () => new ConditionalEffect(
             parts.Parameters, parts.FluentLiterals, parts.StaticLiterals, null!,
+            [],
             parts.FluentLiterals[0]));
         AssertParam<ArgumentNullException>("effect", () => new ConditionalEffect(
             parts.Parameters, parts.FluentLiterals, parts.StaticLiterals, parts.DerivedLiterals,
+            [],
             null!));
 
         AssertParam<ArgumentException>("quantifiedVariables", () => new ConditionalEffect(
             new Variable[] { null! }, parts.FluentLiterals, parts.StaticLiterals,
-            parts.DerivedLiterals, parts.FluentLiterals[0]));
+            parts.DerivedLiterals, [], parts.FluentLiterals[0]));
         AssertParam<ArgumentException>("fluentConditions", () => new ConditionalEffect(
             parts.Parameters, new Literal<Atom<Fluent>>[] { null! }, parts.StaticLiterals,
-            parts.DerivedLiterals, parts.FluentLiterals[0]));
+            parts.DerivedLiterals, [], parts.FluentLiterals[0]));
         AssertParam<ArgumentException>("staticConditions", () => new ConditionalEffect(
             parts.Parameters, parts.FluentLiterals, new Literal<Atom<Static>>[] { null! },
-            parts.DerivedLiterals, parts.FluentLiterals[0]));
+            parts.DerivedLiterals, [], parts.FluentLiterals[0]));
         AssertParam<ArgumentException>("derivedConditions", () => new ConditionalEffect(
             parts.Parameters, parts.FluentLiterals, parts.StaticLiterals,
-            new Literal<Atom<Derived>>[] { null! }, parts.FluentLiterals[0]));
+            new Literal<Atom<Derived>>[] { null! }, [], parts.FluentLiterals[0]));
     }
 
     [Fact]
@@ -330,6 +335,7 @@ public class PublicModelNullValidationTests
             Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             fluentLiteral);
 
         return new SchemaParts(

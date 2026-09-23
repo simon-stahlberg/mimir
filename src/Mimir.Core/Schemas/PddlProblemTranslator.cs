@@ -134,10 +134,10 @@ internal sealed class PddlProblemTranslator
         var assignedFunctions = new HashSet<NumericFunction>();
         foreach (ActionSchema action in domain.Actions)
         {
-            foreach (ConditionalEffect effect in action.Effects)
+            foreach (ConditionalNumericEffect effect in action.NumericEffects)
             {
-                if (effect.NumericEffect is { Operator: NumericUpdateOperator.Assign } update)
-                    assignedFunctions.Add(update.Target.Function);
+                if (effect.Effect.Operator == NumericUpdateOperator.Assign)
+                    assignedFunctions.Add(effect.Effect.Target.Function);
             }
         }
 

@@ -91,9 +91,9 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             action.DerivedPreconditions,
             actionScope, action.NumericPreconditions);
         ImmutableArray<IEffect>.Builder effects = ImmutableArray.CreateBuilder<IEffect>(
-            action.Effects.Count + (_actionCostsEnabled ? 1 : 0));
+            action.Effects.Count + action.NumericEffects.Count + (_actionCostsEnabled ? 1 : 0));
 
-        foreach (ConditionalEffect effect in action.Effects)
+        foreach (ConditionalEffectBase effect in action.Effects.Concat<ConditionalEffectBase>(action.NumericEffects))
             effects.Add(BuildEffect(effect, actionScope));
 
         if (_actionCostsEnabled)
@@ -252,7 +252,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
     }
 
     private IEffect BuildEffect(
-        ConditionalEffect effect,
+        ConditionalEffectBase effect,
         IReadOnlySet<Variable> actionScope)
     {
         ArgumentNullException.ThrowIfNull(effect);
@@ -263,33 +263,36 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             effect.StaticConditions,
             effect.DerivedConditions,
             effectScope, effect.NumericConditions);
-        IEffect literalEffect = effect.NumericEffect is { } numeric
-            ? BuildNumericUpdate(numeric, effectScope) : effect.RequiredLiteralEffect.Polarity switch
+        IEffect innerEffect = effect switch
         {
-            Polarity.Positive => new AddEffect(BuildPredicateCall(
-                effect.RequiredLiteralEffect.Value.Predicate,
-                effect.RequiredLiteralEffect.Value.Arguments,
-                effectScope)),
-            Polarity.Negative => new DeleteEffect(BuildPredicateCall(
-                effect.RequiredLiteralEffect.Value.Predicate,
-                effect.RequiredLiteralEffect.Value.Arguments,
-                effectScope)),
-            _ => throw new InvalidOperationException(
-                $"Unsupported effect polarity '{effect.RequiredLiteralEffect.Polarity}'.")
+            ConditionalEffect literal => BuildLiteralEffect(literal.Effect, effectScope),
+            ConditionalNumericEffect numeric => BuildNumericUpdate(numeric.Effect, effectScope),
+            _ => throw new InvalidOperationException($"Unknown effect '{effect.GetType().Name}'.")
         };
 
         if (effect.QuantifiedVariables.Count == 0)
-            return new PddlConditionalEffect(condition, literalEffect);
+            return new PddlConditionalEffect(condition, innerEffect);
 
         IEffect quantifiedEffect = LogicalExpressionSemantics.IsAlwaysTrue(condition)
-            ? literalEffect
-            : new PddlConditionalEffect(condition, literalEffect);
+            ? innerEffect
+            : new PddlConditionalEffect(condition, innerEffect);
 
         return new PddlConditionalEffect(
             new EmptyLogic(),
             new ForallEffect(
                 BuildParameters(effect.QuantifiedVariables),
                 quantifiedEffect));
+    }
+
+    private IEffect BuildLiteralEffect(Literal<Atom<Fluent>> literal, IReadOnlySet<Variable> scope)
+    {
+        PredicateCall call = BuildPredicateCall(literal.Value.Predicate, literal.Value.Arguments, scope);
+        return literal.Polarity switch
+        {
+            Polarity.Positive => new AddEffect(call),
+            Polarity.Negative => new DeleteEffect(call),
+            _ => throw new InvalidOperationException($"Unsupported effect polarity '{literal.Polarity}'.")
+        };
     }
 
     private IEffect BuildNumericUpdate(NumericUpdate update, IReadOnlySet<Variable> scope)

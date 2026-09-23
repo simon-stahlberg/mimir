@@ -271,7 +271,8 @@ Schemas and grounded actions share these inspection properties:
 | `precondition.comparisons` | Numeric requirements |
 | `effect.literals` | Unconditional Boolean updates |
 | `effect.numeric_updates` | Unconditional numeric updates |
-| `conditional_effects` | Guarded or quantified clauses with `condition` and `effect` |
+| `conditional_effects` | Guarded or quantified Boolean clauses with `condition` and `effect` |
+| `conditional_numeric_effects` | Guarded or quantified numeric clauses with `condition` and `effect` |
 | `cost_expression` | An inspectable numeric expression |
 
 Expression constants expose `value`; function calls expose `function` and
@@ -279,8 +280,8 @@ Expression constants expose `value`; function calls expose `function` and
 Numeric comparisons expose `left`, `operator`, and `right`; updates expose
 `target`, `operator`, and `expression`. Grounding substitutes objects without
 evaluating numeric expressions. Unconditional schema effects are under
-`effect`, not `conditional_effects`. Quantified schema clauses remain under
-`conditional_effects` until grounding.
+`effect`, not the conditional collections. Quantified schema clauses remain
+under `conditional_effects` or `conditional_numeric_effects` until grounding.
 
 Builders use `Numeric` and `NumericExpressionSpec` for numeric expressions:
 

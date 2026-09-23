@@ -84,6 +84,14 @@ public static partial class Exports
     public static int ActionGetConditionalEffect(int handle, int index)
         => CreateHandle(() => RequireHandle<ActionSchema>(handle).ConditionalEffects[index]);
 
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_conditional_numeric_effect_count")]
+    public static int ActionGetConditionalNumericEffectCount(int handle)
+        => ReadValue(handle, -1, (ActionSchema action) => action.ConditionalNumericEffects.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_get_conditional_numeric_effect")]
+    public static int ActionGetConditionalNumericEffect(int handle, int index)
+        => CreateHandle(() => RequireHandle<ActionSchema>(handle).ConditionalNumericEffects[index]);
+
     [UnmanagedCallersOnly(EntryPoint = "mimir_action_to_string")]
     public static IntPtr ActionToString(int handle)
     {
@@ -95,52 +103,52 @@ public static partial class Exports
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_effect")]
     public static int ConditionalEffectGetEffect(int handle)
-        => CreateHandle(() => RequireHandle<ConditionalEffect>(handle).RequiredLiteralEffect);
+        => CreateHandle(() => RequireHandle<ConditionalEffect>(handle).Effect);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_quantified_count")]
     public static int ConditionalEffectGetQuantifiedCount(int handle)
-        => ReadValue(handle, -1, (ConditionalEffect effect) => effect.QuantifiedVariables.Count);
+        => ReadValue(handle, -1, (ConditionalEffectBase effect) => effect.QuantifiedVariables.Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_quantified")]
     public static int ConditionalEffectGetQuantified(int handle, int index)
     {
-        var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
+        var ce = ObjectRegistry.Get<ConditionalEffectBase>(handle);
         if (ce == null || index < 0 || index >= ce.QuantifiedVariables.Count) return 0;
         return ObjectRegistry.Store(ce.QuantifiedVariables[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_fluent_condition_count")]
     public static int ConditionalEffectGetFluentConditionCount(int handle)
-        => ReadValue(handle, -1, (ConditionalEffect effect) => effect.FluentConditions.Count);
+        => ReadValue(handle, -1, (ConditionalEffectBase effect) => effect.FluentConditions.Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_fluent_condition")]
     public static int ConditionalEffectGetFluentCondition(int handle, int index)
     {
-        var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
+        var ce = ObjectRegistry.Get<ConditionalEffectBase>(handle);
         if (ce == null || index < 0 || index >= ce.FluentConditions.Count) return 0;
         return ObjectRegistry.Store(ce.FluentConditions[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_static_condition_count")]
     public static int ConditionalEffectGetStaticConditionCount(int handle)
-        => ReadValue(handle, -1, (ConditionalEffect effect) => effect.StaticConditions.Count);
+        => ReadValue(handle, -1, (ConditionalEffectBase effect) => effect.StaticConditions.Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_static_condition")]
     public static int ConditionalEffectGetStaticCondition(int handle, int index)
     {
-        var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
+        var ce = ObjectRegistry.Get<ConditionalEffectBase>(handle);
         if (ce == null || index < 0 || index >= ce.StaticConditions.Count) return 0;
         return ObjectRegistry.Store(ce.StaticConditions[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_derived_condition_count")]
     public static int ConditionalEffectGetDerivedConditionCount(int handle)
-        => ReadValue(handle, -1, (ConditionalEffect effect) => effect.DerivedConditions.Count);
+        => ReadValue(handle, -1, (ConditionalEffectBase effect) => effect.DerivedConditions.Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_get_derived_condition")]
     public static int ConditionalEffectGetDerivedCondition(int handle, int index)
     {
-        var ce = ObjectRegistry.Get<ConditionalEffect>(handle);
+        var ce = ObjectRegistry.Get<ConditionalEffectBase>(handle);
         if (ce == null || index < 0 || index >= ce.DerivedConditions.Count) return 0;
         return ObjectRegistry.Store(ce.DerivedConditions[index]);
     }

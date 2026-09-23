@@ -508,8 +508,8 @@ public sealed class LiftedFfHeuristic : IHeuristic
                     .Select(literal => new CompiledFluentAtom(literal.Value.Predicate, literal.Value.Arguments, parameterSlots))
                     .ToArray(),
                 PositiveEffects = schema.Effects
-                    .Where(effect => effect.RequiredLiteralEffect.Polarity == Polarity.Positive)
-                    .Select(effect => new CompiledFluentAtom(effect.RequiredLiteralEffect.Value.Predicate, effect.RequiredLiteralEffect.Value.Arguments, parameterSlots))
+                    .Where(effect => effect.Effect.Polarity == Polarity.Positive)
+                    .Select(effect => new CompiledFluentAtom(effect.Effect.Value.Predicate, effect.Effect.Value.Arguments, parameterSlots))
                     .ToArray(),
                 CostExpression = CompiledNumericExpression.Compile(schema.CostExpression, parameterSlots),
                 CostBindings = new Constant?[schema.Parameters.Count]

@@ -131,7 +131,9 @@ public sealed class DerivedDomainConstructionTests
             Array.Empty<Literal<Atom<Fluent>>>(),
             Array.Empty<Literal<Atom<Static>>>(),
             Array.Empty<Literal<Atom<Derived>>>(),
+            [],
             Array.Empty<ConditionalEffect>(),
+            [],
             new NumericConstant(1d));
 
         ArgumentException exception = Assert.Throws<ArgumentException>(() => new Domain(
