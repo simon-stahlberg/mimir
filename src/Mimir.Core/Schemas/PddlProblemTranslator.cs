@@ -117,9 +117,11 @@ internal sealed class PddlProblemTranslator
         ProblemGoalExtractor.ExtractGoalLiterals(
             astProblem.Goal,
             AllPredicates,
+            allFunctions,
             objectLookup,
             Context,
-            goalList, allFunctions, comparisons);
+            goalList,
+            comparisons);
         NumericGoals = comparisons;
         Goal = goalList;
         Context.InitializeDerivedClosure();

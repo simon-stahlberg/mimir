@@ -1,17 +1,16 @@
 using Mimir.Pddl.Ast;
 using Mimir.Pddl.Ast.Expressions;
+using Mimir.Pddl.Ast.Models;
 
 namespace Mimir.Core.Schemas;
 
-internal static class NumericExpressionTranslator
+internal sealed class NumericExpressionTranslator(
+    IReadOnlyDictionary<string, NumericFunction> functions,
+    Func<Term, Dictionary<string, Variable>, ITerm> mapTerm)
 {
-    internal static NumericComparison TranslateComparison(
-        Comparison comparison,
-        Dictionary<string, Variable> variableScope,
-        IReadOnlyDictionary<string, NumericFunction> functionLookup,
-        Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm)
+    public NumericComparison TranslateComparison(Comparison comparison, Dictionary<string, Variable> scope)
         => new(
-            TranslateExpression(comparison.Left, variableScope, functionLookup, mapTerm),
+            TranslateExpression(comparison.Left, scope),
             comparison.Operator switch
             {
                 Pddl.Ast.Expressions.ComparisonOperator.Equal => ComparisonOperator.Equal,
@@ -21,60 +20,40 @@ internal static class NumericExpressionTranslator
                 Pddl.Ast.Expressions.ComparisonOperator.GreaterThanOrEqual => ComparisonOperator.GreaterThanOrEqual,
                 _ => throw new NotSupportedException($"Unsupported comparison operator '{comparison.Operator}'.")
             },
-            TranslateExpression(comparison.Right, variableScope, functionLookup, mapTerm));
+            TranslateExpression(comparison.Right, scope));
 
-    internal static NumericExpression TranslateExpression(
-        INumericExpression expression,
-        Dictionary<string, Variable> variableScope,
-        IReadOnlyDictionary<string, NumericFunction> functionLookup,
-        Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm)
+    public NumericExpression TranslateExpression(INumericExpression expression, Dictionary<string, Variable> scope)
     {
         return expression switch
         {
             ProgrammaticNumberLiteral literal => new NumericConstant(literal.RuntimeValue),
             NumberLiteral numberLiteral => new NumericConstant((double)numberLiteral.Value),
             Negate negate => new NumericBinaryExpression(
-                NumericOperator.Subtract,
-                new NumericConstant(0d),
-                TranslateExpression(negate.Operand, variableScope, functionLookup, mapTerm)),
-            Add add => new NumericBinaryExpression(
-                NumericOperator.Add,
-                TranslateExpression(add.Left, variableScope, functionLookup, mapTerm),
-                TranslateExpression(add.Right, variableScope, functionLookup, mapTerm)),
-            Subtract subtract => new NumericBinaryExpression(
-                NumericOperator.Subtract,
-                TranslateExpression(subtract.Left, variableScope, functionLookup, mapTerm),
-                TranslateExpression(subtract.Right, variableScope, functionLookup, mapTerm)),
-            Multiply multiply => new NumericBinaryExpression(
-                NumericOperator.Multiply,
-                TranslateExpression(multiply.Left, variableScope, functionLookup, mapTerm),
-                TranslateExpression(multiply.Right, variableScope, functionLookup, mapTerm)),
-            Divide divide => new NumericBinaryExpression(
-                NumericOperator.Divide,
-                TranslateExpression(divide.Left, variableScope, functionLookup, mapTerm),
-                TranslateExpression(divide.Right, variableScope, functionLookup, mapTerm)),
-            FluentCall fluentCall => TranslateFunctionCall(fluentCall, variableScope, functionLookup, mapTerm),
+                NumericOperator.Subtract, new NumericConstant(0d), TranslateExpression(negate.Operand, scope)),
+            Add add => Binary(NumericOperator.Add, add.Left, add.Right, scope),
+            Subtract subtract => Binary(NumericOperator.Subtract, subtract.Left, subtract.Right, scope),
+            Multiply multiply => Binary(NumericOperator.Multiply, multiply.Left, multiply.Right, scope),
+            Divide divide => Binary(NumericOperator.Divide, divide.Left, divide.Right, scope),
+            FluentCall fluentCall => TranslateFunctionCall(fluentCall, scope),
             _ => throw new NotSupportedException($"Unsupported numeric expression '{expression.GetType().Name}'.")
         };
     }
 
-    private static NumericExpression TranslateFunctionCall(
-        FluentCall fluentCall,
-        Dictionary<string, Variable> variableScope,
-        IReadOnlyDictionary<string, NumericFunction> functionLookup,
-        Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm)
+    private NumericBinaryExpression Binary(
+        NumericOperator operation,
+        INumericExpression left,
+        INumericExpression right,
+        Dictionary<string, Variable> scope)
+        => new(operation, TranslateExpression(left, scope), TranslateExpression(right, scope));
+
+    private FunctionCall TranslateFunctionCall(FluentCall fluentCall, Dictionary<string, Variable> scope)
     {
-        if (IsTotalCost(fluentCall))
+        if (NumericFunction.IsTotalCost(fluentCall.Name))
             throw new NotSupportedException("total-cost can only be increased by action effects; it cannot be read.");
 
-        if (!functionLookup.TryGetValue(fluentCall.Name, out var function))
+        if (!functions.TryGetValue(fluentCall.Name, out NumericFunction? function))
             throw new InvalidOperationException($"Numeric function '{fluentCall.Name}' is not declared in the domain.");
 
-        return new FunctionCall(
-            function,
-            fluentCall.Arguments.Select(term => mapTerm(term, variableScope)).ToList());
+        return new FunctionCall(function, fluentCall.Arguments.Select(term => mapTerm(term, scope)).ToList());
     }
-
-    private static bool IsTotalCost(FluentCall fluentCall)
-        => NumericFunction.IsTotalCost(fluentCall.Name);
 }

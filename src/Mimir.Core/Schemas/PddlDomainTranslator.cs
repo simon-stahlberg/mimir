@@ -59,44 +59,7 @@ internal sealed class PddlDomainTranslator
             return function;
         }
 
-        (Dictionary<string, Variable> Scope, List<Variable> Variables) ExtendVariableScope(
-            Dictionary<string, Variable>? parentScope,
-            IEnumerable<Parameter> parameters)
-        {
-            var scope = parentScope is null
-                ? new Dictionary<string, Variable>(StringComparer.OrdinalIgnoreCase)
-                : new Dictionary<string, Variable>(parentScope, StringComparer.OrdinalIgnoreCase);
-            var localVariables = new Dictionary<string, Variable>(StringComparer.OrdinalIgnoreCase);
-            var variables = new List<Variable>();
-
-            foreach (var parameter in parameters)
-            {
-                if (!localVariables.TryGetValue(parameter.Name, out var variable))
-                {
-                    variable = new Variable(parameter.Name, parameter.TypeName);
-                    localVariables[parameter.Name] = variable;
-                }
-
-                scope[parameter.Name] = variable;
-                variables.Add(variable);
-            }
-
-            return (scope, variables);
-        }
-
-        ITerm MapDomainTerm(Term term, Dictionary<string, Variable> variableScope)
-        {
-            if (term.IsVariable)
-            {
-                if (variableScope.TryGetValue(term.Name, out var variable)) return variable;
-
-                throw new InvalidOperationException($"Validated expression contains undeclared variable '{term.Name}'.");
-            }
-
-            if (domainConstants.TryGetValue(term.Name, out var constant)) return constant;
-
-            throw new InvalidOperationException($"Validated expression contains undeclared constant '{term.Name}'.");
-        }
+        var expressions = new DomainExpressionTranslator(allPredicates, allFunctions, domainConstants);
 
         TypeHierarchy = astDomain.Types.ToDictionary(t => t.Name, t => t.ParentType, StringComparer.OrdinalIgnoreCase);
 
@@ -108,7 +71,7 @@ internal sealed class PddlDomainTranslator
         var functionsList = new List<NumericFunction>();
         foreach (var functionDecl in astDomain.Functions)
         {
-            var (_, parameters) = ExtendVariableScope(parentScope: null, functionDecl.Parameters);
+            var (_, parameters) = DomainExpressionTranslator.ExtendScope(parentScope: null, functionDecl.Parameters);
             NumericFunction function = GetOrCreateFunction(functionDecl.Name, parameters);
             if (!NumericFunction.IsTotalCost(functionDecl.Name))
                 functionsList.Add(function);
@@ -145,7 +108,7 @@ internal sealed class PddlDomainTranslator
 
         foreach (var pDecl in astDomain.Predicates)
         {
-            var (_, parameters) = ExtendVariableScope(parentScope: null, pDecl.Parameters);
+            var (_, parameters) = DomainExpressionTranslator.ExtendScope(parentScope: null, pDecl.Parameters);
 
             if (derivedNames.Contains(pDecl.Name))
             {
@@ -174,7 +137,7 @@ internal sealed class PddlDomainTranslator
             string name = rule.Signature.Name;
             if (derivedParameters.ContainsKey(name)) continue;
 
-            var (_, parameters) = ExtendVariableScope(parentScope: null, rule.Signature.Parameters);
+            var (_, parameters) = DomainExpressionTranslator.ExtendScope(parentScope: null, rule.Signature.Parameters);
             derivedParameters[name] = parameters;
             derivedList.Add(GetOrCreatePredicate<Derived>(name, parameters));
         }
@@ -197,13 +160,7 @@ internal sealed class PddlDomainTranslator
                 for (int index = 0; index < rule.Signature.Parameters.Length; index++)
                     ruleScope[rule.Signature.Parameters[index].Name] = canonicalParameters[index];
 
-                bodies.Add(DomainExpressionTranslator.TranslateExpression(
-                    rule.Body,
-                    allPredicates,
-                    allFunctions,
-                    ruleScope,
-                    MapDomainTerm,
-                    ExtendVariableScope));
+                bodies.Add(expressions.TranslateExpression(rule.Body, ruleScope));
             }
 
             groundedDefs[name] = bodies.Count == 1
@@ -213,41 +170,17 @@ internal sealed class PddlDomainTranslator
 
         DerivedDefinitions = groundedDefs;
 
-        var pendingActions = new List<(
-            string Name,
-            IReadOnlyList<Variable> Parameters,
-            IReadOnlyList<Literal<Atom<Fluent>>> FluentPreconditions,
-            IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions,
-            IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions,
-            IReadOnlyList<ConditionalEffectBase> Effects,
-            IReadOnlyList<NumericComparison> NumericPreconditions,
-            NumericExpression? ExplicitCostExpression)>();
-
-        for (int actionIndex = 0; actionIndex < astDomain.Actions.Length; actionIndex++)
+        double defaultActionCost = astDomain.Requirements.HasRequirement(PddlRequirement.ActionCosts) ? 0d : 1d;
+        var actionsList = new List<ActionSchema>(astDomain.Actions.Length);
+        foreach (ActionDefinition action in astDomain.Actions)
         {
-            ActionDefinition action = astDomain.Actions[actionIndex];
-            var (parameterScope, vars) = ExtendVariableScope(parentScope: null, action.Parameters);
+            var (parameterScope, parameters) = DomainExpressionTranslator.ExtendScope(parentScope: null, action.Parameters);
 
-            var fPre = new List<Literal<Atom<Fluent>>>();
-            var sPre = new List<Literal<Atom<Static>>>();
-            var dPre = new List<Literal<Atom<Derived>>>();
-            var comparisons = new List<NumericComparison>();
-
+            var precondition = new ExtractedCondition();
             if (action.Precondition != null)
-            {
-                DomainExpressionTranslator.ExtractPreconditions(
-                    action.Precondition,
-                    Polarity.Positive,
-                    allPredicates,
-                    parameterScope,
-                    MapDomainTerm,
-                    fPre,
-                    sPre,
-                    dPre, allFunctions, comparisons);
-            }
+                expressions.ExtractCondition(action.Precondition, Polarity.Positive, parameterScope, precondition);
 
-            var effects = new DomainExpressionTranslator.ExtractedEffects();
-
+            var effects = new ExtractedEffects();
             if (action.Effect is not null)
             {
                 if (action.Effect is not AndEffect andEff)
@@ -260,38 +193,24 @@ internal sealed class PddlDomainTranslator
                         throw new InvalidOperationException(
                             $"Canonical action '{action.Name}' contains an unexpected effect '{child.GetType().Name}'.");
 
-                    DomainExpressionTranslator.ExtractEffects(
-                        cond,
-                        Array.Empty<Variable>(),
-                        parameterScope,
-                        allPredicates,
-                        MapDomainTerm,
-                        ExtendVariableScope,
-                        effects, allFunctions);
+                    expressions.ExtractEffects(cond, parameterScope, effects);
                 }
             }
 
-            NumericExpression? explicitCostExpression = effects.CostIncreases.Count == 0
-                ? null
+            NumericExpression cost = effects.CostIncreases.Count == 0
+                ? new NumericConstant(defaultActionCost)
                 : effects.CostIncreases.Aggregate((left, right) => new NumericBinaryExpression(NumericOperator.Add, left, right));
 
-            pendingActions.Add((action.Name, vars, fPre, sPre, dPre, effects.Effects, comparisons, explicitCostExpression));
-        }
-
-        double defaultActionCost = astDomain.Requirements.HasRequirement(PddlRequirement.ActionCosts) ? 0d : 1d;
-        var actionsList = new List<ActionSchema>(pendingActions.Count);
-        foreach (var pendingAction in pendingActions)
-        {
             actionsList.Add(new ActionSchema(
-                pendingAction.Name,
-                pendingAction.Parameters,
-                pendingAction.FluentPreconditions,
-                pendingAction.StaticPreconditions,
-                pendingAction.DerivedPreconditions,
-                pendingAction.NumericPreconditions,
-                pendingAction.Effects.OfType<ConditionalEffect>().ToArray(),
-                pendingAction.Effects.OfType<ConditionalNumericEffect>().ToArray(),
-                pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost)));
+                action.Name,
+                parameters,
+                precondition.Fluent,
+                precondition.Static,
+                precondition.Derived,
+                precondition.NumericConditions,
+                effects.Effects.OfType<ConditionalEffect>().ToArray(),
+                effects.Effects.OfType<ConditionalNumericEffect>().ToArray(),
+                cost));
         }
 
         Actions = actionsList;

@@ -9,24 +9,24 @@ internal static class ProblemGoalExtractor
     public static void ExtractGoalLiterals(
         ILogicalExpression expression,
         IReadOnlyDictionary<string, Predicate> allPredicates,
+        IReadOnlyDictionary<string, NumericFunction> functions,
         IReadOnlyDictionary<string, Constant> objectLookup,
         InstanceContext context,
         List<Literal<Fact>> results,
-        IReadOnlyDictionary<string, NumericFunction> functions, List<NumericComparison> comparisons)
+        List<NumericComparison> comparisons)
     {
         switch (expression)
         {
             case Comparison comparison:
-                var scope = new Dictionary<string, Variable>();
-                ITerm MapTerm(Mimir.Pddl.Ast.Models.Term term, Dictionary<string, Variable> _) => objectLookup[term.Name];
-                comparisons.Add(NumericExpressionTranslator.TranslateComparison(comparison, scope, functions, MapTerm));
+                var numeric = new NumericExpressionTranslator(functions, (term, _) => objectLookup[term.Name]);
+                comparisons.Add(numeric.TranslateComparison(comparison, new Dictionary<string, Variable>()));
                 return;
             case EmptyLogic:
                 return;
 
             case And and:
                 foreach (var child in and.Expressions)
-                    ExtractGoalLiterals(child, allPredicates, objectLookup, context, results, functions, comparisons);
+                    ExtractGoalLiterals(child, allPredicates, functions, objectLookup, context, results, comparisons);
                 return;
 
             case PredicateCall predicateCall:
