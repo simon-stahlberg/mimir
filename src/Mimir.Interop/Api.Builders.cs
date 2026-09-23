@@ -328,32 +328,27 @@ public static partial class Exports
             (ComparisonOperator)operation,
             RequireHandle<NumericExpressionSpec>(rightHandle)));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_builder_add_expression")]
-    public static byte BuilderAddExpression(int builder, int expression) => Mutate<object>(builder, value =>
-    {
-        LogicalExpressionSpec condition = RequireHandle<LogicalExpressionSpec>(expression);
-        switch (value)
-        {
-            case ActionSchemaBuilder action: action.AddPrecondition(condition); break;
-            case ConditionalEffectBuilder effect: effect.AddCondition(condition); break;
-            case GoalBuilder goal: goal.Add(condition); break;
-            default: throw new ArgumentException("Expected an action, effect, or goal builder.");
-        }
-    });
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_schema_builder_add_precondition_expression")]
+    public static byte ActionSchemaBuilderAddPreconditionExpression(int handle, int expression)
+        => Mutate<ActionSchemaBuilder>(handle, builder => builder.AddPrecondition(RequireHandle<LogicalExpressionSpec>(expression)));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_builder_numeric_update")]
-    public static byte BuilderNumericUpdate(int builder, int target, int operation, int expression) => Mutate<object>(builder, value =>
-    {
-        NumericFunctionSpec field = RequireHandle<NumericFunctionSpec>(target);
-        NumericExpressionSpec right = RequireHandle<NumericExpressionSpec>(expression);
-        var update = (NumericUpdateOperator)operation;
-        switch (value)
-        {
-            case ActionSchemaBuilder action: action.NumericUpdate(field, update, right); break;
-            case ConditionalEffectBuilder effect: effect.NumericUpdate(field, update, right); break;
-            default: throw new ArgumentException("Expected an action or effect builder.");
-        }
-    });
+    [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_builder_add_condition_expression")]
+    public static byte ConditionalEffectBuilderAddConditionExpression(int handle, int expression)
+        => Mutate<ConditionalEffectBuilder>(handle, builder => builder.AddCondition(RequireHandle<LogicalExpressionSpec>(expression)));
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_goal_builder_add_expression")]
+    public static byte GoalBuilderAddExpression(int handle, int expression)
+        => Mutate<GoalBuilder>(handle, builder => builder.Add(RequireHandle<LogicalExpressionSpec>(expression)));
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_action_schema_builder_numeric_update")]
+    public static byte ActionSchemaBuilderNumericUpdate(int handle, int target, int operation, int expression)
+        => Mutate<ActionSchemaBuilder>(handle, builder => builder.NumericUpdate(
+            RequireHandle<NumericFunctionSpec>(target), (NumericUpdateOperator)operation, RequireHandle<NumericExpressionSpec>(expression)));
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_conditional_effect_builder_numeric_update")]
+    public static byte ConditionalEffectBuilderNumericUpdate(int handle, int target, int operation, int expression)
+        => Mutate<ConditionalEffectBuilder>(handle, builder => builder.NumericUpdate(
+            RequireHandle<NumericFunctionSpec>(target), (NumericUpdateOperator)operation, RequireHandle<NumericExpressionSpec>(expression)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_builder_set_value")]
     public static byte InitialStateSetValue(int builder, int target, double value)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import ctypes
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from numbers import Real
 from typing import TypeVar, cast
 
@@ -353,6 +353,7 @@ class Logic:
 
 
 def _add_expression(
+    add: Callable[..., object],
     builder: _BuilderHandle,
     expression: LogicalExpressionSpec,
     arguments: tuple[str, ...],
@@ -360,10 +361,11 @@ def _add_expression(
 ) -> None:
     if arguments or not positive:
         raise ValueError("expression conditions cannot have extra arguments or a negative polarity")
-    lib.mimir_builder_add_expression(builder._handle, expression._handle)
+    add(builder._handle, expression._handle)
 
 
 def _add_numeric_update(
+    update: Callable[..., object],
     builder: _BuilderHandle,
     target: NumericFunctionSpec,
     operation: NumericUpdateOperator,
@@ -372,7 +374,7 @@ def _add_numeric_update(
     if not isinstance(target, NumericFunctionSpec):
         raise TypeError("numeric update targets must be function references")
     value = NumericExpressionSpec._coerce(expression)
-    lib.mimir_builder_numeric_update(builder._handle, target._handle, operation, value._handle)
+    update(builder._handle, target._handle, operation, value._handle)
 
 
 class Numeric:
@@ -622,7 +624,7 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
         positive: bool = True,
     ) -> "ActionSchemaBuilder":
         if isinstance(condition, LogicalExpressionSpec):
-            _add_expression(self, condition, arguments, positive)
+            _add_expression(lib.mimir_action_schema_builder_add_precondition_expression, self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_action_schema_builder_add_precondition(
@@ -679,23 +681,23 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
         return self
 
     def assign(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.ASSIGN, expression)
+        _add_numeric_update(lib.mimir_action_schema_builder_numeric_update, self, target, NumericUpdateOperator.ASSIGN, expression)
         return self
 
     def increase(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.INCREASE, expression)
+        _add_numeric_update(lib.mimir_action_schema_builder_numeric_update, self, target, NumericUpdateOperator.INCREASE, expression)
         return self
 
     def decrease(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.DECREASE, expression)
+        _add_numeric_update(lib.mimir_action_schema_builder_numeric_update, self, target, NumericUpdateOperator.DECREASE, expression)
         return self
 
     def scale_up(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.SCALE_UP, expression)
+        _add_numeric_update(lib.mimir_action_schema_builder_numeric_update, self, target, NumericUpdateOperator.SCALE_UP, expression)
         return self
 
     def scale_down(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ActionSchemaBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.SCALE_DOWN, expression)
+        _add_numeric_update(lib.mimir_action_schema_builder_numeric_update, self, target, NumericUpdateOperator.SCALE_DOWN, expression)
         return self
 
     def close(self) -> ActionListBuilder:
@@ -727,7 +729,7 @@ class ConditionalEffectBuilder(_ChildBuilderHandle):
         positive: bool = True,
     ) -> "ConditionalEffectBuilder":
         if isinstance(condition, LogicalExpressionSpec):
-            _add_expression(self, condition, arguments, positive)
+            _add_expression(lib.mimir_conditional_effect_builder_add_condition_expression, self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_conditional_effect_builder_add_condition(
@@ -758,23 +760,23 @@ class ConditionalEffectBuilder(_ChildBuilderHandle):
         return self
 
     def assign(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.ASSIGN, expression)
+        _add_numeric_update(lib.mimir_conditional_effect_builder_numeric_update, self, target, NumericUpdateOperator.ASSIGN, expression)
         return self
 
     def increase(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.INCREASE, expression)
+        _add_numeric_update(lib.mimir_conditional_effect_builder_numeric_update, self, target, NumericUpdateOperator.INCREASE, expression)
         return self
 
     def decrease(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.DECREASE, expression)
+        _add_numeric_update(lib.mimir_conditional_effect_builder_numeric_update, self, target, NumericUpdateOperator.DECREASE, expression)
         return self
 
     def scale_up(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.SCALE_UP, expression)
+        _add_numeric_update(lib.mimir_conditional_effect_builder_numeric_update, self, target, NumericUpdateOperator.SCALE_UP, expression)
         return self
 
     def scale_down(self, target: NumericFunctionSpec, expression: NumericExpressionSpec | float) -> ConditionalEffectBuilder:
-        _add_numeric_update(self, target, NumericUpdateOperator.SCALE_DOWN, expression)
+        _add_numeric_update(lib.mimir_conditional_effect_builder_numeric_update, self, target, NumericUpdateOperator.SCALE_DOWN, expression)
         return self
 
     def close(self) -> ActionSchemaBuilder:
@@ -921,7 +923,7 @@ class GoalBuilder(_ChildBuilderHandle):
         positive: bool = True,
     ) -> "GoalBuilder":
         if isinstance(condition, LogicalExpressionSpec):
-            _add_expression(self, condition, arguments, positive)
+            _add_expression(lib.mimir_goal_builder_add_expression, self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_goal_builder_add(

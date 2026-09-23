@@ -110,8 +110,11 @@ _bind("mimir_numeric_spec_constant", [_double], _int)
 _bind("mimir_numeric_spec_function", [_string, _pointer, _int], _int)
 _bind("mimir_numeric_spec_binary", [_int, _int, _int], _int)
 _bind("mimir_numeric_spec_compare", [_int, _int, _int], _int)
-_bind("mimir_builder_add_expression", [_int, _int], _byte)
-_bind("mimir_builder_numeric_update", [_int, _int, _int, _int], _byte)
+_bind("mimir_action_schema_builder_add_precondition_expression", [_int, _int], _byte)
+_bind("mimir_conditional_effect_builder_add_condition_expression", [_int, _int], _byte)
+_bind("mimir_goal_builder_add_expression", [_int, _int], _byte)
+_bind("mimir_action_schema_builder_numeric_update", [_int, _int, _int, _int], _byte)
+_bind("mimir_conditional_effect_builder_numeric_update", [_int, _int, _int, _int], _byte)
 _bind("mimir_initial_state_builder_set_value", [_int, _int, _double], _byte)
 
 
