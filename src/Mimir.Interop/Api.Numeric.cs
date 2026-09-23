@@ -109,9 +109,9 @@ public static partial class Exports
     public static int NumericIsGround(int handle) => ReadValue(handle, -1, (object value) => value switch
     {
         NumericExpression expression => NumericEvaluation.IsGround(expression),
-        GroundNumericComparison or GroundNumericUpdate => true,
-        NumericComparison or NumericUpdate => false,
-        _ => throw new ArgumentException("Expected a numeric expression, comparison, or update.")
+        GroundNumericComparison => true,
+        NumericComparison => false,
+        _ => throw new ArgumentException("Expected a numeric expression or comparison.")
     } ? 1 : 0);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_state_holds_comparison")]

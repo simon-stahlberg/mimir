@@ -186,7 +186,7 @@ class NumericExpressionSpec(_BuilderHandle):
     def _compare(self, operation: ComparisonOperator, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
         right = self._coerce(other)
         handle = int(lib.mimir_numeric_spec_compare(self._handle, operation, right._handle))
-        return LogicalExpressionSpec._from_handle(_require_handle(handle, "Numeric comparison"))
+        return LogicalExpressionSpec._from_handle(handle)
 
     def equal_to(self, other: NumericExpressionSpec | float) -> LogicalExpressionSpec:
         return self._compare(ComparisonOperator.EQUAL, other)
@@ -360,7 +360,7 @@ def _add_expression(
 ) -> None:
     if arguments or not positive:
         raise ValueError("expression conditions cannot have extra arguments or a negative polarity")
-    _require_success(lib.mimir_builder_add_expression(builder._handle, expression._handle), "add expression")
+    lib.mimir_builder_add_expression(builder._handle, expression._handle)
 
 
 def _add_numeric_update(
@@ -372,10 +372,7 @@ def _add_numeric_update(
     if not isinstance(target, NumericFunctionSpec):
         raise TypeError("numeric update targets must be function references")
     value = NumericExpressionSpec._coerce(expression)
-    _require_success(
-        lib.mimir_builder_numeric_update(builder._handle, target._handle, operation, value._handle),
-        "numeric update",
-    )
+    lib.mimir_builder_numeric_update(builder._handle, target._handle, operation, value._handle)
 
 
 class Numeric:
@@ -387,9 +384,7 @@ class Numeric:
     @staticmethod
     def constant(value: float) -> NumericExpressionSpec:
         handle = int(lib.mimir_numeric_spec_constant(_number(value, "value")))
-        return NumericExpressionSpec._from_handle(
-            _require_handle(handle, "Numeric.constant")
-        )
+        return NumericExpressionSpec._from_handle(handle)
 
     @staticmethod
     def function(function_name: str, *arguments: str) -> NumericFunctionSpec:
@@ -401,9 +396,7 @@ class Numeric:
                 len(arguments),
             )
         )
-        return NumericFunctionSpec._from_handle(
-            _require_handle(handle, "Numeric.function")
-        )
+        return NumericFunctionSpec._from_handle(handle)
 
     @staticmethod
     def _binary(
@@ -416,9 +409,7 @@ class Numeric:
         ):
             raise TypeError("left and right must be NumericExpressionSpec values")
         handle = int(lib.mimir_numeric_spec_binary(operation, left._handle, right._handle))
-        return NumericExpressionSpec._from_handle(
-            _require_handle(handle, f"Numeric.{operation.name.lower()}")
-        )
+        return NumericExpressionSpec._from_handle(handle)
 
 
 class DomainBuilder(_BuilderHandle):
@@ -626,17 +617,17 @@ class ActionSchemaBuilder(_ChildBuilderHandle):
 
     def add_precondition(
         self,
-        predicate_name: str | LogicalExpressionSpec,
+        condition: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "ActionSchemaBuilder":
-        if isinstance(predicate_name, LogicalExpressionSpec):
-            _add_expression(self, predicate_name, arguments, positive)
+        if isinstance(condition, LogicalExpressionSpec):
+            _add_expression(self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_action_schema_builder_add_precondition(
             self._handle,
-            _utf8(predicate_name, "predicate_name"),
+            _utf8(condition, "condition"),
             _polarity(positive),
             pointer,
             len(arguments),
@@ -731,17 +722,17 @@ class ConditionalEffectBuilder(_ChildBuilderHandle):
 
     def add_condition(
         self,
-        predicate_name: str | LogicalExpressionSpec,
+        condition: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "ConditionalEffectBuilder":
-        if isinstance(predicate_name, LogicalExpressionSpec):
-            _add_expression(self, predicate_name, arguments, positive)
+        if isinstance(condition, LogicalExpressionSpec):
+            _add_expression(self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_conditional_effect_builder_add_condition(
             self._handle,
-            _utf8(predicate_name, "predicate_name"),
+            _utf8(condition, "condition"),
             _polarity(positive),
             pointer,
             len(arguments),
@@ -911,8 +902,7 @@ class InitialStateBuilder(_ChildBuilderHandle):
     def set_value(self, target: NumericFunctionSpec, value: float) -> InitialStateBuilder:
         if not isinstance(target, NumericFunctionSpec):
             raise TypeError("initialization targets must be function references")
-        result = lib.mimir_initial_state_set_value(self._handle, target._handle, _number(value, "value"))
-        _require_success(result, "InitialStateBuilder.set_value")
+        lib.mimir_initial_state_builder_set_value(self._handle, target._handle, _number(value, "value"))
         return self
 
     def close(self) -> ProblemBuilder:
@@ -926,17 +916,17 @@ class GoalBuilder(_ChildBuilderHandle):
 
     def add(
         self,
-        predicate_name: str | LogicalExpressionSpec,
+        condition: str | LogicalExpressionSpec,
         *arguments: str,
         positive: bool = True,
     ) -> "GoalBuilder":
-        if isinstance(predicate_name, LogicalExpressionSpec):
-            _add_expression(self, predicate_name, arguments, positive)
+        if isinstance(condition, LogicalExpressionSpec):
+            _add_expression(self, condition, arguments, positive)
             return self
         pointer, _array = _string_array(arguments, "argument")
         result = lib.mimir_goal_builder_add(
             self._handle,
-            _utf8(predicate_name, "predicate_name"),
+            _utf8(condition, "condition"),
             _polarity(positive),
             pointer,
             len(arguments),

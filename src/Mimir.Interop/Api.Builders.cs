@@ -355,7 +355,7 @@ public static partial class Exports
         }
     });
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_set_value")]
+    [UnmanagedCallersOnly(EntryPoint = "mimir_initial_state_builder_set_value")]
     public static byte InitialStateSetValue(int builder, int target, double value)
         => Mutate<InitialStateBuilder>(builder, initial => initial.SetValue(RequireHandle<NumericFunctionSpec>(target), value));
 

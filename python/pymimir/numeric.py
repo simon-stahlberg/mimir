@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import IntEnum
 from functools import cached_property
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from ._base import Object, Term, Variable, _Handle, _required_string, _wrap_term
 from .advanced._native import lib
@@ -131,9 +131,13 @@ def _call_string(function: NumericFunction, arguments: tuple[Term, ...] | tuple[
 class FunctionCall(NumericExpression):
     @cached_property
     def function(self) -> NumericFunction:
+        from .model import Problem
+
         if self._owner is None:
             raise RuntimeError("function call has no owner")
-        return NumericFunction._from_handle(lib.mimir_numeric_function(self._handle), self._owner._schema_domain)
+        # Numeric functions are owned by the domain, even when the call was reached through a problem.
+        domain = self._owner.domain if isinstance(self._owner, Problem) else self._owner
+        return NumericFunction._from_handle(lib.mimir_numeric_function(self._handle), domain)
 
     @cached_property
     def arguments(self) -> tuple[Term, ...]:
@@ -281,15 +285,12 @@ def _read_comparisons(handle: int, owner: Domain | Problem) -> tuple[NumericComp
                  for index in range(lib.mimir_numeric_comparison_count(handle)))
 
 
-def _read_updates(handle: int, owner: Domain | Problem) -> tuple[NumericUpdate | GroundNumericUpdate, ...]:
-    updates: list[NumericUpdate | GroundNumericUpdate] = []
-    for index in range(lib.mimir_numeric_update_count(handle)):
-        item = lib.mimir_numeric_update_get(handle, index)
-        if lib.mimir_numeric_is_ground(item):
-            updates.append(GroundNumericUpdate._from_handle(item, owner))
-        else:
-            updates.append(NumericUpdate._from_handle(item, owner))
-    return tuple(updates)
+_UpdateT = TypeVar("_UpdateT", NumericUpdate, GroundNumericUpdate)
+
+
+def _read_updates(handle: int, owner: Domain | Problem, cls: type[_UpdateT]) -> tuple[_UpdateT, ...]:
+    return tuple(cls._from_handle(lib.mimir_numeric_update_get(handle, index), owner)
+                 for index in range(lib.mimir_numeric_update_count(handle)))
 
 
 def _comparison_handles(comparisons: tuple[NumericComparison, ...]) -> list[int]:

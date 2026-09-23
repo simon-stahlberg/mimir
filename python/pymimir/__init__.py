@@ -9,7 +9,7 @@ problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 :mod:`pymimir.advanced` are explicitly unstable.
 """
 
-from . import builders, heuristics, learning, model, search, state_space
+from . import builders, heuristics, learning, model, numeric, search, state_space
 from .builders import (
     Numeric,
     NumericExpressionSpec,
@@ -114,7 +114,8 @@ __all__ = [
     "DerivedPredicateListBuilder", "ProblemBuilder", "ProblemObjectListBuilder",
     "InitialStateBuilder", "GoalBuilder", "Logic", "LogicalExpressionSpec",
     "Numeric", "NumericExpressionSpec", "NumericFunctionSpec",
-    "NumericFunction", "NumericExpression", "NumericConstant", "NumericBinaryExpression",
+    # Numeric formalism
+    "numeric", "NumericFunction", "NumericExpression", "NumericConstant", "NumericBinaryExpression",
     "FunctionCall", "GroundFunctionCall", "NumericComparison", "GroundNumericComparison",
     "NumericUpdate", "GroundNumericUpdate", "NumericOperator", "ComparisonOperator", "NumericUpdateOperator",
     # Search

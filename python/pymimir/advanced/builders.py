@@ -105,14 +105,14 @@ _bind("mimir_logic_exists", [_pointer, _pointer, _int, _int], _int)
 _bind("mimir_logic_forall", [_pointer, _pointer, _int, _int], _int)
 
 
-# Action-cost specifications.
+# Numeric expression specifications.
 _bind("mimir_numeric_spec_constant", [_double], _int)
 _bind("mimir_numeric_spec_function", [_string, _pointer, _int], _int)
 _bind("mimir_numeric_spec_binary", [_int, _int, _int], _int)
 _bind("mimir_numeric_spec_compare", [_int, _int, _int], _int)
 _bind("mimir_builder_add_expression", [_int, _int], _byte)
 _bind("mimir_builder_numeric_update", [_int, _int, _int, _int], _byte)
-_bind("mimir_initial_state_set_value", [_int, _int, _double], _byte)
+_bind("mimir_initial_state_builder_set_value", [_int, _int, _double], _byte)
 
 
 # Problem and problem sections.

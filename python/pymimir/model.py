@@ -5,7 +5,6 @@ from __future__ import annotations
 import ctypes
 import os
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from typing import cast
 from enum import Enum
 from functools import cached_property
 from types import MappingProxyType
@@ -333,7 +332,7 @@ class Effect:
         return self._numeric_effects
 
     def __str__(self) -> str:
-        return "(and " + " ".join(str(l) for l in self._literals) + ")"
+        return "(and " + " ".join([*(str(l) for l in self._literals), *(str(u) for u in self._numeric_effects)]) + ")"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -390,12 +389,11 @@ class _ConditionalEffectBase(_Handle):
         return list(self.static_literals + self.fluent_literals + self.derived_literals)
 
     def __str__(self) -> str:
-        conds = self._conditions()
-        effect = self.effect
-        if not conds:
-            return str(effect)
-        cond_str = " ".join(str(c) for c in conds)
-        return f"(when (and {cond_str}) {effect})"
+        condition = self.condition
+        parts = [*(str(l) for l in condition.literals), *(str(c) for c in condition.numeric_conditions)]
+        if not parts:
+            return str(self.effect)
+        return f"(when (and {' '.join(parts)}) {self.effect})"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -422,7 +420,7 @@ class ConditionalNumericEffect(_ConditionalEffectBase):
     def effect(self) -> Effect:
         if self._owner is None:
             raise RuntimeError("conditional effect has no owner")
-        updates = cast(tuple[NumericUpdate, ...], _read_updates(self._handle, self._owner))
+        updates = _read_updates(self._handle, self._owner, NumericUpdate)
         return Effect._from_parts(self.quantified_variables, (), self._owner, updates)
 
 # =============================================================================
@@ -497,7 +495,7 @@ class GroundEffect:
     @property
     def numeric_effects(self) -> tuple[GroundNumericUpdate, ...]:
         if self._action is not None:
-            return cast(tuple[GroundNumericUpdate, ...], _read_updates(self._action._handle, self._problem))
+            return _read_updates(self._action._handle, self._problem, GroundNumericUpdate)
         return self._numeric_effects
 
     @property
@@ -506,9 +504,12 @@ class GroundEffect:
             self._problem.ground_literal(atom, positive=False) for atom in self.delete_atoms)
 
     def __str__(self) -> str:
-        adds = " ".join(str(a) for a in self.add_atoms)
-        dels = " ".join(f"(not {a})" for a in self.delete_atoms)
-        return f"(and {adds} {dels})" if adds or dels else "(and)"
+        parts = [
+            *(str(a) for a in self.add_atoms),
+            *(f"(not {a})" for a in self.delete_atoms),
+            *(str(u) for u in self.numeric_effects),
+        ]
+        return f"(and {' '.join(parts)})" if parts else "(and)"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -612,7 +613,7 @@ class _GroundConditionalEffectBase(_Handle):
     def __str__(self) -> str:
         cond = self.condition
         effect = self.effect
-        if len(cond) == 0:
+        if not cond.literals and not cond.numeric_conditions:
             return str(effect)
         return f"(when {cond} {effect})"
 
@@ -641,7 +642,7 @@ class GroundConditionalNumericEffect(_GroundConditionalEffectBase):
 
     @property
     def effect(self) -> GroundEffect:
-        updates = cast(tuple[GroundNumericUpdate, ...], _read_updates(self._handle, self._problem))
+        updates = _read_updates(self._handle, self._problem, GroundNumericUpdate)
         return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(), numeric_effects=updates)
 
 # =============================================================================
@@ -698,7 +699,7 @@ class Action(_Handle):
             raise RuntimeError("action has no owner")
         n = lib.mimir_action_get_effect_literal_count(self._handle)
         literals = tuple(Literal._from_handle(lib.mimir_action_get_effect_literal(self._handle, i), self._owner) for i in range(n))
-        return Effect._from_parts(self.parameters, literals, self._owner, cast(tuple[NumericUpdate, ...], _read_updates(self._handle, self._owner)))
+        return Effect._from_parts(self.parameters, literals, self._owner, _read_updates(self._handle, self._owner, NumericUpdate))
 
     @cached_property
     def conditional_effects(self) -> tuple[ConditionalEffect, ...]:
@@ -833,11 +834,6 @@ class Domain(_Handle):
 
     def __init__(self) -> None:
         raise TypeError("use Domain.from_file() or Domain.from_pddl()")
-
-    # Schema-level values (functions, predicates) are owned by the domain even when reached through a problem.
-    @property
-    def _schema_domain(self) -> Domain:
-        return self
 
     @classmethod
     def from_file(cls, path: str | os.PathLike[str]) -> "Domain":
@@ -1107,10 +1103,6 @@ class Problem(_Handle):
         return self._domain
 
     @property
-    def _schema_domain(self) -> Domain:
-        return self._domain
-
-    @property
     def generator(self) -> ActionGenerator:
         value = _required_string(
             lib.mimir_problem_get_generator(self._handle),
@@ -1334,8 +1326,6 @@ class Problem(_Handle):
         numeric_ptr, _numeric_array = _handle_array([field._handle for field, value in entries])
         numbers = (ctypes.c_double * len(entries))(*(value for field, value in entries)) if entries else None
         handle = lib.mimir_problem_new_state(self._handle, ptr, len(atoms), numeric_ptr, numbers, len(entries))
-        if handle == 0:
-            raise_last_error("could not create state")
         return State._from_handle(handle, self)
 
     def lifted_function_call(self, function: NumericFunction, *arguments: Term) -> FunctionCall:
@@ -1712,26 +1702,25 @@ class ConjunctiveCondition(_Handle):
                 for variable in self._parameters
             ]
             variable_map = dict(zip(self._parameters, mapped_parameters))
+
+            def map_term(term: Term) -> Term:
+                if not isinstance(term, Variable):
+                    return term
+                if term not in variable_map:
+                    raise ValueError("condition contains an undeclared variable")
+                return variable_map[term]
+
             mapped_literals: list[Literal] = []
             for literal in self._literals:
                 atom = literal.atom
-                terms: list[Term] = []
-                for term in atom.arguments:
-                    if isinstance(term, Variable):
-                        if term not in variable_map:
-                            raise ValueError("condition contains an undeclared variable")
-                        terms.append(variable_map[term])
-                    else:
-                        terms.append(term)
-                mapped_atom = problem.lifted_atom(atom.predicate, *terms)
+                mapped_atom = problem.lifted_atom(atom.predicate, *(map_term(term) for term in atom.arguments))
                 mapped_literals.append(problem.literal(mapped_atom, positive=literal.is_positive))
+
             def map_numeric(expression: NumericExpression) -> NumericExpression:
                 if isinstance(expression, NumericConstant):
                     return expression
                 if isinstance(expression, FunctionCall):
-                    terms: list[Term] = [variable_map[term] if isinstance(term, Variable) else term
-                                         for term in expression.arguments]
-                    return problem.lifted_function_call(expression.function, *terms)
+                    return problem.lifted_function_call(expression.function, *(map_term(term) for term in expression.arguments))
                 if isinstance(expression, NumericBinaryExpression):
                     return map_numeric(expression.left)._binary(expression.operator, map_numeric(expression.right))
                 raise ValueError("schema comparison contains an unsupported numeric expression")
@@ -1876,17 +1865,15 @@ class GroundConjunctiveCondition(_NativeOwner):
         ptr, _array = _handle_array([literal._handle for literal in literal_values])
         comparison_values = tuple(numeric_conditions)
         comparison_ptr, _comparison_array = _handle_array(_comparison_handles(comparison_values))
-        grounded: list[GroundNumericComparison] = []
-        for comparison in comparison_values:
-            if not isinstance(comparison, GroundNumericComparison):
-                raise ValueError("ground numeric conditions cannot contain variables")
-            grounded.append(comparison)
+        grounded = tuple(comparison for comparison in comparison_values if isinstance(comparison, GroundNumericComparison))
+        if len(grounded) != len(comparison_values):
+            raise ValueError("ground numeric conditions cannot contain variables")
         self = object.__new__(cls)
         handle = lib.mimir_goal_create(problem._handle, ptr, len(literal_values), comparison_ptr, len(grounded))
         finalizer = _create_finalizer(self, free_handle, handle)
         try:
             self._literals = literal_values
-            self._numeric_conditions = tuple(grounded)
+            self._numeric_conditions = grounded
             self._problem = problem
             self._handle = handle
             self._finalizer = finalizer

@@ -317,3 +317,16 @@ def test_total_cost_guards_are_rejected_before_simplification(guard):
           (:requirements :adl :numeric-fluents :action-costs)
           (:functions (fuel) (total-cost))
           (:action act :parameters () :effect (when {guard} (increase (total-cost) 1))))""")
+
+
+def test_effect_strings_include_numeric_parts():
+    domain = m.Domain.from_pddl("""(define (domain d)
+      (:requirements :strips :numeric-fluents :conditional-effects)
+      (:predicates (p))
+      (:functions (fuel))
+      (:action act :parameters () :precondition (>= (fuel) 1)
+        :effect (and (p) (decrease (fuel) 1) (when (>= (fuel) 3) (increase (fuel) 2)))))""")
+    problem = m.Problem.from_pddl(domain, "(define (problem q) (:domain d) (:init (= (fuel) 4)) (:goal (p)))")
+    for action in (domain.action("act"), problem.action("act")):
+        assert str(action.effect) == "(and (p) (decrease (fuel) 1.0))"
+        assert str(action.conditional_numeric_effects[0]) == "(when (and (>= (fuel) 3.0)) (and (increase (fuel) 2.0)))"
