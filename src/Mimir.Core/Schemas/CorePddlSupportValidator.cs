@@ -20,6 +20,7 @@ internal static class CorePddlSupportValidator
         ArgumentNullException.ThrowIfNull(domain);
 
         bool actionCostsEnabled = domain.Requirements.HasRequirement(PddlRequirement.ActionCosts);
+        HashSet<string> changingFunctions = CollectChangingFunctions(domain);
         foreach (ActionDefinition action in domain.Actions)
         {
             if (action.Precondition is not null)
@@ -35,6 +36,8 @@ internal static class CorePddlSupportValidator
                     action.Effect,
                     everyWhenIsConditional,
                     actionCostsEnabled,
+                    changingFunctions,
+                    action.Name,
                     isConditional: false,
                     isQuantified: false,
                     $"effect of action '{action.Name}'");
@@ -129,6 +132,8 @@ internal static class CorePddlSupportValidator
         IEffect effect,
         bool everyWhenIsConditional,
         bool actionCostsEnabled,
+        IReadOnlySet<string> changingFunctions,
+        string actionName,
         bool isConditional,
         bool isQuantified,
         string context)
@@ -142,6 +147,8 @@ internal static class CorePddlSupportValidator
                         child,
                         everyWhenIsConditional,
                         actionCostsEnabled,
+                        changingFunctions,
+                        actionName,
                         isConditional,
                         isQuantified,
                         context);
@@ -153,6 +160,8 @@ internal static class CorePddlSupportValidator
                     conditionalEffect.Effect,
                     everyWhenIsConditional,
                     actionCostsEnabled,
+                    changingFunctions,
+                    actionName,
                     isConditional || everyWhenIsConditional || !LogicalExpressionSemantics.IsAlwaysTrue(conditionalEffect.Condition),
                     isQuantified,
                     context);
@@ -162,12 +171,14 @@ internal static class CorePddlSupportValidator
                     forallEffect.Effect,
                     everyWhenIsConditional,
                     actionCostsEnabled,
+                    changingFunctions,
+                    actionName,
                     isConditional,
                     isQuantified: true,
                     context);
                 return;
             case Increase increase when IsTotalCost(increase.Fluent):
-                ValidateTotalCostIncrease(increase, actionCostsEnabled, isConditional, isQuantified);
+                ValidateTotalCostIncrease(increase, actionCostsEnabled, changingFunctions, actionName, isConditional, isQuantified);
                 return;
             case Increase increase:
                 ValidateNumericUpdate(increase.Fluent, increase.Value);
@@ -203,6 +214,8 @@ internal static class CorePddlSupportValidator
     private static void ValidateTotalCostIncrease(
         Increase increase,
         bool actionCostsEnabled,
+        IReadOnlySet<string> changingFunctions,
+        string actionName,
         bool isConditional,
         bool isQuantified)
     {
@@ -225,7 +238,71 @@ internal static class CorePddlSupportValidator
         }
 
         ValidateNumericExpression(increase.Value);
+        string? changing = ReadFunctionNames(increase.Value).FirstOrDefault(changingFunctions.Contains);
+        if (changing is not null)
+        {
+            throw new NotSupportedException(
+                $"Action '{actionName}' has a cost that depends on changing numeric fluent '{changing}'; only state-independent action costs are supported.");
+        }
     }
+
+    // A function is changing when any action updates it; total-cost is bookkeeping, not a fluent.
+    private static HashSet<string> CollectChangingFunctions(DomainDefinition domain)
+    {
+        var changing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (ActionDefinition action in domain.Actions)
+        {
+            if (action.Effect is not null)
+                Collect(action.Effect);
+        }
+        return changing;
+
+        void Collect(IEffect effect)
+        {
+            switch (effect)
+            {
+                case AndEffect andEffect:
+                    foreach (IEffect child in andEffect.Effects)
+                        Collect(child);
+                    return;
+                case Mimir.Pddl.Ast.Effects.ConditionalEffect conditionalEffect:
+                    Collect(conditionalEffect.Effect);
+                    return;
+                case ForallEffect forallEffect:
+                    Collect(forallEffect.Effect);
+                    return;
+                case Increase increase when IsTotalCost(increase.Fluent):
+                    return;
+                case Increase increase:
+                    changing.Add(increase.Fluent.Name);
+                    return;
+                case Assign assign:
+                    changing.Add(assign.Fluent.Name);
+                    return;
+                case Decrease decrease:
+                    changing.Add(decrease.Fluent.Name);
+                    return;
+                case ScaleUp scaleUp:
+                    changing.Add(scaleUp.Fluent.Name);
+                    return;
+                case ScaleDown scaleDown:
+                    changing.Add(scaleDown.Fluent.Name);
+                    return;
+            }
+        }
+    }
+
+    private static IEnumerable<string> ReadFunctionNames(INumericExpression expression) => expression switch
+    {
+        NumberLiteral => [],
+        FluentCall call => [call.Name],
+        Negate negate => ReadFunctionNames(negate.Operand),
+        Add add => ReadFunctionNames(add.Left).Concat(ReadFunctionNames(add.Right)),
+        Subtract subtract => ReadFunctionNames(subtract.Left).Concat(ReadFunctionNames(subtract.Right)),
+        Multiply multiply => ReadFunctionNames(multiply.Left).Concat(ReadFunctionNames(multiply.Right)),
+        Divide divide => ReadFunctionNames(divide.Left).Concat(ReadFunctionNames(divide.Right)),
+        _ => throw new NotSupportedException($"Numeric expression '{expression.GetType().Name}' is not supported.")
+    };
 
     private static void ValidateNumericExpression(INumericExpression expression)
     {

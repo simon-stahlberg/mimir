@@ -248,15 +248,13 @@ def test_numeric_generators_and_planners_use_static_numeric_costs(generator, alg
     assert result.solution.goal_state.applicable_actions() == ()
 
 
-def test_state_dependent_costs_are_rejected():
-    domain = m.Domain.from_pddl("""(define (domain steps)
-        (:requirements :strips :numeric-fluents :action-costs)
-        (:functions (fuel) (total-cost))
-        (:action step :parameters () :precondition (>= (fuel) 1)
-            :effect (and (decrease (fuel) 1) (increase (total-cost) (fuel)))))""")
-    with pytest.raises(m.PddlError, match="depends on changing numeric fluents"):
-        m.Problem.from_pddl(domain, """(define (problem p) (:domain steps)
-            (:init (= (fuel) 2) (= (total-cost) 0)) (:goal (= (fuel) 0)) (:metric minimize (total-cost)))""")
+def test_state_dependent_costs_are_rejected_with_the_domain():
+    with pytest.raises(m.PddlError, match="depends on changing numeric fluent 'fuel'"):
+        m.Domain.from_pddl("""(define (domain steps)
+            (:requirements :strips :numeric-fluents :action-costs)
+            (:functions (fuel) (total-cost))
+            (:action step :parameters () :precondition (>= (fuel) 1)
+                :effect (and (decrease (fuel) 1) (increase (total-cost) (fuel)))))""")
 
 
 def test_unsupported_numeric_heuristics_raise_unsupported_error():

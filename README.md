@@ -326,8 +326,8 @@ no mutable fields exist.
 
 Only `minimize (total-cost)` is supported as a metric. Accumulated cost is search
 bookkeeping and is not part of state identity. Action costs may read static
-numeric functions but not mutable ones: a problem whose cost expression depends on
-a changing fluent is rejected at load with an unsupported-feature error. `cost` /
+numeric functions but not mutable ones: a domain whose cost expression depends on
+a changing fluent is rejected when it is loaded or built, with an unsupported-feature error. `cost` /
 `Cost` is therefore a constant per grounded action. With `:action-costs`, an action
 without a `total-cost` increase costs 0, both in PDDL and in `DomainBuilder`;
 without the requirement every action costs 1. Conditional and quantified

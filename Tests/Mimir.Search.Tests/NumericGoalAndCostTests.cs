@@ -79,19 +79,17 @@ public class NumericGoalAndCostTests
     }
 
     [Fact]
-    public void StateDependentActionCostsAreRejectedAtLoad()
+    public void StateDependentActionCostsAreRejectedAtDomainLoad()
     {
-        Domain domain = Domain.FromText("""
+        PddlLoadException exception = Assert.Throws<PddlLoadException>(() => Domain.FromText("""
 (define (domain d) (:requirements :strips :numeric-fluents :action-costs)
  (:functions (fuel) (total-cost))
  (:action step :parameters () :precondition (>= (fuel) 1)
   :effect (and (decrease (fuel) 1) (increase (total-cost) (fuel)))))
-""");
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(() => Problem.FromText(domain, """
-(define (problem p) (:domain d) (:init (= (fuel) 2) (= (total-cost) 0))
- (:goal (= (fuel) 0)) (:metric minimize (total-cost)))
 """));
-        Assert.IsType<NotSupportedException>(exception.InnerException);
+        NotSupportedException inner = Assert.IsType<NotSupportedException>(exception.InnerException);
+        Assert.Contains("Action 'step'", inner.Message);
+        Assert.Contains("'fuel'", inner.Message);
     }
 
     [Fact]

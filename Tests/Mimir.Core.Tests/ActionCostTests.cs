@@ -1190,7 +1190,7 @@ public sealed class ActionCostTests : IDisposable
 (define (domain mutable-cost)
   (:requirements :strips :action-costs)
   (:predicates (done))
-  (:functions (total-cost) (energy))
+  (:functions (total-cost) (energy) (wage))
 
   (:action refuel
     :parameters ()
@@ -1202,7 +1202,7 @@ public sealed class ActionCostTests : IDisposable
     :precondition ()
     :effect (and
       (done)
-      (increase (total-cost) (energy)))))
+      (increase (total-cost) (wage)))))
 """;
         Domain domain = Domain.FromFile(WriteTempFile(domainPddl));
         Assert.NotEmpty(domain.Actions.SelectMany(action => action.NumericEffects));
@@ -1215,7 +1215,7 @@ public sealed class ActionCostTests : IDisposable
 (define (domain same-action-mutable-cost)
   (:requirements :strips :action-costs)
   (:predicates (done))
-  (:functions (total-cost) (fuel))
+  (:functions (total-cost) (fuel) (toll))
 
   (:action drive
     :parameters ()
@@ -1223,7 +1223,7 @@ public sealed class ActionCostTests : IDisposable
     :effect (and
       (done)
       (decrease (fuel) 1)
-      (increase (total-cost) (fuel)))))
+      (increase (total-cost) (toll)))))
 """;
 
         Domain domain = Domain.FromFile(WriteTempFile(domainPddl));

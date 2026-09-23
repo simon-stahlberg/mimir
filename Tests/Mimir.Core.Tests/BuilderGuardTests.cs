@@ -80,6 +80,20 @@ public class BuilderGuardTests
     }
 
     [Fact]
+    public void DomainBuilderRejectsCostsReadingChangingFluents()
+    {
+        DomainBuilder builder = new DomainBuilder("changing-cost")
+            .Requirements().Add(":strips").Add(":numeric-fluents").Add(":action-costs").Close()
+            .Functions().Add("fuel").Close()
+            .Actions().Add("step").Decrease(Numeric.Function("fuel"), 1).WithCost(Numeric.Function("fuel")).Close().Close();
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() => builder.Build());
+
+        Assert.Contains("Action 'step'", exception.Message);
+        Assert.Contains("'fuel'", exception.Message);
+    }
+
+    [Fact]
     public void DomainSectionsAreOrderedSingleUseAndLockTheirParent()
     {
         var builder = new DomainBuilder("sections");

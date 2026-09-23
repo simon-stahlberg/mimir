@@ -82,6 +82,31 @@ public sealed class CorePddlSupportValidatorTests
     }
 
     [Fact]
+    public void ValidateDomain_RejectsCostsReadingFluentsChangedByAnyConditionalEffect()
+    {
+        DomainDefinition domain = ParseDomain("""
+(define (domain changing-cost)
+  (:requirements :strips :action-costs :conditional-effects)
+  (:predicates (flag))
+  (:functions (battery))
+  (:action charge
+    :parameters ()
+    :precondition ()
+    :effect (when (flag) (increase (BATTERY) 1)))
+  (:action move
+    :parameters ()
+    :precondition ()
+    :effect (increase (total-cost) (* 2 (battery)))))
+""");
+
+        NotSupportedException exception = Assert.Throws<NotSupportedException>(
+            () => CorePddlSupportValidator.ValidateDomain(domain));
+
+        Assert.Contains("Action 'move'", exception.Message);
+        Assert.Contains("'battery'", exception.Message);
+    }
+
+    [Fact]
     public void ValidateDomain_RejectsTotalCostIncreaseWithoutActionCostsRequirement()
     {
         DomainDefinition domain = ParseDomain("""

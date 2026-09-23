@@ -60,12 +60,6 @@ internal sealed class PddlProblemTranslator
         }
 
         AddUndefinedAssignTargets(domain, objectsList, numericValues);
-        foreach (ActionSchema action in domain.Actions)
-        {
-            if (NumericEvaluation.DependsOnState(action.CostExpression, domain.ChangingFunctions))
-                throw new NotSupportedException(
-                    $"Action '{action.Name}' has a cost that depends on changing numeric fluents; only state-independent action costs are supported.");
-        }
         Context = new InstanceContext(problem, objectsList, numericValues, domain.ChangingFunctions);
 
         foreach (var initExpr in astProblem.Init)
