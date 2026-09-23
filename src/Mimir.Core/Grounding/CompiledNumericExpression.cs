@@ -2,81 +2,90 @@ using Mimir.Core.Schemas;
 
 namespace Mimir.Core.Grounding;
 
-internal sealed class CompiledNumericExpression
+internal abstract class CompiledNumericExpression
 {
-    private readonly NumericExpression _source;
-    private readonly CompiledNumericExpression? _left;
-    private readonly CompiledNumericExpression? _right;
-    private readonly CompiledGroundingTerm[] _terms;
-    // Reused across evaluations to keep lookups allocation-free; evaluators are single-threaded (see README).
-    private readonly Constant[] _arguments;
-
-    private CompiledNumericExpression(NumericExpression source,
-        CompiledNumericExpression? left = null, CompiledNumericExpression? right = null,
-        CompiledGroundingTerm[]? terms = null)
-    {
-        _source = source;
-        _left = left;
-        _right = right;
-        _terms = terms ?? Array.Empty<CompiledGroundingTerm>();
-        _arguments = new Constant[_terms.Length];
-    }
-
     public static CompiledNumericExpression Compile(NumericExpression expression, IReadOnlyDictionary<Variable, int> slots)
-    {
-        switch (expression)
+        => expression switch
         {
-            case NumericConstant or GroundFunctionCall:
-                return new CompiledNumericExpression(expression);
-            case NumericBinaryExpression binary:
-                return new CompiledNumericExpression(expression, Compile(binary.Left, slots), Compile(binary.Right, slots));
-            case FunctionCall call:
-                return new CompiledNumericExpression(expression,
-                    terms: call.Arguments.Select(term => CompiledGroundingTerm.Compile(term, slots)).ToArray());
-            default:
-                throw new InvalidOperationException($"Unsupported numeric expression '{expression.GetType().Name}'.");
-        }
-    }
-
-    public NumericExpression Ground(Problem problem, Constant?[] bindings)
-    {
-        return _source switch
-        {
-            NumericConstant => _source,
-            GroundFunctionCall call when ReferenceEquals(call.Context, problem.Context) => call,
-            GroundFunctionCall => throw new ArgumentException("Numeric expression belongs to a different problem."),
-            FunctionCall call => problem.Context.GetFunctionCall(call.Function, ResolveArguments(bindings)),
-            NumericBinaryExpression binary => new NumericBinaryExpression(binary.Operator,
-                _left!.Ground(problem, bindings), _right!.Ground(problem, bindings)),
-            _ => throw new InvalidOperationException("Unknown numeric expression.")
+            NumericConstant constant => new CompiledNumericConstant(constant),
+            GroundFunctionCall call => new CompiledGroundFunctionCall(call),
+            FunctionCall call => new CompiledLiftedFunctionCall(call, slots),
+            NumericBinaryExpression binary => new CompiledNumericBinary(
+                binary.Operator, Compile(binary.Left, slots), Compile(binary.Right, slots)),
+            _ => throw new InvalidOperationException($"Unsupported numeric expression '{expression.GetType().Name}'.")
         };
-    }
 
-    public double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
+    public abstract NumericExpression Ground(Problem problem, Constant?[] bindings);
+
+    public abstract double Evaluate(InstanceContext context, Constant?[] bindings, State? state);
+
+    private protected static double ReadValue(GroundFunctionCall? call, State? state)
     {
-        if (_source is NumericConstant constant) return constant.Value;
-        if (_source is NumericBinaryExpression binary)
-            return NumericEvaluation.Apply(binary.Operator,
-                _left!.Evaluate(context, bindings, state), _right!.Evaluate(context, bindings, state));
-        GroundFunctionCall? call = _source switch
-        {
-            GroundFunctionCall grounded when ReferenceEquals(grounded.Context, context) => grounded,
-            GroundFunctionCall => throw new ArgumentException("Numeric expression belongs to a different problem."),
-            // A lookup must not register calls: binding search evaluates many candidates that are never grounded.
-            FunctionCall lifted => context.TryGetFunctionCall(lifted.Function, ResolveArguments(bindings)),
-            _ => throw new InvalidOperationException("Unknown numeric expression.")
-        };
         if (call is null) return NumericEvaluation.Undefined;
         if (call.StateIndex is not int index) return call.InitialValue;
         if (state is null) throw new InvalidOperationException("Changing numeric expressions require a state.");
         return state.NumericValues[index];
     }
+}
+
+internal sealed class CompiledNumericConstant(NumericConstant constant) : CompiledNumericExpression
+{
+    public override NumericExpression Ground(Problem problem, Constant?[] bindings) => constant;
+
+    public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state) => constant.Value;
+}
+
+internal sealed class CompiledGroundFunctionCall(GroundFunctionCall call) : CompiledNumericExpression
+{
+    public override NumericExpression Ground(Problem problem, Constant?[] bindings)
+        => ReferenceEquals(call.Context, problem.Context)
+            ? call
+            : throw new ArgumentException("Numeric expression belongs to a different problem.");
+
+    public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
+        => ReferenceEquals(call.Context, context)
+            ? ReadValue(call, state)
+            : throw new ArgumentException("Numeric expression belongs to a different problem.");
+}
+
+internal sealed class CompiledLiftedFunctionCall : CompiledNumericExpression
+{
+    private readonly NumericFunction _function;
+    private readonly CompiledGroundingTerm[] _terms;
+    // Reused across evaluations to keep lookups allocation-free; evaluators are single-threaded (see README).
+    private readonly Constant[] _arguments;
+
+    public CompiledLiftedFunctionCall(FunctionCall call, IReadOnlyDictionary<Variable, int> slots)
+    {
+        _function = call.Function;
+        _terms = call.Arguments.Select(term => CompiledGroundingTerm.Compile(term, slots)).ToArray();
+        _arguments = new Constant[_terms.Length];
+    }
+
+    public override NumericExpression Ground(Problem problem, Constant?[] bindings)
+        => problem.Context.GetFunctionCall(_function, ResolveArguments(bindings));
+
+    // A lookup must not register calls: binding search evaluates many candidates that are never grounded.
+    public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
+        => ReadValue(context.TryGetFunctionCall(_function, ResolveArguments(bindings)), state);
 
     private Constant[] ResolveArguments(Constant?[] bindings)
     {
         for (int i = 0; i < _terms.Length; i++) _arguments[i] = _terms[i].Resolve(bindings);
         return _arguments;
     }
+}
+
+internal sealed class CompiledNumericBinary(
+    NumericOperator operation,
+    CompiledNumericExpression left,
+    CompiledNumericExpression right) : CompiledNumericExpression
+{
+    public override NumericExpression Ground(Problem problem, Constant?[] bindings)
+        => new NumericBinaryExpression(operation, left.Ground(problem, bindings), right.Ground(problem, bindings));
+
+    public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
+        => NumericEvaluation.Apply(operation, left.Evaluate(context, bindings, state), right.Evaluate(context, bindings, state));
 }
 
 internal sealed class CompiledNumericComparison
