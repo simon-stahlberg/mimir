@@ -50,7 +50,7 @@ public partial class Problem
     public bool HasNumericPlanning => NumericGoals.Count > 0 || Domain.DerivedPlan.HasNumericConditions || Domain.Actions.Any(action => action.HasNumericConditionsOrEffects);
     internal void RequirePropositionalPlanning(string component)
     {
-        if (HasNumericPlanning) throw new NotSupportedException($"{component} does not support numeric planning.");
+        if (HasNumericPlanning) throw new NotSupportedException($"Numeric planning is not supported by {component}.");
     }
     public IReadOnlyDictionary<string, Predicate> AllPredicates { get; }
 

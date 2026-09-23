@@ -59,7 +59,7 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
 
     internal void RequirePropositional(string component)
     {
-        if (NumericConditions.Count > 0) throw new NotSupportedException($"{component} does not support numeric goals.");
+        if (NumericConditions.Count > 0) throw new NotSupportedException($"Numeric goals are not supported by {component}.");
     }
 
     public static GoalCondition Always(Problem problem)
