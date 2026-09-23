@@ -6,27 +6,29 @@ namespace Mimir.Core.Grounding;
 // undefined fluent, or when two effects write the same fluent incompatibly (only increase/decrease combine).
 internal static class NumericStateTransition
 {
+    // Actions rarely have more numeric effects than this, so their writes fit on the stack.
+    private const int StackWriteLimit = 16;
+
+    internal static bool IsDefined(ExtendedState state, Action action)
+    {
+        int capacity = action.NumericEffects.Count + action.ConditionalNumericEffects.Count;
+        if (capacity == 0) return true;
+        Span<NumericWrite> writes = capacity <= StackWriteLimit ? stackalloc NumericWrite[capacity] : new NumericWrite[capacity];
+        return TryCollectWrites(state, action, writes, out _);
+    }
+
     // values is null when the action writes no numeric fluent in this state.
     internal static bool TryApply(ExtendedState state, Action action, out double[]? values)
     {
         values = null;
-        State source = state.State;
-        List<NumericWrite>? writes = null;
-        IReadOnlyList<GroundNumericUpdate> unconditional = action.NumericEffects;
-        for (int i = 0; i < unconditional.Count; i++)
-        {
-            if (!TryCollect(source, unconditional[i], ref writes)) return false;
-        }
+        int capacity = action.NumericEffects.Count + action.ConditionalNumericEffects.Count;
+        if (capacity == 0) return true;
+        Span<NumericWrite> writes = capacity <= StackWriteLimit ? stackalloc NumericWrite[capacity] : new NumericWrite[capacity];
+        if (!TryCollectWrites(state, action, writes, out int count)) return false;
+        if (count == 0) return true;
 
-        IReadOnlyList<GroundConditionalNumericEffect> conditional = action.ConditionalNumericEffects;
-        for (int i = 0; i < conditional.Count; i++)
-        {
-            if (conditional[i].IsSatisfied(state) && !TryCollect(source, conditional[i].Effect, ref writes)) return false;
-        }
-
-        if (writes is null) return true;
-        values = source.NumericValues.ToArray();
-        foreach (NumericWrite write in writes)
+        values = state.State.NumericValues.ToArray();
+        foreach (NumericWrite write in writes[..count])
         {
             values[write.Index] = write.Additive
                 ? NumericEvaluation.Apply(NumericOperator.Add, values[write.Index], write.Value)
@@ -35,7 +37,25 @@ internal static class NumericStateTransition
         return true;
     }
 
-    private static bool TryCollect(State source, GroundNumericUpdate update, ref List<NumericWrite>? writes)
+    private static bool TryCollectWrites(ExtendedState state, Action action, Span<NumericWrite> writes, out int count)
+    {
+        count = 0;
+        State source = state.State;
+        IReadOnlyList<GroundNumericUpdate> unconditional = action.NumericEffects;
+        for (int i = 0; i < unconditional.Count; i++)
+        {
+            if (!TryCollect(source, unconditional[i], writes, ref count)) return false;
+        }
+
+        IReadOnlyList<GroundConditionalNumericEffect> conditional = action.ConditionalNumericEffects;
+        for (int i = 0; i < conditional.Count; i++)
+        {
+            if (conditional[i].IsSatisfied(state) && !TryCollect(source, conditional[i].Effect, writes, ref count)) return false;
+        }
+        return true;
+    }
+
+    private static bool TryCollect(State source, GroundNumericUpdate update, Span<NumericWrite> writes, ref int count)
     {
         if (!ReferenceEquals(update.Target.Context, source.Context))
             throw new ArgumentException("Numeric update belongs to a different problem.");
@@ -57,8 +77,7 @@ internal static class NumericStateTransition
         if (double.IsNaN(value)) return false;
 
         bool additive = update.Operator is NumericUpdateOperator.Increase or NumericUpdateOperator.Decrease;
-        writes ??= new List<NumericWrite>(2);
-        for (int i = 0; i < writes.Count; i++)
+        for (int i = 0; i < count; i++)
         {
             NumericWrite previous = writes[i];
             if (previous.Index != index) continue;
@@ -66,7 +85,7 @@ internal static class NumericStateTransition
             writes[i] = previous with { Value = previous.Value + value };
             return true;
         }
-        writes.Add(new NumericWrite(index, additive, value));
+        writes[count++] = new NumericWrite(index, additive, value);
         return true;
     }
 

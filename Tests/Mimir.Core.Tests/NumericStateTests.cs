@@ -75,6 +75,39 @@ public class NumericStateTests
     }
 
     [Fact]
+    public void NumericChanges_ShareFluentStorageWithoutMutatingTheSource()
+    {
+        Problem problem = CreateProblem();
+        Action finish = problem.GroundAction(problem.Domain.Actions.Single(action => action.Name == "finish"));
+        Action refuel = problem.GroundAction(
+            problem.Domain.Actions.Single(action => action.Name == "refuel"), problem.ObjectLookup["truck1"]);
+        State finished = problem.InitialState.Expand().Apply(finish);
+        State refueled = finished.Expand().Apply(refuel);
+        GroundFunctionCall fuel = problem.FunctionCall("fuel", "truck1");
+
+        Assert.True(Unsafe.AreSame(ref MemoryMarshal.GetReference(finished.Bitboard),
+            ref MemoryMarshal.GetReference(refueled.Bitboard)));
+        Assert.True(refueled.Value(problem.Atom("done")));
+        Assert.Equal(20, finished.Value(fuel));
+        Assert.Equal(21, refueled.Value(fuel));
+        Assert.NotEqual(finished, refueled);
+    }
+
+    [Fact]
+    public void ActionsWithoutFiringEffects_ReturnTheSourceState()
+    {
+        Domain domain = Domain.FromText("""
+(define (domain idle) (:requirements :strips :numeric-fluents :conditional-effects)
+  (:functions (fuel))
+  (:action wait :parameters () :precondition (and) :effect (when (> (fuel) 10) (increase (fuel) 1))))
+""");
+        Problem problem = Problem.FromText(domain, "(define (problem p) (:domain idle) (:init (= (fuel) 2)) (:goal ()))");
+        State initial = problem.InitialState;
+
+        Assert.Same(initial, initial.Expand().Apply(problem.GroundAction(domain.Actions.Single())));
+    }
+
+    [Fact]
     public void EqualityAndHashing_IncludeNumericValuesAndNormalizeSignedZero()
     {
         Problem problem = CreateProblem();

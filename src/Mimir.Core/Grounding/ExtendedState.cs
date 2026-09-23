@@ -94,13 +94,18 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
             }
         }
 
+        if (!NumericStateTransition.TryApply(this, action, out double[]? numericValues))
+            throw new InvalidOperationException("The action is not applicable: its numeric effects are undefined in this state.");
+
+        // Without literal effects only numeric fluents change, so the successor shares the fluent bitboard.
+        if (action.AddEffects.IsEmpty && action.DeleteEffects.IsEmpty && triggeredEffects is null)
+            return numericValues is null ? State : new State(State, numericValues);
+
         var result = new ulong[length];
         State.Bitboard.CopyTo(result);
 
         ApplyDeletes(action, triggeredEffects, result);
         ApplyAdds(action, triggeredEffects, result);
-        if (!NumericStateTransition.TryApply(this, action, out double[]? numericValues))
-            throw new InvalidOperationException("The action is not applicable: its numeric effects are undefined in this state.");
         if (numericValues is not null)
             return new State(State.Context, State.TrimTrailingZeros(result), numericValues, takeOwnership: true);
         return new State(

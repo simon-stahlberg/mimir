@@ -307,7 +307,7 @@ public class Action : IEquatable<Action>
     // PDDL 2.1 makes an action inapplicable when its cost or a numeric effect is undefined. Checked after the
     // preconditions because triggered conditional effects are only meaningful where the preconditions hold.
     internal bool IsTransitionDefined(ExtendedState state)
-        => !double.IsNaN(Cost) && NumericStateTransition.TryApply(state, this, out _);
+        => !double.IsNaN(Cost) && NumericStateTransition.IsDefined(state, this);
 
     internal bool AreNumericPreconditionsSatisfied(State state)
     {

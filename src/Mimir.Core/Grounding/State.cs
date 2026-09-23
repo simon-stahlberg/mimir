@@ -49,6 +49,20 @@ public class State : IEquatable<State>
         _hashCode = ComputeHashCode(context, _bitboard, _numericValues);
     }
 
+    internal State(State source, double[] numericValues)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(numericValues);
+        if (numericValues.Length != source.Context.NumericStateSize)
+            throw new ArgumentException($"State requires {source.Context.NumericStateSize} numeric values, received {numericValues.Length}.", nameof(numericValues));
+        Context = source.Context;
+        _bitboard = source._bitboard;
+        _numericValues = numericValues;
+        for (int index = 0; index < _numericValues.Length; index++)
+            _numericValues[index] = NumericEvaluation.Quantize(_numericValues[index]);
+        _hashCode = ComputeHashCode(Context, _bitboard, _numericValues);
+    }
+
     internal State(State source, ulong[] bitboard, bool takeOwnership)
     {
         ArgumentNullException.ThrowIfNull(source);
