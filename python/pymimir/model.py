@@ -1683,76 +1683,70 @@ class ConjunctiveCondition(_Handle):
         """Enumerate variable bindings under which this condition holds in ``state``."""
         if not isinstance(state, State):
             raise TypeError("state must be a State")
-        if limit is None:
-            native_limit = -1
-        else:
+        if limit is not None:
             if isinstance(limit, bool) or not isinstance(limit, int):
                 raise TypeError("limit must be int or None")
             if limit < 0:
                 raise ValueError("limit must be nonnegative")
             if limit == 0:
                 return ()
-            native_limit = limit
         problem = state.problem
         if self._problem is not None and self._problem != problem:
             raise ValueError("condition and state belong to different problems")
         if self._problem is None and isinstance(self._owner, Domain):
-            mapped_parameters = [
-                problem.variable(variable.name, variable.type_name)
-                for variable in self._parameters
-            ]
-            variable_map = dict(zip(self._parameters, mapped_parameters))
-
-            def map_term(term: Term) -> Term:
-                if not isinstance(term, Variable):
-                    return term
-                if term not in variable_map:
-                    raise ValueError("condition contains an undeclared variable")
-                return variable_map[term]
-
-            mapped_literals: list[Literal] = []
-            for literal in self._literals:
-                atom = literal.atom
-                mapped_atom = problem.lifted_atom(atom.predicate, *(map_term(term) for term in atom.arguments))
-                mapped_literals.append(problem.literal(mapped_atom, positive=literal.is_positive))
-
-            def map_numeric(expression: NumericExpression) -> NumericExpression:
-                if isinstance(expression, NumericConstant):
-                    return expression
-                if isinstance(expression, FunctionCall):
-                    return problem.lifted_function_call(expression.function, *(map_term(term) for term in expression.arguments))
-                if isinstance(expression, NumericBinaryExpression):
-                    return map_numeric(expression.left)._binary(expression.operator, map_numeric(expression.right))
-                raise ValueError("schema comparison contains an unsupported numeric expression")
-
-            mapped_comparisons = [map_numeric(c.left)._compare(c.operator, map_numeric(c.right))
-                                  for c in self.numeric_conditions]
-            mapped = problem.condition(*mapped_literals, variables=mapped_parameters, numeric_conditions=mapped_comparisons)
-            mapped_bindings = mapped.bindings(state, limit=limit)
+            mapped, mapped_parameters = self._in_problem(problem)
             return tuple(
-                {
-                    original: binding[mapped_parameter]
-                    for original, mapped_parameter in zip(self._parameters, mapped_parameters)
-                }
-                for binding in mapped_bindings
+                {original: binding[mapped_parameter] for original, mapped_parameter in zip(self._parameters, mapped_parameters)}
+                for binding in mapped.bindings(state, limit=limit)
             )
         if self._handle == 0:
             backed = problem.condition(*self._literals, variables=self._parameters, numeric_conditions=self.numeric_conditions)
             return backed.bindings(state, limit=limit)
-        list_handle = lib.mimir_conjunctive_condition_ground(
-            self._handle, state._handle, native_limit
-        )
+        return self._native_bindings(state, -1 if limit is None else limit)
+
+    def _in_problem(self, problem: Problem) -> tuple[ConjunctiveCondition, list[Variable]]:
+        """Re-create this schema condition over fresh problem variables; returns it with those variables."""
+        mapped_parameters = [problem.variable(variable.name, variable.type_name) for variable in self._parameters]
+        variable_map = dict(zip(self._parameters, mapped_parameters))
+
+        def map_term(term: Term) -> Term:
+            if not isinstance(term, Variable):
+                return term
+            if term not in variable_map:
+                raise ValueError("condition contains an undeclared variable")
+            return variable_map[term]
+
+        def map_numeric(expression: NumericExpression) -> NumericExpression:
+            if isinstance(expression, NumericConstant):
+                return expression
+            if isinstance(expression, FunctionCall):
+                return problem.lifted_function_call(expression.function, *(map_term(term) for term in expression.arguments))
+            if isinstance(expression, NumericBinaryExpression):
+                return map_numeric(expression.left)._binary(expression.operator, map_numeric(expression.right))
+            raise ValueError("schema comparison contains an unsupported numeric expression")
+
+        literals = [
+            problem.literal(
+                problem.lifted_atom(literal.atom.predicate, *(map_term(term) for term in literal.atom.arguments)),
+                positive=literal.is_positive,
+            )
+            for literal in self._literals
+        ]
+        comparisons = [map_numeric(c.left)._compare(c.operator, map_numeric(c.right)) for c in self.numeric_conditions]
+        return problem.condition(*literals, variables=mapped_parameters, numeric_conditions=comparisons), mapped_parameters
+
+    def _native_bindings(self, state: State, native_limit: int) -> tuple[dict[Variable, Object], ...]:
+        list_handle = lib.mimir_conjunctive_condition_ground(self._handle, state._handle, native_limit)
         if list_handle == 0:
             raise ValueError("condition cannot be grounded against this state")
         try:
-            count = lib.mimir_binding_list_count(list_handle)
             results: list[dict[Variable, Object]] = []
-            for i in range(count):
+            for i in range(lib.mimir_binding_list_count(list_handle)):
                 size = lib.mimir_binding_list_get_binding_size(list_handle, i)
                 if size != len(self._parameters):
                     raise RuntimeError("native binding size does not match condition parameters")
                 objects = [
-                    Object._from_handle(lib.mimir_binding_list_get_object(list_handle, i, j), problem)
+                    Object._from_handle(lib.mimir_binding_list_get_object(list_handle, i, j), state.problem)
                     for j in range(size)
                 ]
                 results.append(dict(zip(self._parameters, objects)))
