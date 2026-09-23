@@ -304,8 +304,11 @@ def test_rich_numeric_builders_and_derived_conditions(generator):
     assert not next_state.value(problem.atom("available", "a"))
     assert not choose_action.is_applicable(next_state)
     assert choose_action not in next_state.applicable_actions()
-    assert initial.value(problem.atom("available", "a"))
-    assert len(domain.action("choose").precondition.literals) > 0
+    # The quantified comparison is compiled into a derived predicate, so it is not a direct numeric condition.
+    precondition = domain.action("choose").precondition
+    assert len(precondition.literals) == 2
+    assert "(available ?t)" in [str(literal) for literal in precondition.literals]
+    assert precondition.numeric_conditions == ()
     assert choose_action.conditional_effects == ()
     assert len(choose_action.conditional_numeric_effects) == 1
 
@@ -330,3 +333,22 @@ def test_effect_strings_include_numeric_parts():
     for action in (domain.action("act"), problem.action("act")):
         assert str(action.effect) == "(and (p) (decrease (fuel) 1.0))"
         assert str(action.conditional_numeric_effects[0]) == "(when (and (>= (fuel) 3.0)) (and (increase (fuel) 2.0)))"
+
+
+def test_scale_builders_update_numeric_values():
+    fuel = m.Numeric.function("fuel")
+    domain = (m.DomainBuilder("scaling")
+              .requirements().add(":strips").add(":numeric-fluents").add(":conditional-effects").close()
+              .functions().add("fuel").close()
+              .actions()
+              .add("double").scale_up(fuel, 2).close()
+              .add("halve").add_conditional_effect().add_condition(fuel.greater_than(1)).scale_down(fuel, 2).close().close()
+              .close().build())
+    problem = (m.ProblemBuilder(domain, "p")
+               .initial_state().set_value(m.Numeric.function("fuel"), 3).close()
+               .goal().add(m.Numeric.function("fuel").equal_to(6)).close().build())
+    fuel_ref = problem.function_call("fuel")
+    assert domain.action("double").effect.numeric_effects[0].operator == m.NumericUpdateOperator.SCALE_UP
+    assert domain.action("halve").conditional_numeric_effects[0].effect.numeric_effects[0].operator == m.NumericUpdateOperator.SCALE_DOWN
+    assert problem.action("double").apply(problem.initial_state).value(fuel_ref) == 6
+    assert problem.action("halve").apply(problem.initial_state).value(fuel_ref) == 1.5

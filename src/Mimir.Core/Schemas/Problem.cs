@@ -23,7 +23,7 @@ public partial class Problem
 
     public string Name { get; }
     public Domain Domain { get; }
-    public InstanceContext Context { get; internal set; } = null!;
+    public InstanceContext Context { get; }
     public IReadOnlyList<string> Requirements { get; }
     public IReadOnlyList<Constant> DeclaredObjects { get; }
     public IReadOnlyList<Constant> AllObjects { get; }

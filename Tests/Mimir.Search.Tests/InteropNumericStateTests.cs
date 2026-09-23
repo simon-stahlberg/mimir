@@ -16,22 +16,14 @@ public unsafe class InteropNumericStateTests
     {
         Domain domain = Domain.FromText("""
 (define (domain numeric-interop) (:requirements :strips :numeric-fluents)
-  (:functions (fuel ?truck)))
+  (:functions (fuel ?truck))
+  (:action drive :parameters (?truck) :precondition (and) :effect (decrease (fuel ?truck) 1)))
 """);
         Problem problem = Problem.FromText(domain, """
 (define (problem storage) (:domain numeric-interop) (:objects a b)
   (:init (= (fuel a) 20) (= (fuel b) 35)) (:goal ()))
 """);
-        NumericFunction function = Assert.Single(domain.Functions);
-        var initialValues = new Dictionary<NumericFunctionKey, double>
-        {
-            [new(function, [problem.ObjectLookup["a"]])] = 20,
-            [new(function, [problem.ObjectLookup["b"]])] = 35
-        };
-        var context = new InstanceContext(problem, problem.AllObjects, new NumericStateLayout(initialValues, [function]));
-        context.SetStaticBitboardWords(Array.Empty<ulong>());
-        context.InitializeDerivedClosure();
-        problem.Context = context;
+        Assert.Equal(2, problem.Context.NumericLayout.Count);
         GroundFunctionCall first = problem.FunctionCall("fuel", "a");
         GroundFunctionCall second = problem.FunctionCall("fuel", "b");
         int problemHandle = ObjectRegistry.Store(problem);
@@ -60,7 +52,7 @@ public unsafe class InteropNumericStateTests
             Assert.Equal(4, evaluate(result, firstHandle));
             Assert.Equal(0, evaluate(result, secondHandle));
             State state = ObjectRegistry.Get<ExtendedState>(result)!.State;
-            Assert.Equal(StateFactory.Default.Create(context, [], new Dictionary<GroundFunctionCall, double>
+            Assert.Equal(StateFactory.Default.Create(problem.Context, [], new Dictionary<GroundFunctionCall, double>
             {
                 [first] = 4, [second] = 0
             }), state);

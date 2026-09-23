@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Xunit;
+using Action = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Core.Tests;
 
@@ -59,8 +60,8 @@ public class NumericStateTests
     {
         Problem problem = CreateProblem();
         State initial = problem.InitialState;
-        var action = Assert.Single(problem.GetApplicableActionGenerator(initial).GetApplicableActions(initial.Expand()));
-        State successor = initial.Expand().Apply(action);
+        Action finish = problem.GroundAction(problem.Domain.Actions.Single(action => action.Name == "finish"));
+        State successor = initial.Expand().Apply(finish);
         Fact<Fluent> done = Assert.IsType<Fact<Fluent>>(problem.Atom("done"));
         State withFact = initial.WithAdditionalFluentFacts([done]);
         Assert.False(initial.Value(done));
@@ -195,34 +196,22 @@ public class NumericStateTests
 
     private static Problem CreateProblem(bool mutable = true)
     {
-        Domain domain = Domain.FromText("""
+        string refuel = mutable
+            ? "(:action refuel :parameters (?truck) :precondition (and) :effect (increase (fuel ?truck) 1))"
+            : "";
+        Domain domain = Domain.FromText($$"""
 (define (domain numeric-storage)
   (:requirements :strips :numeric-fluents)
   (:predicates (done))
   (:functions (fuel ?truck) (distance))
-  (:action finish :parameters () :precondition () :effect (done)))
+  (:action finish :parameters () :precondition () :effect (done))
+  {{refuel}})
 """);
-        Problem problem = Problem.FromText(domain, """
+        return Problem.FromText(domain, """
 (define (problem storage) (:domain numeric-storage)
   (:objects truck1 truck2 truck3)
   (:init (= (fuel truck1) 20) (= (fuel truck2) 35) (= (distance) 7))
   (:goal ()))
 """);
-        if (!mutable) return problem;
-
-        // Mutable domains cannot be loaded yet; exercise the storage contract with a classified internal layout.
-        NumericFunction fuel = domain.Functions.Single(function => function.Name == "fuel");
-        NumericFunction distance = domain.Functions.Single(function => function.Name == "distance");
-        var values = new Dictionary<NumericFunctionKey, double>
-        {
-            [new(fuel, [problem.ObjectLookup["truck1"]])] = 20,
-            [new(fuel, [problem.ObjectLookup["truck2"]])] = 35,
-            [new(distance, [])] = 7
-        };
-        var context = new InstanceContext(problem, problem.AllObjects, new NumericStateLayout(values, [fuel]));
-        context.SetStaticBitboardWords(Array.Empty<ulong>());
-        context.InitializeDerivedClosure();
-        problem.Context = context;
-        return problem;
     }
 }

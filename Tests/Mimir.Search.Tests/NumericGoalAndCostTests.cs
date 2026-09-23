@@ -5,15 +5,13 @@ using Mimir.Search.Evaluation;
 using Mimir.Search.Heuristics;
 using Mimir.Search.Planning;
 using Xunit;
+using Action = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Search.Tests;
 
 public class NumericGoalAndCostTests
 {
-    [Theory]
-    [InlineData(ApplicableActionGeneratorType.Grounded)]
-    [InlineData(ApplicableActionGeneratorType.Lifted)]
-    public void NumericGoalsAndStaticNumericCostsSurvivePlanReporting(ApplicableActionGeneratorType generatorType)
+    private static Problem CreateFuelProblem(ApplicableActionGeneratorType generatorType)
     {
         Domain domain = Domain.FromText("""
 (define (domain d) (:requirements :strips :numeric-fluents :action-costs)
@@ -21,27 +19,44 @@ public class NumericGoalAndCostTests
  (:action step :parameters () :precondition (>= (fuel) 1)
   :effect (and (decrease (fuel) 1) (increase (total-cost) (rate)))))
 """);
-        Problem problem = Problem.FromText(domain, """
+        return Problem.FromText(domain, """
 (define (problem p) (:domain d) (:init (= (fuel) 2) (= (rate) 1.5) (= (total-cost) 0))
  (:goal (= (fuel) 0)) (:metric minimize (total-cost)))
 """, generatorType);
-        var action = problem.GroundAction(domain.Actions[0]);
+    }
+
+    [Theory]
+    [InlineData(ApplicableActionGeneratorType.Grounded)]
+    [InlineData(ApplicableActionGeneratorType.Lifted)]
+    public void NumericGoalsAreEvaluatedAgainstStates(ApplicableActionGeneratorType generatorType)
+    {
+        Problem problem = CreateFuelProblem(generatorType);
+        Action action = problem.GroundAction(problem.Domain.Actions[0]);
         GoalCondition goal = GoalCondition.FromProblem(problem);
         State initial = problem.InitialState;
+        State last = initial.Expand().Apply(action).Expand().Apply(action);
+
         Assert.False(goal.IsSatisfied(initial.Expand()));
         Assert.Equal(1, goal.CountUnsatisfiedGoals(initial.Expand()));
-        Assert.Equal(1.5, action.Cost);
-        State next = initial.Expand().Apply(action);
-        State last = next.Expand().Apply(action);
         Assert.True(goal.IsSatisfied(last.Expand()));
         Assert.Equal(0, goal.CountUnsatisfiedGoals(last.Expand()));
+        Assert.Equal(1, new GoalCountHeuristic(problem).Evaluate(initial.Expand()).Value);
         Assert.NotEqual(goal, GoalCondition.Always(problem));
         Assert.Equal(goal, GoalCondition.FromLiterals(problem, [], problem.NumericGoals));
         Assert.Equal(goal.GetHashCode(), GoalCondition.FromProblem(problem).GetHashCode());
+    }
+
+    [Theory]
+    [InlineData(ApplicableActionGeneratorType.Grounded)]
+    [InlineData(ApplicableActionGeneratorType.Lifted)]
+    public void StaticNumericCostsSurvivePlanReporting(ApplicableActionGeneratorType generatorType)
+    {
+        Problem problem = CreateFuelProblem(generatorType);
+        Action action = problem.GroundAction(problem.Domain.Actions[0]);
+        Assert.Equal(1.5, action.Cost);
+
         SearchResult result = SearchResult.Success([action, action], new SearchStatistics(2, 3, TimeSpan.Zero, 2));
-        PlanResult plan = PlannerExecution.ToPlanResult(result, TimeSpan.Zero, TimeSpan.Zero);
-        Assert.Equal(3, plan.PlanCost);
-        Assert.Equal(1, new GoalCountHeuristic(problem).Evaluate(initial.Expand()).Value);
+        Assert.Equal(3, PlannerExecution.ToPlanResult(result, TimeSpan.Zero, TimeSpan.Zero).PlanCost);
         IPlanner[] planners = [new UniformCostPlanner(), new BreadthFirstPlanner()];
         foreach (IPlanner planner in planners)
         {
@@ -50,14 +65,17 @@ public class NumericGoalAndCostTests
             Assert.Equal(3, solved.PlanCost);
             Assert.Equal(2, solved.PlanLength);
         }
+    }
+
+    [Fact]
+    public void PropositionalOnlyComponentsRejectNumericProblems()
+    {
+        Problem problem = CreateFuelProblem(ApplicableActionGeneratorType.Grounded);
+        var generator = (GroundedApplicableActionGenerator)problem.GetApplicableActionGenerator(problem.InitialState);
         Assert.Throws<NotSupportedException>(() => new LiftedFfHeuristic(problem));
         Assert.Throws<NotSupportedException>(() => new IteratedWidthPlanner(1).Solve(problem));
-        if (generatorType == ApplicableActionGeneratorType.Grounded)
-        {
-            var grounded = (Mimir.Core.Engines.GroundedApplicableActionGenerator)problem.GetApplicableActionGenerator(initial);
-            Assert.Throws<NotSupportedException>(() => new MaxHeuristic(grounded));
-            Assert.Throws<NotSupportedException>(() => new H2Heuristic(problem));
-        }
+        Assert.Throws<NotSupportedException>(() => new MaxHeuristic(generator));
+        Assert.Throws<NotSupportedException>(() => new H2Heuristic(problem));
     }
 
     [Fact]

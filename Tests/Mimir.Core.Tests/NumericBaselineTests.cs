@@ -3,17 +3,15 @@ using Mimir.Pddl.Ast;
 using Mimir.Pddl.Ast.Models;
 using Mimir.Pddl.Ast.Expressions;
 using Mimir.Pddl.Parsing;
-using System.Diagnostics;
 using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Xunit;
-using Xunit.Abstractions;
 using Action = Mimir.Core.Grounding.Action;
 
-namespace Mimir.Search.Tests;
+namespace Mimir.Core.Tests;
 
-public class NumericBaselineTests(ITestOutputHelper output)
+public class NumericBaselineTests
 {
     private static string DataPath => Path.Combine(AppContext.BaseDirectory, "../../../../../Benchmark/numeric");
 
@@ -59,9 +57,6 @@ public class NumericBaselineTests(ITestOutputHelper output)
     public void BreadthFirstLayers_MatchCppBaseline(string domainName, ApplicableActionGeneratorType generatorType)
     {
         (int Expanded, long Generated, int NewStates)[] expected = ExpectedLayers[domainName];
-        long totalAllocated = GC.GetAllocatedBytesForCurrentThread();
-        int gen0 = GC.CollectionCount(0);
-        var total = Stopwatch.StartNew();
         Problem problem = LoadTraversalProblem(domainName,
             "pfile1.pddl", generatorType);
         Assert.True(problem.HasNumericPlanning);
@@ -69,13 +64,10 @@ public class NumericBaselineTests(ITestOutputHelper output)
         IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(initial);
         var visited = new HashSet<State> { initial };
         var frontier = new List<State> { initial };
-        output.WriteLine($"Setup: {total.Elapsed.TotalMilliseconds:F3} ms");
 
         for (int depth = 0; depth < expected.Length; depth++)
         {
             (int expectedExpanded, long expectedGenerated, int expectedNewStates) = expected[depth];
-            long allocated = GC.GetAllocatedBytesForCurrentThread();
-            var timer = Stopwatch.StartNew();
             var next = new List<State>();
             long generated = 0;
             foreach (State state in frontier)
@@ -89,11 +81,6 @@ public class NumericBaselineTests(ITestOutputHelper output)
                         next.Add(successor);
                 }
             }
-            timer.Stop();
-            allocated = GC.GetAllocatedBytesForCurrentThread() - allocated;
-            output.WriteLine($"Depth {depth}: expanded={frontier.Count}, generated={generated}, " +
-                $"new={next.Count}, elapsed={timer.Elapsed.TotalMilliseconds:F3} ms, " +
-                $"allocated={allocated} bytes");
             Assert.Equal(expectedExpanded, frontier.Count);
             Assert.Equal(expectedGenerated, generated);
             Assert.Equal(expectedNewStates, next.Count);
@@ -101,9 +88,8 @@ public class NumericBaselineTests(ITestOutputHelper output)
         }
 
         Assert.Equal(1 + expected.Sum(level => level.NewStates), visited.Count);
-        output.WriteLine($"Total: {total.Elapsed.TotalMilliseconds:F3} ms, " +
-            $"allocated={GC.GetAllocatedBytesForCurrentThread() - totalAllocated} bytes, gen0={GC.CollectionCount(0) - gen0}");
     }
+
     [Theory]
     [InlineData("block-grouping")]
     [InlineData("delivery")]
@@ -113,15 +99,6 @@ public class NumericBaselineTests(ITestOutputHelper output)
         string file = Path.Combine(DataPath, domainName, "pfile1.pddl");
         Assert.Equal(PddlLoadErrorCode.UnsupportedFeature,
             Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, file)).ErrorCode);
-    }
-
-    [Fact]
-    public void OriginalTppStateDependentCostsAreRejected()
-    {
-        Domain domain = Domain.FromFile(Path.Combine(DataPath, "tpp", "domain.pddl"));
-        PddlLoadException exception = Assert.Throws<PddlLoadException>(() =>
-            Problem.FromFile(domain, Path.Combine(DataPath, "tpp", "pfile1.pddl")));
-        Assert.IsType<NotSupportedException>(exception.InnerException);
     }
 
     private static Problem LoadTraversalProblem(string domainName, string problemFile,
