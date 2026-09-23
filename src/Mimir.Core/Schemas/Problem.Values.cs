@@ -18,22 +18,9 @@ public partial class Problem
 
     public FunctionCall NewFunctionCall(NumericFunction function, IReadOnlyList<ITerm> arguments)
     {
-        ArgumentNullException.ThrowIfNull(function);
         ArgumentNullException.ThrowIfNull(arguments);
-        if (!Domain.Contains(function)) throw new ArgumentException("Function belongs to a different domain.");
-        if (arguments.Count != function.Parameters.Count) throw new ArgumentException("Incorrect function arity.");
-        for (int index = 0; index < arguments.Count; index++)
-        {
-            ITerm argument = arguments[index] ?? throw new ArgumentException("Arguments cannot contain null.");
-            string type = argument switch
-            {
-                Constant constant when Context.ContainsObject(constant) => constant.Type,
-                Variable variable when ContainsDynamicVariable(variable) => variable.Type,
-                _ => throw new ArgumentException("Function argument belongs to a different problem.")
-            };
-            if (!Domain.IsCompatible(type, function.Parameters[index].Type))
-                throw new ArgumentException($"Incompatible argument type for '{function.Name}'.");
-        }
+        var dynamicVariables = arguments.OfType<Variable>().Where(ContainsDynamicVariable).ToHashSet();
+        ValidateNumericFunctionArguments(function, arguments, dynamicVariables, nameof(arguments));
         return new FunctionCall(function, arguments);
     }
 

@@ -478,25 +478,16 @@ internal sealed partial class DerivedPredicateClosure
         }
     }
 
-    private static int FindDeepestNumericVariable(NumericExpression expression,
+    private static int FindDeepestNumericVariable(NumericComparison comparison,
         IReadOnlyDictionary<Variable, int> variableDepths)
     {
-        switch (expression)
+        int deepest = -1;
+        foreach (Variable variable in comparison.Variables())
         {
-            case NumericConstant:
-                return -1;
-            case FunctionCall call:
-                int deepest = -1;
-                foreach (ITerm term in call.Arguments)
-                    if (term is Variable variable && variableDepths.TryGetValue(variable, out int depth))
-                        deepest = Math.Max(deepest, depth);
-                return deepest;
-            case NumericBinaryExpression binary:
-                return Math.Max(FindDeepestNumericVariable(binary.Left, variableDepths),
-                    FindDeepestNumericVariable(binary.Right, variableDepths));
-            default:
-                throw new InvalidOperationException($"Unsupported derived numeric expression '{expression.GetType().Name}'.");
+            if (variableDepths.TryGetValue(variable, out int depth))
+                deepest = Math.Max(deepest, depth);
         }
+        return deepest;
     }
 
     private static int FindDeepestVariable(
@@ -506,8 +497,7 @@ internal sealed partial class DerivedPredicateClosure
         switch (expression)
         {
             case NumericComparison comparison:
-                return Math.Max(FindDeepestNumericVariable(comparison.Left, variableDepths),
-                    FindDeepestNumericVariable(comparison.Right, variableDepths));
+                return FindDeepestNumericVariable(comparison, variableDepths);
             case GroundedTrue:
                 return -1;
             case GroundedAtom atom:

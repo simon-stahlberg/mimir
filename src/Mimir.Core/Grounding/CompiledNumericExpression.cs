@@ -92,21 +92,7 @@ internal sealed class CompiledNumericComparison
         Left = CompiledNumericExpression.Compile(comparison.Left, slots);
         Right = CompiledNumericExpression.Compile(comparison.Right, slots);
         Operator = comparison.Operator;
-        var variables = new HashSet<int>();
-        Collect(comparison.Left);
-        Collect(comparison.Right);
-        VariableIndices = variables.Order().ToArray();
-        void Collect(NumericExpression expression)
-        {
-            if (expression is FunctionCall call)
-                foreach (ITerm term in call.Arguments)
-                    if (term is Variable variable) variables.Add(slots[variable]);
-            if (expression is NumericBinaryExpression binary)
-            {
-                Collect(binary.Left);
-                Collect(binary.Right);
-            }
-        }
+        VariableIndices = comparison.Variables().Select(variable => slots[variable]).Distinct().Order().ToArray();
     }
 
     public GroundNumericComparison Ground(Problem problem, Constant?[] bindings)

@@ -246,7 +246,7 @@ internal sealed class PddlDomainTranslator
                     dPre, allFunctions, comparisons);
             }
 
-            var effects = new List<ConditionalEffectBase>();
+            var effects = new DomainExpressionTranslator.ExtractedEffects();
 
             if (action.Effect is not null)
             {
@@ -271,13 +271,11 @@ internal sealed class PddlDomainTranslator
                 }
             }
 
-            NumericExpression? explicitCostExpression = NumericExpressionTranslator.ExtractActionCostExpression(
-                action.Effect,
-                parameterScope,
-                allFunctions,
-                MapDomainTerm);
+            NumericExpression? explicitCostExpression = effects.CostIncreases.Count == 0
+                ? null
+                : effects.CostIncreases.Aggregate((left, right) => new NumericBinaryExpression(NumericOperator.Add, left, right));
 
-            pendingActions.Add((action.Name, vars, fPre, sPre, dPre, effects, comparisons, explicitCostExpression));
+            pendingActions.Add((action.Name, vars, fPre, sPre, dPre, effects.Effects, comparisons, explicitCostExpression));
         }
 
         double defaultActionCost = astDomain.Requirements.HasRequirement(PddlRequirement.ActionCosts) ? 0d : 1d;

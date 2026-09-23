@@ -5,65 +5,6 @@ namespace Mimir.Core.Schemas;
 
 internal static class NumericExpressionTranslator
 {
-    public static NumericExpression? ExtractActionCostExpression(
-        IEffect? effect,
-        Dictionary<string, Variable> variableScope,
-        IReadOnlyDictionary<string, NumericFunction> functionLookup,
-        Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm)
-    {
-        if (effect == null)
-            return null;
-
-        var expressions = new List<NumericExpression>();
-        CollectActionCostExpressions(effect, variableScope, functionLookup, mapTerm, expressions);
-        if (expressions.Count == 0)
-            return null;
-
-        var combined = expressions[0];
-        for (int i = 1; i < expressions.Count; i++)
-        {
-            combined = new NumericBinaryExpression(NumericOperator.Add, combined, expressions[i]);
-        }
-
-        return combined;
-    }
-
-    // CorePddlSupportValidator already rejected conditional, quantified and parameterized total-cost increases.
-    private static void CollectActionCostExpressions(
-        IEffect effect,
-        Dictionary<string, Variable> variableScope,
-        IReadOnlyDictionary<string, NumericFunction> functionLookup,
-        Func<Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
-        List<NumericExpression> results)
-    {
-        switch (effect)
-        {
-            case Pddl.Ast.Effects.AndEffect andEffect:
-                foreach (var child in andEffect.Effects)
-                    CollectActionCostExpressions(child, variableScope, functionLookup, mapTerm, results);
-                break;
-            case Pddl.Ast.Effects.ConditionalEffect conditionalEffect:
-                CollectActionCostExpressions(conditionalEffect.Effect, variableScope, functionLookup, mapTerm, results);
-                break;
-            case Pddl.Ast.Effects.ForallEffect forallEffect:
-                CollectActionCostExpressions(forallEffect.Effect, variableScope, functionLookup, mapTerm, results);
-                break;
-            case Pddl.Ast.Effects.Increase increase when IsTotalCost(increase.Fluent):
-                results.Add(TranslateExpression(increase.Value, variableScope, functionLookup, mapTerm));
-                break;
-            case Pddl.Ast.Effects.Increase:
-            case Pddl.Ast.Effects.Assign:
-            case Pddl.Ast.Effects.Decrease:
-            case Pddl.Ast.Effects.ScaleUp:
-            case Pddl.Ast.Effects.ScaleDown:
-            case Pddl.Ast.Effects.AddEffect:
-            case Pddl.Ast.Effects.DeleteEffect:
-                break;
-            default:
-                throw new NotSupportedException($"Unsupported effect '{effect.GetType().Name}'.");
-        }
-    }
-
     internal static NumericComparison TranslateComparison(
         Comparison comparison,
         Dictionary<string, Variable> variableScope,

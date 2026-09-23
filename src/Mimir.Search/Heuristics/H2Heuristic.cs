@@ -119,8 +119,7 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
     private void EnsureSupportedGoal(GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
-        if (goal.NumericConditions.Count > 0)
-            throw new NotSupportedException("h^2 does not support numeric goals.");
+        goal.RequirePropositional("h^2");
         if (!ReferenceEquals(goal.Problem, _problem))
             throw new ArgumentException(
                 "Goal belongs to a different problem instance than this heuristic.",

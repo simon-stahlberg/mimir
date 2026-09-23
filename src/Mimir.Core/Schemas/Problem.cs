@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using Mimir.Core.Engines;
@@ -12,6 +13,7 @@ namespace Mimir.Core.Schemas;
 public partial class Problem
 {
     private static readonly object DynamicVariableRegistration = new();
+    internal static readonly IReadOnlySet<Variable> NoVariables = FrozenSet<Variable>.Empty;
 
     private readonly ConditionalWeakTable<Variable, object> _dynamicVariables = new();
     private readonly Lazy<IApplicableActionGenerator> _initialActionGenerator;
@@ -217,7 +219,7 @@ public partial class Problem
                 "Cumulative total-cost is planner bookkeeping and cannot be queried as a problem numeric function value.");
         }
 
-        ValidateNumericFunctionArguments(function, arguments);
+        ValidateNumericFunctionArguments(function, arguments, NoVariables, nameof(arguments));
         NumericField field = Context.NumericLayout.Resolve(function, arguments);
         if (field.Index is not null)
             throw new InvalidOperationException("Read changing numeric values through State.Value.");
@@ -287,9 +289,8 @@ public partial class Problem
         }
         ArgumentNullException.ThrowIfNull(numericConditions);
         GroundNumericComparison[] comparisonSnapshot = numericConditions.ToArray();
-        var noVariables = new HashSet<Variable>();
         foreach (GroundNumericComparison comparison in comparisonSnapshot)
-            ValidateNumericComparison(comparison, noVariables, nameof(numericConditions));
+            ValidateNumericComparison(comparison, NoVariables, nameof(numericConditions));
         return new GroundConjunctiveCondition(this, snapshot, comparisonSnapshot);
     }
 
@@ -413,21 +414,7 @@ public partial class Problem
                         throw new ArgumentException("Numeric expression belongs to a different problem.", parameterName);
                     return;
                 case FunctionCall call:
-                    if (!Domain.Contains(call.Function))
-                        throw new ArgumentException($"Numeric function '{call.Function.Name}' belongs to a different domain.", parameterName);
-                    if (call.Arguments.Count != call.Function.Parameters.Count)
-                        throw new ArgumentException($"Numeric function '{call.Function.Name}' has the wrong number of arguments.", parameterName);
-                    for (int i = 0; i < call.Arguments.Count; i++)
-                    {
-                        string type = call.Arguments[i] switch
-                        {
-                            Variable variable when variables.Contains(variable) => variable.Type,
-                            Constant constant when Context.ContainsObject(constant) => constant.Type,
-                            _ => throw new ArgumentException("Numeric argument is not part of this condition's scope.", parameterName)
-                        };
-                        if (!Domain.IsCompatible(type, call.Function.Parameters[i].Type))
-                            throw new ArgumentException("Numeric argument has an incompatible type.", parameterName);
-                    }
+                    ValidateNumericFunctionArguments(call.Function, call.Arguments, variables, parameterName);
                     return;
                 default:
                     throw new ArgumentException("Unknown numeric expression.", parameterName);
@@ -451,33 +438,39 @@ public partial class Problem
         ValidateConditionAtom(literal.Value, parameters, parameterName);
     }
 
+    // Ground callers pass an empty variable set; lifted callers pass the variables in scope.
     internal void ValidateNumericFunctionArguments(
         NumericFunction function,
-        IReadOnlyList<Constant> arguments)
+        IReadOnlyList<ITerm> arguments,
+        IReadOnlySet<Variable> variables,
+        string parameterName)
     {
         ArgumentNullException.ThrowIfNull(function);
         ArgumentNullException.ThrowIfNull(arguments);
         if (!Domain.Contains(function))
             throw new ArgumentException(
                 $"Numeric function '{function.Name}' belongs to a different domain.",
-                nameof(function));
+                parameterName);
         if (function.Parameters.Count != arguments.Count)
             throw new ArgumentException(
                 $"Numeric function '{function.Name}' expects {function.Parameters.Count} arguments, got {arguments.Count}.",
-                nameof(arguments));
+                parameterName);
 
         for (int i = 0; i < arguments.Count; i++)
         {
-            Constant argument = arguments[i]
-                ?? throw new ArgumentException("Arguments cannot contain null values.", nameof(arguments));
-            if (!Context.ContainsObject(argument))
+            string type = arguments[i] switch
+            {
+                null => throw new ArgumentException("Arguments cannot contain null values.", parameterName),
+                Constant constant when Context.ContainsObject(constant) => constant.Type,
+                Variable variable when variables.Contains(variable) => variable.Type,
+                ITerm term => throw new ArgumentException(
+                    $"Argument '{term}' of '{function.Name}' is not an object of this problem or a variable in scope.",
+                    parameterName)
+            };
+            if (!Domain.IsCompatible(type, function.Parameters[i].Type))
                 throw new ArgumentException(
-                    $"Object '{argument.Name}' belongs to a different problem.",
-                    nameof(arguments));
-            if (!Domain.IsCompatible(argument.Type, function.Parameters[i].Type))
-                throw new ArgumentException(
-                    $"Object '{argument.Name}' has type '{argument.Type}', expected '{function.Parameters[i].Type}'.",
-                    nameof(arguments));
+                    $"Argument '{arguments[i]}' has type '{type}', expected '{function.Parameters[i].Type}'.",
+                    parameterName);
         }
     }
 

@@ -53,23 +53,13 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         IReadOnlyList<GroundNumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(problem);
-        ArgumentNullException.ThrowIfNull(literals);
-        ArgumentNullException.ThrowIfNull(numericConditions);
+        GroundConjunctiveCondition condition = problem.GroundCondition(literals, numericConditions);
+        return new GoalCondition(problem, expression: null, condition.Literals, condition.NumericConditions);
+    }
 
-        foreach (Literal<Fact> literal in literals)
-        {
-            if (!ReferenceEquals(literal.Value.Context.Problem, problem))
-            {
-                throw new ArgumentException(
-                    "A goal literal belongs to a different problem instance.",
-                    nameof(literals));
-            }
-        }
-
-        var noVariables = new HashSet<Variable>();
-        foreach (GroundNumericComparison comparison in numericConditions)
-            problem.ValidateNumericComparison(comparison, noVariables, nameof(numericConditions));
-        return new GoalCondition(problem, expression: null, literals, numericConditions);
+    internal void RequirePropositional(string component)
+    {
+        if (NumericConditions.Count > 0) throw new NotSupportedException($"{component} does not support numeric goals.");
     }
 
     public static GoalCondition Always(Problem problem)
@@ -191,6 +181,7 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         switch (expression)
         {
             case NumericComparison comparison:
+                problem.ValidateNumericComparison(comparison, Problem.NoVariables, parameterName);
                 var bindings = new Dictionary<Variable, Constant>();
                 comparisons.Add(new GroundNumericComparison(comparison.Left.Ground(problem, bindings),
                     comparison.Operator, comparison.Right.Ground(problem, bindings)));

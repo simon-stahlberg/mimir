@@ -111,6 +111,12 @@ internal static class DomainExpressionTranslator
         }
     }
 
+    internal sealed class ExtractedEffects
+    {
+        public List<ConditionalEffectBase> Effects { get; } = new();
+        public List<NumericExpression> CostIncreases { get; } = new();
+    }
+
     public static void ExtractEffects(
         IEffect effect,
         IReadOnlyList<Variable> quantified,
@@ -118,9 +124,9 @@ internal static class DomainExpressionTranslator
         Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
-        List<ConditionalEffectBase> results,
+        ExtractedEffects output,
         IReadOnlyDictionary<string, NumericFunction> functions)
-        => ExtractEffects(effect, quantified, scope, predicates, mapTerm, extendScope, results, functions,
+        => ExtractEffects(effect, quantified, scope, predicates, mapTerm, extendScope, output, functions,
             EffectCondition.Empty);
 
     private sealed record EffectCondition(
@@ -130,6 +136,8 @@ internal static class DomainExpressionTranslator
         IReadOnlyList<NumericComparison> NumericConditions)
     {
         public static readonly EffectCondition Empty = new([], [], [], []);
+
+        public bool IsEmpty => Fluent.Count == 0 && Static.Count == 0 && Derived.Count == 0 && NumericConditions.Count == 0;
     }
 
     private static void ExtractEffects(
@@ -139,7 +147,7 @@ internal static class DomainExpressionTranslator
         Dictionary<string, Predicate> predicates,
         Func<Mimir.Pddl.Ast.Models.Term, Dictionary<string, Variable>, ITerm> mapTerm,
         Func<Dictionary<string, Variable>?, IEnumerable<Mimir.Pddl.Ast.Models.Parameter>, (Dictionary<string, Variable> Scope, List<Variable> Variables)> extendScope,
-        List<ConditionalEffectBase> results,
+        ExtractedEffects output,
         IReadOnlyDictionary<string, NumericFunction> functions,
         EffectCondition outerCondition)
     {
@@ -152,19 +160,22 @@ internal static class DomainExpressionTranslator
             case Mimir.Pddl.Ast.Effects.ConditionalEffect conditional:
                 ExtractPreconditions(conditional.Condition, Polarity.Positive, predicates, scope, mapTerm,
                     fluent, statics, derived, functions, comparisons);
-                ExtractEffects(conditional.Effect, quantified, scope, predicates, mapTerm, extendScope, results, functions,
+                ExtractEffects(conditional.Effect, quantified, scope, predicates, mapTerm, extendScope, output, functions,
                     new EffectCondition(fluent, statics, derived, comparisons));
                 return;
             case Mimir.Pddl.Ast.Effects.AndEffect conjunction:
                 foreach (IEffect child in conjunction.Effects)
-                    ExtractEffects(child, quantified, scope, predicates, mapTerm, extendScope, results, functions, outerCondition);
+                    ExtractEffects(child, quantified, scope, predicates, mapTerm, extendScope, output, functions, outerCondition);
                 return;
             case Mimir.Pddl.Ast.Effects.ForallEffect forall:
                 var (innerScope, variables) = extendScope(scope, forall.Variables);
                 ExtractEffects(forall.Effect, quantified.Concat(variables).ToArray(), innerScope, predicates,
-                    mapTerm, extendScope, results, functions, outerCondition);
+                    mapTerm, extendScope, output, functions, outerCondition);
                 return;
             case Mimir.Pddl.Ast.Effects.Increase increase when NumericFunction.IsTotalCost(increase.Fluent.Name):
+                if (quantified.Count > 0 || !outerCondition.IsEmpty)
+                    throw new InvalidOperationException("Validated action costs cannot be conditional or quantified.");
+                output.CostIncreases.Add(NumericExpressionTranslator.TranslateExpression(increase.Value, scope, functions, mapTerm));
                 return;
         }
         (FluentCall Target, INumericExpression Value, NumericUpdateOperator Operator)? update = effect switch
@@ -180,12 +191,12 @@ internal static class DomainExpressionTranslator
         {
             var target = (FunctionCall)NumericExpressionTranslator.TranslateExpression(numeric.Target, scope, functions, mapTerm);
             NumericExpression value = NumericExpressionTranslator.TranslateExpression(numeric.Value, scope, functions, mapTerm);
-            results.Add(new ConditionalNumericEffect(quantified, fluent, statics, derived, comparisons,
+            output.Effects.Add(new ConditionalNumericEffect(quantified, fluent, statics, derived, comparisons,
                 new NumericUpdate(target, numeric.Operator, value)));
             return;
         }
         Literal<Atom<Fluent>> literal = ExtractEffectLiteral(effect, predicates, scope, mapTerm);
-        results.Add(new ConditionalEffect(quantified, fluent, statics, derived, comparisons, literal));
+        output.Effects.Add(new ConditionalEffect(quantified, fluent, statics, derived, comparisons, literal));
     }
 
     private static GroundedAtom TranslateAtom(

@@ -39,12 +39,12 @@ internal static class ActionBuilder
 
         foreach (ConditionalNumericEffect effect in schema.NumericEffects)
         {
-            AddReferencedVariables(effect.Effect.Target, referencedVariables);
-            AddReferencedVariables(effect.Effect.Expression, referencedVariables);
+            referencedVariables.UnionWith(effect.Effect.Target.Variables());
+            referencedVariables.UnionWith(effect.Effect.Expression.Variables());
             AddConditionVariables(effect, referencedVariables);
         }
 
-        AddReferencedVariables(schema.CostExpression, referencedVariables);
+        referencedVariables.UnionWith(schema.CostExpression.Variables());
         return schema.Parameters
             .Select(referencedVariables.Contains)
             .ToArray();
@@ -497,32 +497,6 @@ internal static class ActionBuilder
         HashSet<Variable> referencedVariables)
     {
         foreach (NumericComparison comparison in comparisons)
-        {
-            AddReferencedVariables(comparison.Left, referencedVariables);
-            AddReferencedVariables(comparison.Right, referencedVariables);
-        }
-    }
-
-    private static void AddReferencedVariables(
-        NumericExpression expression,
-        HashSet<Variable> referencedVariables)
-    {
-        switch (expression)
-        {
-            case NumericConstant:
-                return;
-            case NumericBinaryExpression binary:
-                AddReferencedVariables(binary.Left, referencedVariables);
-                AddReferencedVariables(binary.Right, referencedVariables);
-                return;
-            case FunctionCall function:
-                AddReferencedVariables(
-                    function.Arguments,
-                    referencedVariables);
-                return;
-            default:
-                throw new InvalidOperationException(
-                    $"Unsupported action-cost expression '{expression.GetType().Name}'.");
-        }
+            referencedVariables.UnionWith(comparison.Variables());
     }
 }

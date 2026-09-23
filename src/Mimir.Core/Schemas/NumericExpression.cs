@@ -35,6 +35,14 @@ public abstract record NumericExpression
                 binary.Left.Ground(problem, bindings), binary.Right.Ground(problem, bindings)),
             _ => throw new ArgumentException("Numeric expression belongs to another problem.")
         };
+
+    internal IEnumerable<Variable> Variables() => this switch
+    {
+        NumericConstant or GroundFunctionCall => [],
+        FunctionCall call => call.Arguments.OfType<Variable>(),
+        NumericBinaryExpression binary => binary.Left.Variables().Concat(binary.Right.Variables()),
+        _ => throw new InvalidOperationException($"Unknown numeric expression '{GetType().Name}'.")
+    };
 }
 
 
@@ -122,6 +130,8 @@ public record NumericComparison : IGroundedExpression
         Operator = operation;
         Right = right;
     }
+
+    internal IEnumerable<Variable> Variables() => Left.Variables().Concat(Right.Variables());
 }
 
 public sealed record GroundNumericComparison : NumericComparison
@@ -182,7 +192,7 @@ public sealed record GroundFunctionCall : NumericExpression
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(function);
         ArgumentNullException.ThrowIfNull(arguments);
-        problem.ValidateNumericFunctionArguments(function, arguments);
+        problem.ValidateNumericFunctionArguments(function, arguments, Problem.NoVariables, nameof(arguments));
         Context = problem.Context;
         Field = Context.NumericLayout.Resolve(function, arguments);
         Problem = problem;
