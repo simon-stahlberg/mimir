@@ -31,7 +31,7 @@ internal sealed class IwSearch : ISearchAlgorithm
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
         // Novelty only tracks atoms, so states that differ only in numeric values would be pruned as not novel.
-        if (initialState.Context.NumericLayout.Count > 0)
+        if (initialState.Context.NumericStateSize > 0)
             throw new NotSupportedException("IW does not support problems with changing numeric fluents.");
 
         _k = k;

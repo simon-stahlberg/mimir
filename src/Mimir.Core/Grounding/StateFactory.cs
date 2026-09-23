@@ -21,7 +21,7 @@ public sealed class StateFactory
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(trueFacts);
-        int numericCount = context.NumericLayout.Count;
+        int numericCount = context.NumericStateSize;
         var values = new double[numericCount];
         var assigned = new bool[numericCount];
         if (numericValues is not null)
@@ -31,12 +31,12 @@ public sealed class StateFactory
                 ArgumentNullException.ThrowIfNull(call);
                 if (!ReferenceEquals(call.Context, context))
                     throw new ArgumentException("A numeric field belongs to a different problem.", nameof(numericValues));
-                if (call.Field.Index is not NumericFluentIndex index)
+                if (call.StateIndex is not int index)
                     throw new ArgumentException($"Static numeric field '{call.Function.Name}' cannot be overridden in a state.", nameof(numericValues));
-                if (assigned[index.Value])
+                if (assigned[index])
                     throw new ArgumentException($"Numeric field '{call.Function.Name}' was supplied more than once.", nameof(numericValues));
-                assigned[index.Value] = true;
-                values[index.Value] = value;
+                assigned[index] = true;
+                values[index] = value;
             }
         }
         if ((numericValues?.Count ?? 0) != numericCount)

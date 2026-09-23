@@ -40,8 +40,7 @@ internal static class NumericStateTransition
         if (!ReferenceEquals(update.Target.Context, source.Context))
             throw new ArgumentException("Numeric update belongs to a different problem.");
         // A target without a state slot was never initialized and is not assignable, so it is undefined.
-        if (update.Target.Field.Index is not NumericFluentIndex target) return false;
-        int index = target.Value;
+        if (update.Target.StateIndex is not int index) return false;
         double before = source.NumericValues[index];
         double right = source.Value(update.Expression);
         if (double.IsNaN(right)) return false;

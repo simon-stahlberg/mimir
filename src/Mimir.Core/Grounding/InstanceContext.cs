@@ -265,12 +265,18 @@ public class InstanceContext
             ?? throw new InvalidOperationException(nameof(InitializeDerivedClosure));
 
     public Problem Problem { get; }
-    internal NumericStateLayout NumericLayout { get; }
+    private readonly Dictionary<NumericFunctionKey, GroundFunctionCall> _functionCalls = new();
+    private readonly double[] _initialNumericValues;
+    internal int NumericStateSize => _initialNumericValues.Length;
+    internal ReadOnlySpan<double> InitialNumericValues => _initialNumericValues;
 
-    internal InstanceContext(Problem problem, IEnumerable<Constant> objects, NumericStateLayout numericLayout)
+    internal InstanceContext(
+        Problem problem,
+        IEnumerable<Constant> objects,
+        IReadOnlyDictionary<NumericFunctionKey, double> initialNumericValues,
+        IReadOnlySet<NumericFunction> changingFunctions)
     {
         Problem = problem ?? throw new ArgumentNullException(nameof(problem));
-        NumericLayout = numericLayout ?? throw new ArgumentNullException(nameof(numericLayout));
         ArgumentNullException.ThrowIfNull(objects);
         Constant[] objectArray = objects.ToArray();
         _objects = new HashSet<Constant>(
@@ -288,6 +294,82 @@ public class InstanceContext
                 objectArray
                     .Where(candidate => problem.Domain.IsCompatible(candidate.Type, type))
                     .ToArray());
+        }
+
+        // Only changing fluents get a state slot; static ones are read from the call's initial value.
+        var stateValues = new List<double>();
+        foreach ((NumericFunctionKey key, double value) in initialNumericValues)
+        {
+            int? stateIndex = null;
+            if (changingFunctions.Contains(key.Function))
+            {
+                stateIndex = stateValues.Count;
+                stateValues.Add(value);
+            }
+            RegisterFunctionCall(key.Function, key.Arguments, stateIndex, value);
+        }
+        _initialNumericValues = stateValues.ToArray();
+    }
+
+    // Registers the call on first use, like RegisterFact. A call without an initial value was never initialized
+    // and no assign effect can define it, so it stays undefined forever.
+    internal GroundFunctionCall GetFunctionCall(NumericFunction function, IReadOnlyList<Constant> arguments)
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(arguments);
+        if (TryGetFunctionCall(function, arguments) is { } call)
+            return call;
+        ValidateNumericFunctionArguments(function, arguments, Problem.NoVariables, nameof(arguments));
+        return RegisterFunctionCall(function, arguments, stateIndex: null, NumericEvaluation.Undefined);
+    }
+
+    internal GroundFunctionCall? TryGetFunctionCall(NumericFunction function, IReadOnlyList<Constant> arguments)
+        => _functionCalls.GetValueOrDefault(new NumericFunctionKey(function, arguments));
+
+    private GroundFunctionCall RegisterFunctionCall(
+        NumericFunction function,
+        IReadOnlyList<Constant> arguments,
+        int? stateIndex,
+        double initialValue)
+    {
+        var call = new GroundFunctionCall(this, function, arguments, stateIndex, initialValue);
+        _functionCalls.Add(new NumericFunctionKey(call.Function, call.Arguments), call);
+        return call;
+    }
+
+    // Ground callers pass Problem.NoVariables; lifted callers pass the variables in scope.
+    internal void ValidateNumericFunctionArguments(
+        NumericFunction function,
+        IReadOnlyList<ITerm> arguments,
+        IReadOnlySet<Variable> variables,
+        string parameterName)
+    {
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(arguments);
+        if (!Problem.Domain.Contains(function))
+            throw new ArgumentException(
+                $"Numeric function '{function.Name}' belongs to a different domain.",
+                parameterName);
+        if (function.Parameters.Count != arguments.Count)
+            throw new ArgumentException(
+                $"Numeric function '{function.Name}' expects {function.Parameters.Count} arguments, got {arguments.Count}.",
+                parameterName);
+
+        for (int i = 0; i < arguments.Count; i++)
+        {
+            string type = arguments[i] switch
+            {
+                null => throw new ArgumentException("Arguments cannot contain null values.", parameterName),
+                Constant constant when ContainsObject(constant) => constant.Type,
+                Variable variable when variables.Contains(variable) => variable.Type,
+                ITerm term => throw new ArgumentException(
+                    $"Argument '{term}' of '{function.Name}' is not an object of this problem or a variable in scope.",
+                    parameterName)
+            };
+            if (!Problem.Domain.IsCompatible(type, function.Parameters[i].Type))
+                throw new ArgumentException(
+                    $"Argument '{arguments[i]}' has type '{type}', expected '{function.Parameters[i].Type}'.",
+                    parameterName);
         }
     }
 

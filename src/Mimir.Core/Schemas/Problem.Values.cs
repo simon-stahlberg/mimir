@@ -11,16 +11,19 @@ public partial class Problem
         NumericFunction function = Domain.Functions.FirstOrDefault(function =>
             function.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
             ?? throw new ArgumentException($"Unknown numeric function '{name}'.", nameof(name));
-        return new GroundFunctionCall(this, function, arguments.Select(argument =>
+        return FunctionCall(function, arguments.Select(argument =>
             ObjectLookup.TryGetValue(argument, out Constant? value) ? value
                 : throw new ArgumentException($"Unknown object '{argument}'.")).ToArray());
     }
+
+    public GroundFunctionCall FunctionCall(NumericFunction function, IReadOnlyList<Constant> arguments)
+        => Context.GetFunctionCall(function, arguments);
 
     public FunctionCall NewFunctionCall(NumericFunction function, IReadOnlyList<ITerm> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
         var dynamicVariables = arguments.OfType<Variable>().Where(ContainsDynamicVariable).ToHashSet();
-        ValidateNumericFunctionArguments(function, arguments, dynamicVariables, nameof(arguments));
+        Context.ValidateNumericFunctionArguments(function, arguments, dynamicVariables, nameof(arguments));
         return new FunctionCall(function, arguments);
     }
 

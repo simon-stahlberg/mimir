@@ -330,8 +330,8 @@ public class BuilderParityTests
             .Build();
 
         Assert.Equal(
-            textProblem.InitialState.Value(new GroundFunctionCall(textProblem, textDomain.Functions.Single(), [textProblem.ObjectLookup["a"]])),
-            builtProblem.InitialState.Value(new GroundFunctionCall(builtProblem, builtDomain.Functions.Single(), [builtProblem.ObjectLookup["a"]])));
+            textProblem.InitialState.Value(textProblem.FunctionCall(textDomain.Functions.Single(), [textProblem.ObjectLookup["a"]])),
+            builtProblem.InitialState.Value(builtProblem.FunctionCall(builtDomain.Functions.Single(), [builtProblem.ObjectLookup["a"]])));
         AssertEquivalent(
             textProblem,
             builtProblem,

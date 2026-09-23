@@ -37,8 +37,8 @@ public class State : IEquatable<State>
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(bitboard);
         ArgumentNullException.ThrowIfNull(numericValues);
-        if (numericValues.Length != context.NumericLayout.Count)
-            throw new ArgumentException($"State requires {context.NumericLayout.Count} numeric values, received {numericValues.Length}.", nameof(numericValues));
+        if (numericValues.Length != context.NumericStateSize)
+            throw new ArgumentException($"State requires {context.NumericStateSize} numeric values, received {numericValues.Length}.", nameof(numericValues));
 
         Context = context;
         _bitboard = takeOwnership ? bitboard : bitboard.ToArray();

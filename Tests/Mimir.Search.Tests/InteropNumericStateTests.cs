@@ -23,7 +23,7 @@ public unsafe class InteropNumericStateTests
 (define (problem storage) (:domain numeric-interop) (:objects a b)
   (:init (= (fuel a) 20) (= (fuel b) 35)) (:goal ()))
 """);
-        Assert.Equal(2, problem.Context.NumericLayout.Count);
+        Assert.Equal(2, problem.Context.NumericStateSize);
         GroundFunctionCall first = problem.FunctionCall("fuel", "a");
         GroundFunctionCall second = problem.FunctionCall("fuel", "b");
         int problemHandle = ObjectRegistry.Store(problem);

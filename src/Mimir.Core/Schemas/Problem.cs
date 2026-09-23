@@ -355,7 +355,7 @@ public partial class Problem
             int bitIndex = fact.LocalIndex % 64;
             bitboard[arrayIndex] |= 1UL << bitIndex;
         }
-        ReadOnlySpan<double> numericValues = Context.NumericLayout.InitialValues;
+        ReadOnlySpan<double> numericValues = Context.InitialNumericValues;
         return new State(Context, bitboard,
             numericValues.ToArray(), takeOwnership: true);
     }
@@ -397,7 +397,7 @@ public partial class Problem
                         throw new ArgumentException("Numeric expression belongs to a different problem.", parameterName);
                     return;
                 case FunctionCall call:
-                    ValidateNumericFunctionArguments(call.Function, call.Arguments, variables, parameterName);
+                    Context.ValidateNumericFunctionArguments(call.Function, call.Arguments, variables, parameterName);
                     return;
                 default:
                     throw new ArgumentException("Unknown numeric expression.", parameterName);
@@ -419,42 +419,6 @@ public partial class Problem
             throw new ArgumentException("Condition literal values cannot be null.", parameterName);
 
         ValidateConditionAtom(literal.Value, parameters, parameterName);
-    }
-
-    // Ground callers pass an empty variable set; lifted callers pass the variables in scope.
-    internal void ValidateNumericFunctionArguments(
-        NumericFunction function,
-        IReadOnlyList<ITerm> arguments,
-        IReadOnlySet<Variable> variables,
-        string parameterName)
-    {
-        ArgumentNullException.ThrowIfNull(function);
-        ArgumentNullException.ThrowIfNull(arguments);
-        if (!Domain.Contains(function))
-            throw new ArgumentException(
-                $"Numeric function '{function.Name}' belongs to a different domain.",
-                parameterName);
-        if (function.Parameters.Count != arguments.Count)
-            throw new ArgumentException(
-                $"Numeric function '{function.Name}' expects {function.Parameters.Count} arguments, got {arguments.Count}.",
-                parameterName);
-
-        for (int i = 0; i < arguments.Count; i++)
-        {
-            string type = arguments[i] switch
-            {
-                null => throw new ArgumentException("Arguments cannot contain null values.", parameterName),
-                Constant constant when Context.ContainsObject(constant) => constant.Type,
-                Variable variable when variables.Contains(variable) => variable.Type,
-                ITerm term => throw new ArgumentException(
-                    $"Argument '{term}' of '{function.Name}' is not an object of this problem or a variable in scope.",
-                    parameterName)
-            };
-            if (!Domain.IsCompatible(type, function.Parameters[i].Type))
-                throw new ArgumentException(
-                    $"Argument '{arguments[i]}' has type '{type}', expected '{function.Parameters[i].Type}'.",
-                    parameterName);
-        }
     }
 
     private void ValidateAtom(

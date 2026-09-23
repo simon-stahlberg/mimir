@@ -11,11 +11,11 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
     private readonly Constant? _arg1;
     private readonly Constant? _arg2;
     private readonly Constant? _arg3;
-    private readonly IReadOnlyList<Constant>? _arguments;
+    // Stored keys hold an immutable list; lookup keys borrow a caller buffer only during Dictionary.TryGetValue.
+    private readonly IReadOnlyList<Constant> _arguments;
 
     internal NumericFunction Function => _function;
-    internal NumericFunctionKey Snapshot() => _arity > 3
-        ? new NumericFunctionKey(_function, _arguments!.ToArray()) : this;
+    internal IReadOnlyList<Constant> Arguments => _arguments;
 
     public NumericFunctionKey(NumericFunction function, IReadOnlyList<Constant> arguments)
     {
@@ -24,20 +24,11 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
         _arg1 = arguments.Count > 0 ? arguments[0] : null;
         _arg2 = arguments.Count > 1 ? arguments[1] : null;
         _arg3 = arguments.Count > 2 ? arguments[2] : null;
-        // Only higher arities retain the collection. Initialization keys receive a
-        // private array; lookup keys borrow theirs only during Dictionary.TryGetValue.
-        _arguments = arguments.Count > 3 ? arguments : null;
+        _arguments = arguments;
     }
 
     public override string ToString()
-    {
-        var arguments = new List<string>(_arity);
-        if (_arity > 0) arguments.Add(_arg1!.Name);
-        if (_arity > 1) arguments.Add(_arg2!.Name);
-        if (_arity > 2) arguments.Add(_arg3!.Name);
-        for (int index = 3; index < _arity; index++) arguments.Add(_arguments![index].Name);
-        return $"({_function.Name}{string.Concat(arguments.Select(argument => " " + argument))})";
-    }
+        => $"({_function.Name}{string.Concat(_arguments.Select(argument => " " + argument.Name))})";
 
     public bool Equals(NumericFunctionKey other)
     {
@@ -48,7 +39,7 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
         if (!ReferenceEquals(_arg3, other._arg3)) return false;
         for (int i = 3; i < _arity; i++)
         {
-            if (!ReferenceEquals(_arguments![i], other._arguments![i])) return false;
+            if (!ReferenceEquals(_arguments[i], other._arguments[i])) return false;
         }
 
         return true;
@@ -65,7 +56,7 @@ internal readonly struct NumericFunctionKey : IEquatable<NumericFunctionKey>
         hash.Add(_arg2 is null ? 0 : RuntimeHelpers.GetHashCode(_arg2));
         hash.Add(_arg3 is null ? 0 : RuntimeHelpers.GetHashCode(_arg3));
         for (int i = 3; i < _arity; i++)
-            hash.Add(RuntimeHelpers.GetHashCode(_arguments![i]));
+            hash.Add(RuntimeHelpers.GetHashCode(_arguments[i]));
         return hash.ToHashCode();
     }
 }

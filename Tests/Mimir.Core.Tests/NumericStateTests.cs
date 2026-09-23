@@ -121,44 +121,43 @@ public class NumericStateTests
     }
 
     [Fact]
-    public void Layout_IsFrozenAndResolvesUninitializedReferencesAsUndefined()
+    public void FunctionCalls_AreInternedAndUninitializedOnesAreUndefined()
     {
         Problem problem = CreateProblem();
-        NumericFunction function = problem.Domain.Functions.Single(function => function.Name == "fuel");
-        var inputs = new Dictionary<NumericFunctionKey, double>
-        {
-            [new(function, [problem.ObjectLookup["truck1"]])] = 4
-        };
-        var changing = new List<NumericFunction> { function };
-        var layout = new NumericStateLayout(inputs, changing);
-        inputs.Clear();
-        changing.Clear();
-        Assert.Equal(1, layout.Count);
-        Assert.Equal(4, layout.InitialValues[0]);
-        Assert.Equal(new NumericFluentIndex(0), layout.Resolve(function, [problem.ObjectLookup["truck1"]]).Index);
-        NumericField missing = layout.Resolve(function, [problem.ObjectLookup["truck2"]]);
-        Assert.Null(missing.Index);
-        Assert.True(double.IsNaN(missing.InitialValue));
-        Assert.True(double.IsNaN(problem.InitialState.Value(problem.FunctionCall("fuel", "truck3"))));
-        Assert.Equal(2, problem.Context.NumericLayout.Count);
+        NumericFunction fuel = problem.Domain.Functions.Single(function => function.Name == "fuel");
+        Constant truck3 = problem.ObjectLookup["truck3"];
+
+        Assert.Same(problem.FunctionCall("fuel", "truck1"), problem.FunctionCall("fuel", "truck1"));
+        Assert.NotNull(problem.FunctionCall("fuel", "truck1").StateIndex);
+        Assert.NotNull(problem.FunctionCall("fuel", "truck2").StateIndex);
+        Assert.Null(problem.FunctionCall("distance").StateIndex);
+        Assert.Equal(7, problem.InitialState.Value(problem.FunctionCall("distance")));
+        Assert.Equal(2, problem.Context.NumericStateSize);
+
+        Assert.Null(problem.Context.TryGetFunctionCall(fuel, [truck3]));
+        GroundFunctionCall missing = problem.FunctionCall("fuel", "truck3");
+        Assert.Same(missing, problem.Context.TryGetFunctionCall(fuel, [truck3]));
+        Assert.Null(missing.StateIndex);
+        Assert.True(double.IsNaN(problem.InitialState.Value(missing)));
+        Assert.Equal(2, problem.Context.NumericStateSize);
     }
 
     [Fact]
-    public void Layout_CopiesHigherArityKeysAndRejectsInfiniteInitialValues()
+    public void RegisteredFunctionCallsOwnTheirArgumentsAndRejectInfiniteInitialValues()
     {
-        var function = new NumericFunction("amount", [new Variable("?a"), new Variable("?b"), new Variable("?c"), new Variable("?d")]);
-        var first = new Constant("a", "object");
-        var second = new Constant("b", "object");
-        Constant[] arguments = [first, first, first, first];
-        var initial = new Dictionary<NumericFunctionKey, double> { [new(function, arguments)] = 3 };
-        var layout = new NumericStateLayout(initial, [function]);
-        arguments[3] = second;
-        Assert.Equal(3, layout.Resolve(function, [first, first, first, first]).InitialValue);
-        Assert.True(double.IsNaN(layout.Resolve(function, arguments).InitialValue));
-        Assert.Throws<ArgumentException>(() => new NumericStateLayout(new Dictionary<NumericFunctionKey, double>
-        {
-            [new(function, arguments)] = double.PositiveInfinity
-        }, [function]));
+        Problem problem = CreateProblem();
+        NumericFunction fuel = problem.Domain.Functions.Single(function => function.Name == "fuel");
+        Constant truck1 = problem.ObjectLookup["truck1"];
+        Constant[] arguments = [truck1];
+        var context = new InstanceContext(problem, problem.AllObjects,
+            new Dictionary<NumericFunctionKey, double> { [new(fuel, arguments)] = 3 }, new HashSet<NumericFunction> { fuel });
+        arguments[0] = problem.ObjectLookup["truck2"];
+
+        Assert.Equal(3, Assert.IsType<GroundFunctionCall>(context.TryGetFunctionCall(fuel, [truck1])).InitialValue);
+        Assert.Null(context.TryGetFunctionCall(fuel, arguments));
+        Assert.Throws<ArgumentException>(() => new InstanceContext(problem, problem.AllObjects,
+            new Dictionary<NumericFunctionKey, double> { [new(fuel, [truck1])] = double.PositiveInfinity },
+            new HashSet<NumericFunction> { fuel }));
     }
 
     [Fact]

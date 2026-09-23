@@ -45,7 +45,7 @@ internal sealed class CompiledNumericExpression
             NumericConstant => _source,
             GroundFunctionCall call when ReferenceEquals(call.Context, problem.Context) => call,
             GroundFunctionCall => throw new ArgumentException("Numeric expression belongs to a different problem."),
-            FunctionCall call => new GroundFunctionCall(problem, call.Function, ResolveArguments(bindings)),
+            FunctionCall call => problem.Context.GetFunctionCall(call.Function, ResolveArguments(bindings)),
             NumericBinaryExpression binary => new NumericBinaryExpression(binary.Operator,
                 _left!.Ground(problem, bindings), _right!.Ground(problem, bindings)),
             _ => throw new InvalidOperationException("Unknown numeric expression.")
@@ -58,20 +58,18 @@ internal sealed class CompiledNumericExpression
         if (_source is NumericBinaryExpression binary)
             return NumericEvaluation.Apply(binary.Operator,
                 _left!.Evaluate(context, bindings, state), _right!.Evaluate(context, bindings, state));
-        NumericField field;
-        if (_source is GroundFunctionCall grounded)
+        GroundFunctionCall? call = _source switch
         {
-            if (!ReferenceEquals(grounded.Context, context))
-                throw new ArgumentException("Numeric expression belongs to a different problem.");
-            field = grounded.Field;
-        }
-        else if (_source is FunctionCall call)
-            field = context.NumericLayout.Resolve(call.Function, ResolveArguments(bindings));
-        else
-            throw new InvalidOperationException("Unknown numeric expression.");
-        if (field.Index is not NumericFluentIndex index) return field.InitialValue;
+            GroundFunctionCall grounded when ReferenceEquals(grounded.Context, context) => grounded,
+            GroundFunctionCall => throw new ArgumentException("Numeric expression belongs to a different problem."),
+            // A lookup must not register calls: binding search evaluates many candidates that are never grounded.
+            FunctionCall lifted => context.TryGetFunctionCall(lifted.Function, ResolveArguments(bindings)),
+            _ => throw new InvalidOperationException("Unknown numeric expression.")
+        };
+        if (call is null) return NumericEvaluation.Undefined;
+        if (call.StateIndex is not int index) return call.InitialValue;
         if (state is null) throw new InvalidOperationException("Changing numeric expressions require a state.");
-        return state.NumericValues[index.Value];
+        return state.NumericValues[index];
     }
 
     private Constant[] ResolveArguments(Constant?[] bindings)
@@ -128,7 +126,7 @@ internal sealed class CompiledNumericUpdate
         var arguments = new Constant[_targetArguments.Length];
         for (int i = 0; i < arguments.Length; i++)
             arguments[i] = _targetArguments[i].Resolve(bindings);
-        return new GroundNumericUpdate(new GroundFunctionCall(problem, _target, arguments), _operator,
+        return new GroundNumericUpdate(problem.Context.GetFunctionCall(_target, arguments), _operator,
             _expression.Ground(problem, bindings));
     }
 }

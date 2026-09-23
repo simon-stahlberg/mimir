@@ -818,9 +818,9 @@ public sealed class ActionCostTests : IDisposable
         NumericFunction price = Assert.Single(problem.Domain.Functions);
         var arguments = new List<Constant> { problem.ObjectLookup["a"] };
 
-        Assert.Equal(2d, problem.InitialState.Value(new GroundFunctionCall(problem, price, arguments)));
+        Assert.Equal(2d, problem.InitialState.Value(problem.FunctionCall(price, arguments)));
         arguments[0] = problem.ObjectLookup["b"];
-        Assert.Equal(5d, problem.InitialState.Value(new GroundFunctionCall(problem, price, arguments)));
+        Assert.Equal(5d, problem.InitialState.Value(problem.FunctionCall(price, arguments)));
     }
 
     [Fact]
@@ -835,10 +835,10 @@ public sealed class ActionCostTests : IDisposable
             problem.ObjectLookup["d"]
         ];
 
-        Assert.Equal(9d, problem.InitialState.Value(new GroundFunctionCall(problem, routeCost, ordered)));
+        Assert.Equal(9d, problem.InitialState.Value(problem.FunctionCall(routeCost, ordered)));
 
         Constant[] reordered = [ordered[0], ordered[1], ordered[3], ordered[2]];
-        Assert.True(double.IsNaN(problem.InitialState.Value(new GroundFunctionCall(problem, routeCost, reordered))));
+        Assert.True(double.IsNaN(problem.InitialState.Value(problem.FunctionCall(routeCost, reordered))));
     }
 
       [Theory]

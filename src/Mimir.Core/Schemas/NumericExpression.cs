@@ -22,7 +22,7 @@ public abstract record NumericExpression
         => this switch
         {
             NumericConstant => this,
-            FunctionCall call => new GroundFunctionCall(problem, call.Function,
+            FunctionCall call => problem.Context.GetFunctionCall(call.Function,
                 call.Arguments.Select(argument => argument switch
                 {
                     Constant constant => constant,
@@ -30,7 +30,7 @@ public abstract record NumericExpression
                         ? value : throw new ArgumentException($"Unbound variable '{variable.Name}'."),
                     _ => throw new ArgumentException("Unsupported numeric argument.")
                 }).ToArray()),
-            GroundFunctionCall call when ReferenceEquals(call.Problem, problem) => call,
+            GroundFunctionCall call when ReferenceEquals(call.Context, problem.Context) => call,
             NumericBinaryExpression binary => new NumericBinaryExpression(binary.Operator,
                 binary.Left.Ground(problem, bindings), binary.Right.Ground(problem, bindings)),
             _ => throw new ArgumentException("Numeric expression belongs to another problem.")
@@ -179,39 +179,36 @@ public sealed record GroundNumericUpdate
     }
 }
 
+// Interned per InstanceContext like Fact, so equality is identity.
 public sealed record GroundFunctionCall : NumericExpression
 {
-    public Problem Problem { get; }
-    internal NumericField Field { get; }
     internal InstanceContext Context { get; }
+    public Problem Problem => Context.Problem;
     public NumericFunction Function { get; }
     public IReadOnlyList<Constant> Arguments { get; }
+    // Changing fluents have a state slot; static and never-initialized ones are read from InitialValue.
+    internal int? StateIndex { get; }
+    internal double InitialValue { get; }
 
-    public GroundFunctionCall(Problem problem, NumericFunction function, IReadOnlyList<Constant> arguments)
+    internal GroundFunctionCall(
+        InstanceContext context,
+        NumericFunction function,
+        IReadOnlyList<Constant> arguments,
+        int? stateIndex,
+        double initialValue)
     {
-        ArgumentNullException.ThrowIfNull(problem);
-        ArgumentNullException.ThrowIfNull(function);
-        ArgumentNullException.ThrowIfNull(arguments);
-        problem.ValidateNumericFunctionArguments(function, arguments, Problem.NoVariables, nameof(arguments));
-        Context = problem.Context;
-        Field = Context.NumericLayout.Resolve(function, arguments);
-        Problem = problem;
+        if (double.IsInfinity(initialValue))
+            throw new ArgumentException($"Numeric field '{function.Name}' has a non-finite initial value.", nameof(initialValue));
+        Context = context;
         Function = function;
         Arguments = Array.AsReadOnly(arguments.ToArray());
+        StateIndex = stateIndex;
+        InitialValue = initialValue;
     }
 
-    public bool Equals(GroundFunctionCall? other) => other is not null
-        && ReferenceEquals(Problem, other.Problem) && ReferenceEquals(Function, other.Function)
-        && ValueSequence.ReferenceEqualsItems(Arguments, other.Arguments);
+    public bool Equals(GroundFunctionCall? other) => ReferenceEquals(this, other);
 
-    public override int GetHashCode()
-    {
-        var hash = new HashCode();
-        hash.Add(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Problem));
-        hash.Add(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Function));
-        ValueSequence.AddReferencesToHash(ref hash, Arguments);
-        return hash.ToHashCode();
-    }
+    public override int GetHashCode() => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this);
 }
 
 internal static class NumericEvaluation
@@ -237,9 +234,7 @@ internal static class NumericEvaluation
             case GroundFunctionCall call:
                 if (!ReferenceEquals(call.Context, state.Context))
                     throw new ArgumentException("Numeric expression belongs to a different problem.");
-                return call.Field.Index is NumericFluentIndex index
-                    ? state.NumericValues[index.Value]
-                    : call.Field.InitialValue;
+                return call.StateIndex is int index ? state.NumericValues[index] : call.InitialValue;
             case NumericBinaryExpression binary:
                 return Apply(binary.Operator, Evaluate(state, binary.Left), Evaluate(state, binary.Right));
             default: throw new ArgumentException("State.Value requires a grounded numeric expression.");
