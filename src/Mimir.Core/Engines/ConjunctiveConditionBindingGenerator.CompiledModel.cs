@@ -9,7 +9,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
     internal sealed class CompiledConjunctiveConditionData
     {
         internal int VariableCount { get; init; }
-        internal Problem Problem { get; init; } = null!;
+        internal InstanceContext Context { get; init; } = null!;
         internal CompiledNumericComparison[] DeferredNumericConditions { get; set; } = Array.Empty<CompiledNumericComparison>();
         internal int PositiveFluentCount { get; set; }
         internal bool StaticNullaryValid { get; set; }

@@ -123,25 +123,10 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         if (other is null || !ReferenceEquals(Problem, other.Problem))
             return false;
 
-        return GoalLiterals.SequenceEqual(other.GoalLiterals) && HasSameComparisons(other);
-    }
-
-    // NumericConditions have no canonical order, so they are compared as sets; both lists are already distinct.
-    private bool HasSameComparisons(GoalCondition other)
-    {
-        if (NumericConditions.Count != other.NumericConditions.Count)
-            return false;
-
-        foreach (GroundNumericComparison comparison in NumericConditions)
-        {
-            bool found = false;
-            foreach (GroundNumericComparison candidate in other.NumericConditions)
-                found |= comparison.Equals(candidate);
-            if (!found)
-                return false;
-        }
-
-        return true;
+        // NumericConditions have no canonical order, so they are compared as sets; both lists are already distinct.
+        return GoalLiterals.SequenceEqual(other.GoalLiterals)
+            && NumericConditions.Count == other.NumericConditions.Count
+            && NumericConditions.All(other.NumericConditions.Contains);
     }
 
     public override bool Equals(object? obj) => Equals(obj as GoalCondition);

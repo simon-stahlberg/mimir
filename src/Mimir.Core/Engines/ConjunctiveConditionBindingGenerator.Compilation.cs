@@ -19,7 +19,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         var compiledCondition = new CompiledConjunctiveConditionData
         {
             VariableCount = k,
-            Problem = problem,
+            Context = problem.Context,
             StateDependentUnaryConstraints = new List<IUnaryConstraint>[k]
         };
 
@@ -161,6 +161,9 @@ public sealed partial class ConjunctiveConditionBindingGenerator
                 positiveFluentOrdinal: -1);
         }
 
+        // Cheapest evaluation first: static comparisons over at most two variables prune candidate domains once;
+        // changing comparisons over zero or one variable are pre-grounded per candidate and checked per state;
+        // the rest are deferred until the clique binds all of their variables.
         List<CompiledNumericComparison>? pendingNumericUnary = null;
         List<CompiledNumericComparison>? deferredNumeric = null;
         foreach (NumericComparison comparison in numericConditions)

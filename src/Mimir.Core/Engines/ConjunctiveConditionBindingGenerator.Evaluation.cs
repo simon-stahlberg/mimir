@@ -341,23 +341,14 @@ public sealed partial class ConjunctiveConditionBindingGenerator
             return false;
         }
 
-        foreach (CompiledNumericComparison comparison in enumeration.Data.DeferredNumericConditions)
+        if (!AreDeferredNumericConstraintsSatisfied(
+                enumeration.Data,
+                clique,
+                assignedPartitions,
+                enumeration.Binding,
+                enumeration.State))
         {
-            if (!comparison.VariableIndices.AsSpan().Contains(assignedPartitions[^1]))
-                continue;
-            bool ready = true;
-            foreach (int variableIndex in comparison.VariableIndices)
-            {
-                if (!assignedPartitions.Contains(variableIndex))
-                {
-                    ready = false;
-                    break;
-                }
-                int localIndex = clique[variableIndex] - enumeration.Data.CandidateDomainOffsets[variableIndex];
-                enumeration.Binding[variableIndex] = enumeration.Data.StaticCandidateDomains[variableIndex][localIndex];
-            }
-            if (ready && !comparison.Evaluate(enumeration.Data.Problem.Context, enumeration.Binding, enumeration.State.State))
-                return false;
+            return false;
         }
 
         if (!enumeration.Representative
@@ -468,6 +459,41 @@ public sealed partial class ConjunctiveConditionBindingGenerator
                     + validIndices[variableIndex][candidateIndex];
             }
         }
+    }
+
+    // A deferred comparison is evaluated once, when the clique first contains all of its variables.
+    private static bool AreDeferredNumericConstraintsSatisfied(
+        CompiledConjunctiveConditionData compiledCondition,
+        ReadOnlySpan<int> clique,
+        ReadOnlySpan<int> assignedPartitions,
+        Constant[] binding,
+        BindingEvaluationState state)
+    {
+        int newestPartition = assignedPartitions[^1];
+        foreach (CompiledNumericComparison comparison in compiledCondition.DeferredNumericConditions)
+        {
+            int[] variableIndices = comparison.VariableIndices;
+            if (!variableIndices.AsSpan().Contains(newestPartition) || !AreAllAssigned(variableIndices, assignedPartitions))
+                continue;
+            foreach (int variableIndex in variableIndices)
+            {
+                int localIndex = clique[variableIndex] - compiledCondition.CandidateDomainOffsets[variableIndex];
+                binding[variableIndex] = compiledCondition.StaticCandidateDomains[variableIndex][localIndex];
+            }
+            if (!comparison.Evaluate(compiledCondition.Context, binding, state.State))
+                return false;
+        }
+        return true;
+    }
+
+    private static bool AreAllAssigned(int[] variableIndices, ReadOnlySpan<int> assignedPartitions)
+    {
+        foreach (int variableIndex in variableIndices)
+        {
+            if (!assignedPartitions.Contains(variableIndex))
+                return false;
+        }
+        return true;
     }
 
     private static bool AreDeferredDerivedConstraintsSatisfied(

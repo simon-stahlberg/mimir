@@ -81,7 +81,7 @@ public class RpgGrounder : IGrounder
                     continue;
                 }
 
-                if (!StaticNumericGuardsHold(conditionalEffect, _relaxedState))
+                if (!StaticNumericGuardsHold(conditionalEffect))
                     continue;
 
                 if (_relaxedState.ContainsAll(
@@ -262,13 +262,15 @@ public class RpgGrounder : IGrounder
         return reachableActions;
     }
 
-    // Same over-approximation as for action preconditions: only static guards can rule an effect out.
-    private static bool StaticNumericGuardsHold(GroundConditionalEffect effect, State state)
+    // Same over-approximation as for action preconditions: only static guards can rule an effect out. Static
+    // comparisons have the same value in every state, so the initial state decides them.
+    private static bool StaticNumericGuardsHold(GroundConditionalEffect effect)
     {
+        Problem problem = effect.Context.Problem;
         foreach (GroundNumericComparison comparison in effect.NumericConditions)
         {
-            if (!NumericEvaluation.DependsOnState(comparison, state.Context.Problem.Domain.ChangingFunctions)
-                && !state.Holds(comparison))
+            if (!NumericEvaluation.DependsOnState(comparison, problem.Domain.ChangingFunctions)
+                && !problem.InitialState.Holds(comparison))
                 return false;
         }
         return true;

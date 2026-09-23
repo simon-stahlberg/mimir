@@ -53,7 +53,7 @@ public sealed class ActionCostTests : IDisposable
         return path;
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating()
+    private static Problem CreateProblemForStaticFunctionValue_UsesCurrentArgumentValues()
     {
         DomainBuilder domainBuilder = new DomainBuilder("numeric-lookup");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -93,7 +93,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder()
+    private static Problem CreateProblemForStaticFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder()
     {
         DomainBuilder domainBuilder = new DomainBuilder("higher-arity-lookup");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -350,7 +350,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating0()
+    private static Problem CreateProblemForActions_WithUndefinedCostFunctionValueAreInapplicable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("incomplete-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -395,7 +395,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating1()
+    private static Problem CreateProblemForActions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForStaticallyInfeasibleBindings()
     {
         DomainBuilder domainBuilder = new DomainBuilder("static-pruned-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -440,7 +440,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating2()
+    private static Problem CreateProblemForActions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForRelaxedUnreachableBindings()
     {
         DomainBuilder domainBuilder = new DomainBuilder("unreachable-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -482,7 +482,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating3()
+    private static Problem CreateProblemForActions_DoNotThrowWhenMissingCostBindingIsBlockedByConditionalEffectStaticGuard()
     {
         DomainBuilder domainBuilder = new DomainBuilder("conditional-unreachable-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -537,7 +537,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating4()
+    private static Problem CreateProblemForActions_WithUndefinedCostAreDroppedWhenReachedByConditionalEffect()
     {
         DomainBuilder domainBuilder = new DomainBuilder("conditional-reachable-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -593,7 +593,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating5()
+    private static Problem CreateProblemForActions_WithUndefinedCostAreDroppedWhenRelaxedReachable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("later-reachable-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -642,7 +642,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating6()
+    private static Problem CreateProblemForActions_ThrowWhenGroundedCostIsNegative()
     {
         DomainBuilder domainBuilder = new DomainBuilder("negative-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -671,7 +671,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating7()
+    private static Problem CreateProblemForActions_EvaluateUnaryNegationInCostExpressions()
     {
         DomainBuilder domainBuilder = new DomainBuilder("unary-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -700,7 +700,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating8()
+    private static Problem CreateProblemForActions_WithOverflowingCostAreInapplicable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("non-finite-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -729,7 +729,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating9()
+    private static Problem CreateProblemForActions_WithCostDivisionByZeroAreInapplicable()
     {
         DomainBuilder domainBuilder = new DomainBuilder("divide-by-zero-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -758,7 +758,7 @@ public sealed class ActionCostTests : IDisposable
         return problemBuilder.Build();
     }
 
-    private static Problem CreateProblemForGetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder0()
+    private static Problem CreateProblemForStateApply_DoesNotEncodeActionCostInSuccessorState()
     {
         DomainBuilder domainBuilder = new DomainBuilder("apply-cost");
         RequirementListBuilder requirements = domainBuilder.Requirements();
@@ -814,7 +814,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void StaticFunctionValue_UsesCurrentArgumentValues()
     {
-        Problem problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating();
+        Problem problem = CreateProblemForStaticFunctionValue_UsesCurrentArgumentValues();
         NumericFunction price = Assert.Single(problem.Domain.Functions);
         var arguments = new List<Constant> { problem.ObjectLookup["a"] };
 
@@ -826,7 +826,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void StaticFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder()
     {
-        Problem problem = CreateProblemForGetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder();
+        Problem problem = CreateProblemForStaticFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder();
         NumericFunction routeCost = Assert.Single(problem.Domain.Functions);
         Constant[] ordered = [
             problem.ObjectLookup["a"],
@@ -1059,7 +1059,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_WithUndefinedCostFunctionValueAreInapplicable()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating0();
+        var problem = CreateProblemForActions_WithUndefinedCostFunctionValueAreInapplicable();
 
         foreach (IApplicableActionGenerator generator in Generators(problem))
         {
@@ -1075,7 +1075,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForStaticallyInfeasibleBindings()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating1();
+        var problem = CreateProblemForActions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForStaticallyInfeasibleBindings();
 
         var actions = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder())
             .GetApplicableActions(problem.InitialState.Expand())
@@ -1089,7 +1089,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForRelaxedUnreachableBindings()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating2();
+        var problem = CreateProblemForActions_DoNotThrowWhenMissingCostFunctionValueOnlyOccursForRelaxedUnreachableBindings();
 
         var groundedActions = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder())
             .GetApplicableActions(problem.InitialState.Expand())
@@ -1108,7 +1108,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_DoNotThrowWhenMissingCostBindingIsBlockedByConditionalEffectStaticGuard()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating3();
+        var problem = CreateProblemForActions_DoNotThrowWhenMissingCostBindingIsBlockedByConditionalEffectStaticGuard();
 
         List<GroundAction> finishActions = new RpgGrounder().Ground(problem, problem.InitialState)
             .Where(action => action.Schema.Name == "finish")
@@ -1122,7 +1122,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_WithUndefinedCostAreDroppedWhenReachedByConditionalEffect()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating4();
+        var problem = CreateProblemForActions_WithUndefinedCostAreDroppedWhenReachedByConditionalEffect();
 
         GroundAction finish = Assert.Single(new RpgGrounder().Ground(problem, problem.InitialState),
             action => action.Schema.Name == "finish");
@@ -1132,7 +1132,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_WithUndefinedCostAreDroppedWhenRelaxedReachable()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating5();
+        var problem = CreateProblemForActions_WithUndefinedCostAreDroppedWhenRelaxedReachable();
 
         GroundAction finish = Assert.Single(new RpgGrounder().Ground(problem, problem.InitialState),
             action => action.Schema.Name == "finish");
@@ -1142,7 +1142,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_ThrowWhenGroundedCostIsNegative()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating6();
+        var problem = CreateProblemForActions_ThrowWhenGroundedCostIsNegative();
 
         var exception = Assert.Throws<InvalidOperationException>(() =>
             new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder()));
@@ -1153,7 +1153,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_EvaluateUnaryNegationInCostExpressions()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating7();
+        var problem = CreateProblemForActions_EvaluateUnaryNegationInCostExpressions();
 
         var action = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder())
             .GetApplicableActions(problem.InitialState.Expand())
@@ -1165,7 +1165,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_WithOverflowingCostAreInapplicable()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating8();
+        var problem = CreateProblemForActions_WithOverflowingCostAreInapplicable();
 
         foreach (IApplicableActionGenerator generator in Generators(problem))
             Assert.Empty(generator.GetApplicableActions(problem.InitialState.Expand()));
@@ -1174,7 +1174,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void Actions_WithCostDivisionByZeroAreInapplicable()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating9();
+        var problem = CreateProblemForActions_WithCostDivisionByZeroAreInapplicable();
 
         foreach (IApplicableActionGenerator generator in Generators(problem))
             Assert.Empty(generator.GetApplicableActions(problem.InitialState.Expand()));
@@ -1259,7 +1259,7 @@ public sealed class ActionCostTests : IDisposable
     [Fact]
     public void StateApply_DoesNotEncodeActionCostInSuccessorState()
     {
-        var problem = CreateProblemForGetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder0();
+        var problem = CreateProblemForStateApply_DoesNotEncodeActionCostInSuccessorState();
 
         var actions = new GroundedApplicableActionGenerator(problem, problem.InitialState, new RpgGrounder())
             .GetApplicableActions(problem.InitialState.Expand())

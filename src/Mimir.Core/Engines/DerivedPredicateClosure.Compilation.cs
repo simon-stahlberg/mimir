@@ -231,8 +231,7 @@ internal sealed partial class DerivedPredicateClosure
         switch (expression)
         {
             case NumericComparison comparison:
-                var activeSlots = activeVariables.ToDictionary(variable => variable, variable => slotsByVariable[variable]);
-                return new CompiledComparisonExpression(new CompiledNumericComparison(comparison, activeSlots));
+                return new CompiledComparisonExpression(new CompiledNumericComparison(comparison, slotsByVariable));
             case GroundedTrue:
                 return CompiledTrueExpression.Instance;
             case GroundedAtom atom:
