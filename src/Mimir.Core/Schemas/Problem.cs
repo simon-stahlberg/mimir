@@ -272,16 +272,11 @@ public partial class Problem
         return new Literal<Fact<T>>(fact, isPositive ? Polarity.Positive : Polarity.Negative);
     }
 
-    /// <summary>
-    /// Build a conjunctive condition from a list of variables and a mixed list
-    /// of typed literals. Each literal must be a <c>Literal&lt;Atom&lt;T&gt;&gt;</c>
-    /// for T ∈ {Static, Fluent, Derived}.
-    /// </summary>
     public Mimir.Core.Grounding.Action GroundAction(ActionSchema schema, params Constant[] arguments)
         => ActionBuilder.BuildAction(schema, arguments, this);
 
     public GroundConjunctiveCondition GroundCondition(IEnumerable<Literal<Fact>> literals,
-        IReadOnlyList<GroundNumericComparison>? comparisons = null)
+        IReadOnlyList<GroundNumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(literals);
         Literal<Fact>[] snapshot = literals.ToArray();
@@ -290,19 +285,27 @@ public partial class Problem
             ArgumentNullException.ThrowIfNull(literal);
             if (!ReferenceEquals(literal.Value.Context, Context)) throw new ArgumentException("Literal belongs to a different problem.", nameof(literals));
         }
-        GroundNumericComparison[] comparisonSnapshot = (comparisons ?? []).ToArray();
+        ArgumentNullException.ThrowIfNull(numericConditions);
+        GroundNumericComparison[] comparisonSnapshot = numericConditions.ToArray();
         var noVariables = new HashSet<Variable>();
         foreach (GroundNumericComparison comparison in comparisonSnapshot)
-            ValidateNumericComparison(comparison, noVariables, nameof(comparisons));
+            ValidateNumericComparison(comparison, noVariables, nameof(numericConditions));
         return new GroundConjunctiveCondition(this, snapshot, comparisonSnapshot);
     }
 
+    /// <summary>
+    /// Build a conjunctive condition from a list of variables and a mixed list
+    /// of typed literals. Each literal must be a <c>Literal&lt;Atom&lt;T&gt;&gt;</c>
+    /// for T ∈ {Static, Fluent, Derived}.
+    /// </summary>
     public ConjunctiveCondition NewConjunctiveCondition(
         IReadOnlyList<Variable> parameters,
-        IEnumerable<Literal> literals, IReadOnlyList<NumericComparison>? comparisons = null)
+        IEnumerable<Literal> literals,
+        IReadOnlyList<NumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(parameters);
         ArgumentNullException.ThrowIfNull(literals);
+        ArgumentNullException.ThrowIfNull(numericConditions);
 
         var parameterSet = new HashSet<Variable>(ReferenceEqualityComparer.Instance);
         foreach (Variable parameter in parameters)
@@ -340,9 +343,9 @@ public partial class Problem
             }
         }
 
-        foreach (NumericComparison comparison in comparisons ?? [])
-            ValidateNumericComparison(comparison, parameterSet, nameof(comparisons));
-        return ConjunctiveCondition.Of(this, parameters, materializedLiterals, comparisons);
+        foreach (NumericComparison comparison in numericConditions)
+            ValidateNumericComparison(comparison, parameterSet, nameof(numericConditions));
+        return ConjunctiveCondition.Of(this, parameters, materializedLiterals, numericConditions);
     }
 
     private State BuildInitialState()

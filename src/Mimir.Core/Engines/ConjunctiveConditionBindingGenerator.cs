@@ -51,7 +51,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
             condition.FluentLiterals,
             condition.StaticLiterals,
             condition.DerivedLiterals,
-            condition.Comparisons);
+            condition.NumericConditions);
     }
 
     public CompiledConjunctiveCondition Compile(

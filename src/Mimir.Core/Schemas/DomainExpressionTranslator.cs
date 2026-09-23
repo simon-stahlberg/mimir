@@ -127,7 +127,7 @@ internal static class DomainExpressionTranslator
         IReadOnlyList<Literal<Atom<Fluent>>> Fluent,
         IReadOnlyList<Literal<Atom<Static>>> Static,
         IReadOnlyList<Literal<Atom<Derived>>> Derived,
-        IReadOnlyList<NumericComparison> Comparisons)
+        IReadOnlyList<NumericComparison> NumericConditions)
     {
         public static readonly EffectCondition Empty = new([], [], [], []);
     }
@@ -146,7 +146,7 @@ internal static class DomainExpressionTranslator
         var fluent = new List<Literal<Atom<Fluent>>>(outerCondition.Fluent);
         var statics = new List<Literal<Atom<Static>>>(outerCondition.Static);
         var derived = new List<Literal<Atom<Derived>>>(outerCondition.Derived);
-        var comparisons = new List<NumericComparison>(outerCondition.Comparisons);
+        var comparisons = new List<NumericComparison>(outerCondition.NumericConditions);
         switch (effect)
         {
             case Mimir.Pddl.Ast.Effects.ConditionalEffect conditional:

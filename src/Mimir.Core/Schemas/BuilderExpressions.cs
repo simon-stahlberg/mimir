@@ -328,7 +328,7 @@ internal sealed record BuilderActionSpec(
     IReadOnlyList<BuilderConditionalEffectSpec> ConditionalEffects,
     NumericExpressionSpec? Cost,
     IReadOnlyList<LogicalExpressionSpec> Expressions,
-    IReadOnlyList<BuilderNumericUpdateSpec> NumericUpdates);
+    IReadOnlyList<BuilderNumericUpdateSpec> NumericEffects);
 internal sealed record BuilderNumericUpdateSpec(NumericFunctionSpec Target, NumericUpdateOperator Operator, NumericExpressionSpec Expression);
 internal sealed record BuilderDerivedPredicateSpec(string PredicateName, LogicalExpressionSpec Body);
 

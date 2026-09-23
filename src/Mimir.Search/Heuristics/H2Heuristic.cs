@@ -119,7 +119,7 @@ public sealed class H2Heuristic : IHeuristic, IGroundedHeuristic
     private void EnsureSupportedGoal(GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
-        if (goal.Comparisons.Count > 0)
+        if (goal.NumericConditions.Count > 0)
             throw new NotSupportedException("h^2 does not support numeric goals.");
         if (!ReferenceEquals(goal.Problem, _problem))
             throw new ArgumentException(

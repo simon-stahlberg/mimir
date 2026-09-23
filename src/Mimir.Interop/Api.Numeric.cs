@@ -120,21 +120,21 @@ public static partial class Exports
         => ReadValue(state, -1, (ExtendedState value) =>
             value.State.Holds(RequireHandle<NumericComparison>(comparison)) ? 1 : 0);
 
-    private static IReadOnlyList<NumericComparison> NumericComparisons(object owner) => owner switch
+    private static IReadOnlyList<NumericComparison> NumericConditions(object owner) => owner switch
     {
         ActionSchema action => action.NumericPreconditions,
         GroundAction action => action.NumericPreconditions,
         ConditionalEffectBase effect => effect.NumericConditions,
         GroundConditionalEffectBase effect => effect.NumericConditions,
-        ConjunctiveCondition condition => condition.Comparisons,
-        GoalCondition goal => goal.Comparisons,
+        ConjunctiveCondition condition => condition.NumericConditions,
+        GoalCondition goal => goal.NumericConditions,
         Problem problem => problem.NumericGoals,
         _ => throw new ArgumentException("Expected an action, condition, or problem.")
     };
 
-    private static IReadOnlyList<object> NumericUpdates(object owner) => owner switch
+    private static IReadOnlyList<object> NumericEffects(object owner) => owner switch
     {
-        ActionSchema action => action.Effect.NumericUpdates,
+        ActionSchema action => action.Effect.NumericEffects,
         GroundAction action => action.NumericEffects,
         ConditionalNumericEffect effect => [effect.Effect],
         GroundConditionalNumericEffect effect => [effect.Effect],
@@ -142,10 +142,10 @@ public static partial class Exports
     };
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_count")]
-    public static int NumericComparisonCount(int owner) => ReadValue(owner, -1, (object value) => NumericComparisons(value).Count);
+    public static int NumericComparisonCount(int owner) => ReadValue(owner, -1, (object value) => NumericConditions(value).Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_get")]
-    public static int NumericComparisonGet(int owner, int index) => CreateHandle(() => NumericComparisons(RequireHandle<object>(owner))[index]);
+    public static int NumericComparisonGet(int owner, int index) => CreateHandle(() => NumericConditions(RequireHandle<object>(owner))[index]);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_operand")]
     public static int NumericComparisonOperand(int handle, int index) => CreateHandle(() => index switch
@@ -158,7 +158,7 @@ public static partial class Exports
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_operator")]
     public static int NumericComparisonOperator(int handle) => ReadValue(handle, -1, (NumericComparison value) => (int)value.Operator);
 
-    // Comparisons over ground expressions are created as GroundNumericComparison so they can be used in goals.
+    // NumericConditions over ground expressions are created as GroundNumericComparison so they can be used in goals.
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_comparison_create")]
     public static int NumericComparisonCreate(int left, int operation, int right) => CreateHandle(() =>
     {
@@ -171,10 +171,10 @@ public static partial class Exports
     });
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_count")]
-    public static int NumericUpdateCount(int owner) => ReadValue(owner, -1, (object value) => NumericUpdates(value).Count);
+    public static int NumericUpdateCount(int owner) => ReadValue(owner, -1, (object value) => NumericEffects(value).Count);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_get")]
-    public static int NumericUpdateGet(int owner, int index) => CreateHandle(() => NumericUpdates(RequireHandle<object>(owner))[index]);
+    public static int NumericUpdateGet(int owner, int index) => CreateHandle(() => NumericEffects(RequireHandle<object>(owner))[index]);
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_update_operand")]
     public static int NumericUpdateOperand(int handle, int index) => CreateHandle(() => (RequireHandle<object>(handle), index) switch

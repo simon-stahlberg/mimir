@@ -167,33 +167,23 @@ public class PublicModelNullValidationTests
     }
 
     [Fact]
-    public void ActionCostRecords_RejectNullMembersOnConstructionAndReplacement()
+    public void NumericExpressionRecords_RejectNullMembers()
     {
         var constant = new NumericConstant(1d);
-        var binary = new NumericBinaryExpression(NumericOperator.Add, constant, constant);
         var function = new NumericFunction("cost", Array.Empty<Variable>());
         var argument = new Constant("value", "object");
-        var functionCost = new FunctionCall(function, [argument]);
 
-        AssertParam<ArgumentNullException>("Left", () =>
+        AssertParam<ArgumentNullException>("left", () =>
             new NumericBinaryExpression(NumericOperator.Add, null!, constant));
-        AssertParam<ArgumentNullException>("Right", () =>
+        AssertParam<ArgumentNullException>("right", () =>
             new NumericBinaryExpression(NumericOperator.Add, constant, null!));
-        AssertParam<ArgumentNullException>("Left", () => _ = binary with { Left = null! });
-        AssertParam<ArgumentNullException>("Right", () => _ = binary with { Right = null! });
 
-        AssertParam<ArgumentNullException>("Function", () =>
+        AssertParam<ArgumentNullException>("function", () =>
             new FunctionCall(null!, [argument]));
-        AssertParam<ArgumentNullException>("Arguments", () =>
+        AssertParam<ArgumentNullException>("arguments", () =>
             new FunctionCall(function, null!));
-        AssertParam<ArgumentException>("Arguments", () =>
+        AssertParam<ArgumentException>("arguments", () =>
             new FunctionCall(function, new ITerm[] { null! }));
-        AssertParam<ArgumentNullException>("Function", () =>
-            _ = functionCost with { Function = null! });
-        AssertParam<ArgumentNullException>("Arguments", () =>
-            _ = functionCost with { Arguments = null! });
-        AssertParam<ArgumentException>("Arguments", () =>
-            _ = functionCost with { Arguments = new ITerm[] { null! } });
     }
 
     [Fact]

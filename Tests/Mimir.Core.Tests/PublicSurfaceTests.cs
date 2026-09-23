@@ -56,7 +56,8 @@ public class PublicSurfaceTests
             parameters,
             Array.Empty<Literal<Atom<Static>>>(),
             fluentPreconditions,
-            Array.Empty<Literal<Atom<Derived>>>());
+            Array.Empty<Literal<Atom<Derived>>>(),
+            []);
         var costExpression = new FunctionCall(function, atomArguments);
 
         parameters.Add(new Variable("?y"));

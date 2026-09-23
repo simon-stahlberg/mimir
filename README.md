@@ -268,9 +268,9 @@ Schemas and grounded actions share these inspection properties:
 | Property | Contents |
 | --- | --- |
 | `precondition.literals` | Boolean requirements |
-| `precondition.comparisons` | Numeric requirements |
+| `precondition.numeric_conditions` | Numeric requirements |
 | `effect.literals` | Unconditional Boolean updates |
-| `effect.numeric_updates` | Unconditional numeric updates |
+| `effect.numeric_effects` | Unconditional numeric updates |
 | `conditional_effects` | Guarded or quantified Boolean clauses with `condition` and `effect` |
 | `conditional_numeric_effects` | Guarded or quantified numeric clauses with `condition` and `effect` |
 | `cost_expression` | An inspectable numeric expression |

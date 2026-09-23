@@ -31,7 +31,8 @@ public class EqualityPredicateTests
         Literal<Atom<Static>> yz = problem.NewLiteral(problem.NewAtom(equals, [y, z]), false);
         ConjunctiveCondition condition = problem.NewConjunctiveCondition(
             [x, y, z],
-            [xy, xz, yz]);
+            [xy, xz, yz],
+            []);
         var generator = new ConjunctiveConditionBindingGenerator();
         CompiledConjunctiveCondition compiled = generator.Compile(condition, problem);
 

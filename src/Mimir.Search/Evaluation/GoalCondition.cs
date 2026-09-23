@@ -10,18 +10,18 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
     public Problem Problem { get; }
     public IGroundedExpression? Expression { get; }
     internal IReadOnlyList<Literal<Fact>> GoalLiterals { get; }
-    public IReadOnlyList<GroundNumericComparison> Comparisons { get; }
+    public IReadOnlyList<GroundNumericComparison> NumericConditions { get; }
 
     private GoalCondition(
         Problem problem,
         IGroundedExpression? expression,
         IReadOnlyList<Literal<Fact>> goalLiterals,
-        IReadOnlyList<GroundNumericComparison>? comparisons = null)
+        IReadOnlyList<GroundNumericComparison> numericConditions)
     {
         Problem = problem;
         Expression = expression;
         GoalLiterals = Normalize(goalLiterals);
-        Comparisons = Array.AsReadOnly((comparisons ?? []).Distinct().ToArray());
+        NumericConditions = Array.AsReadOnly(numericConditions.Distinct().ToArray());
     }
 
     public static GoalCondition FromProblem(Problem problem)
@@ -49,10 +49,12 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
 
     public static GoalCondition FromLiterals(
         Problem problem,
-        IReadOnlyList<Literal<Fact>> literals, IReadOnlyList<GroundNumericComparison>? comparisons = null)
+        IReadOnlyList<Literal<Fact>> literals,
+        IReadOnlyList<GroundNumericComparison> numericConditions)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(literals);
+        ArgumentNullException.ThrowIfNull(numericConditions);
 
         foreach (Literal<Fact> literal in literals)
         {
@@ -65,15 +67,15 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         }
 
         var noVariables = new HashSet<Variable>();
-        foreach (GroundNumericComparison comparison in comparisons ?? [])
-            problem.ValidateNumericComparison(comparison, noVariables, nameof(comparisons));
-        return new GoalCondition(problem, expression: null, literals, comparisons);
+        foreach (GroundNumericComparison comparison in numericConditions)
+            problem.ValidateNumericComparison(comparison, noVariables, nameof(numericConditions));
+        return new GoalCondition(problem, expression: null, literals, numericConditions);
     }
 
     public static GoalCondition Always(Problem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
-        return new GoalCondition(problem, new GroundedTrue(), Array.Empty<Literal<Fact>>());
+        return new GoalCondition(problem, new GroundedTrue(), Array.Empty<Literal<Fact>>(), Array.Empty<GroundNumericComparison>());
     }
 
     public bool IsSatisfied(ExtendedState state)
@@ -88,9 +90,9 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
                 return false;
         }
 
-        for (int i = 0; i < Comparisons.Count; i++)
+        for (int i = 0; i < NumericConditions.Count; i++)
         {
-            if (!state.State.Holds(Comparisons[i]))
+            if (!state.State.Holds(NumericConditions[i]))
                 return false;
         }
 
@@ -110,9 +112,9 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
                 unsatisfied++;
         }
 
-        for (int i = 0; i < Comparisons.Count; i++)
+        for (int i = 0; i < NumericConditions.Count; i++)
         {
-            if (!state.State.Holds(Comparisons[i]))
+            if (!state.State.Holds(NumericConditions[i]))
                 unsatisfied++;
         }
 
@@ -134,16 +136,16 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
         return GoalLiterals.SequenceEqual(other.GoalLiterals) && HasSameComparisons(other);
     }
 
-    // Comparisons have no canonical order, so they are compared as sets; both lists are already distinct.
+    // NumericConditions have no canonical order, so they are compared as sets; both lists are already distinct.
     private bool HasSameComparisons(GoalCondition other)
     {
-        if (Comparisons.Count != other.Comparisons.Count)
+        if (NumericConditions.Count != other.NumericConditions.Count)
             return false;
 
-        foreach (GroundNumericComparison comparison in Comparisons)
+        foreach (GroundNumericComparison comparison in NumericConditions)
         {
             bool found = false;
-            foreach (GroundNumericComparison candidate in other.Comparisons)
+            foreach (GroundNumericComparison candidate in other.NumericConditions)
                 found |= comparison.Equals(candidate);
             if (!found)
                 return false;
@@ -162,7 +164,7 @@ public sealed class GoalCondition : IEquatable<GoalCondition>
             hash.Add(literal);
 
         int comparisonHash = 0;
-        foreach (GroundNumericComparison comparison in Comparisons)
+        foreach (GroundNumericComparison comparison in NumericConditions)
             comparisonHash ^= comparison.GetHashCode();
         hash.Add(comparisonHash);
         return hash.ToHashCode();

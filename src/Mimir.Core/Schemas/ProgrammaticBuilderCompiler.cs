@@ -135,7 +135,7 @@ internal static class ProgrammaticDomainCompiler
     {
         var effects = new List<IEffect>();
         effects.AddRange(action.Effects.Select(BuildSimpleEffect));
-        effects.AddRange(action.NumericUpdates.Select(BuildNumericUpdate));
+        effects.AddRange(action.NumericEffects.Select(BuildNumericUpdate));
         effects.AddRange(action.ConditionalEffects.Select(BuildConditionalEffect));
         // Without :action-costs the only permitted explicit cost is the implicit unit cost.
         if (actionCostsEnabled && action.Cost is not null)

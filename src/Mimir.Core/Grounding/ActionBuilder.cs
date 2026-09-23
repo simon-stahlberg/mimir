@@ -151,11 +151,9 @@ internal static class ActionBuilder
                     bindings,
                     workspace,
                     workspace.ActionDerivedConditions);
-                GroundNumericComparison[] comparisons = plan.NumericPreconditions.Length == 0
-                    ? Array.Empty<GroundNumericComparison>()
-                    : new GroundNumericComparison[plan.NumericPreconditions.Length];
-                for (int i = 0; i < comparisons.Length; i++)
-                    comparisons[i] = plan.NumericPreconditions[i].Ground(problem, bindings);
+                var numericPreconditions = new GroundNumericComparison[plan.NumericPreconditions.Length];
+                for (int i = 0; i < numericPreconditions.Length; i++)
+                    numericPreconditions[i] = plan.NumericPreconditions[i].Ground(problem, bindings);
                 preconditions = new ActionPreconditions(
                     problem.Context,
                     positiveFluent,
@@ -163,7 +161,7 @@ internal static class ActionBuilder
                     positiveStatic,
                     negativeStatic,
                     workspace.ActionDerivedConditions,
-                    comparisons);
+                    numericPreconditions);
             }
 
             if (effects is null)

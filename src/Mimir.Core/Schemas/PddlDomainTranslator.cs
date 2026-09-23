@@ -220,7 +220,7 @@ internal sealed class PddlDomainTranslator
             IReadOnlyList<Literal<Atom<Static>>> StaticPreconditions,
             IReadOnlyList<Literal<Atom<Derived>>> DerivedPreconditions,
             IReadOnlyList<ConditionalEffectBase> Effects,
-            IReadOnlyList<NumericComparison> Comparisons,
+            IReadOnlyList<NumericComparison> NumericPreconditions,
             NumericExpression? ExplicitCostExpression)>();
 
         for (int actionIndex = 0; actionIndex < astDomain.Actions.Length; actionIndex++)
@@ -290,7 +290,7 @@ internal sealed class PddlDomainTranslator
                 pendingAction.FluentPreconditions,
                 pendingAction.StaticPreconditions,
                 pendingAction.DerivedPreconditions,
-                pendingAction.Comparisons,
+                pendingAction.NumericPreconditions,
                 pendingAction.Effects.OfType<ConditionalEffect>().ToArray(),
                 pendingAction.Effects.OfType<ConditionalNumericEffect>().ToArray(),
                 pendingAction.ExplicitCostExpression ?? new NumericConstant(defaultActionCost)));

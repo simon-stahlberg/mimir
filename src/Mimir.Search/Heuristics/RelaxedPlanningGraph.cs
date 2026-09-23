@@ -261,7 +261,7 @@ internal sealed class GroundedRelaxedPlanningGraph
     internal void EnsureSupportedGoal(GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
-        if (goal.Comparisons.Count > 0)
+        if (goal.NumericConditions.Count > 0)
             throw new NotSupportedException("Grounded RPG heuristics do not support numeric goals.");
         if (!ReferenceEquals(goal.Problem, _problem))
             throw new ArgumentException("Goal belongs to a different problem instance than this heuristic.", nameof(goal));

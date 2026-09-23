@@ -190,7 +190,7 @@ public sealed class DomainBuilder
             ValidateLiteral(effect, scope, isEffect: true, $"action '{action.Name}' effect");
 
         foreach (LogicalExpressionSpec expression in action.Expressions) ValidateLogicalExpression(expression.Node, scope, action.Name);
-        foreach (BuilderNumericUpdateSpec update in action.NumericUpdates)
+        foreach (BuilderNumericUpdateSpec update in action.NumericEffects)
         {
             ValidateNumericExpression(update.Target.Node, scope, $"action '{action.Name}'");
             ValidateNumericExpression(update.Expression.Node, scope, $"action '{action.Name}'");

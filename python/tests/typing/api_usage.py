@@ -309,7 +309,7 @@ def inspect_numeric_values(problem: pymimir.Problem) -> None:
     satisfied: bool = problem.initial_state.holds(condition)
     schema: pymimir.Action = problem.domain.actions[0]
     cost: pymimir.NumericExpression = schema.cost_expression
-    requirements: tuple[pymimir.NumericComparison, ...] = schema.precondition.comparisons
-    updates: tuple[pymimir.NumericUpdate, ...] = schema.effect.numeric_updates
+    requirements: tuple[pymimir.NumericComparison, ...] = schema.precondition.numeric_conditions
+    updates: tuple[pymimir.NumericUpdate, ...] = schema.effect.numeric_effects
     assert isinstance(truth, bool) and isinstance(value, float) and isinstance(satisfied, bool)
     assert cost is not None and requirements is not None and updates is not None

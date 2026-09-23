@@ -59,22 +59,18 @@ public class CollectionImmutabilityTests
     }
 
     [Fact]
-    public void NumericFunctionActionCostExpressionCopiesReplacementArguments()
+    public void FunctionCallCopiesArguments()
     {
         var functionParameter = new Variable("?value");
         var function = new NumericFunction("cost", [functionParameter]);
         var first = new Constant("first", "object");
         var second = new Constant("second", "object");
-        var replacementArguments = new List<ITerm> { first };
-        var original = new FunctionCall(function, [first]);
-        FunctionCall replacement = original with
-        {
-            Arguments = replacementArguments
-        };
+        var arguments = new List<ITerm> { first };
+        var call = new FunctionCall(function, arguments);
 
-        replacementArguments[0] = second;
+        arguments[0] = second;
 
-        Assert.Same(first, Assert.Single(replacement.Arguments));
+        Assert.Same(first, Assert.Single(call.Arguments));
     }
 
     [Fact]
@@ -114,7 +110,8 @@ public class CollectionImmutabilityTests
         Literal<Atom<Static>> literal = problem.NewLiteral(atom, isPositive: true);
         ConjunctiveCondition condition = problem.NewConjunctiveCondition(
             [first, second],
-            [literal]);
+            [literal],
+            []);
         CompiledConjunctiveCondition compiled =
             new ConjunctiveConditionBindingGenerator().Compile(condition, problem);
 

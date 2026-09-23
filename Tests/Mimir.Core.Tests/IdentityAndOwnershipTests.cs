@@ -288,7 +288,7 @@ public class IdentityAndOwnershipTests
         Variable variable = problem.NewVariable("?temporary", "thing");
         Atom<Fluent> atom = problem.NewAtom(predicate, [variable]);
         Literal<Atom<Fluent>> literal = problem.NewLiteral(atom, isPositive: true);
-        ConjunctiveCondition condition = problem.NewConjunctiveCondition([variable], [literal]);
+        ConjunctiveCondition condition = problem.NewConjunctiveCondition([variable], [literal], []);
         return (new WeakReference<Variable>(variable), condition);
     }
 

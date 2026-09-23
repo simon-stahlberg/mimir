@@ -22,7 +22,8 @@ public sealed class DeadEndDetectorTests
         var detector = new H2DeadEndDetector(problem);
         GoalCondition goal = GoalCondition.FromProblem(problem);
         GoalCondition hindsight = GoalCondition.FromLiterals(problem,
-            [new Literal<Fact>(SearchTestHelpers.GetFluentFact(problem, "dead"), Polarity.Positive)]);
+            [new Literal<Fact>(SearchTestHelpers.GetFluentFact(problem, "dead"), Polarity.Positive)],
+            []);
 
         Assert.Equal(2d, heuristic.Evaluate(problem.InitialState.Expand()).Value);
         Assert.True(detector.IsDeadEnd(dead, goal));

@@ -406,7 +406,7 @@ public class StateTests
         TestProblemFixture fixture = TestProblemFixture.Create(["p"]);
         Fact<Fluent> fact = fixture.RegisterFluent("p");
         ulong[] bitboard = [1UL];
-        var state = new State(fixture.Context, bitboard);
+        var state = new State(fixture.Context, bitboard, []);
         int hashCode = state.GetHashCode();
         var states = new HashSet<State> { state };
 
@@ -421,8 +421,8 @@ public class StateTests
     public void EqualStatesWithTrailingZeroWords_HaveEqualHashCodes()
     {
         TestProblemFixture fixture = TestProblemFixture.Create(["p"]);
-        State compact = new(fixture.Context, [1UL]);
-        State padded = new(fixture.Context, [1UL, 0UL, 0UL]);
+        State compact = new(fixture.Context, [1UL], []);
+        State padded = new(fixture.Context, [1UL, 0UL, 0UL], []);
 
         Assert.Equal(compact, padded);
         Assert.Equal(compact.GetHashCode(), padded.GetHashCode());

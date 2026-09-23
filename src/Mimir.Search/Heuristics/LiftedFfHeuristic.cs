@@ -526,7 +526,7 @@ public sealed class LiftedFfHeuristic : IHeuristic
 
     private static Fact<Fluent>[] CompileGoals(GoalCondition goal)
     {
-        if (goal.Comparisons.Count > 0) throw new NotSupportedException("Lifted FF does not support numeric goals.");
+        if (goal.NumericConditions.Count > 0) throw new NotSupportedException("Lifted FF does not support numeric goals.");
         var goalLiterals = goal.GoalLiterals;
         if (goalLiterals == null)
             throw new NotSupportedException("Lifted FF v1 only supports positive conjunctive fluent goals.");

@@ -89,7 +89,8 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             action.FluentPreconditions,
             action.StaticPreconditions,
             action.DerivedPreconditions,
-            actionScope, action.NumericPreconditions);
+            action.NumericPreconditions,
+            actionScope);
         ImmutableArray<IEffect>.Builder effects = ImmutableArray.CreateBuilder<IEffect>(
             action.Effects.Count + action.NumericEffects.Count + (_actionCostsEnabled ? 1 : 0));
 
@@ -210,7 +211,8 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         IReadOnlyList<Literal<Atom<Fluent>>> fluentLiterals,
         IReadOnlyList<Literal<Atom<Static>>> staticLiterals,
         IReadOnlyList<Literal<Atom<Derived>>> derivedLiterals,
-        IReadOnlySet<Variable> variableScope, IReadOnlyList<NumericComparison>? comparisons = null)
+        IReadOnlyList<NumericComparison> numericConditions,
+        IReadOnlySet<Variable> variableScope)
     {
         var expressions = new List<ILogicalExpression>(
             fluentLiterals.Count + staticLiterals.Count + derivedLiterals.Count);
@@ -218,7 +220,7 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
         AddLiterals(fluentLiterals, expressions, variableScope);
         AddLiterals(staticLiterals, expressions, variableScope);
         AddLiterals(derivedLiterals, expressions, variableScope);
-        foreach (NumericComparison comparison in comparisons ?? [])
+        foreach (NumericComparison comparison in numericConditions)
             expressions.Add(BuildComparison(comparison, variableScope));
 
         return expressions.Count switch
@@ -262,7 +264,8 @@ internal sealed class ProgrammaticDomainDefinitionBuilder
             effect.FluentConditions,
             effect.StaticConditions,
             effect.DerivedConditions,
-            effectScope, effect.NumericConditions);
+            effect.NumericConditions,
+            effectScope);
         IEffect innerEffect = effect switch
         {
             ConditionalEffect literal => BuildLiteralEffect(literal.Effect, effectScope),

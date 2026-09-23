@@ -14,7 +14,7 @@ public class State : IEquatable<State>
         ArgumentNullException.ThrowIfNull(condition);
         if (!ReferenceEquals(condition.Problem, Context.Problem))
             throw new ArgumentException("Condition belongs to a different problem.");
-        return condition.Literals.All(Holds) && condition.Comparisons.All(Holds);
+        return condition.Literals.All(Holds) && condition.NumericConditions.All(Holds);
     }
 
     public bool Holds(NumericComparison comparison)
@@ -32,11 +32,11 @@ public class State : IEquatable<State>
     internal ReadOnlySpan<double> NumericValues => _numericValues;
 
     internal State(InstanceContext context, ulong[] bitboard,
-        double[]? numericValues = null, bool takeOwnership = false)
+        double[] numericValues, bool takeOwnership = false)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(bitboard);
-        numericValues ??= Array.Empty<double>();
+        ArgumentNullException.ThrowIfNull(numericValues);
         if (numericValues.Length != context.NumericLayout.Count)
             throw new ArgumentException($"State requires {context.NumericLayout.Count} numeric values, received {numericValues.Length}.", nameof(numericValues));
 

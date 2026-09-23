@@ -56,70 +56,37 @@ public enum NumericOperator
     Divide
 }
 
-public sealed record NumericBinaryExpression(
-    NumericOperator Operator,
-    NumericExpression Left,
-    NumericExpression Right) : NumericExpression
+public sealed record NumericBinaryExpression : NumericExpression
 {
-    private NumericOperator _operator = RequireOperator(Operator);
-    public NumericOperator Operator
-    {
-        get => _operator;
-        init => _operator = RequireOperator(value);
-    }
+    public NumericOperator Operator { get; }
+    public NumericExpression Left { get; }
+    public NumericExpression Right { get; }
 
-    private static NumericOperator RequireOperator(NumericOperator operation)
+    public NumericBinaryExpression(NumericOperator operation, NumericExpression left, NumericExpression right)
     {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
         if (!Enum.IsDefined(operation)) throw new ArgumentOutOfRangeException(nameof(operation));
-        return operation;
-    }
-
-    private NumericExpression _left = Left ?? throw new ArgumentNullException(nameof(Left));
-    private NumericExpression _right = Right ?? throw new ArgumentNullException(nameof(Right));
-
-    public NumericExpression Left
-    {
-        get => _left;
-        init => _left = value ?? throw new ArgumentNullException(nameof(Left));
-    }
-
-    public NumericExpression Right
-    {
-        get => _right;
-        init => _right = value ?? throw new ArgumentNullException(nameof(Right));
+        Operator = operation;
+        Left = left;
+        Right = right;
     }
 }
 
-public sealed record FunctionCall(
-    NumericFunction Function,
-    IReadOnlyList<ITerm> Arguments) : NumericExpression
+public sealed record FunctionCall : NumericExpression
 {
-    private NumericFunction _function = Function ?? throw new ArgumentNullException(nameof(Function));
-    private IReadOnlyList<ITerm> _arguments = CopyArguments(Arguments, nameof(Arguments));
+    public NumericFunction Function { get; }
+    public IReadOnlyList<ITerm> Arguments { get; }
 
-    public NumericFunction Function
+    public FunctionCall(NumericFunction function, IReadOnlyList<ITerm> arguments)
     {
-        get => _function;
-        init => _function = value ?? throw new ArgumentNullException(nameof(Function));
-    }
-
-    public IReadOnlyList<ITerm> Arguments
-    {
-        get => _arguments;
-        init => _arguments = CopyArguments(value, nameof(Arguments));
-    }
-
-    private static IReadOnlyList<ITerm> CopyArguments(
-        IReadOnlyList<ITerm> arguments,
-        string parameterName)
-    {
-        ArgumentNullException.ThrowIfNull(arguments, parameterName);
-
+        ArgumentNullException.ThrowIfNull(function);
+        ArgumentNullException.ThrowIfNull(arguments);
         ITerm[] copy = arguments.ToArray();
         if (copy.Any(argument => argument is null))
-            throw new ArgumentException("The collection cannot contain null values.", parameterName);
-
-        return Array.AsReadOnly(copy);
+            throw new ArgumentException("The collection cannot contain null values.", nameof(arguments));
+        Function = function;
+        Arguments = Array.AsReadOnly(copy);
     }
 
     public bool Equals(FunctionCall? other)
@@ -230,8 +197,8 @@ public sealed record GroundFunctionCall : NumericExpression
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(Problem);
-        hash.Add(Function);
+        hash.Add(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Problem));
+        hash.Add(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(Function));
         ValueSequence.AddReferencesToHash(ref hash, Arguments);
         return hash.ToHashCode();
     }

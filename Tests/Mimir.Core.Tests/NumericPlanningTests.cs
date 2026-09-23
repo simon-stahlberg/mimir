@@ -30,8 +30,8 @@ public class NumericPlanningTests
         var action = problem.GroundAction(problem.Domain.Actions[0], problem.ObjectLookup["a"]);
         GroundFunctionCall fuel = problem.FunctionCall("fuel", "a");
         State initial = problem.InitialState;
-        Assert.Single(action.Precondition.Comparisons);
-        Assert.Single(action.Effect.NumericUpdates);
+        Assert.Single(action.Precondition.NumericConditions);
+        Assert.Single(action.Effect.NumericEffects);
         Assert.True(action.IsApplicable(initial.Expand()));
         Assert.Equal(4, action.Cost);
         State next = initial.Expand().Apply(action);

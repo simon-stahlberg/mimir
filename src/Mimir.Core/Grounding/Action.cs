@@ -88,7 +88,7 @@ internal sealed class ActionPreconditions :
     private readonly bool _staticDerivedPreconditionsSatisfied;
     private readonly Literal<Fact<Derived>>[] _stateDependentDerivedPreconditions;
 
-    internal IReadOnlyList<GroundNumericComparison> Comparisons { get; }
+    internal IReadOnlyList<GroundNumericComparison> NumericPreconditions { get; }
     internal OffsetBitboard PositiveFluent { get; }
     internal OffsetBitboard NegativeFluent { get; }
     internal OffsetBitboard PositiveStatic { get; }
@@ -101,13 +101,13 @@ internal sealed class ActionPreconditions :
         OffsetBitboard positiveStatic,
         OffsetBitboard negativeStatic,
         IReadOnlyList<Literal<Fact<Derived>>> derivedPreconditions,
-        IReadOnlyList<GroundNumericComparison>? comparisons = null)
+        IReadOnlyList<GroundNumericComparison> numericPreconditions)
         : base(GetDerivedPreconditions(derivedPreconditions))
     {
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(numericPreconditions);
 
-        Comparisons = comparisons is null || comparisons.Count == 0
-            ? Array.Empty<GroundNumericComparison>() : Array.AsReadOnly(comparisons.ToArray());
+        NumericPreconditions = Array.AsReadOnly(numericPreconditions.ToArray());
         PositiveFluent = positiveFluent;
         NegativeFluent = negativeFluent;
         PositiveStatic = positiveStatic;
@@ -208,7 +208,7 @@ public class Action : IEquatable<Action>
 {
     public GroundConjunctiveCondition Precondition => new(Context.Problem,
         GroundConditionLiterals.Read(Context, PositiveFluentPreconditions, NegativeFluentPreconditions,
-            PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions), _preconditions.Comparisons);
+            PositiveStaticPreconditions, NegativeStaticPreconditions, DerivedPreconditions), _preconditions.NumericPreconditions);
 
     public GroundActionEffect Effect => new(GroundConditionLiterals.Read(Context,
         AddEffects, DeleteEffects, default, default, Array.Empty<Literal<Fact<Derived>>>()), _effects.NumericEffects);
@@ -234,7 +234,7 @@ public class Action : IEquatable<Action>
         => _preconditions.PositiveStatic;
     internal OffsetBitboard NegativeStaticPreconditions
         => _preconditions.NegativeStatic;
-    internal IReadOnlyList<GroundNumericComparison> NumericPreconditions => _preconditions.Comparisons;
+    internal IReadOnlyList<GroundNumericComparison> NumericPreconditions => _preconditions.NumericPreconditions;
     internal IReadOnlyList<GroundNumericUpdate> NumericEffects => _effects.NumericEffects;
     internal OffsetBitboard AddEffects => _effects.Add;
     internal OffsetBitboard DeleteEffects => _effects.Delete;
@@ -277,7 +277,8 @@ public class Action : IEquatable<Action>
             negativeFluentPreconditions,
             positiveStaticPreconditions,
             negativeStaticPreconditions,
-            derivedPreconditions);
+            derivedPreconditions,
+            Array.Empty<GroundNumericComparison>());
         _effects = new ActionEffects(
             addEffects,
             deleteEffects,
@@ -347,7 +348,7 @@ public class Action : IEquatable<Action>
 
     internal bool AreNumericPreconditionsSatisfied(State state)
     {
-        foreach (GroundNumericComparison comparison in _preconditions.Comparisons)
+        foreach (GroundNumericComparison comparison in _preconditions.NumericPreconditions)
             if (!state.Holds(comparison)) return false;
         return true;
     }

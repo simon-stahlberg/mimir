@@ -286,13 +286,13 @@ class GroundLiteral(_Handle):
 class Effect:
     """A lifted effect represented as parameters plus effect literals."""
 
-    __slots__ = ("_parameters", "_literals", "_owner", "_numeric_updates")
+    __slots__ = ("_parameters", "_literals", "_owner", "_numeric_effects")
 
     _parameters: tuple[Variable, ...]
     _literals: tuple[Literal, ...]
     _owner: Domain | Problem | None
 
-    _numeric_updates: tuple[NumericUpdate, ...]
+    _numeric_effects: tuple[NumericUpdate, ...]
 
     def __init__(self) -> None:
         raise TypeError("effects are created by actions")
@@ -303,7 +303,7 @@ class Effect:
         parameters: Sequence[Variable],
         literals: Sequence[Literal],
         owner: Domain | Problem | None,
-        numeric_updates: Sequence[NumericUpdate] = (),
+        numeric_effects: Sequence[NumericUpdate] = (),
     ) -> "Effect":
         values = [*parameters, *literals]
         if owner is None and values:
@@ -311,7 +311,7 @@ class Effect:
         if any(value._owner != owner for value in values):
             raise ValueError("effect values must have the same owner")
         value = object.__new__(cls)
-        value._numeric_updates = tuple(numeric_updates)
+        value._numeric_effects = tuple(numeric_effects)
         value._parameters = tuple(parameters)
         value._literals = tuple(literals)
         value._owner = owner
@@ -329,8 +329,8 @@ class Effect:
         return iter(self._literals)
 
     @property
-    def numeric_updates(self) -> tuple[NumericUpdate, ...]:
-        return self._numeric_updates
+    def numeric_effects(self) -> tuple[NumericUpdate, ...]:
+        return self._numeric_effects
 
     def __str__(self) -> str:
         return "(and " + " ".join(str(l) for l in self._literals) + ")"
@@ -344,11 +344,11 @@ class Effect:
             and self._owner == other._owner
             and self._parameters == other._parameters
             and self._literals == other._literals
-            and self.numeric_updates == other.numeric_updates
+            and self.numeric_effects == other.numeric_effects
         )
 
     def __hash__(self) -> int:
-        return hash(("Effect", self._owner, tuple(self._parameters), tuple(self._literals), self.numeric_updates))
+        return hash(("Effect", self._owner, tuple(self._parameters), tuple(self._literals), self.numeric_effects))
 
 
 class _ConditionalEffectBase(_Handle):
@@ -433,14 +433,14 @@ class ConditionalNumericEffect(_ConditionalEffectBase):
 class GroundEffect:
     """The unconditional add/delete lists of a grounded Action."""
 
-    __slots__ = ("_action", "_problem", "_add_list", "_delete_list", "_numeric_updates")
+    __slots__ = ("_action", "_problem", "_add_list", "_delete_list", "_numeric_effects")
 
     _action: GroundAction | None
     _problem: Problem
     _add_list: tuple[GroundAtom, ...] | None
     _delete_list: tuple[GroundAtom, ...] | None
 
-    _numeric_updates: tuple[GroundNumericUpdate, ...]
+    _numeric_effects: tuple[GroundNumericUpdate, ...]
 
     def __init__(self) -> None:
         raise TypeError("ground effects are created by grounded actions")
@@ -453,13 +453,13 @@ class GroundEffect:
         action: "GroundAction" | None = None,
         add_atoms: Sequence[GroundAtom] | None = None,
         delete_atoms: Sequence[GroundAtom] | None = None,
-        numeric_updates: Sequence[GroundNumericUpdate] = (),
+        numeric_effects: Sequence[GroundNumericUpdate] = (),
     ) -> "GroundEffect":
         supplied_atoms = [*(add_atoms or ()), *(delete_atoms or ())]
         if any(atom._owner != problem for atom in supplied_atoms):
             raise ValueError("ground effect atoms must belong to its problem")
         value = object.__new__(cls)
-        value._numeric_updates = tuple(numeric_updates)
+        value._numeric_effects = tuple(numeric_effects)
         value._action = action
         value._problem = problem
         value._add_list = tuple(add_atoms) if add_atoms is not None else None
@@ -495,10 +495,10 @@ class GroundEffect:
         )
 
     @property
-    def numeric_updates(self) -> tuple[GroundNumericUpdate, ...]:
+    def numeric_effects(self) -> tuple[GroundNumericUpdate, ...]:
         if self._action is not None:
             return cast(tuple[GroundNumericUpdate, ...], _read_updates(self._action._handle, self._problem))
-        return self._numeric_updates
+        return self._numeric_effects
 
     @property
     def literals(self) -> tuple[GroundLiteral, ...]:
@@ -519,13 +519,13 @@ class GroundEffect:
             and self._problem == other._problem
             and self.add_atoms == other.add_atoms
             and self.delete_atoms == other.delete_atoms
-            and self.numeric_updates == other.numeric_updates
+            and self.numeric_effects == other.numeric_effects
         )
 
     def __hash__(self) -> int:
         return hash((
             "GroundEffect", self._problem,
-            self.add_atoms, self.delete_atoms, self.numeric_updates
+            self.add_atoms, self.delete_atoms, self.numeric_effects
         ))
 
 
@@ -642,7 +642,7 @@ class GroundConditionalNumericEffect(_GroundConditionalEffectBase):
     @property
     def effect(self) -> GroundEffect:
         updates = cast(tuple[GroundNumericUpdate, ...], _read_updates(self._handle, self._problem))
-        return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(), numeric_updates=updates)
+        return GroundEffect._from_parts(self._problem, add_atoms=(), delete_atoms=(), numeric_effects=updates)
 
 # =============================================================================
 # Action (schema) and GroundAction
@@ -1260,9 +1260,9 @@ class Problem(_Handle):
         self,
         *literals: Literal,
         variables: Iterable[Variable] = (),
-        comparisons: Iterable[NumericComparison] = (),
+        numeric_conditions: Iterable[NumericComparison] = (),
     ) -> "ConjunctiveCondition":
-        comparison_values = tuple(comparisons)
+        comparison_values = tuple(numeric_conditions)
         variable_values = list(variables)
         literal_values = list(literals)
         if any(not isinstance(value, Variable) for value in variable_values):
@@ -1292,9 +1292,9 @@ class Problem(_Handle):
     def ground_condition(
         self,
         *items: GroundAtom | GroundLiteral,
-        comparisons: Iterable[NumericComparison] = (),
+        numeric_conditions: Iterable[NumericComparison] = (),
     ) -> "GroundConjunctiveCondition":
-        comparison_values = tuple(comparisons)
+        comparison_values = tuple(numeric_conditions)
         if any(not isinstance(item, (GroundAtom, GroundLiteral)) for item in items):
             raise TypeError("items must be GroundAtom or GroundLiteral values")
         literals = [
@@ -1628,7 +1628,7 @@ class State(_Handle):
 class ConjunctiveCondition(_Handle):
     """A lifted conjunctive condition."""
 
-    _comparisons: tuple[NumericComparison, ...]
+    _numeric_conditions: tuple[NumericComparison, ...]
 
     def __init__(self) -> None:
         raise TypeError("use Problem.condition()")
@@ -1644,7 +1644,7 @@ class ConjunctiveCondition(_Handle):
         owner: Domain | Problem,
         parameters: Sequence[Variable],
         literals: Sequence[Literal],
-        comparisons: Sequence[NumericComparison] = (),
+        numeric_conditions: Sequence[NumericComparison] = (),
     ) -> "ConjunctiveCondition":
         if handle is None:
             self = object.__new__(cls)
@@ -1659,7 +1659,7 @@ class ConjunctiveCondition(_Handle):
             self._problem = owner if isinstance(owner, Problem) else None
             self._parameters = list(parameters)
             self._literals = list(literals)
-            self._comparisons = tuple(comparisons)
+            self._numeric_conditions = tuple(numeric_conditions)
             owned_values = [*self._parameters, *self._literals]
             if any(value._owner != owner for value in owned_values):
                 raise ValueError("condition values must have the same owner")
@@ -1677,8 +1677,8 @@ class ConjunctiveCondition(_Handle):
         return tuple(self._parameters)
 
     @property
-    def comparisons(self) -> tuple[NumericComparison, ...]:
-        return self._comparisons
+    def numeric_conditions(self) -> tuple[NumericComparison, ...]:
+        return self._numeric_conditions
 
     @property
     def literals(self) -> tuple[Literal, ...]:
@@ -1737,8 +1737,8 @@ class ConjunctiveCondition(_Handle):
                 raise ValueError("schema comparison contains an unsupported numeric expression")
 
             mapped_comparisons = [map_numeric(c.left)._compare(c.operator, map_numeric(c.right))
-                                  for c in self.comparisons]
-            mapped = problem.condition(*mapped_literals, variables=mapped_parameters, comparisons=mapped_comparisons)
+                                  for c in self.numeric_conditions]
+            mapped = problem.condition(*mapped_literals, variables=mapped_parameters, numeric_conditions=mapped_comparisons)
             mapped_bindings = mapped.bindings(state, limit=limit)
             return tuple(
                 {
@@ -1748,7 +1748,7 @@ class ConjunctiveCondition(_Handle):
                 for binding in mapped_bindings
             )
         if self._handle == 0:
-            backed = problem.condition(*self._literals, variables=self._parameters, comparisons=self.comparisons)
+            backed = problem.condition(*self._literals, variables=self._parameters, numeric_conditions=self.numeric_conditions)
             return backed.bindings(state, limit=limit)
         list_handle = lib.mimir_conjunctive_condition_ground(
             self._handle, state._handle, native_limit
@@ -1839,7 +1839,7 @@ class ConjunctiveCondition(_Handle):
             self._owner == other._owner
             and self._parameters == other._parameters
             and self._literals == other._literals
-            and self.comparisons == other.comparisons
+            and self.numeric_conditions == other.numeric_conditions
         )
 
     def __hash__(self) -> int:
@@ -1847,46 +1847,46 @@ class ConjunctiveCondition(_Handle):
             return value_hash(self._handle)
         return hash((
             "ConjunctiveCondition", self._owner,
-            tuple(self._parameters), tuple(self._literals), self.comparisons,
+            tuple(self._parameters), tuple(self._literals), self.numeric_conditions,
         ))
 
 
 class GroundConjunctiveCondition(_NativeOwner):
     """A grounded conjunctive condition: a list of ground literals attached to a problem."""
 
-    __slots__ = ("_literals", "_problem", "_handle", "_finalizer", "_comparisons", "__weakref__")
+    __slots__ = ("_literals", "_problem", "_handle", "_finalizer", "_numeric_conditions", "__weakref__")
 
     _literals: list[GroundLiteral]
     _problem: Problem
     _handle: int
     _finalizer: _Finalizer
 
-    _comparisons: tuple[GroundNumericComparison, ...]
+    _numeric_conditions: tuple[GroundNumericComparison, ...]
 
     def __init__(self) -> None:
         raise TypeError("use Problem.ground_condition()")
 
     @classmethod
     def _from_literals(
-        cls, literals: Sequence[GroundLiteral], problem: Problem, comparisons: Sequence[NumericComparison] = ()
+        cls, literals: Sequence[GroundLiteral], problem: Problem, numeric_conditions: Sequence[NumericComparison] = ()
     ) -> "GroundConjunctiveCondition":
         if any(literal._owner != problem for literal in literals):
             raise ValueError("ground literals must belong to this problem")
         literal_values = list(literals)
         ptr, _array = _handle_array([literal._handle for literal in literal_values])
-        comparison_values = tuple(comparisons)
+        comparison_values = tuple(numeric_conditions)
         comparison_ptr, _comparison_array = _handle_array(_comparison_handles(comparison_values))
         grounded: list[GroundNumericComparison] = []
         for comparison in comparison_values:
             if not isinstance(comparison, GroundNumericComparison):
-                raise ValueError("ground comparisons cannot contain variables")
+                raise ValueError("ground numeric conditions cannot contain variables")
             grounded.append(comparison)
         self = object.__new__(cls)
         handle = lib.mimir_goal_create(problem._handle, ptr, len(literal_values), comparison_ptr, len(grounded))
         finalizer = _create_finalizer(self, free_handle, handle)
         try:
             self._literals = literal_values
-            self._comparisons = tuple(grounded)
+            self._numeric_conditions = tuple(grounded)
             self._problem = problem
             self._handle = handle
             self._finalizer = finalizer
@@ -1900,8 +1900,8 @@ class GroundConjunctiveCondition(_NativeOwner):
         return self._problem
 
     @property
-    def comparisons(self) -> tuple[GroundNumericComparison, ...]:
-        return self._comparisons
+    def numeric_conditions(self) -> tuple[GroundNumericComparison, ...]:
+        return self._numeric_conditions
 
     @property
     def literals(self) -> tuple[GroundLiteral, ...]:
@@ -1973,7 +1973,7 @@ class GroundConjunctiveCondition(_NativeOwner):
                 return lift_numeric(expression.left)._binary(expression.operator, lift_numeric(expression.right))
             raise ValueError("expected a grounded numeric expression")
 
-        comparisons = tuple(lift_numeric(c.left)._compare(c.operator, lift_numeric(c.right)) for c in self.comparisons)
+        numeric_conditions = tuple(lift_numeric(c.left)._compare(c.operator, lift_numeric(c.right)) for c in self.numeric_conditions)
         variables = list(variable_map.values())
         if add_inequalities and problem.domain.uses_equality:
             equals = problem.domain.predicate("=")
@@ -1983,7 +1983,7 @@ class GroundConjunctiveCondition(_NativeOwner):
                     atom = problem.lifted_atom(equals, variables[i], variables[j])
                     lifted_literals.append(problem.literal(atom, positive=False))
 
-        return problem.condition(*lifted_literals, variables=variables, comparisons=comparisons)
+        return problem.condition(*lifted_literals, variables=variables, numeric_conditions=numeric_conditions)
 
     def holds(self, state: State) -> bool:
         if not isinstance(state, State):
@@ -1999,7 +1999,7 @@ class GroundConjunctiveCondition(_NativeOwner):
         return len(self._literals)
 
     def __str__(self) -> str:
-        return "(and " + " ".join([*(str(l) for l in self._literals), *(str(c) for c in self._comparisons)]) + ")"
+        return "(and " + " ".join([*(str(l) for l in self._literals), *(str(c) for c in self._numeric_conditions)]) + ")"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -2009,11 +2009,11 @@ class GroundConjunctiveCondition(_NativeOwner):
             isinstance(other, GroundConjunctiveCondition)
             and self._problem == other._problem
             and self._literals == other._literals
-            and self.comparisons == other.comparisons
+            and self.numeric_conditions == other.numeric_conditions
         )
 
     def __hash__(self) -> int:
-        return hash(("GroundConjunctiveCondition", self._problem, tuple(self._literals), self.comparisons))
+        return hash(("GroundConjunctiveCondition", self._problem, tuple(self._literals), self.numeric_conditions))
 
 
 def _predicate_type(

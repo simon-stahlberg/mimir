@@ -55,15 +55,15 @@ def test_schema_and_ground_inspection_have_matching_shapes(problem):
     action = problem.action("drive", "truck1")
     for value in (schema, action):
         assert len(value.precondition.literals) == 2
-        assert value.precondition.comparisons == ()
+        assert value.precondition.numeric_conditions == ()
         assert len(value.effect.literals) == 2
-        assert value.effect.numeric_updates == ()
+        assert value.effect.numeric_effects == ()
         assert len(value.conditional_effects) == 1
         conditional = value.conditional_effects[0]
         assert len(conditional.condition.literals) == 1
-        assert conditional.condition.comparisons == ()
+        assert conditional.condition.numeric_conditions == ()
         assert len(conditional.effect.literals) == 1
-        assert conditional.effect.numeric_updates == ()
+        assert conditional.effect.numeric_effects == ()
         assert isinstance(value.cost_expression, m.NumericBinaryExpression)
         assert value.cost_expression.operator is m.NumericOperator.ADD
         assert value.cost_expression.right.value == 1
@@ -136,10 +136,10 @@ def test_numeric_builders_execute_and_inspect():
                .goal().add(ground.equal_to(0)).add("done", "a").close().build())
     action = problem.action("drive", "a")
     fuel_ref = problem.function_call("fuel", "a")
-    assert len(domain.action("drive").precondition.comparisons) == 1
-    assert domain.action("drive").effect.numeric_updates[0].operator == m.NumericUpdateOperator.DECREASE
-    assert action.effect.numeric_updates[0].target == fuel_ref
-    assert len(action.conditional_effects[0].condition.comparisons) == 1
+    assert len(domain.action("drive").precondition.numeric_conditions) == 1
+    assert domain.action("drive").effect.numeric_effects[0].operator == m.NumericUpdateOperator.DECREASE
+    assert action.effect.numeric_effects[0].target == fuel_ref
+    assert len(action.conditional_effects[0].condition.numeric_conditions) == 1
     initial = problem.initial_state
     assert action.cost == 1.5
     next_state = action.apply(initial)
@@ -153,12 +153,12 @@ def test_numeric_builders_execute_and_inspect():
     custom = problem.state(numeric_values={fuel_ref: 2})
     assert custom == next_state
     assert len({initial, next_state, last}) == 3
-    condition = problem.ground_condition(comparisons=[fuel_ref.greater_than(1)])
+    condition = problem.ground_condition(numeric_conditions=[fuel_ref.greater_than(1)])
     assert initial.holds(condition)
     assert not last.holds(condition)
-    assert condition != problem.ground_condition(comparisons=[fuel_ref.greater_than(4)])
+    assert condition != problem.ground_condition(numeric_conditions=[fuel_ref.greater_than(4)])
     lifted = condition.lift()
-    assert len(lifted.comparisons) == 1
+    assert len(lifted.numeric_conditions) == 1
     assert len(lifted.bindings(initial)) == 1
     assert lifted.bindings(last) == ()
     assert initial.applicable_actions() == (action,)
@@ -182,9 +182,9 @@ def test_numeric_pddl_updates_and_conditional_inspection(operation, expected):
     action = problem.action("act")
     assert domain.action("act").conditional_effects == ()
     assert len(domain.action("act").conditional_numeric_effects) == 1
-    assert len(domain.action("act").conditional_numeric_effects[0].effect.numeric_updates) == 1
+    assert len(domain.action("act").conditional_numeric_effects[0].effect.numeric_effects) == 1
     assert action.conditional_effects == ()
-    assert len(action.conditional_numeric_effects[0].effect.numeric_updates) == 1
+    assert len(action.conditional_numeric_effects[0].effect.numeric_effects) == 1
     assert action.conditional_numeric_effects[0].effect.literals == ()
     # State values are stored on the 1e-9 comparison grid.
     assert action.apply(problem.initial_state).value(problem.function_call("fuel")) == pytest.approx(expected, abs=1e-9)

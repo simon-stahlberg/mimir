@@ -53,12 +53,12 @@ public class NumericApiTests
             .GetApplicableActions(problem.InitialState.Expand()));
         Assert.Equal(2, schema.Precondition.Literals.Count);
         Assert.Equal(2, action.Precondition.Literals.Count);
-        Assert.Empty(schema.Precondition.Comparisons);
-        Assert.Empty(action.Precondition.Comparisons);
+        Assert.Empty(schema.Precondition.NumericConditions);
+        Assert.Empty(action.Precondition.NumericConditions);
         Assert.Equal(2, schema.Effect.Literals.Count);
         Assert.Equal(2, action.Effect.Literals.Count);
-        Assert.Empty(schema.Effect.NumericUpdates);
-        Assert.Empty(action.Effect.NumericUpdates);
+        Assert.Empty(schema.Effect.NumericEffects);
+        Assert.Empty(action.Effect.NumericEffects);
         ConditionalEffect conditional = Assert.Single(schema.ConditionalEffects);
         Assert.Single(conditional.Condition.Literals);
         Assert.Equal("ready", conditional.Effect.Value.Predicate.Name);
