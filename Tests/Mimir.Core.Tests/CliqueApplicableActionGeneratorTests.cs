@@ -714,7 +714,7 @@ public class CliqueApplicableActionGeneratorTests
         ActionListBuilder actions = domainBuilder.Actions();
         ActionSchemaBuilder action = actions.Add("broken");
         action.AddEffect("done");
-        action.WithCost(Numeric.Divide(Numeric.Constant(1d), Numeric.Constant(0d)));
+        action.WithCost(Numeric.Constant(1d) / Numeric.Constant(0d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();

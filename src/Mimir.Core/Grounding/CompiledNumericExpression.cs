@@ -8,6 +8,7 @@ internal sealed class CompiledNumericExpression
     private readonly CompiledNumericExpression? _left;
     private readonly CompiledNumericExpression? _right;
     private readonly CompiledGroundingTerm[] _terms;
+    // Reused across evaluations to keep lookups allocation-free; evaluators are single-threaded (see README).
     private readonly Constant[] _arguments;
 
     private CompiledNumericExpression(NumericExpression source,
@@ -18,7 +19,7 @@ internal sealed class CompiledNumericExpression
         _left = left;
         _right = right;
         _terms = terms ?? Array.Empty<CompiledGroundingTerm>();
-        _arguments = _terms.Length == 0 ? Array.Empty<Constant>() : new Constant[_terms.Length];
+        _arguments = new Constant[_terms.Length];
     }
 
     public static CompiledNumericExpression Compile(NumericExpression expression, IReadOnlyDictionary<Variable, int> slots)
@@ -104,8 +105,7 @@ internal sealed class CompiledNumericComparison
 
     public static CompiledNumericComparison[] Compile(IReadOnlyList<NumericComparison> comparisons,
         IReadOnlyDictionary<Variable, int> slots)
-        => comparisons.Count == 0 ? Array.Empty<CompiledNumericComparison>()
-            : comparisons.Select(comparison => new CompiledNumericComparison(comparison, slots)).ToArray();
+        => comparisons.Select(comparison => new CompiledNumericComparison(comparison, slots)).ToArray();
 }
 
 internal sealed class CompiledNumericUpdate

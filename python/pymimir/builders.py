@@ -157,16 +157,16 @@ class NumericExpressionSpec(_BuilderHandle):
         return value if isinstance(value, NumericExpressionSpec) else Numeric.constant(value)
 
     def __add__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
-        return Numeric.add(self, self._coerce(other))
+        return Numeric._binary(NumericOperator.ADD, self, self._coerce(other))
 
     def __sub__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
-        return Numeric.subtract(self, self._coerce(other))
+        return Numeric._binary(NumericOperator.SUBTRACT, self, self._coerce(other))
 
     def __mul__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
-        return Numeric.multiply(self, self._coerce(other))
+        return Numeric._binary(NumericOperator.MULTIPLY, self, self._coerce(other))
 
     def __truediv__(self, other: NumericExpressionSpec | float) -> NumericExpressionSpec:
-        return Numeric.divide(self, self._coerce(other))
+        return Numeric._binary(NumericOperator.DIVIDE, self, self._coerce(other))
 
     def __radd__(self, other: float) -> NumericExpressionSpec:
         return self._coerce(other) + self
@@ -404,22 +404,6 @@ class Numeric:
         return NumericFunctionSpec._from_handle(
             _require_handle(handle, "Numeric.function")
         )
-
-    @staticmethod
-    def add(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
-        return Numeric._binary(NumericOperator.ADD, left, right)
-
-    @staticmethod
-    def subtract(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
-        return Numeric._binary(NumericOperator.SUBTRACT, left, right)
-
-    @staticmethod
-    def multiply(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
-        return Numeric._binary(NumericOperator.MULTIPLY, left, right)
-
-    @staticmethod
-    def divide(left: NumericExpressionSpec, right: NumericExpressionSpec) -> NumericExpressionSpec:
-        return Numeric._binary(NumericOperator.DIVIDE, left, right)
 
     @staticmethod
     def _binary(

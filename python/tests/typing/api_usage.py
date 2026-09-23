@@ -28,10 +28,7 @@ def build_with_public_api() -> pymimir.Problem:
     conditional: pymimir.ConditionalEffectBuilder = action.add_conditional_effect()
     conditional.add_condition("eligible", "?item")
     conditional.add_effect("done", "?item").close()
-    cost: pymimir.NumericExpressionSpec = pymimir.Numeric.add(
-        pymimir.Numeric.function("price", "?item"),
-        pymimir.Numeric.constant(0.5),
-    )
+    cost: pymimir.NumericExpressionSpec = pymimir.Numeric.function("price", "?item") + pymimir.Numeric.constant(0.5)
     action.with_cost(cost).close().close()
 
     derived: pymimir.DerivedPredicateListBuilder = (
@@ -68,9 +65,9 @@ def build_with_public_api() -> pymimir.Problem:
         pymimir.Logic.forall([], pymimir.Logic.true()),
     )
     unused_costs: tuple[pymimir.NumericExpressionSpec, ...] = (
-        pymimir.Numeric.subtract(cost, pymimir.Numeric.constant(1)),
-        pymimir.Numeric.multiply(cost, pymimir.Numeric.constant(2)),
-        pymimir.Numeric.divide(cost, pymimir.Numeric.constant(2)),
+        cost - pymimir.Numeric.constant(1),
+        cost * 2,
+        cost / pymimir.Numeric.constant(2),
     )
     _ = unused_logic, unused_costs
     return problem_builder.build()

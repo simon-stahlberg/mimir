@@ -18,19 +18,7 @@ internal sealed class NumericStateLayout
         IReadOnlyDictionary<NumericFunctionKey, double> initialValues,
         IReadOnlyCollection<NumericFunction> changingFunctions)
     {
-        ArgumentNullException.ThrowIfNull(initialValues);
-        ArgumentNullException.ThrowIfNull(changingFunctions);
-        if (changingFunctions.Any(function => function is null))
-            throw new ArgumentException("Changing functions cannot contain null values.", nameof(changingFunctions));
         var changing = new HashSet<NumericFunction>(changingFunctions);
-
-        if (initialValues.Count == 0)
-        {
-            _fields = FrozenDictionary<NumericFunctionKey, NumericField>.Empty;
-            _initialValues = Array.Empty<double>();
-            return;
-        }
-
         var fields = new Dictionary<NumericFunctionKey, NumericField>(initialValues.Count);
         var values = new List<double>();
         foreach ((NumericFunctionKey key, double value) in initialValues)
@@ -46,7 +34,7 @@ internal sealed class NumericStateLayout
             fields.Add(key.Snapshot(), new NumericField(index, value));
         }
         _fields = fields.ToFrozenDictionary();
-        _initialValues = values.Count == 0 ? Array.Empty<double>() : values.ToArray();
+        _initialValues = values.ToArray();
     }
 
     // Fields outside the layout were never initialized and no assign effect can define them, so they stay

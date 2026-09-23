@@ -262,6 +262,7 @@ public class RpgGrounder : IGrounder
         return reachableActions;
     }
 
+    // Same over-approximation as for action preconditions: only static guards can rule an effect out.
     private static bool StaticNumericGuardsHold(GroundConditionalEffect effect, State state)
     {
         foreach (GroundNumericComparison comparison in effect.NumericConditions)
@@ -322,6 +323,8 @@ public class RpgGrounder : IGrounder
                     positiveFluentPreconditions,
                     schema.StaticPreconditions,
                     Array.Empty<Literal<Atom<Derived>>>(),
+                    // The relaxed reachability analysis does not track numeric values, so only static comparisons
+                    // can prune actions; dropping the changing ones keeps the result an over-approximation.
                     schema.NumericPreconditions.Where(comparison =>
                         !NumericEvaluation.DependsOnState(comparison, problem.Domain.ChangingFunctions)).ToArray()),
             });

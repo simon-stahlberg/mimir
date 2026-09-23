@@ -41,7 +41,8 @@ public class State : IEquatable<State>
             throw new ArgumentException($"State requires {context.NumericLayout.Count} numeric values, received {numericValues.Length}.", nameof(numericValues));
 
         Context = context;
-        _bitboard = bitboard.Length == 0 ? Array.Empty<ulong>() : takeOwnership ? bitboard : bitboard.ToArray();
+        _bitboard = takeOwnership ? bitboard : bitboard.ToArray();
+        // States of problems without changing numeric fluents share one empty array instead of each owning one.
         _numericValues = numericValues.Length == 0 ? Array.Empty<double>() : takeOwnership ? numericValues : numericValues.ToArray();
         for (int index = 0; index < _numericValues.Length; index++)
             _numericValues[index] = NumericEvaluation.Quantize(_numericValues[index]);
@@ -53,7 +54,7 @@ public class State : IEquatable<State>
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(bitboard);
         Context = source.Context;
-        _bitboard = bitboard.Length == 0 ? Array.Empty<ulong>() : takeOwnership ? bitboard : bitboard.ToArray();
+        _bitboard = takeOwnership ? bitboard : bitboard.ToArray();
         _numericValues = source._numericValues;
         _hashCode = ComputeHashCode(Context, _bitboard, _numericValues);
     }

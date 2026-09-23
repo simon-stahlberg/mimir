@@ -22,8 +22,8 @@ public sealed class StateFactory
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(trueFacts);
         int numericCount = context.NumericLayout.Count;
-        double[] values = numericCount == 0 ? Array.Empty<double>() : new double[numericCount];
-        bool[] assigned = numericCount == 0 ? Array.Empty<bool>() : new bool[numericCount];
+        var values = new double[numericCount];
+        var assigned = new bool[numericCount];
         if (numericValues is not null)
         {
             foreach ((GroundFunctionCall call, double value) in numericValues)
@@ -54,7 +54,7 @@ public sealed class StateFactory
         int maxFactIndex = facts.Length == 0 ? -1 : facts.Max(fact => fact.LocalIndex);
         int wordCount = maxFactIndex >= 0 ? (maxFactIndex / 64) + 1 : 0;
 
-        ulong[] bitboard = wordCount == 0 ? Array.Empty<ulong>() : new ulong[wordCount];
+        var bitboard = new ulong[wordCount];
         foreach (Fact<Fluent> fact in facts)
         {
             int arrayIndex = fact.LocalIndex / 64;

@@ -267,8 +267,6 @@ def test_unsupported_numeric_heuristics_raise_unsupported_error():
     problem = m.Problem.from_pddl(domain, "(define (problem p) (:domain steps) (:init (= (fuel) 2)) (:goal (= (fuel) 0)))")
     with pytest.raises(m.UnsupportedError):
         m.iw(problem, max_width=1)
-    with pytest.raises(NotImplementedError):
-        m.iw(problem, max_width=1)
     assert m.gbfs(problem, m.GoalCountHeuristic(problem)).is_solved
 
 

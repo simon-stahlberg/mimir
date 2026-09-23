@@ -103,19 +103,9 @@ def _build_complete_domain() -> pymimir.Domain:
         "done", "?other"
     ).close()
     finish.with_cost(
-        pymimir.Numeric.add(
-            pymimir.Numeric.function("price", "?item"),
-            pymimir.Numeric.divide(
-                pymimir.Numeric.multiply(
-                    pymimir.Numeric.constant(1),
-                    pymimir.Numeric.constant(1),
-                ),
-                pymimir.Numeric.subtract(
-                    pymimir.Numeric.constant(2),
-                    pymimir.Numeric.constant(1),
-                ),
-            ),
-        )
+        pymimir.Numeric.function("price", "?item")
+        + (pymimir.Numeric.constant(1) * pymimir.Numeric.constant(1))
+        / (pymimir.Numeric.constant(2) - pymimir.Numeric.constant(1))
     ).close()
     actions.add("wait").with_cost(3).close()
     actions.close()
@@ -366,9 +356,7 @@ def test_builder_python_type_guards():
     with pytest.raises(TypeError):
         pymimir.Logic.and_(pymimir.Logic.true(), "not an expression")
     with pytest.raises(TypeError):
-        pymimir.Numeric.add(
-            pymimir.Numeric.constant(1), "not a cost"
-        )
+        pymimir.Numeric.constant(1) + "not a cost"
 
     builder = pymimir.DomainBuilder("guards")
     predicates = builder.predicates()

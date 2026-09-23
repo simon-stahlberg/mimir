@@ -71,7 +71,7 @@ public sealed class DomainBuilder
         try
         {
             DomainDefinition definition = ProgrammaticDomainCompiler.Compile(this);
-            CorePddlSupportValidator.ValidateDomain(SemanticValidator.ValidateDomain(definition), isCanonical: false);
+            CorePddlSupportValidator.ValidateSourceDomain(SemanticValidator.ValidateDomain(definition));
             DomainDefinition canonical = Canonicalizer.Compile(definition);
             CorePddlSupportValidator.ValidateDomain(canonical);
             DerivedDependencyValidator.Validate(canonical);

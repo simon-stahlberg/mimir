@@ -125,7 +125,7 @@ public partial class Domain
             () =>
             {
                 DomainDefinition astDomain = PddlParser.ParseDomain(text);
-                CorePddlSupportValidator.ValidateDomain(SemanticValidator.ValidateDomain(astDomain), isCanonical: false);
+                CorePddlSupportValidator.ValidateSourceDomain(SemanticValidator.ValidateDomain(astDomain));
                 DomainDefinition canonicalDomain = Canonicalizer.Compile(astDomain);
                 CorePddlSupportValidator.ValidateDomain(canonicalDomain);
                 DerivedDependencyValidator.Validate(canonicalDomain);

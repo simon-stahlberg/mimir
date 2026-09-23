@@ -357,7 +357,7 @@ BFS, uniform-cost search, greedy best-first search with goal counting, and A* wi
 the blind heuristic support numeric problems. Iterated width and the
 relaxed-plan, `h^2`, and lifted FF heuristics do not, and fail with
 `NotSupportedException` in C# or `pymimir.UnsupportedError` in Python (a subclass
-of both `MimirError` and `NotImplementedError`). `NumericBaselineTests` compares
+of `MimirError`). `NumericBaselineTests` compares
 complete BFS layers against recorded C++ results; hydropower has one state fewer
 in its last recorded layer because C++ compares doubles exactly.
 

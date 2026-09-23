@@ -264,7 +264,7 @@ public class DomainTests
     }
 
     [Fact]
-    public void ProblemRejectsQueryingTotalCostAsNumericFunctionValue()
+    public void ProblemRejectsTotalCostFunctionCall()
     {
         Domain domain = Domain.FromText("""
 (define (domain total-cost-query)
@@ -280,12 +280,9 @@ public class DomainTests
   (:goal (done))
   (:metric minimize (total-cost)))
 """);
-        var totalCost = new NumericFunction("total-cost", Array.Empty<Variable>());
+        ArgumentException exception = Assert.Throws<ArgumentException>(() => problem.FunctionCall("total-cost"));
 
-        NotSupportedException exception = Assert.Throws<NotSupportedException>(
-            () => problem.GetNumericFunctionValue(totalCost, Array.Empty<Constant>()));
-
-        Assert.Contains("planner bookkeeping", exception.Message);
+        Assert.Contains("Unknown numeric function", exception.Message);
     }
 
     [Fact]

@@ -303,7 +303,7 @@ public class IdentityAndOwnershipTests
         InstanceContext context,
         ActionSchema schema,
         IReadOnlyList<Constant> arguments)
-        => new(
+        => TestActions.Create(
             context,
             schema,
             arguments,

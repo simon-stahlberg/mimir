@@ -169,8 +169,7 @@ public class NumericPlanningTests
         var initial = new ProblemBuilder(domain, "p");
         initial.InitialState().SetValue(Numeric.Function("value"), 0).SetValue(Numeric.Function("tiny"), double.Epsilon).Close();
         Problem problem = initial.Build();
-        NumericFunction tiny = domain.Functions.Single(function => function.Name == "tiny");
-        Assert.Equal(double.Epsilon, problem.GetNumericFunctionValue(tiny, []));
+        Assert.Equal(double.Epsilon, problem.InitialState.Value(problem.FunctionCall("tiny")));
         // State values snap to the comparison epsilon grid, so a sub-epsilon assignment is stored as zero.
         State next = problem.InitialState.Expand().Apply(problem.GroundAction(domain.Actions[0]));
         Assert.Equal(0d, next.Value(problem.FunctionCall("value")));

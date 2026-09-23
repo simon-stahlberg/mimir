@@ -350,8 +350,6 @@ public static partial class Exports
             GroundFunctionCall[] fields = ReadHandleArray<GroundFunctionCall>(numericHandlesPtr, numericCount, "numeric fields");
             if (numericCount > 0 && numericValuesPtr == IntPtr.Zero)
                 throw new ArgumentException("Numeric values must be supplied.", nameof(numericValuesPtr));
-            if (numericCount == 0)
-                return StateFactory.Default.Create(problem.Context, facts).Expand();
 
             var values = new Dictionary<GroundFunctionCall, double>(numericCount);
             double* numbers = (double*)numericValuesPtr;

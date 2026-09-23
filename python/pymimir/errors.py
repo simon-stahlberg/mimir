@@ -7,7 +7,7 @@ class MimirError(RuntimeError):
     """A native Mimir operation failed."""
 
 
-class UnsupportedError(MimirError, NotImplementedError):
+class UnsupportedError(MimirError):
     """The operation is not supported for this model, e.g. a heuristic on a numeric problem."""
 
 

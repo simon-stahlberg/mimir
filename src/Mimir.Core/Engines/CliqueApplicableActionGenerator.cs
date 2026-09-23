@@ -149,7 +149,6 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
 
     internal CliqueApplicableActionGenerator(Problem problem)
     {
-        ArgumentNullException.ThrowIfNull(problem);
         Problem = problem ?? throw new ArgumentNullException(nameof(problem));
         // One reusable reference callback avoids cold generic-specialization allocations
         // while keeping repeated applicable-action collection allocation-free.

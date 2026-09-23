@@ -263,7 +263,7 @@ public class ActionApplicabilityTests
     {
         InstanceContext context = fixture.Context;
         ActionSchema schema = fixture.ActionSchema;
-        return new Action(
+        return TestActions.Create(
             context,
             schema,
             Array.Empty<Constant>(),

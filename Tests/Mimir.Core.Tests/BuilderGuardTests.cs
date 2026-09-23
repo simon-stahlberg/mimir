@@ -223,7 +223,7 @@ public class BuilderGuardTests
 
         Assert.Equal(
             double.Epsilon,
-            problem.GetNumericFunctionValue(domain.Functions.Single(), Array.Empty<Constant>()));
+            problem.InitialState.Value(new GroundFunctionCall(problem, domain.Functions.Single(), Array.Empty<Constant>())));
         Assert.Equal(
             double.Epsilon,
             Assert.IsType<NumericConstant>(domain.Actions.Single().CostExpression).Value);

@@ -140,7 +140,6 @@ public class NumericStateTests
         Assert.True(double.IsNaN(missing.InitialValue));
         Assert.True(double.IsNaN(problem.InitialState.Value(problem.FunctionCall("fuel", "truck3"))));
         Assert.Equal(2, problem.Context.NumericLayout.Count);
-        Assert.Throws<InvalidOperationException>(() => problem.GetNumericFunctionValue(function, [problem.ObjectLookup["truck1"]]));
     }
 
     [Fact]

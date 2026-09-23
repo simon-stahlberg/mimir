@@ -101,7 +101,7 @@ public class PublicSurfaceTests
         var conditionalEffects = new List<GroundConditionalEffect>();
         var bitboard = new[] { 1UL << fact.LocalIndex };
         ActionSchema schema = Assert.Single(domain.Actions);
-        var action = new Action(
+        var action = TestActions.Create(
             context,
             schema,
             arguments,

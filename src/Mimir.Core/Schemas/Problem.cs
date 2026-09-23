@@ -209,23 +209,6 @@ public partial class Problem
             _ => throw new InvalidOperationException($"Unknown generator type '{GeneratorType}'."),
         };
 
-    public double GetNumericFunctionValue(NumericFunction function, IReadOnlyList<Constant> arguments)
-    {
-        ArgumentNullException.ThrowIfNull(function);
-        ArgumentNullException.ThrowIfNull(arguments);
-        if (NumericFunction.IsTotalCost(function.Name))
-        {
-            throw new NotSupportedException(
-                "Cumulative total-cost is planner bookkeeping and cannot be queried as a problem numeric function value.");
-        }
-
-        ValidateNumericFunctionArguments(function, arguments, NoVariables, nameof(arguments));
-        NumericField field = Context.NumericLayout.Resolve(function, arguments);
-        if (field.Index is not null)
-            throw new InvalidOperationException("Read changing numeric values through State.Value.");
-        return field.InitialValue;
-    }
-
     // -------- Factory helpers for runtime construction --------
 
     /// <summary>
@@ -374,7 +357,7 @@ public partial class Problem
         }
         ReadOnlySpan<double> numericValues = Context.NumericLayout.InitialValues;
         return new State(Context, bitboard,
-            numericValues.IsEmpty ? Array.Empty<double>() : numericValues.ToArray(), takeOwnership: true);
+            numericValues.ToArray(), takeOwnership: true);
     }
 
     internal void ValidateActionBinding(

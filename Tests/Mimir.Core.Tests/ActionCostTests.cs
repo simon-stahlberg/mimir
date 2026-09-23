@@ -180,7 +180,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddEffect("at", Polarity.Negative, "?from");
         action.AddEffect("at", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(Numeric.Add(Numeric.Constant(1d), Numeric.Function("distance", "?from", "?to")));
+        action.WithCost(Numeric.Constant(1d) + Numeric.Function("distance", "?from", "?to"));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -231,7 +231,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddEffect("at", Polarity.Negative, "depot");
         action.AddEffect("at", "?to");
         action.AddEffect("visited", "?to");
-        action.WithCost(Numeric.Add(Numeric.Add(Numeric.Function("entry-fee", "depot"), Numeric.Multiply(Numeric.Constant(2d), Numeric.Constant(1.25d))), Numeric.Divide(Numeric.Function("distance", "depot", "?to"), Numeric.Constant(2d))));
+        action.WithCost((Numeric.Function("entry-fee", "depot") + (Numeric.Constant(2d) * Numeric.Constant(1.25d))) + (Numeric.Function("distance", "depot", "?to") / Numeric.Constant(2d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -284,7 +284,7 @@ public sealed class ActionCostTests : IDisposable
         action.AddParameter("?truck", "vehicle");
         action.AddPrecondition("ready", "?truck");
         action.AddEffect("done", "?truck");
-        action.WithCost(Numeric.Add(Numeric.Multiply(Numeric.Constant(2d), Numeric.Function("RaTe", "?truck", "home")), Numeric.Divide(Numeric.Function("FEE", "pkg1"), Numeric.Constant(4d))));
+        action.WithCost((Numeric.Constant(2d) * Numeric.Function("RaTe", "?truck", "home")) + (Numeric.Function("FEE", "pkg1") / Numeric.Constant(4d)));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -657,7 +657,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(1d)));
+        action.WithCost(Numeric.Constant(0d) - Numeric.Constant(1d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -686,7 +686,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(-5d)));
+        action.WithCost(Numeric.Constant(0d) - Numeric.Constant(-5d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -715,7 +715,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Multiply(Numeric.Constant(1e+28d), Numeric.Constant(1e+28d)))))))))))));
+        action.WithCost(Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * (Numeric.Constant(1e+28d) * Numeric.Constant(1e+28d))))))))))));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -744,7 +744,7 @@ public sealed class ActionCostTests : IDisposable
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Divide(Numeric.Constant(1d), Numeric.Constant(0d)));
+        action.WithCost(Numeric.Constant(1d) / Numeric.Constant(0d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -812,20 +812,19 @@ public sealed class ActionCostTests : IDisposable
     }
 
     [Fact]
-    public void GetNumericFunctionValue_UsesCurrentArgumentValues()
+    public void StaticFunctionValue_UsesCurrentArgumentValues()
     {
         Problem problem = CreateProblemForGetNumericFunctionValue_ReusesTransientLookupArgumentsWithoutAllocating();
         NumericFunction price = Assert.Single(problem.Domain.Functions);
         var arguments = new List<Constant> { problem.ObjectLookup["a"] };
 
-        Assert.Equal(2d, problem.GetNumericFunctionValue(price, arguments));
+        Assert.Equal(2d, problem.InitialState.Value(new GroundFunctionCall(problem, price, arguments)));
         arguments[0] = problem.ObjectLookup["b"];
-        Assert.Equal(5d, problem.GetNumericFunctionValue(price, arguments));
-
+        Assert.Equal(5d, problem.InitialState.Value(new GroundFunctionCall(problem, price, arguments)));
     }
 
     [Fact]
-    public void GetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder()
+    public void StaticFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder()
     {
         Problem problem = CreateProblemForGetNumericFunctionValue_HigherArityKeyUsesArgumentIdentityAndOrder();
         NumericFunction routeCost = Assert.Single(problem.Domain.Functions);
@@ -836,10 +835,10 @@ public sealed class ActionCostTests : IDisposable
             problem.ObjectLookup["d"]
         ];
 
-        Assert.Equal(9d, problem.GetNumericFunctionValue(routeCost, ordered));
+        Assert.Equal(9d, problem.InitialState.Value(new GroundFunctionCall(problem, routeCost, ordered)));
 
         Constant[] reordered = [ordered[0], ordered[1], ordered[3], ordered[2]];
-        Assert.True(double.IsNaN(problem.GetNumericFunctionValue(routeCost, reordered)));
+        Assert.True(double.IsNaN(problem.InitialState.Value(new GroundFunctionCall(problem, routeCost, reordered))));
     }
 
       [Theory]

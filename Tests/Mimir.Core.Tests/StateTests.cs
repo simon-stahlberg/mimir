@@ -374,7 +374,7 @@ public class StateTests
         OffsetBitboard deleteEffects,
         IReadOnlyList<GroundConditionalEffect> conditionalEffects)
     {
-        return new Action(
+        return TestActions.Create(
             context,
             schema,
             Array.Empty<Constant>(),

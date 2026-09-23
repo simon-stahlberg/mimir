@@ -1,5 +1,6 @@
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
+using Action = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Core.Tests;
 
@@ -52,4 +53,38 @@ internal sealed class TestProblemFixture
 
         return new TestProblemFixture(problem);
     }
+}
+
+internal static class TestActions
+{
+    internal static Action Create(
+        InstanceContext context,
+        ActionSchema schema,
+        IReadOnlyList<Constant> arguments,
+        OffsetBitboard positiveFluentPreconditions,
+        OffsetBitboard negativeFluentPreconditions,
+        OffsetBitboard positiveStaticPreconditions,
+        OffsetBitboard negativeStaticPreconditions,
+        OffsetBitboard addEffects,
+        OffsetBitboard deleteEffects,
+        IReadOnlyList<Literal<Fact<Derived>>> derivedPreconditions,
+        IReadOnlyList<GroundConditionalEffect> conditionalEffects,
+        double cost)
+        => new(
+            new ActionBinding(context, schema, arguments, takeArgumentOwnership: false),
+            new ActionPreconditions(
+                context,
+                positiveFluentPreconditions,
+                negativeFluentPreconditions,
+                positiveStaticPreconditions,
+                negativeStaticPreconditions,
+                derivedPreconditions,
+                Array.Empty<GroundNumericComparison>()),
+            new ActionEffects(
+                addEffects,
+                deleteEffects,
+                conditionalEffects,
+                Array.Empty<GroundNumericUpdate>(),
+                Array.Empty<GroundConditionalNumericEffect>(),
+                cost));
 }

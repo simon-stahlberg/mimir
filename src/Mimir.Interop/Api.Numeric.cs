@@ -38,9 +38,8 @@ public static partial class Exports
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_binary")]
     public static int NumericBinaryCreate(int operation, int left, int right)
-        => CreateHandle(() => Enum.IsDefined((NumericOperator)operation)
-            ? new NumericBinaryExpression((NumericOperator)operation, RequireHandle<NumericExpression>(left), RequireHandle<NumericExpression>(right))
-            : throw new ArgumentOutOfRangeException(nameof(operation)));
+        => CreateHandle(() => new NumericBinaryExpression(
+            (NumericOperator)operation, RequireHandle<NumericExpression>(left), RequireHandle<NumericExpression>(right)));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_numeric_kind")]
     public static int NumericKind(int handle) => ReadValue(handle, -1, (NumericExpression expression) => expression switch

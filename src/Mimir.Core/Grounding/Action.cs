@@ -252,43 +252,6 @@ public class Action : IEquatable<Action>
         => _effects.ConditionalNumericEffects;
 
     internal Action(
-        InstanceContext context,
-        ActionSchema schema,
-        IReadOnlyList<Constant> arguments,
-        OffsetBitboard positiveFluentPreconditions,
-        OffsetBitboard negativeFluentPreconditions,
-        OffsetBitboard positiveStaticPreconditions,
-        OffsetBitboard negativeStaticPreconditions,
-        OffsetBitboard addEffects,
-        OffsetBitboard deleteEffects,
-        IReadOnlyList<Literal<Fact<Derived>>> derivedPreconditions,
-        IReadOnlyList<GroundConditionalEffect> conditionalEffects,
-        double cost,
-        bool takeArgumentOwnership = false)
-    {
-        _binding = new ActionBinding(
-            context,
-            schema,
-            arguments,
-            takeArgumentOwnership);
-        _preconditions = new ActionPreconditions(
-            context,
-            positiveFluentPreconditions,
-            negativeFluentPreconditions,
-            positiveStaticPreconditions,
-            negativeStaticPreconditions,
-            derivedPreconditions,
-            Array.Empty<GroundNumericComparison>());
-        _effects = new ActionEffects(
-            addEffects,
-            deleteEffects,
-            conditionalEffects,
-            Array.Empty<GroundNumericUpdate>(),
-            Array.Empty<GroundConditionalNumericEffect>(),
-            cost);
-    }
-
-    internal Action(
         ActionBinding binding,
         ActionPreconditions preconditions,
         ActionEffects effects)

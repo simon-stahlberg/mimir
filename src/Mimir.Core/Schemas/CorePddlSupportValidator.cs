@@ -7,7 +7,15 @@ namespace Mimir.Core.Schemas;
 
 internal static class CorePddlSupportValidator
 {
-    public static void ValidateDomain(DomainDefinition domain, bool isCanonical = true)
+    // The canonicalizer simplifies structurally true conditions such as (and (and)) or (= ?x ?x) away, which would
+    // hide a guarded total-cost increase; validating the source domain first treats every `when` as a condition.
+    public static void ValidateSourceDomain(DomainDefinition domain)
+        => ValidateDomain(domain, everyWhenIsConditional: true);
+
+    public static void ValidateDomain(DomainDefinition domain)
+        => ValidateDomain(domain, everyWhenIsConditional: false);
+
+    private static void ValidateDomain(DomainDefinition domain, bool everyWhenIsConditional)
     {
         ArgumentNullException.ThrowIfNull(domain);
 
@@ -25,7 +33,7 @@ internal static class CorePddlSupportValidator
             {
                 ValidateEffect(
                     action.Effect,
-                    isCanonical,
+                    everyWhenIsConditional,
                     actionCostsEnabled,
                     isConditional: false,
                     isQuantified: false,
@@ -119,7 +127,7 @@ internal static class CorePddlSupportValidator
 
     private static void ValidateEffect(
         IEffect effect,
-        bool isCanonical,
+        bool everyWhenIsConditional,
         bool actionCostsEnabled,
         bool isConditional,
         bool isQuantified,
@@ -132,7 +140,7 @@ internal static class CorePddlSupportValidator
                 {
                     ValidateEffect(
                         child,
-                        isCanonical,
+                        everyWhenIsConditional,
                         actionCostsEnabled,
                         isConditional,
                         isQuantified,
@@ -143,16 +151,16 @@ internal static class CorePddlSupportValidator
                 ValidateLogicalExpression(conditionalEffect.Condition, $"condition in the {context}");
                 ValidateEffect(
                     conditionalEffect.Effect,
-                    isCanonical,
+                    everyWhenIsConditional,
                     actionCostsEnabled,
-                    isConditional || !isCanonical || !LogicalExpressionSemantics.IsAlwaysTrue(conditionalEffect.Condition),
+                    isConditional || everyWhenIsConditional || !LogicalExpressionSemantics.IsAlwaysTrue(conditionalEffect.Condition),
                     isQuantified,
                     context);
                 return;
             case ForallEffect forallEffect:
                 ValidateEffect(
                     forallEffect.Effect,
-                    isCanonical,
+                    everyWhenIsConditional,
                     actionCostsEnabled,
                     isConditional,
                     isQuantified: true,

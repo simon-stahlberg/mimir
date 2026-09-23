@@ -103,11 +103,11 @@ public static class Logic
 public class NumericExpressionSpec
 {
     public static implicit operator NumericExpressionSpec(double value) => Numeric.Constant(value);
-    public static NumericExpressionSpec operator +(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Add(left, right);
-    public static NumericExpressionSpec operator -(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Subtract(left, right);
-    public static NumericExpressionSpec operator *(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Multiply(left, right);
-    public static NumericExpressionSpec operator /(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Divide(left, right);
-    public static NumericExpressionSpec operator -(NumericExpressionSpec value) => Numeric.Subtract(Numeric.Constant(0), value);
+    public static NumericExpressionSpec operator +(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Binary(NumericOperator.Add, left, right);
+    public static NumericExpressionSpec operator -(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Binary(NumericOperator.Subtract, left, right);
+    public static NumericExpressionSpec operator *(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Binary(NumericOperator.Multiply, left, right);
+    public static NumericExpressionSpec operator /(NumericExpressionSpec left, NumericExpressionSpec right) => Numeric.Binary(NumericOperator.Divide, left, right);
+    public static NumericExpressionSpec operator -(NumericExpressionSpec value) => Numeric.Binary(NumericOperator.Subtract, Numeric.Constant(0), value);
     public LogicalExpressionSpec EqualTo(NumericExpressionSpec right) => Compare(ComparisonOperator.Equal, right);
     public LogicalExpressionSpec LessThan(NumericExpressionSpec right) => Compare(ComparisonOperator.LessThan, right);
     public LogicalExpressionSpec LessThanOrEqual(NumericExpressionSpec right) => Compare(ComparisonOperator.LessThanOrEqual, right);
@@ -160,18 +160,6 @@ public static class Numeric
                 functionName,
                 BuilderName.CopyTerms(arguments, nameof(arguments))));
     }
-
-    public static NumericExpressionSpec Add(NumericExpressionSpec left, NumericExpressionSpec right)
-        => Binary(NumericOperator.Add, left, right);
-
-    public static NumericExpressionSpec Subtract(NumericExpressionSpec left, NumericExpressionSpec right)
-        => Binary(NumericOperator.Subtract, left, right);
-
-    public static NumericExpressionSpec Multiply(NumericExpressionSpec left, NumericExpressionSpec right)
-        => Binary(NumericOperator.Multiply, left, right);
-
-    public static NumericExpressionSpec Divide(NumericExpressionSpec left, NumericExpressionSpec right)
-        => Binary(NumericOperator.Divide, left, right);
 
     internal static NumericExpressionSpec Binary(
         NumericOperator operation,

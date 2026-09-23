@@ -309,9 +309,7 @@ public class BuilderParityTests
                     .AddParameter("?item", "item")
                     .AddPrecondition("ready", "?item")
                     .AddEffect("done", "?item")
-                    .WithCost(Numeric.Add(
-                        Numeric.Function("price", "?item"),
-                        Numeric.Constant(0.5d)))
+                    .WithCost(Numeric.Function("price", "?item") + Numeric.Constant(0.5d))
                     .Close()
                 .Add("wait")
                     .WithCost(3d)
@@ -332,10 +330,8 @@ public class BuilderParityTests
             .Build();
 
         Assert.Equal(
-            textProblem.GetNumericFunctionValue(textDomain.Functions.Single(), [textProblem.ObjectLookup["a"]]),
-            builtProblem.GetNumericFunctionValue(
-                builtDomain.Functions.Single(),
-                [builtProblem.ObjectLookup["a"]]));
+            textProblem.InitialState.Value(new GroundFunctionCall(textProblem, textDomain.Functions.Single(), [textProblem.ObjectLookup["a"]])),
+            builtProblem.InitialState.Value(new GroundFunctionCall(builtProblem, builtDomain.Functions.Single(), [builtProblem.ObjectLookup["a"]])));
         AssertEquivalent(
             textProblem,
             builtProblem,

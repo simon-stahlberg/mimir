@@ -106,7 +106,7 @@ public sealed partial class ConjunctiveConditionBindingGenerator
             fluentConditions,
             staticConditions,
             derivedConditions,
-            numericConditions ?? Array.Empty<NumericComparison>());
+            numericConditions);
         return new CompiledConjunctiveCondition(
             problem,
             compiledVariables,
@@ -312,7 +312,6 @@ public sealed partial class ConjunctiveConditionBindingGenerator
         int maxBindings)
     {
         ArgumentNullException.ThrowIfNull(condition);
-
         ArgumentNullException.ThrowIfNull(state);
         if (maxBindings < 0)
             throw new ArgumentOutOfRangeException(nameof(maxBindings));

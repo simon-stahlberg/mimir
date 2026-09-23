@@ -850,7 +850,7 @@ public class LiftedFfHeuristicTests
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(1d)));
+        action.WithCost(Numeric.Constant(0d) - Numeric.Constant(1d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -879,7 +879,7 @@ public class LiftedFfHeuristicTests
         ActionSchemaBuilder action = actions.Add("finish");
         action.AddPrecondition("ready");
         action.AddEffect("done");
-        action.WithCost(Numeric.Divide(Numeric.Constant(1d), Numeric.Constant(0d)));
+        action.WithCost(Numeric.Constant(1d) / Numeric.Constant(0d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
@@ -1286,7 +1286,7 @@ public class LiftedFfHeuristicTests
         action.AddPrecondition("ready");
         action.AddEffect("bad");
         action.AddEffect("safe", Polarity.Negative);
-        action.WithCost(Numeric.Subtract(Numeric.Constant(0d), Numeric.Constant(1d)));
+        action.WithCost(Numeric.Constant(0d) - Numeric.Constant(1d));
         action.Close();
         actions.Close();
         Domain domain = domainBuilder.Build();
