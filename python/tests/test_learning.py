@@ -408,12 +408,14 @@ def test_nullary_predicates_use_encoder_specific_nodes() -> None:
     transition_context = pymimir.EncodingContext()
     for problem in (first, second):
         state = problem.initial_state
-        disabled = problem.action("clear").apply(state)
+        clear = problem.action("clear")
+        disabled = clear.apply(state)
         transition_context.begin_instance(problem)
         pymimir.encode_transition_effects(
             transition_context,
             state,
             [disabled],
+            [clear],
             [],
             problem.goal,
             suffix="_broadcast",
@@ -422,6 +424,7 @@ def test_nullary_predicates_use_encoder_specific_nodes() -> None:
             transition_context,
             disabled,
             [state],
+            [clear],
             [],
             problem.goal,
             suffix="_broadcast",
@@ -464,10 +467,15 @@ def test_nullary_predicates_use_encoder_specific_nodes() -> None:
         transition_relations["derived-on_broadcast_neg_goal"],
         1,
     ) == _rows(expected_negative, 1)
+    assert _rows(transition_relations["action_name_clear_broadcast"], 1) == _rows(
+        expected_positive + expected_negative,
+        1,
+    )
 
     empty_context = pymimir.EncodingContext()
     empty_state = empty.initial_state
-    empty_disabled = empty.action("clear").apply(empty_state)
+    empty_clear = empty.action("clear")
+    empty_disabled = empty_clear.apply(empty_state)
     empty_context.begin_instance(empty)
     pymimir.encode_state(empty_context, empty_state, suffix="_empty")
     pymimir.encode_goal(
@@ -491,6 +499,7 @@ def test_nullary_predicates_use_encoder_specific_nodes() -> None:
         empty_context,
         empty_state,
         [empty_disabled],
+        [empty_clear],
         [],
         empty.goal,
         suffix="_empty",
@@ -499,6 +508,7 @@ def test_nullary_predicates_use_encoder_specific_nodes() -> None:
         empty_context,
         empty_disabled,
         [empty_state],
+        [empty_clear],
         [],
         empty.goal,
         suffix="_empty",
@@ -564,6 +574,7 @@ def test_transition_effects_are_native_and_use_action_category_ids() -> None:
             context,
             state,
             [successor, state, successor],
+            [action, action, action],
             [(0, 1), (1, 2), (0, 1)],
             problem.goal,
             suffix="_test",
@@ -577,6 +588,7 @@ def test_transition_effects_are_native_and_use_action_category_ids() -> None:
     assert encoded["p_test_pos"] == [1, 0, 3, 0]
     assert encoded["p_test_pos_goal"] == [1, 0, 3, 0]
     assert _rows(encoded["q_test_neg"], 1) == [(1,), (3,)]
+    assert encoded["action_name_change_test"] == [1, 2, 3]
     assert encoded["effect_relation_test"] == [1, 2, 2, 3, 1, 2]
 
 
@@ -821,6 +833,25 @@ def test_context_rejects_invalid_lifecycle_ownership_and_literals(
             context,
             gripper.initial_state,
             [rich_problem.initial_state],
+            gripper.initial_state.applicable_actions()[:1],
+            [],
+            gripper.goal,
+        )
+    with pytest.raises(ValueError, match="different Problem"):
+        pymimir.encode_transition_effects(
+            context,
+            gripper.initial_state,
+            [gripper.initial_state],
+            rich_problem.initial_state.applicable_actions()[:1],
+            [],
+            gripper.goal,
+        )
+    with pytest.raises(ValueError, match="one action per successor"):
+        pymimir.encode_transition_effects(
+            context,
+            gripper.initial_state,
+            [gripper.initial_state],
+            [],
             [],
             gripper.goal,
         )
@@ -828,6 +859,16 @@ def test_context_rejects_invalid_lifecycle_ownership_and_literals(
         pymimir.encode_transition_effects(
             context,
             gripper.initial_state,
+            [object()],  # type: ignore[list-item]
+            gripper.initial_state.applicable_actions()[:1],
+            [],
+            gripper.goal,
+        )
+    with pytest.raises(TypeError, match="GroundAction"):
+        pymimir.encode_transition_effects(
+            context,
+            gripper.initial_state,
+            [gripper.initial_state],
             [object()],  # type: ignore[list-item]
             [],
             gripper.goal,
@@ -880,6 +921,7 @@ def test_transition_relation_indices_reject_int32_overflow(
 ) -> None:
     problem = _transition_problem()
     state = problem.initial_state
+    action = problem.action("change", "a")
     context = pymimir.EncodingContext()
     context.begin_instance(problem)
     with pytest.raises(OverflowError, match="does not fit in int32"):
@@ -887,6 +929,7 @@ def test_transition_relation_indices_reject_int32_overflow(
             context,
             state,
             [state],
+            [action],
             [(invalid_index, 0)],
             problem.goal,
         )
@@ -906,6 +949,7 @@ def test_transition_validation_is_atomic() -> None:
             context,
             state,
             [successor],
+            [action],
             [(-1, 0)],
             problem.goal,
         )

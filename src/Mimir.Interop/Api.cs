@@ -137,7 +137,7 @@ public static partial class Exports
     private static NativeErrorData? _lastError;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_abi_version")]
-    public static int AbiVersion() => 24;
+    public static int AbiVersion() => 25;
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_take_last_error")]
     public static unsafe byte TakeLastError(IntPtr errorPtr)

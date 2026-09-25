@@ -77,7 +77,7 @@ _bind(
 )
 _bind(
     "mimir_learning_encode_transition_effects",
-    [_int, _int, _ptr, _int, _ptr, _int, _ptr, _int, _cstr],
+    [_int, _int, _ptr, _int, _ptr, _ptr, _int, _ptr, _int, _cstr],
     _byte,
 )
 _bind("mimir_learning_encode_virtual_node", [_int], _byte)

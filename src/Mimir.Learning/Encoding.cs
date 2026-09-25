@@ -121,6 +121,7 @@ public static partial class Encoding
         EncodingContext context,
         ExtendedState source,
         IReadOnlyList<ExtendedState> successors,
+        IReadOnlyList<GroundAction> actions,
         IReadOnlyList<(int FromIndex, int ToIndex)> effectRelations,
         IReadOnlyList<Literal<Fact>> goal,
         string suffix = "")
@@ -140,6 +141,24 @@ public static partial class Encoding
                 throw new ArgumentException(
                     $"Successor {index} belongs to a different instance context.",
                     nameof(successors));
+            }
+        }
+
+        GroundAction[] actionValues = Snapshot(actions, nameof(actions));
+        if (actionValues.Length != successorValues.Length)
+        {
+            throw new ArgumentException(
+                $"Expected one action per successor, got {actionValues.Length} actions " +
+                $"for {successorValues.Length} successors.",
+                nameof(actions));
+        }
+        for (int index = 0; index < actionValues.Length; index++)
+        {
+            if (!ReferenceEquals(actionValues[index].Context, source.State.Context))
+            {
+                throw new ArgumentException(
+                    $"Action {index} belongs to a different instance context.",
+                    nameof(actions));
             }
         }
 
@@ -203,6 +222,9 @@ public static partial class Encoding
         for (int transitionIndex = 0; transitionIndex < validatedEffects.Length; transitionIndex++)
         {
             int transitionId = transitionIds[transitionIndex];
+            context.GetOrCreateRelation(
+                    $"action_name_{actionValues[transitionIndex].Schema.Name}{suffix}")
+                .Add(transitionId);
             foreach (ValidatedEffect effect in validatedEffects[transitionIndex])
             {
                 string polarity = effect.Polarity == Polarity.Positive ? "pos" : "neg";

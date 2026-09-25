@@ -357,6 +357,7 @@ public class EncodingTests
             context,
             source,
             [successor, source, successor],
+            [action, action, action],
             [(0, 1), (1, 2), (0, 1)],
             problem.Goal,
             "_transition");
@@ -386,6 +387,9 @@ public class EncodingTests
         Assert.Equal(
             [1, 0, 3, 0],
             context.Relations["derived-p_transition_pos_goal"]);
+        Assert.Equal(
+            [1, 2, 3],
+            context.Relations["action_name_change_transition"]);
         Assert.Equal(
             [1, 2, 2, 3, 1, 2],
             context.Relations["effect_relation_transition"]);
@@ -438,6 +442,7 @@ public class EncodingTests
                 context,
                 state,
                 [disabled],
+                [action],
                 [],
                 problem.Goal,
                 "_broadcast");
@@ -445,6 +450,7 @@ public class EncodingTests
                 context,
                 disabled,
                 [state],
+                [action],
                 [],
                 problem.Goal,
                 "_broadcast");
@@ -466,6 +472,9 @@ public class EncodingTests
         AssertUnaryRows(
             expectedNegative,
             context.Relations["enabled_broadcast_neg_goal"]);
+        AssertUnaryRows(
+            [2, 3, 5, 6],
+            context.Relations["action_name_disable_broadcast"]);
 
         var emptyContext = new EncodingContext();
         ExtendedState emptyState = empty.InitialState.Expand();
@@ -476,6 +485,7 @@ public class EncodingTests
             emptyContext,
             emptyState,
             [emptyDisabled],
+            [emptyAction],
             [],
             empty.Goal,
             "_empty");
@@ -483,6 +493,7 @@ public class EncodingTests
             emptyContext,
             emptyDisabled,
             [emptyState],
+            [emptyAction],
             [],
             empty.Goal,
             "_empty");
@@ -683,6 +694,7 @@ public class EncodingTests
         (_, Problem foreign) = CreateRichProblem(domain, "foreign-rich");
         ExtendedState state = problem.InitialState.Expand();
         ExtendedState foreignState = foreign.InitialState.Expand();
+        GroundAction action = Assert.Single(GetApplicableActions(problem, state));
         GroundAction foreignAction = Assert.Single(
             GetApplicableActions(foreign, foreignState));
         Literal<Fact> powered = GoalLiteral(problem, "powered");
@@ -701,6 +713,7 @@ public class EncodingTests
                 context,
                 state,
                 [state],
+                [action],
                 [(0, -1)],
                 [powered]));
         Assert.Throws<ArgumentException>(() =>
@@ -708,6 +721,7 @@ public class EncodingTests
                 context,
                 state,
                 [state],
+                [action],
                 [],
                 [negative]));
         Assert.Throws<ArgumentException>(() =>
@@ -715,6 +729,23 @@ public class EncodingTests
                 context,
                 state,
                 [foreignState],
+                [action],
+                [],
+                [powered]));
+        Assert.Throws<ArgumentException>(() =>
+            Encoding.EncodeTransitionEffects(
+                context,
+                state,
+                [state],
+                [],
+                [],
+                [powered]));
+        Assert.Throws<ArgumentException>(() =>
+            Encoding.EncodeTransitionEffects(
+                context,
+                state,
+                [state],
+                [foreignAction],
                 [],
                 [powered]));
         Assert.Throws<ArgumentException>(() =>

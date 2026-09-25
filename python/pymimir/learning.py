@@ -774,12 +774,16 @@ def encode_transition_effects(
     context: EncodingContext,
     source: State,
     successors: Sequence[State],
+    actions: Sequence[GroundAction],
     effect_relations: Sequence[tuple[int, int]],
     goal: GroundConjunctiveCondition,
     *,
     suffix: str = "",
 ) -> None:
-    """Append source-to-successor net effects and ordered transition links."""
+    """Append source-to-successor net effects, applied action names, and ordered transition links.
+
+    ``actions[i]`` is the action whose application produced ``successors[i]``.
+    """
 
     context_value = _require_context(context)
     source_value = _state_for_context(context_value, source)
@@ -789,6 +793,15 @@ def encode_transition_effects(
             raise TypeError("successors must contain only State values")
         if successor.problem is not context_value.problem:
             raise ValueError("successors contain a value from a different Problem")
+
+    action_values = _sequence(actions, "actions")
+    if len(action_values) != len(successor_values):
+        raise ValueError("actions must contain one action per successor")
+    for action in action_values:
+        if not isinstance(action, GroundAction):
+            raise TypeError("actions must contain only GroundAction values")
+        if action.problem is not context_value.problem:
+            raise ValueError("actions contain a value from a different Problem")
 
     relation_values = _sequence(effect_relations, "effect_relations")
     flat_relation_indices: list[int] = []
@@ -802,6 +815,9 @@ def encode_transition_effects(
     successor_pointer, _successor_array = _int_pointer(
         [successor._handle for successor in successor_values]
     )
+    action_pointer, _action_array = _int_pointer(
+        [action._handle for action in action_values]
+    )
     relation_pointer, _relation_array = _int_pointer(flat_relation_indices)
     goal_pointer, _goal_array = _int_pointer(
         [literal._handle for literal in goal_literals]
@@ -812,6 +828,7 @@ def encode_transition_effects(
             source_value._handle,
             successor_pointer,
             len(successor_values),
+            action_pointer,
             relation_pointer,
             len(relation_values),
             goal_pointer,

@@ -33,8 +33,8 @@ def blocks():
 
 
 def test_release_and_public_search_surface():
-    assert pymimir.advanced.lib.mimir_abi_version() == 24
-    assert pymimir.__version__ == "0.14.0b5"
+    assert pymimir.advanced.lib.mimir_abi_version() == 25
+    assert pymimir.__version__ == "0.14.0b6"
     assert not hasattr(pymimir, "brfs")
     assert not hasattr(pymimir, "astar_eager")
     assert not hasattr(pymimir, "gbfs_lazy")

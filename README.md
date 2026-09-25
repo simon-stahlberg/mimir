@@ -1,6 +1,6 @@
 # Mimir Python API
 
-Mimir 0.14.0b5 provides a typed, semantic API for loading PDDL and prototyping
+Mimir 0.14.0b6 provides a typed, semantic API for loading PDDL and prototyping
 search algorithms.
 
 ```python
@@ -393,7 +393,7 @@ with learning.EncodingContext() as context:
     learning.encode_goal(context, state, problem.goal)
     learning.encode_action_list(context, state, actions)
     learning.encode_transition_effects(
-        context, state, successors, [], problem.goal
+        context, state, successors, actions, [], problem.goal
     )
     context.end_instance()
 
@@ -421,6 +421,10 @@ every object, including domain constants. Transition effects instead emit the
 unary relation `P(transition)`. If a problem has no objects, state, goal, and
 expressive encodings retain the corresponding relation key with an empty value
 buffer, while transition effects still encode their transition node.
+
+`encode_transition_effects` takes one action per successor, where `actions[i]`
+produced `successors[i]`, and labels each transition node with the unary
+relation `action_name_<schema><suffix>(transition)`.
 
 Encoding functions append into the native context and return `None`. A batch
 may mix Problems only when they share the exact `Domain` object. The context

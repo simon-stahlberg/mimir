@@ -99,7 +99,7 @@ from .learning import (
     encode_virtual_node,
 )
 
-__version__: str = "0.14.0b5"
+__version__: str = "0.14.0b6"
 
 __all__ = [
     # Model

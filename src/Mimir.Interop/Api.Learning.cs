@@ -445,6 +445,7 @@ public static partial class Exports
         int sourceHandle,
         IntPtr successorHandlesPtr,
         int successorCount,
+        IntPtr actionHandlesPtr,
         IntPtr effectRelationIndicesPtr,
         int effectRelationCount,
         IntPtr goalHandlesPtr,
@@ -462,6 +463,12 @@ public static partial class Exports
             successorCount,
             "successors");
         if (successors is null)
+            return 0;
+        List<GroundAction>? actions = ReadLearningHandleArray<GroundAction>(
+            actionHandlesPtr,
+            successorCount,
+            "actions");
+        if (actions is null)
             return 0;
         (int FromIndex, int ToIndex)[]? effectRelations = ReadEffectRelations(
             effectRelationIndicesPtr,
@@ -482,6 +489,7 @@ public static partial class Exports
             context,
             source,
             successors,
+            actions,
             effectRelations,
             goal,
             suffix));

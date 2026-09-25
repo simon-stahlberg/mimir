@@ -139,7 +139,8 @@ def use_public_api(
     pymimir.encode_transition_effects(
         context,
         state,
-        [state],
+        [action.apply(state) for action in actions],
+        actions,
         [],
         problem.goal,
     )
