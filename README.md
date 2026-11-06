@@ -188,11 +188,32 @@ observe pruned successors.
 
 Search algorithms and state-space construction obtain generators from the start
 state's problem; generator injection has been removed from their constructors
-and builders. Choose grounded or lifted
+and builders. Choose grounded, lifted or factored
 generation when constructing the problem. C# planner specifications now use
 `algorithm[:heuristic]`, for example `astar:goal-count`.
 Planner heuristic factories receive `(startState, goal)`; the problem is available
 through `startState.Context.Problem`.
+## Factored applicable actions
+
+`generator="factored"` reports applicable actions as Cartesian products over the
+action parameters instead of one binding at a time. A parameter stays set-valued
+whenever the precondition leaves it independent of the others, so a state with
+millions of successors remains cheap to describe. Negative preconditions, such as
+`(not (= ?x ?y))`, are carried as exclusions on the group rather than coupling its
+parameters, so a product is every tuple of its candidate sets minus those
+exclusions.
+
+Callers that do not know about grouping keep working: `GetApplicableActions`
+lazily expands every product and therefore enumerates the same actions as the
+lifted generator. The expansion is unbounded, so a consumer that wants to exploit
+the compression must use the C# `IFactoredApplicableActionGenerator`; the groups
+are not exposed through the Python API yet, which only sees the expansion.
+
+The factored generator supports a fragment of PDDL. Numeric conditions and
+effects, and cost expressions whose definedness cannot be proven, throw
+`NotSupportedException` while the problem is loaded. Use the lifted generator for
+those domains.
+
 The original initial-state generator stays cached. Other grounded generators
 are cached by live `State` object identity with a capacity of 16 and FIFO
 eviction; a cache hit does not refresh the eviction order. This bounds entry

@@ -127,7 +127,7 @@ public sealed partial class FactoredApplicableActionGenerator
         foreach (Literal<Atom<Derived>> literal in schema.DerivedPreconditions)
             atoms.Add(CompileAtom(FactoredAtomKind.Derived, literal.Value.Predicate, literal.Value.Arguments, literal.Polarity, parameterSlots));
 
-        bool permanentlyInapplicable = AddCostDefinednessAtoms(problem, schema, parameterSlots, atoms);
+        bool permanentlyInapplicable = AddCostDefinednessAtoms(schema, parameterSlots, atoms);
 
         var domains = new Constant[schema.Parameters.Count][];
         for (int i = 0; i < domains.Length; i++)
@@ -205,7 +205,6 @@ public sealed partial class FactoredApplicableActionGenerator
     /// positive atoms instead of forcing a per-member probe after grounding.
     /// </summary>
     private static bool AddCostDefinednessAtoms(
-        Problem problem,
         ActionSchema schema,
         IReadOnlyDictionary<Variable, int> parameterSlots,
         List<FactoredAtom> atoms)
@@ -239,7 +238,6 @@ public sealed partial class FactoredApplicableActionGenerator
             }
         }
 
-        _ = problem;
         return permanentlyInapplicable;
     }
 
