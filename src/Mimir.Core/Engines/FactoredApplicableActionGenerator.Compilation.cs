@@ -34,6 +34,10 @@ public sealed partial class FactoredApplicableActionGenerator
 
         public bool IsPositive => Polarity == Polarity.Positive;
 
+        /// <summary>Derived extensions can be far larger than the bindings that reach them, so they are probed
+        /// one candidate at a time instead of being materialized.</summary>
+        public bool IsProbed => Kind == FactoredAtomKind.Derived;
+
         /// <summary>
         /// Projects a ground argument list onto <see cref="Parameters"/>, or returns false when the arguments
         /// contradict a constant position or a repeated parameter.
@@ -78,6 +82,12 @@ public sealed partial class FactoredApplicableActionGenerator
 
         /// <summary>Set when a nullary precondition or an undefined ground cost makes the schema permanently inapplicable.</summary>
         public required bool IsPermanentlyInapplicable { get; init; }
+
+        /// <summary>Atom indices per parameter, so propagation revisits only the atoms a change can affect.</summary>
+        public required int[][] AtomsByParameter { get; init; }
+
+        /// <summary>Atoms over constants alone, which no parameter change can reach.</summary>
+        public required int[] ParameterlessAtoms { get; init; }
     }
 
     private static SchemaPlan CompileSchema(Problem problem, ActionSchema schema)
@@ -126,6 +136,18 @@ public sealed partial class FactoredApplicableActionGenerator
             if (domains[i].Length == 0) permanentlyInapplicable = true;
         }
 
+        var atomsByParameter = new List<int>[schema.Parameters.Count];
+        for (int parameter = 0; parameter < atomsByParameter.Length; parameter++)
+            atomsByParameter[parameter] = new List<int>();
+
+        var parameterlessAtoms = new List<int>();
+        for (int index = 0; index < atoms.Count; index++)
+        {
+            if (atoms[index].Parameters.Length == 0) parameterlessAtoms.Add(index);
+            foreach (int parameter in atoms[index].Parameters)
+                atomsByParameter[parameter].Add(index);
+        }
+
         ActionGroundingPlan groundingPlan = problem.Context.GetActionGroundingPlan(schema);
         return new SchemaPlan
         {
@@ -138,6 +160,8 @@ public sealed partial class FactoredApplicableActionGenerator
                 .Select(isRelevant => !isRelevant)
                 .ToArray(),
             IsPermanentlyInapplicable = permanentlyInapplicable,
+            AtomsByParameter = atomsByParameter.Select(indices => indices.ToArray()).ToArray(),
+            ParameterlessAtoms = parameterlessAtoms.ToArray(),
         };
     }
 

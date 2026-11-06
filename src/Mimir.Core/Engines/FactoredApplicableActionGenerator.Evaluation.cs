@@ -8,13 +8,37 @@ public sealed partial class FactoredApplicableActionGenerator
     private static readonly List<Constant[]> NoTuples = new();
 
     /// <summary>
+    /// The true facts of every predicate the schemas mention, shared by all schemas expanded from one state.
+    /// Static extensions never change, so they are built once per generator.
+    /// </summary>
+    internal sealed class StateFacts
+    {
+        private static readonly List<Fact> None = new();
+
+        private readonly Dictionary<Predicate, List<Fact>> _statics;
+        private readonly Dictionary<Predicate, List<Fact>> _fluents = new(ReferenceEqualityComparer.Instance);
+
+        public ExtendedState State { get; }
+
+        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state, HashSet<Predicate> fluents)
+        {
+            _statics = statics;
+            State = state;
+            foreach (Predicate predicate in fluents)
+                _fluents[predicate] = state.State.Context.GetFacts(predicate).Where(state.IsTrue).ToList();
+        }
+
+        public List<Fact> GetTrueFacts(Predicate predicate)
+            => _statics.GetValueOrDefault(predicate)
+                ?? _fluents.GetValueOrDefault(predicate)
+                ?? None;
+    }
+
+    /// <summary>
     /// Collects, for every atom, the ground tuples that satisfy it in this state, projected onto the schema
     /// parameters the atom mentions. Equality needs no extension because its truth is decided by reference.
     /// </summary>
-    private List<Constant[]>?[] MaterializeTrueTuples(
-        SchemaPlan plan,
-        ExtendedState state,
-        Dictionary<Predicate, List<Fact>> derivedFacts)
+    private List<Constant[]>?[] MaterializeTrueTuples(SchemaPlan plan, StateFacts facts)
     {
         var tuples = new List<Constant[]>?[plan.Atoms.Length];
         for (int index = 0; index < plan.Atoms.Length; index++)
@@ -22,29 +46,21 @@ public sealed partial class FactoredApplicableActionGenerator
             FactoredAtom atom = plan.Atoms[index];
             tuples[index] = atom.Kind switch
             {
-                FactoredAtomKind.Equality => null,
+                FactoredAtomKind.Equality or FactoredAtomKind.Derived => null,
                 FactoredAtomKind.FunctionDefined => ProjectFunctionCalls(atom),
-                FactoredAtomKind.Derived => ProjectFacts(
-                    atom,
-                    derivedFacts.GetValueOrDefault(atom.Predicate!) ?? (IReadOnlyList<Fact>)Array.Empty<Fact>(),
-                    state: null),
-                _ => ProjectFacts(atom, Problem.Context.GetFacts(atom.Predicate!), state),
+                _ => ProjectFacts(atom, facts.GetTrueFacts(atom.Predicate!)),
             };
         }
 
         return tuples;
     }
 
-    private static List<Constant[]> ProjectFacts(
-        FactoredAtom atom,
-        IReadOnlyList<Fact> facts,
-        ExtendedState? state)
+    private static List<Constant[]> ProjectFacts(FactoredAtom atom, List<Fact> trueFacts)
     {
-        var tuples = new List<Constant[]>();
+        var tuples = new List<Constant[]>(trueFacts.Count);
         var projected = new Constant[atom.Parameters.Length];
-        foreach (Fact fact in facts)
+        foreach (Fact fact in trueFacts)
         {
-            if (state is not null && !state.IsTrue(fact)) continue;
             if (!atom.TryProject(fact.Arguments, projected)) continue;
             tuples.Add((Constant[])projected.Clone());
         }
@@ -66,57 +82,122 @@ public sealed partial class FactoredApplicableActionGenerator
     }
 
     /// <summary>
-    /// Shrinks the candidate sets until every atom with at most one undetermined parameter is enforced. Returns
-    /// false when some parameter runs out of candidates or a fully determined atom is violated.
+    /// Shrinks the candidate sets until every atom with at most one undetermined parameter is enforced. Only the
+    /// atoms reachable from a changed parameter are revisited. Returns false when some parameter runs out of
+    /// candidates or a fully determined atom is violated.
     /// </summary>
     private static bool Propagate(
         SchemaPlan plan,
         List<Constant[]>?[] tuples,
-        List<Constant>[] candidates)
+        List<Constant>[] candidates,
+        StateFacts facts,
+        Stack<int> worklist)
     {
-        for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
+        while (worklist.Count > 0)
         {
-            if (candidates[parameter].Count == 0) return false;
-        }
-
-        bool changed = true;
-        while (changed)
-        {
-            changed = false;
-            for (int index = 0; index < plan.Atoms.Length; index++)
+            int changedParameter = worklist.Pop();
+            foreach (int index in plan.AtomsByParameter[changedParameter])
             {
-                FactoredAtom atom = plan.Atoms[index];
-                int undeterminedCount = 0;
-                int undetermined = -1;
-                foreach (int parameter in atom.Parameters)
-                {
-                    if (candidates[parameter].Count <= 1) continue;
-                    undeterminedCount++;
-                    undetermined = parameter;
-                }
-
-                if (undeterminedCount > 1) continue;
-                if (undeterminedCount == 0)
-                {
-                    if (!DeterminedAtomHolds(atom, tuples[index], candidates)) return false;
-                    continue;
-                }
-
-                int before = candidates[undetermined].Count;
-                Restrict(atom, tuples[index], candidates, undetermined);
-                if (candidates[undetermined].Count == 0) return false;
-                if (candidates[undetermined].Count != before) changed = true;
+                if (!EnforceAtom(plan, tuples, candidates, facts, index, worklist)) return false;
             }
         }
 
         return true;
     }
 
+    private static bool EnforceAtom(
+        SchemaPlan plan,
+        List<Constant[]>?[] tuples,
+        List<Constant>[] candidates,
+        StateFacts facts,
+        int index,
+        Stack<int> worklist)
+    {
+        FactoredAtom atom = plan.Atoms[index];
+        int undeterminedCount = 0;
+        int undetermined = -1;
+        foreach (int parameter in atom.Parameters)
+        {
+            if (candidates[parameter].Count <= 1) continue;
+            undeterminedCount++;
+            undetermined = parameter;
+        }
+
+        if (undeterminedCount > 1) return true;
+        if (undeterminedCount == 0)
+            return DeterminedAtomHolds(atom, tuples[index], candidates, facts);
+
+        int before = candidates[undetermined].Count;
+        Restrict(atom, tuples[index], candidates, facts, undetermined);
+        if (candidates[undetermined].Count == 0) return false;
+        if (candidates[undetermined].Count != before) worklist.Push(undetermined);
+        return true;
+    }
+
+    /// <summary>
+    /// Restricts every atom that mentions the fixed parameter to the tuples agreeing with it. Atoms that do not
+    /// mention it keep their existing list, so a branch copies only the relations it actually narrows.
+    /// </summary>
+    private static List<Constant[]>?[] SemiJoin(
+        SchemaPlan plan,
+        List<Constant[]>?[] tuples,
+        int parameter,
+        Constant value)
+    {
+        var reduced = (List<Constant[]>?[])tuples.Clone();
+        foreach (int index in plan.AtomsByParameter[parameter])
+        {
+            FactoredAtom atom = plan.Atoms[index];
+            if (tuples[index] is not { } atomTuples) continue;
+
+            int column = Array.IndexOf(atom.Parameters, parameter);
+            var filtered = new List<Constant[]>();
+            foreach (Constant[] tuple in atomTuples)
+            {
+                if (ReferenceEquals(tuple[column], value)) filtered.Add(tuple);
+            }
+
+            reduced[index] = filtered;
+        }
+
+        return reduced;
+    }
+
+    /// <summary>Enforces every atom once, which seeds the incremental propagation above.</summary>
+    private static bool PropagateAll(
+        SchemaPlan plan,
+        List<Constant[]>?[] tuples,
+        List<Constant>[] candidates,
+        StateFacts facts)
+    {
+        for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
+        {
+            if (candidates[parameter].Count == 0) return false;
+        }
+
+        foreach (int index in plan.ParameterlessAtoms)
+        {
+            if (!DeterminedAtomHolds(plan.Atoms[index], tuples[index], candidates, facts)) return false;
+        }
+
+        var worklist = new Stack<int>();
+        for (int index = 0; index < plan.Atoms.Length; index++)
+        {
+            if (!EnforceAtom(plan, tuples, candidates, facts, index, worklist)) return false;
+        }
+
+        return Propagate(plan, tuples, candidates, facts, worklist);
+    }
+
     private static bool DeterminedAtomHolds(
         FactoredAtom atom,
         List<Constant[]>? tuples,
-        List<Constant>[] candidates)
+        List<Constant>[] candidates,
+        StateFacts facts)
     {
+        if (atom.IsProbed)
+            return ProbeDerived(atom, candidates, facts) == atom.IsPositive;
+
         if (atom.Kind == FactoredAtomKind.Equality)
         {
             Constant left = ResolveArgument(atom, 0, candidates);
@@ -143,9 +224,16 @@ public sealed partial class FactoredApplicableActionGenerator
         FactoredAtom atom,
         List<Constant[]>? tuples,
         List<Constant>[] candidates,
+        StateFacts facts,
         int parameter)
     {
         List<Constant> remaining = candidates[parameter];
+        if (atom.IsProbed)
+        {
+            RestrictByProbe(atom, candidates, facts, parameter, remaining);
+            return;
+        }
+
         if (atom.Kind == FactoredAtomKind.Equality)
         {
             RestrictByEquality(atom, candidates, parameter, remaining);
@@ -195,6 +283,38 @@ public sealed partial class FactoredApplicableActionGenerator
         }
 
         remaining.RemoveAll(candidate => ReferenceEquals(candidate, known));
+    }
+
+    /// <summary>Probes one derived atom per candidate, with every other parameter already determined.</summary>
+    private static void RestrictByProbe(
+        FactoredAtom atom,
+        List<Constant>[] candidates,
+        StateFacts facts,
+        int parameter,
+        List<Constant> remaining)
+    {
+        var original = new List<Constant>(remaining);
+        var probe = new List<Constant> { original[0] };
+        candidates[parameter] = probe;
+        remaining.Clear();
+        foreach (Constant candidate in original)
+        {
+            probe[0] = candidate;
+            if (ProbeDerived(atom, candidates, facts) == atom.IsPositive) remaining.Add(candidate);
+        }
+
+        candidates[parameter] = remaining;
+    }
+
+    private static bool ProbeDerived(FactoredAtom atom, List<Constant>[] candidates, StateFacts facts)
+    {
+        var arguments = new Constant[atom.ArgumentSlots.Length];
+        for (int position = 0; position < arguments.Length; position++)
+            arguments[position] = ResolveArgument(atom, position, candidates);
+
+        return facts.State.IsDerivedTruePrevalidated(
+            (Mimir.Core.Schemas.Predicate<Derived>)atom.Predicate!,
+            arguments);
     }
 
     private static Constant ResolveArgument(FactoredAtom atom, int position, List<Constant>[] candidates)

@@ -46,6 +46,14 @@ public sealed class ExtendedState : IEquatable<ExtendedState>
             fact,
             _derivedEvaluation);
 
+    internal bool IsDerivedTruePrevalidated(
+        Predicate<Derived> predicate,
+        IReadOnlyList<Constant> arguments)
+        => State.Context.IsDerivedTruePrevalidated(
+            predicate,
+            arguments,
+            _derivedEvaluation);
+
     internal bool IsStateDependentDerivedTruePrevalidated(
         Predicate<Derived> predicate,
         IReadOnlyList<Constant> arguments)

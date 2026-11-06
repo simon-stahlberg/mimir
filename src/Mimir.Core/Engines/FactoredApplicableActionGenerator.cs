@@ -22,6 +22,8 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
 {
     public Problem Problem { get; }
     private readonly SchemaPlan[] _schemaPlans;
+    private readonly Dictionary<Predicate, List<Fact>> _staticTrueFacts;
+    private readonly HashSet<Predicate> _changingPredicates;
 
     internal FactoredApplicableActionGenerator(Problem problem)
     {
@@ -29,7 +31,24 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         _schemaPlans = problem.Domain.Actions
             .Select(schema => CompileSchema(problem, schema))
             .ToArray();
+
+        _staticTrueFacts = new Dictionary<Predicate, List<Fact>>(ReferenceEqualityComparer.Instance);
+        _changingPredicates = new HashSet<Predicate>(ReferenceEqualityComparer.Instance);
+        foreach (FactoredAtom atom in _schemaPlans.SelectMany(plan => plan.Atoms))
+        {
+            if (atom.Predicate is null) continue;
+            if (atom.Kind == FactoredAtomKind.Fluent) _changingPredicates.Add(atom.Predicate);
+        }
+
         _ = problem.InitialState;
+        foreach (FactoredAtom atom in _schemaPlans.SelectMany(plan => plan.Atoms))
+        {
+            if (atom.Kind != FactoredAtomKind.Static || _staticTrueFacts.ContainsKey(atom.Predicate!)) continue;
+            _staticTrueFacts[atom.Predicate!] = problem.Context
+                .GetFacts(atom.Predicate!)
+                .Where(fact => problem.Context.IsTrue(new StaticIndex(((Fact<Static>)fact).LocalIndex)))
+                .ToList();
+        }
     }
 
     public IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state)
@@ -40,10 +59,10 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
 
     private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state)
     {
-        Dictionary<Predicate, List<Fact>> derivedFacts = GroupTrueDerivedFacts(state);
+        var facts = new StateFacts(_staticTrueFacts, state, _changingPredicates);
         foreach (SchemaPlan plan in _schemaPlans)
         {
-            foreach (FactoredAction group in SolveSchema(plan, state, derivedFacts))
+            foreach (FactoredAction group in SolveSchema(plan, facts))
                 yield return group;
         }
     }
@@ -78,39 +97,19 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             throw new InvalidOperationException("State and applicable-action generator belong to different problem contexts.");
     }
 
-    private static Dictionary<Predicate, List<Fact>> GroupTrueDerivedFacts(ExtendedState state)
-    {
-        var grouped = new Dictionary<Predicate, List<Fact>>(ReferenceEqualityComparer.Instance);
-        foreach (Fact<Derived> fact in state.GetTrueDerivedFacts())
-        {
-            if (!grouped.TryGetValue(fact.Predicate, out List<Fact>? facts))
-            {
-                facts = new List<Fact>();
-                grouped.Add(fact.Predicate, facts);
-            }
-
-            facts.Add(fact);
-        }
-
-        return grouped;
-    }
-
-    private List<FactoredAction> SolveSchema(
-        SchemaPlan plan,
-        ExtendedState state,
-        Dictionary<Predicate, List<Fact>> derivedFacts)
+    private List<FactoredAction> SolveSchema(SchemaPlan plan, StateFacts facts)
     {
         var groups = new List<FactoredAction>();
         if (plan.IsPermanentlyInapplicable) return groups;
 
-        List<Constant[]>?[] tuples = MaterializeTrueTuples(plan, state, derivedFacts);
+        List<Constant[]>?[] tuples = MaterializeTrueTuples(plan, facts);
         var candidates = new List<Constant>[plan.ParameterCount];
         for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
             candidates[parameter] = new List<Constant>(plan.Domains[parameter]);
 
-        if (!Propagate(plan, tuples, candidates)) return groups;
+        if (!PropagateAll(plan, tuples, candidates, facts)) return groups;
 
-        foreach (List<Constant>[] solution in Solve(plan, tuples, candidates))
+        foreach (List<Constant>[] solution in Solve(plan, tuples, candidates, facts))
             groups.Add(BuildGroup(plan, tuples, solution));
 
         return groups;
@@ -123,7 +122,8 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private List<List<Constant>[]> Solve(
         SchemaPlan plan,
         List<Constant[]>?[] tuples,
-        List<Constant>[] candidates)
+        List<Constant>[] candidates,
+        StateFacts facts)
     {
         var results = new List<List<Constant>[]>();
         int branchParameter = ChooseBranchParameter(plan, candidates);
@@ -139,13 +139,18 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         // remaining parameters are therefore unaffected by this choice, so one completion stands for all of them.
         bool isWitnessBranch = plan.WitnessParameters[branchParameter];
 
+        var worklist = new Stack<int>();
         foreach (Constant value in candidates[branchParameter])
         {
             List<Constant>[] branch = CloneCandidates(candidates);
             branch[branchParameter] = new List<Constant> { value };
-            if (!Propagate(plan, tuples, branch)) continue;
+            // Semi-join on the parameter just fixed, so deeper branches scan progressively smaller relations.
+            List<Constant[]>?[] branchTuples = SemiJoin(plan, tuples, branchParameter, value);
+            worklist.Clear();
+            worklist.Push(branchParameter);
+            if (!Propagate(plan, branchTuples, branch, facts, worklist)) continue;
 
-            results.AddRange(Solve(plan, tuples, branch));
+            results.AddRange(Solve(plan, branchTuples, branch, facts));
             if (isWitnessBranch && results.Count > 0) break;
         }
 
@@ -199,7 +204,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         }
 
         if (undetermined < 2) return false;
-        return atom.IsPositive || mentionsWitness;
+        return atom.IsPositive || atom.IsProbed || mentionsWitness;
     }
 
     private static List<Constant>[] CloneCandidates(List<Constant>[] candidates)
@@ -235,7 +240,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         for (int index = 0; index < plan.Atoms.Length; index++)
         {
             FactoredAtom atom = plan.Atoms[index];
-            if (atom.IsPositive) continue;
+            if (atom.IsPositive || atom.IsProbed) continue;
 
             int[] undetermined = atom.Parameters.Where(parameter => candidates[parameter].Count > 1).ToArray();
             if (undetermined.Length < 2) continue;

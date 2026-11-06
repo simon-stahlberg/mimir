@@ -8,6 +8,12 @@ using GroundAction = Mimir.Core.Grounding.Action;
 // Compares FactoredApplicableActionGenerator against CliqueApplicableActionGenerator over the benchmark set.
 // Both generators run on the same Problem, so states and constants are reference-comparable.
 
+if (args.Length > 1 && args[0] == "--scale")
+{
+    Mimir.FactoredParity.Scaling.Run(Path.GetFullPath(args[1]), TimeSpan.FromSeconds(60));
+    return 0;
+}
+
 string benchmarkRoot = Path.GetFullPath(args.Length > 0 ? args[0] : "Benchmark");
 int stateLimit = args.Length > 1 ? int.Parse(args[1]) : 200;
 string? only = args.Length > 2 ? args[2] : null;
@@ -21,6 +27,9 @@ int unsupported = 0;
 var unsupportedDomains = new SortedSet<string>();
 long totalActions = 0;
 long totalGroups = 0;
+var cliqueTime = new System.Diagnostics.Stopwatch();
+var factoredTime = new System.Diagnostics.Stopwatch();
+var expandTime = new System.Diagnostics.Stopwatch();
 
 foreach ((string domainName, string domainPath, string problemPath) in Discover(benchmarkRoot))
 {
@@ -56,7 +65,16 @@ foreach ((string domainName, string domainPath, string problemPath) in Discover(
     var clique = new CliqueApplicableActionGenerator(problem);
     instances++;
 
-    string? failure = Compare(problem, clique, factored, stateLimit, ref totalActions, ref totalGroups);
+    TimeSpan beforeFactored = factoredTime.Elapsed;
+    TimeSpan beforeClique = cliqueTime.Elapsed;
+    string? failure = Compare(
+        problem, clique, factored, stateLimit, ref totalActions, ref totalGroups, cliqueTime, factoredTime, expandTime);
+    TimeSpan spent = factoredTime.Elapsed - beforeFactored;
+    if (spent > TimeSpan.FromSeconds(0.5))
+    {
+        Console.WriteLine($"SLOW {domainName,-45} factored {spent.TotalSeconds,7:F2}s "
+            + $"clique {(cliqueTime.Elapsed - beforeClique).TotalSeconds,7:F2}s");
+    }
     if (failure is null) continue;
 
     mismatches++;
@@ -73,6 +91,9 @@ Console.WriteLine($"ground actions     : {totalActions}");
 Console.WriteLine($"factored groups    : {totalGroups}");
 if (totalGroups > 0)
     Console.WriteLine($"compression        : {(double)totalActions / totalGroups:F2}x");
+Console.WriteLine($"clique time        : {cliqueTime.Elapsed.TotalSeconds:F2}s");
+Console.WriteLine($"factored groups ms : {factoredTime.Elapsed.TotalSeconds:F2}s");
+Console.WriteLine($"factored expand ms : {expandTime.Elapsed.TotalSeconds:F2}s");
 if (unsupportedDomains.Count > 0)
 {
     Console.WriteLine();
@@ -95,7 +116,10 @@ static string? Compare(
     FactoredApplicableActionGenerator factored,
     int stateLimit,
     ref long totalActions,
-    ref long totalGroups)
+    ref long totalGroups,
+    Stopwatch cliqueTime,
+    Stopwatch factoredTime,
+    Stopwatch expandTime)
 {
     var open = new Queue<State>();
     var closed = new HashSet<State> { problem.InitialState };
@@ -111,15 +135,19 @@ static string? Compare(
         ExtendedState extended = state.Expand();
         visited++;
 
+        cliqueTime.Start();
         clique.CollectApplicableActions(extended, cliqueActions);
+        cliqueTime.Stop();
 
         var factoredActions = new List<GroundAction>();
         long groups = 0;
-        foreach (FactoredAction group in factored.GetFactoredApplicableActions(extended))
-        {
-            groups++;
-            factoredActions.AddRange(group.Expand());
-        }
+        factoredTime.Start();
+        var groupList = factored.GetFactoredApplicableActions(extended).ToList();
+        factoredTime.Stop();
+        groups = groupList.Count;
+        expandTime.Start();
+        foreach (FactoredAction group in groupList) factoredActions.AddRange(group.Expand());
+        expandTime.Stop();
 
         totalActions += cliqueActions.Count;
         totalGroups += groups;
