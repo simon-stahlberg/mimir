@@ -96,7 +96,7 @@ public sealed partial class FactoredApplicableActionGenerator
         /// Projected tuples for the atoms whose extension cannot change between states. Fluent entries stay null
         /// and are filled per state; derived entries stay null because they are probed, not enumerated.
         /// </summary>
-        public List<Constant[]>?[] UnchangingTuples { get; set; } = Array.Empty<List<Constant[]>?>();
+        public TupleSet?[] UnchangingTuples { get; set; } = Array.Empty<TupleSet?>();
     }
 
     private static SchemaPlan CompileSchema(Problem problem, ActionSchema schema)

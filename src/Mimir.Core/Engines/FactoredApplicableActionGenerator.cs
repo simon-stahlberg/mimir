@@ -124,7 +124,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         var groups = new List<FactoredAction>();
         if (plan.IsPermanentlyInapplicable) return groups;
 
-        List<Constant[]>?[] tuples = MaterializeTrueTuples(plan, facts);
+        TupleSet?[] tuples = MaterializeTrueTuples(plan, facts);
         var candidates = new List<Constant>[plan.ParameterCount];
         for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
             candidates[parameter] = new List<Constant>(plan.Domains[parameter]);
@@ -141,7 +141,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     /// </summary>
     private void Solve(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         List<Constant>[] candidates,
         StateFacts facts,
         List<FactoredAction> groups)
@@ -166,7 +166,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             List<Constant>[] branch = CloneCandidates(candidates);
             branch[branchParameter] = new List<Constant> { value };
             // Semi-join on the parameter just fixed, so deeper branches scan progressively smaller relations.
-            List<Constant[]>?[] branchTuples = SemiJoin(plan, tuples, branchParameter, value);
+            TupleSet?[] branchTuples = SemiJoin(plan, tuples, branchParameter, value);
             worklist.Clear();
             worklist.Push(branchParameter);
             if (!Propagate(plan, branchTuples, branch, facts, worklist)) continue;
@@ -236,7 +236,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
 
     private static FactoredAction BuildGroup(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         List<Constant>[] candidates)
     {
         var sets = new Constant[plan.ParameterCount][];
@@ -294,7 +294,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     /// </summary>
     private static Constant[][] CollectForbiddenTuples(
         FactoredAtom atom,
-        List<Constant[]> trueTuples,
+        TupleSet trueTuples,
         Constant[][] sets,
         HashSet<Constant>?[] membership)
     {
@@ -306,19 +306,19 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         }
 
         var forbidden = new List<Constant[]>();
-        foreach (Constant[] tuple in trueTuples)
+        for (int row = 0; row < trueTuples.Count; row++)
         {
             bool reachable = true;
-            for (int column = 0; column < atom.Parameters.Length; column++)
+            for (int column = 0; column < trueTuples.Arity; column++)
             {
-                if (!membership[atom.Parameters[column]]!.Contains(tuple[column]))
+                if (!membership[atom.Parameters[column]]!.Contains(trueTuples.At(row, column)))
                 {
                     reachable = false;
                     break;
                 }
             }
 
-            if (reachable) forbidden.Add(tuple);
+            if (reachable) forbidden.Add(trueTuples.Row(row));
         }
 
         return forbidden.ToArray();

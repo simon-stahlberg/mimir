@@ -5,7 +5,57 @@ namespace Mimir.Core.Engines;
 
 public sealed partial class FactoredApplicableActionGenerator
 {
-    private static readonly List<Constant[]> NoTuples = new();
+    /// <summary>
+    /// The ground tuples satisfying one atom, packed row-major into a single array. A tuple per row would cost
+    /// an allocation per true fact per schema per state, which dominated both CPU and GC time.
+    /// </summary>
+    internal sealed class TupleSet
+    {
+        public static readonly TupleSet Empty = new(Array.Empty<Constant>(), arity: 0, count: 0);
+
+        private readonly Constant[] _values;
+
+        public int Arity { get; }
+        public int Count { get; }
+
+        public TupleSet(Constant[] values, int arity, int count)
+        {
+            _values = values;
+            Arity = arity;
+            Count = count;
+        }
+
+        public Constant At(int row, int column) => _values[(row * Arity) + column];
+
+        public TupleSet Where(int column, Constant value)
+        {
+            int matches = 0;
+            for (int row = 0; row < Count; row++)
+            {
+                if (ReferenceEquals(At(row, column), value)) matches++;
+            }
+
+            if (matches == Count) return this;
+
+            var values = new Constant[matches * Arity];
+            int next = 0;
+            for (int row = 0; row < Count; row++)
+            {
+                if (!ReferenceEquals(At(row, column), value)) continue;
+                Array.Copy(_values, row * Arity, values, next * Arity, Arity);
+                next++;
+            }
+
+            return new TupleSet(values, Arity, matches);
+        }
+
+        public Constant[] Row(int row)
+        {
+            var copy = new Constant[Arity];
+            Array.Copy(_values, row * Arity, copy, 0, Arity);
+            return copy;
+        }
+    }
 
     /// <summary>
     /// The true facts of every predicate the schemas mention, shared by all schemas expanded from one state.
@@ -38,9 +88,9 @@ public sealed partial class FactoredApplicableActionGenerator
     /// Collects, for every atom, the ground tuples that satisfy it in this state, projected onto the schema
     /// parameters the atom mentions. Equality needs no extension because its truth is decided by reference.
     /// </summary>
-    private static List<Constant[]>?[] MaterializeTrueTuples(SchemaPlan plan, StateFacts facts)
+    private static TupleSet?[] MaterializeTrueTuples(SchemaPlan plan, StateFacts facts)
     {
-        var tuples = (List<Constant[]>?[])plan.UnchangingTuples.Clone();
+        var tuples = (TupleSet?[])plan.UnchangingTuples.Clone();
         for (int index = 0; index < plan.Atoms.Length; index++)
         {
             FactoredAtom atom = plan.Atoms[index];
@@ -52,9 +102,9 @@ public sealed partial class FactoredApplicableActionGenerator
     }
 
     /// <summary>Projects the atoms whose extension is fixed for the whole problem, once per generator.</summary>
-    private List<Constant[]>?[] ProjectUnchangingTuples(SchemaPlan plan)
+    private TupleSet?[] ProjectUnchangingTuples(SchemaPlan plan)
     {
-        var tuples = new List<Constant[]>?[plan.Atoms.Length];
+        var tuples = new TupleSet?[plan.Atoms.Length];
         for (int index = 0; index < plan.Atoms.Length; index++)
         {
             FactoredAtom atom = plan.Atoms[index];
@@ -69,30 +119,36 @@ public sealed partial class FactoredApplicableActionGenerator
         return tuples;
     }
 
-    private static List<Constant[]> ProjectFacts(FactoredAtom atom, List<Fact> trueFacts)
+    private static TupleSet ProjectFacts(FactoredAtom atom, List<Fact> trueFacts)
     {
-        var tuples = new List<Constant[]>(trueFacts.Count);
-        var projected = new Constant[atom.Parameters.Length];
+        int arity = atom.Parameters.Length;
+        var values = new Constant[trueFacts.Count * arity];
+        var projected = new Constant[arity];
+        int count = 0;
         foreach (Fact fact in trueFacts)
         {
             if (!atom.TryProject(fact.Arguments, projected)) continue;
-            tuples.Add((Constant[])projected.Clone());
+            Array.Copy(projected, 0, values, count * arity, arity);
+            count++;
         }
 
-        return tuples;
+        return new TupleSet(values, arity, count);
     }
 
-    private List<Constant[]> ProjectFunctionCalls(FactoredAtom atom)
+    private TupleSet ProjectFunctionCalls(FactoredAtom atom)
     {
-        var tuples = new List<Constant[]>();
-        var projected = new Constant[atom.Parameters.Length];
+        int arity = atom.Parameters.Length;
+        var rows = new List<Constant>();
+        var projected = new Constant[arity];
+        int count = 0;
         foreach (GroundFunctionCall call in Problem.Context.GetDefinedFunctionCalls(atom.Function!))
         {
             if (!atom.TryProject(call.Arguments, projected)) continue;
-            tuples.Add((Constant[])projected.Clone());
+            rows.AddRange(projected);
+            count++;
         }
 
-        return tuples;
+        return new TupleSet(rows.ToArray(), arity, count);
     }
 
     /// <summary>
@@ -102,7 +158,7 @@ public sealed partial class FactoredApplicableActionGenerator
     /// </summary>
     private static bool Propagate(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         List<Constant>[] candidates,
         StateFacts facts,
         Stack<int> worklist)
@@ -121,7 +177,7 @@ public sealed partial class FactoredApplicableActionGenerator
 
     private static bool EnforceAtom(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         List<Constant>[] candidates,
         StateFacts facts,
         int index,
@@ -152,35 +208,18 @@ public sealed partial class FactoredApplicableActionGenerator
     /// Restricts every atom that mentions the fixed parameter to the tuples agreeing with it. Atoms that do not
     /// mention it keep their existing list, so a branch copies only the relations it actually narrows.
     /// </summary>
-    private static List<Constant[]>?[] SemiJoin(
+    private static TupleSet?[] SemiJoin(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         int parameter,
         Constant value)
     {
-        var reduced = (List<Constant[]>?[])tuples.Clone();
+        var reduced = (TupleSet?[])tuples.Clone();
         foreach (int index in plan.AtomsByParameter[parameter])
         {
-            FactoredAtom atom = plan.Atoms[index];
             if (tuples[index] is not { } atomTuples) continue;
-
-            int column = Array.IndexOf(atom.Parameters, parameter);
-            int matches = 0;
-            foreach (Constant[] tuple in atomTuples)
-            {
-                if (ReferenceEquals(tuple[column], value)) matches++;
-            }
-
-            // Reuse the list when the fix removes nothing, which is the common case for a one-tuple relation.
-            if (matches == atomTuples.Count) continue;
-
-            var filtered = new List<Constant[]>(matches);
-            foreach (Constant[] tuple in atomTuples)
-            {
-                if (ReferenceEquals(tuple[column], value)) filtered.Add(tuple);
-            }
-
-            reduced[index] = filtered;
+            int column = Array.IndexOf(plan.Atoms[index].Parameters, parameter);
+            reduced[index] = atomTuples.Where(column, value);
         }
 
         return reduced;
@@ -189,7 +228,7 @@ public sealed partial class FactoredApplicableActionGenerator
     /// <summary>Enforces every atom once, which seeds the incremental propagation above.</summary>
     private static bool PropagateAll(
         SchemaPlan plan,
-        List<Constant[]>?[] tuples,
+        TupleSet?[] tuples,
         List<Constant>[] candidates,
         StateFacts facts)
     {
@@ -214,7 +253,7 @@ public sealed partial class FactoredApplicableActionGenerator
 
     private static bool DeterminedAtomHolds(
         FactoredAtom atom,
-        List<Constant[]>? tuples,
+        TupleSet? tuples,
         List<Constant>[] candidates,
         StateFacts facts)
     {
@@ -228,16 +267,17 @@ public sealed partial class FactoredApplicableActionGenerator
             return ReferenceEquals(left, right) == atom.IsPositive;
         }
 
-        var values = new Constant[atom.Parameters.Length];
-        for (int column = 0; column < values.Length; column++)
-            values[column] = candidates[atom.Parameters[column]][0];
-
+        TupleSet rows = tuples ?? TupleSet.Empty;
         bool isTrue = false;
-        foreach (Constant[] tuple in tuples ?? NoTuples)
+        for (int row = 0; row < rows.Count && !isTrue; row++)
         {
-            if (!TupleEquals(tuple, values)) continue;
             isTrue = true;
-            break;
+            for (int column = 0; column < rows.Arity; column++)
+            {
+                if (ReferenceEquals(rows.At(row, column), candidates[atom.Parameters[column]][0])) continue;
+                isTrue = false;
+                break;
+            }
         }
 
         return isTrue == atom.IsPositive;
@@ -245,7 +285,7 @@ public sealed partial class FactoredApplicableActionGenerator
 
     private static void Restrict(
         FactoredAtom atom,
-        List<Constant[]>? tuples,
+        TupleSet? tuples,
         List<Constant>[] candidates,
         StateFacts facts,
         int parameter)
@@ -264,21 +304,22 @@ public sealed partial class FactoredApplicableActionGenerator
         }
 
         int column = Array.IndexOf(atom.Parameters, parameter);
+        TupleSet rows = tuples ?? TupleSet.Empty;
         var supported = new HashSet<Constant>(ReferenceEqualityComparer.Instance);
-        foreach (Constant[] tuple in tuples ?? NoTuples)
+        for (int row = 0; row < rows.Count; row++)
         {
             bool matches = true;
-            for (int other = 0; other < atom.Parameters.Length; other++)
+            for (int other = 0; other < rows.Arity; other++)
             {
                 if (other == column) continue;
-                if (!ReferenceEquals(tuple[other], candidates[atom.Parameters[other]][0]))
+                if (!ReferenceEquals(rows.At(row, other), candidates[atom.Parameters[other]][0]))
                 {
                     matches = false;
                     break;
                 }
             }
 
-            if (matches) supported.Add(tuple[column]);
+            if (matches) supported.Add(rows.At(row, column));
         }
 
         remaining.RemoveAll(candidate => supported.Contains(candidate) != atom.IsPositive);
@@ -346,13 +387,4 @@ public sealed partial class FactoredApplicableActionGenerator
         return parameter < 0 ? atom.ArgumentConstants[position]! : candidates[parameter][0];
     }
 
-    private static bool TupleEquals(Constant[] left, Constant[] right)
-    {
-        for (int column = 0; column < left.Length; column++)
-        {
-            if (!ReferenceEquals(left[column], right[column])) return false;
-        }
-
-        return true;
-    }
 }
