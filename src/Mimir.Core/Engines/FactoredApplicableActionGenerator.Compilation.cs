@@ -80,6 +80,9 @@ public sealed partial class FactoredApplicableActionGenerator
         /// <summary>Parameters absent from every effect, effect condition and the cost; one representative suffices.</summary>
         public required bool[] WitnessParameters { get; init; }
 
+        /// <summary>Shares the ground actions this schema's groups expand to, across states.</summary>
+        public required GroundActionCache Actions { get; init; }
+
         /// <summary>Set when a nullary precondition or an undefined ground cost makes the schema permanently inapplicable.</summary>
         public required bool IsPermanentlyInapplicable { get; init; }
 
@@ -88,6 +91,12 @@ public sealed partial class FactoredApplicableActionGenerator
 
         /// <summary>Atoms over constants alone, which no parameter change can reach.</summary>
         public required int[] ParameterlessAtoms { get; init; }
+
+        /// <summary>
+        /// Projected tuples for the atoms whose extension cannot change between states. Fluent entries stay null
+        /// and are filled per state; derived entries stay null because they are probed, not enumerated.
+        /// </summary>
+        public List<Constant[]>?[] UnchangingTuples { get; set; } = Array.Empty<List<Constant[]>?>();
     }
 
     private static SchemaPlan CompileSchema(Problem problem, ActionSchema schema)
@@ -159,6 +168,7 @@ public sealed partial class FactoredApplicableActionGenerator
             WitnessParameters = groundingPlan.TransitionRelevantParameters
                 .Select(isRelevant => !isRelevant)
                 .ToArray(),
+            Actions = new GroundActionCache(groundingPlan, problem),
             IsPermanentlyInapplicable = permanentlyInapplicable,
             AtomsByParameter = atomsByParameter.Select(indices => indices.ToArray()).ToArray(),
             ParameterlessAtoms = parameterlessAtoms.ToArray(),

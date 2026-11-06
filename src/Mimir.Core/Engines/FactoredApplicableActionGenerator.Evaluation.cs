@@ -38,7 +38,21 @@ public sealed partial class FactoredApplicableActionGenerator
     /// Collects, for every atom, the ground tuples that satisfy it in this state, projected onto the schema
     /// parameters the atom mentions. Equality needs no extension because its truth is decided by reference.
     /// </summary>
-    private List<Constant[]>?[] MaterializeTrueTuples(SchemaPlan plan, StateFacts facts)
+    private static List<Constant[]>?[] MaterializeTrueTuples(SchemaPlan plan, StateFacts facts)
+    {
+        var tuples = (List<Constant[]>?[])plan.UnchangingTuples.Clone();
+        for (int index = 0; index < plan.Atoms.Length; index++)
+        {
+            FactoredAtom atom = plan.Atoms[index];
+            if (atom.Kind != FactoredAtomKind.Fluent) continue;
+            tuples[index] = ProjectFacts(atom, facts.GetTrueFacts(atom.Predicate!));
+        }
+
+        return tuples;
+    }
+
+    /// <summary>Projects the atoms whose extension is fixed for the whole problem, once per generator.</summary>
+    private List<Constant[]>?[] ProjectUnchangingTuples(SchemaPlan plan)
     {
         var tuples = new List<Constant[]>?[plan.Atoms.Length];
         for (int index = 0; index < plan.Atoms.Length; index++)
@@ -46,9 +60,9 @@ public sealed partial class FactoredApplicableActionGenerator
             FactoredAtom atom = plan.Atoms[index];
             tuples[index] = atom.Kind switch
             {
-                FactoredAtomKind.Equality or FactoredAtomKind.Derived => null,
+                FactoredAtomKind.Static => ProjectFacts(atom, StaticTrueFacts(atom.Predicate!)),
                 FactoredAtomKind.FunctionDefined => ProjectFunctionCalls(atom),
-                _ => ProjectFacts(atom, facts.GetTrueFacts(atom.Predicate!)),
+                _ => null,
             };
         }
 
@@ -151,7 +165,16 @@ public sealed partial class FactoredApplicableActionGenerator
             if (tuples[index] is not { } atomTuples) continue;
 
             int column = Array.IndexOf(atom.Parameters, parameter);
-            var filtered = new List<Constant[]>();
+            int matches = 0;
+            foreach (Constant[] tuple in atomTuples)
+            {
+                if (ReferenceEquals(tuple[column], value)) matches++;
+            }
+
+            // Reuse the list when the fix removes nothing, which is the common case for a one-tuple relation.
+            if (matches == atomTuples.Count) continue;
+
+            var filtered = new List<Constant[]>(matches);
             foreach (Constant[] tuple in atomTuples)
             {
                 if (ReferenceEquals(tuple[column], value)) filtered.Add(tuple);

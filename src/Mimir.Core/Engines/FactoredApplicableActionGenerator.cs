@@ -24,6 +24,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private readonly SchemaPlan[] _schemaPlans;
     private readonly Dictionary<Predicate, List<Fact>> _staticTrueFacts;
     private readonly HashSet<Predicate> _changingPredicates;
+    private int _observedGen0Collections;
 
     internal FactoredApplicableActionGenerator(Problem problem)
     {
@@ -49,7 +50,15 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
                 .Where(fact => problem.Context.IsTrue(new StaticIndex(((Fact<Static>)fact).LocalIndex)))
                 .ToList();
         }
+
+        foreach (SchemaPlan plan in _schemaPlans)
+            plan.UnchangingTuples = ProjectUnchangingTuples(plan);
+
+        _observedGen0Collections = GC.CollectionCount(0);
     }
+
+    private List<Fact> StaticTrueFacts(Predicate predicate)
+        => _staticTrueFacts.GetValueOrDefault(predicate) ?? new List<Fact>();
 
     public IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state)
     {
@@ -59,6 +68,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
 
     private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state)
     {
+        ScavengeCollectedActions();
         var facts = new StateFacts(_staticTrueFacts, state, _changingPredicates);
         foreach (SchemaPlan plan in _schemaPlans)
         {
@@ -90,6 +100,18 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             destination.AddRange(group.Expand());
     }
 
+    // Walking the weak caches on every expansion costs more than it reclaims, so wait for a collection.
+    private void ScavengeCollectedActions()
+    {
+        Problem.Context.ScavengeActionComponentCaches();
+        int gen0Collections = GC.CollectionCount(0);
+        if (gen0Collections == _observedGen0Collections) return;
+
+        _observedGen0Collections = gen0Collections;
+        foreach (SchemaPlan plan in _schemaPlans)
+            plan.Actions.Scavenge();
+    }
+
     private void ValidateState(ExtendedState state)
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -109,9 +131,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
 
         if (!PropagateAll(plan, tuples, candidates, facts)) return groups;
 
-        foreach (List<Constant>[] solution in Solve(plan, tuples, candidates, facts))
-            groups.Add(BuildGroup(plan, tuples, solution));
-
+        Solve(plan, tuples, candidates, facts, groups);
         return groups;
     }
 
@@ -119,18 +139,18 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     /// Enumerates assignments of a candidate set to every parameter. A parameter stays set-valued unless a positive
     /// precondition still ties it to another set-valued parameter, in which case the generator branches on it.
     /// </summary>
-    private List<List<Constant>[]> Solve(
+    private void Solve(
         SchemaPlan plan,
         List<Constant[]>?[] tuples,
         List<Constant>[] candidates,
-        StateFacts facts)
+        StateFacts facts,
+        List<FactoredAction> groups)
     {
-        var results = new List<List<Constant>[]>();
         int branchParameter = ChooseBranchParameter(plan, candidates);
         if (branchParameter < 0)
         {
-            results.Add(CollapseWitnesses(plan, candidates));
-            return results;
+            groups.Add(BuildGroup(plan, tuples, candidates));
+            return;
         }
 
         // Mirrors the representative-binding rule of the clique generator. Branching reaches a witness only once
@@ -140,6 +160,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         bool isWitnessBranch = plan.WitnessParameters[branchParameter];
 
         var worklist = new Stack<int>();
+        int before = groups.Count;
         foreach (Constant value in candidates[branchParameter])
         {
             List<Constant>[] branch = CloneCandidates(candidates);
@@ -150,11 +171,9 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             worklist.Push(branchParameter);
             if (!Propagate(plan, branchTuples, branch, facts, worklist)) continue;
 
-            results.AddRange(Solve(plan, branchTuples, branch, facts));
-            if (isWitnessBranch && results.Count > 0) break;
+            Solve(plan, branchTuples, branch, facts, groups);
+            if (isWitnessBranch && groups.Count > before) break;
         }
-
-        return results;
     }
 
     private static int ChooseBranchParameter(SchemaPlan plan, List<Constant>[] candidates)
@@ -215,18 +234,6 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         return clone;
     }
 
-    private static List<Constant>[] CollapseWitnesses(SchemaPlan plan, List<Constant>[] candidates)
-    {
-        List<Constant>[] collapsed = CloneCandidates(candidates);
-        for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
-        {
-            if (!plan.WitnessParameters[parameter] || collapsed[parameter].Count <= 1) continue;
-            collapsed[parameter] = new List<Constant> { collapsed[parameter][0] };
-        }
-
-        return collapsed;
-    }
-
     private static FactoredAction BuildGroup(
         SchemaPlan plan,
         List<Constant[]>?[] tuples,
@@ -234,48 +241,77 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     {
         var sets = new Constant[plan.ParameterCount][];
         for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
-            sets[parameter] = candidates[parameter].ToArray();
+        {
+            // A witness changes no part of the transition, so the group carries one representative of it.
+            sets[parameter] = plan.WitnessParameters[parameter] && candidates[parameter].Count > 1
+                ? [candidates[parameter][0]]
+                : candidates[parameter].ToArray();
+        }
 
         var exclusions = new List<FactoredExclusion>();
+        HashSet<Constant>?[]? membership = null;
         for (int index = 0; index < plan.Atoms.Length; index++)
         {
             FactoredAtom atom = plan.Atoms[index];
             if (atom.IsPositive || atom.IsProbed) continue;
 
-            int[] undetermined = atom.Parameters.Where(parameter => candidates[parameter].Count > 1).ToArray();
-            if (undetermined.Length < 2) continue;
+            int undetermined = 0;
+            int first = -1;
+            int second = -1;
+            foreach (int parameter in atom.Parameters)
+            {
+                if (sets[parameter].Length <= 1) continue;
+                undetermined++;
+                if (first < 0) first = parameter;
+                else if (second < 0) second = parameter;
+            }
+
+            if (undetermined < 2) continue;
 
             if (atom.Kind == FactoredAtomKind.Equality)
             {
-                exclusions.Add(FactoredExclusion.Distinctness(undetermined[0], undetermined[1]));
+                exclusions.Add(FactoredExclusion.Distinctness(first, second));
                 continue;
             }
 
-            Constant[][] forbidden = CollectForbiddenTuples(atom, tuples[index]!, candidates);
+            membership ??= new HashSet<Constant>?[plan.ParameterCount];
+            Constant[][] forbidden = CollectForbiddenTuples(atom, tuples[index]!, sets, membership);
             if (forbidden.Length > 0)
                 exclusions.Add(FactoredExclusion.ForbiddenTuples(atom.Parameters, forbidden));
         }
 
         return new FactoredAction(
             plan.GroundingPlan,
-            plan.GroundingPlan.Context.Problem,
+            plan.Actions,
             sets,
             plan.WitnessParameters,
             exclusions);
     }
 
+    /// <summary>
+    /// Keeps only the tuples a member of this group could actually take, so that expansion tests a short list.
+    /// The membership sets are built once per group and shared by its atoms.
+    /// </summary>
     private static Constant[][] CollectForbiddenTuples(
         FactoredAtom atom,
         List<Constant[]> trueTuples,
-        List<Constant>[] candidates)
+        Constant[][] sets,
+        HashSet<Constant>?[] membership)
     {
+        foreach (int parameter in atom.Parameters)
+        {
+            membership[parameter] ??= new HashSet<Constant>(
+                sets[parameter],
+                ReferenceEqualityComparer.Instance);
+        }
+
         var forbidden = new List<Constant[]>();
         foreach (Constant[] tuple in trueTuples)
         {
             bool reachable = true;
             for (int column = 0; column < atom.Parameters.Length; column++)
             {
-                if (!candidates[atom.Parameters[column]].Contains(tuple[column]))
+                if (!membership[atom.Parameters[column]]!.Contains(tuple[column]))
                 {
                     reachable = false;
                     break;

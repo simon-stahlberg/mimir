@@ -79,6 +79,54 @@ public class FactoredApplicableActionGeneratorTests
         Assert.Equal(4, pick.Expand().Count());
     }
 
+    [Theory]
+    // hiking states inequalities between parameters the precondition otherwise leaves independent; schedule is
+    // the only benchmark domain with negative preconditions over three or more parameters.
+    [InlineData("strips/hiking-opt14-strips", true)]
+    [InlineData("adl/schedule", false)]
+    public void CarriesNegativePreconditionsAsExclusions(string domainDirectory, bool expectDistinctness)
+    {
+        string directory = Path.Combine(BenchmarkPath, domainDirectory);
+        string problemFile = Directory
+            .EnumerateFiles(directory, "*.pddl")
+            .Order(StringComparer.Ordinal)
+            .First(path => !path.EndsWith("domain.pddl", StringComparison.OrdinalIgnoreCase));
+
+        var domain = Domain.FromFile(Path.Combine(directory, "domain.pddl"));
+        var problem = Problem.FromFile(domain, problemFile, ApplicableActionGeneratorType.Factored);
+        var clique = new CliqueApplicableActionGenerator(problem);
+        var factored = new FactoredApplicableActionGenerator(problem);
+
+        var open = new Queue<State>();
+        var closed = new HashSet<State> { problem.InitialState };
+        open.Enqueue(problem.InitialState);
+
+        bool sawExclusion = false;
+        var expected = new List<GroundAction>();
+        for (int visited = 0; open.Count > 0 && visited < 40; visited++)
+        {
+            ExtendedState state = open.Dequeue().Expand();
+            FactoredAction[] groups = factored.GetFactoredApplicableActions(state).ToArray();
+            clique.CollectApplicableActions(state, expected);
+
+            sawExclusion |= groups.Any(group =>
+                group.Exclusions.Any(exclusion => exclusion.IsDistinctness == expectDistinctness));
+
+            // Expansion must drop exactly the members the exclusions rule out.
+            Assert.Equal(
+                TransitionCounts(expected, problem),
+                TransitionCounts(groups.SelectMany(group => group.Expand()).ToList(), problem));
+
+            foreach (GroundAction action in expected)
+            {
+                State successor = state.Apply(action);
+                if (closed.Add(successor)) open.Enqueue(successor);
+            }
+        }
+
+        Assert.True(sawExclusion, $"No {(expectDistinctness ? "distinctness" : "forbidden-tuple")} exclusion arose.");
+    }
+
     private static void AssertParity(string directory, string problemFile, int stateLimit)
     {
         var domain = Domain.FromFile(Path.Combine(directory, "domain.pddl"));

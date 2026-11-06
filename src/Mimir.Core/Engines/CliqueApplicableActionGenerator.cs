@@ -1,76 +1,11 @@
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using GroundAction = Mimir.Core.Grounding.Action;
-using System.Runtime.CompilerServices;
 
 namespace Mimir.Core.Engines;
 
 public class CliqueApplicableActionGenerator : IApplicableActionGenerator
 {
-    private readonly struct BindingKey : IEquatable<BindingKey>
-    {
-        private readonly Constant[] _arguments;
-
-        public BindingKey(ReadOnlySpan<Constant> binding)
-        {
-            _arguments = binding.ToArray();
-        }
-
-        public BindingKey(Constant[] arguments)
-        {
-            _arguments = arguments;
-        }
-
-        public Constant[] Arguments => _arguments;
-
-        public bool Equals(BindingKey other) => Equals(other._arguments);
-
-        public bool Equals(ReadOnlySpan<Constant> binding)
-        {
-            if (_arguments.Length != binding.Length)
-                return false;
-
-            for (int i = 0; i < _arguments.Length; i++)
-            {
-                if (!ReferenceEquals(_arguments[i], binding[i]))
-                    return false;
-            }
-
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is BindingKey other && Equals(other);
-
-        public override int GetHashCode() => GetHashCode(_arguments);
-
-        public static int GetHashCode(ReadOnlySpan<Constant> binding)
-        {
-            var hash = new HashCode();
-            hash.Add(binding.Length);
-            foreach (Constant argument in binding)
-                hash.Add(RuntimeHelpers.GetHashCode(argument));
-
-            return hash.ToHashCode();
-        }
-    }
-
-    private sealed class BindingKeyComparer :
-        IEqualityComparer<BindingKey>,
-        IAlternateEqualityComparer<ReadOnlySpan<Constant>, BindingKey>
-    {
-        public static BindingKeyComparer Instance { get; } = new();
-
-        private BindingKeyComparer()
-        {
-        }
-
-        public bool Equals(BindingKey left, BindingKey right) => left.Equals(right);
-        public int GetHashCode(BindingKey key) => key.GetHashCode();
-        public bool Equals(ReadOnlySpan<Constant> binding, BindingKey key) => key.Equals(binding);
-        public int GetHashCode(ReadOnlySpan<Constant> binding) => BindingKey.GetHashCode(binding);
-        public BindingKey Create(ReadOnlySpan<Constant> binding) => new(binding);
-    }
-
     private sealed class ActionSchemaCache
     {
         public ActionGroundingPlan GroundingPlan = null!;
@@ -79,21 +14,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         public CompiledConjunctiveCondition Preconditions = null!;
         public bool[] TransitionRelevantParameters = null!;
         public bool HasExistentialWitnessParameters;
-
-        public Dictionary<BindingKey, CachedGroundAction> GroundActionCache = null!;
-        public List<BindingKey> StaleBindings = new();
-    }
-
-    private sealed class CachedGroundAction
-    {
-        public Constant[] Arguments { get; }
-        public WeakReference<GroundAction> Reference { get; }
-
-        public CachedGroundAction(Constant[] arguments, GroundAction action)
-        {
-            Arguments = arguments;
-            Reference = new WeakReference<GroundAction>(action);
-        }
+        public GroundActionCache GroundActionCache = null!;
     }
 
     private sealed class ApplicableActionCollector
@@ -134,7 +55,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
 
         private bool Collect(ReadOnlySpan<Constant> binding)
         {
-            GroundAction action = _generator.GetOrBuildAction(_schemaCache, binding);
+            GroundAction action = _schemaCache.GroundActionCache.GetOrBuild(binding);
             if (_schemaCache.RequiresTransitionDefinedCheck && !action.IsTransitionDefined(_state))
                 return true;
             _actions.Add(action);
@@ -186,8 +107,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
                 schema.NumericPreconditions);
             schemaCache.HasExistentialWitnessParameters =
                 schemaCache.TransitionRelevantParameters.Any(isRelevant => !isRelevant);
-            schemaCache.GroundActionCache = new Dictionary<BindingKey, CachedGroundAction>(
-                BindingKeyComparer.Instance);
+            schemaCache.GroundActionCache = new GroundActionCache(groundingPlan, Problem);
 
             schemaCaches.Add(schemaCache);
         }
@@ -278,38 +198,6 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         return actions;
     }
 
-    private GroundAction GetOrBuildAction(
-        ActionSchemaCache schemaCache,
-        ReadOnlySpan<Constant> binding)
-    {
-        Dictionary<BindingKey, CachedGroundAction>.AlternateLookup<ReadOnlySpan<Constant>> lookup =
-            schemaCache.GroundActionCache.GetAlternateLookup<ReadOnlySpan<Constant>>();
-        if (lookup.TryGetValue(binding, out CachedGroundAction? cachedActionEntry))
-        {
-            if (cachedActionEntry.Reference.TryGetTarget(out GroundAction? cachedAction))
-                return cachedAction;
-
-            lookup.Remove(binding);
-            GroundAction rebuiltAction = ActionBuilder.BuildActionWithOwnedArguments(
-                schemaCache.GroundingPlan,
-                cachedActionEntry.Arguments,
-                Problem);
-            cachedActionEntry.Reference.SetTarget(rebuiltAction);
-            schemaCache.GroundActionCache.Add(
-                new BindingKey(cachedActionEntry.Arguments),
-                cachedActionEntry);
-            return rebuiltAction;
-        }
-
-        var key = new BindingKey(binding);
-        GroundAction action = ActionBuilder.BuildActionWithOwnedArguments(
-            schemaCache.GroundingPlan,
-            key.Arguments,
-            Problem);
-        schemaCache.GroundActionCache[key] = new CachedGroundAction(key.Arguments, action);
-        return action;
-    }
-
     private GroundAction GetOrBuildNullaryAction(ActionSchemaCache schemaCache)
     {
         if (schemaCache.NullaryAction!.TryGetTarget(out GroundAction? action))
@@ -333,19 +221,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         _observedGen0Collections = gen0Collections;
         foreach (ActionSchemaCache schemaCache in _schemaCaches)
         {
-            if (schemaCache.NullaryAction is not null)
-                continue;
-
-            foreach ((BindingKey binding, CachedGroundAction action) in schemaCache.GroundActionCache)
-            {
-                if (!action.Reference.TryGetTarget(out _))
-                    schemaCache.StaleBindings.Add(binding);
-            }
-
-            foreach (BindingKey binding in schemaCache.StaleBindings)
-                schemaCache.GroundActionCache.Remove(binding);
-
-            schemaCache.StaleBindings.Clear();
+            if (schemaCache.NullaryAction is null) schemaCache.GroundActionCache.Scavenge();
         }
     }
 

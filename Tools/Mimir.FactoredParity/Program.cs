@@ -75,6 +75,7 @@ foreach ((string domainName, string domainPath, string problemPath) in Discover(
         Console.WriteLine($"SLOW {domainName,-45} factored {spent.TotalSeconds,7:F2}s "
             + $"clique {(cliqueTime.Elapsed - beforeClique).TotalSeconds,7:F2}s");
     }
+
     if (failure is null) continue;
 
     mismatches++;
@@ -101,7 +102,11 @@ if (unsupportedDomains.Count > 0)
     foreach (string reason in unsupportedDomains) Console.WriteLine($"  {reason}");
 }
 
+Console.WriteLine($"distinctness excl  : {Counters.Distinct}");
+Console.WriteLine($"forbidden-tuple    : {Counters.Forbidden}");
+
 return mismatches == 0 ? 0 : 1;
+
 
 static string Shorten(string message)
 {
@@ -145,6 +150,13 @@ static string? Compare(
         var groupList = factored.GetFactoredApplicableActions(extended).ToList();
         factoredTime.Stop();
         groups = groupList.Count;
+        foreach (FactoredAction g in groupList)
+        {
+            foreach (FactoredExclusion e in g.Exclusions)
+            {
+                if (e.IsDistinctness) Counters.Distinct++; else Counters.Forbidden++;
+            }
+        }
         expandTime.Start();
         foreach (FactoredAction group in groupList) factoredActions.AddRange(group.Expand());
         expandTime.Stop();
@@ -248,4 +260,10 @@ static IEnumerable<(string Domain, string DomainPath, string ProblemPath)> Disco
             }
         }
     }
+}
+
+static class Counters
+{
+    public static long Distinct;
+    public static long Forbidden;
 }

@@ -9,7 +9,7 @@ namespace Mimir.Core.Grounding;
 public sealed class FactoredAction
 {
     private readonly ActionGroundingPlan _plan;
-    private readonly Problem _problem;
+    private readonly GroundActionCache _actions;
     private readonly Constant[][] _candidates;
     private readonly bool[] _witnessParameters;
 
@@ -19,13 +19,13 @@ public sealed class FactoredAction
 
     internal FactoredAction(
         ActionGroundingPlan plan,
-        Problem problem,
+        GroundActionCache actions,
         Constant[][] candidates,
         bool[] witnessParameters,
         IReadOnlyList<FactoredExclusion> exclusions)
     {
         _plan = plan;
-        _problem = problem;
+        _actions = actions;
         _candidates = candidates;
         _witnessParameters = witnessParameters;
         Exclusions = exclusions;
@@ -66,7 +66,7 @@ public sealed class FactoredAction
         int parameterCount = _candidates.Length;
         if (parameterCount == 0)
         {
-            yield return ActionBuilder.BuildAction(_plan, Array.Empty<Constant>(), _problem);
+            yield return _actions.GetOrBuild(ReadOnlySpan<Constant>.Empty);
             yield break;
         }
 
@@ -83,7 +83,7 @@ public sealed class FactoredAction
                 binding[i] = _candidates[i][cursor[i]];
 
             if (IsAllowed(binding))
-                yield return ActionBuilder.BuildAction(_plan, binding, _problem);
+                yield return _actions.GetOrBuild(binding);
 
             int position = parameterCount - 1;
             while (position >= 0 && ++cursor[position] == _candidates[position].Length)
@@ -119,7 +119,7 @@ public sealed class FactoredAction
 public sealed class FactoredExclusion
 {
     private readonly int[] _parameterIndices;
-    private readonly Constant[][]? _forbiddenTuples;
+    private readonly HashSet<Constant[]>? _forbiddenTuples;
 
     public IReadOnlyList<int> ParameterIndices => _parameterIndices;
 
@@ -129,7 +129,9 @@ public sealed class FactoredExclusion
     private FactoredExclusion(int[] parameterIndices, Constant[][]? forbiddenTuples)
     {
         _parameterIndices = parameterIndices;
-        _forbiddenTuples = forbiddenTuples;
+        _forbiddenTuples = forbiddenTuples is null
+            ? null
+            : new HashSet<Constant[]>(forbiddenTuples, TupleComparer.Instance);
     }
 
     internal static FactoredExclusion Distinctness(int left, int right)
@@ -143,21 +145,35 @@ public sealed class FactoredExclusion
         if (_forbiddenTuples is null)
             return !ReferenceEquals(binding[_parameterIndices[0]], binding[_parameterIndices[1]]);
 
-        foreach (Constant[] forbidden in _forbiddenTuples)
+        var probe = new Constant[_parameterIndices.Length];
+        for (int i = 0; i < probe.Length; i++)
+            probe[i] = binding[_parameterIndices[i]];
+
+        return !_forbiddenTuples.Contains(probe);
+    }
+
+    private sealed class TupleComparer : IEqualityComparer<Constant[]>
+    {
+        public static TupleComparer Instance { get; } = new();
+
+        public bool Equals(Constant[]? left, Constant[]? right)
         {
-            bool matches = true;
-            for (int i = 0; i < _parameterIndices.Length; i++)
+            if (left is null || right is null) return ReferenceEquals(left, right);
+            if (left.Length != right.Length) return false;
+            for (int i = 0; i < left.Length; i++)
             {
-                if (!ReferenceEquals(binding[_parameterIndices[i]], forbidden[i]))
-                {
-                    matches = false;
-                    break;
-                }
+                if (!ReferenceEquals(left[i], right[i])) return false;
             }
 
-            if (matches) return false;
+            return true;
         }
 
-        return true;
+        public int GetHashCode(Constant[] tuple)
+        {
+            var hash = new HashCode();
+            foreach (Constant constant in tuple)
+                hash.Add(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(constant));
+            return hash.ToHashCode();
+        }
     }
 }
