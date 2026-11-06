@@ -8,6 +8,16 @@ using GroundAction = Mimir.Core.Grounding.Action;
 // Compares FactoredApplicableActionGenerator against CliqueApplicableActionGenerator over the benchmark set.
 // Both generators run on the same Problem, so states and constants are reference-comparable.
 
+if (args.Length > 2 && args[0] == "--iw")
+{
+    Mimir.FactoredParity.IwComparison.Run(
+        Path.GetFullPath(args[1]),
+        int.Parse(args[2]),
+        args.Length > 3 ? int.Parse(args[3]) : 10,
+        args.Length > 4 ? int.Parse(args[4]) : 1);
+    return 0;
+}
+
 if (args.Length > 3 && args[0] == "--novelty")
 {
     Mimir.FactoredParity.Novelty.Run(args[1], args[2], int.Parse(args[3]), args.Length > 4 ? int.Parse(args[4]) : 2000);

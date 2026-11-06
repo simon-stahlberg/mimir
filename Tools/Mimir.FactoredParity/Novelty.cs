@@ -44,7 +44,7 @@ internal static class Novelty
                 if (!closed.Add(successor)) continue;
 
                 incrementalTime.Start();
-                bool incrementalVerdict = incremental.IsNovel(successor, parent);
+                bool incrementalVerdict = incremental.IsNovel(successor, parent, action);
                 incrementalTime.Stop();
 
                 fullTime.Start();

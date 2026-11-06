@@ -26,6 +26,11 @@ public static class PlannerFactory
             "iw1" => new IteratedWidthPlanner(1),
             "iw2" => new IteratedWidthPlanner(2),
             "iw3" => new IteratedWidthPlanner(3),
+            // Suffixes select the novelty notion: -a for action arguments, -b for either.
+            "iw1-a" => new IteratedWidthPlanner(1, Algorithms.IteratedWidth.NoveltyKind.Arguments),
+            "iw2-a" => new IteratedWidthPlanner(2, Algorithms.IteratedWidth.NoveltyKind.Arguments),
+            "iw1-b" => new IteratedWidthPlanner(1, Algorithms.IteratedWidth.NoveltyKind.Both),
+            "iw2-b" => new IteratedWidthPlanner(2, Algorithms.IteratedWidth.NoveltyKind.Both),
             _ => throw new ArgumentException($"Unknown algorithm type '{algorithmType}'.", nameof(algorithmType))
         };
     }
