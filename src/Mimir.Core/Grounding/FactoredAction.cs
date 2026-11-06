@@ -31,7 +31,8 @@ public sealed class FactoredAction
         Exclusions = exclusions;
     }
 
-    public IReadOnlyList<Constant> GetCandidates(int parameterIndex) => _candidates[parameterIndex];
+    /// <summary>The objects this parameter may take. The span is a view over the group and cannot alias it.</summary>
+    public ReadOnlySpan<Constant> GetCandidates(int parameterIndex) => _candidates[parameterIndex];
 
     public bool IsPinned(int parameterIndex) => _candidates[parameterIndex].Length == 1;
 
@@ -77,12 +78,17 @@ public sealed class FactoredAction
 
         var cursor = new int[parameterCount];
         var binding = new Constant[parameterCount];
+        // One scratch row per enumeration keeps exclusion tests allocation-free without sharing state between them.
+        int probeLength = 0;
+        for (int i = 0; i < Exclusions.Count; i++)
+            probeLength = Math.Max(probeLength, Exclusions[i].ParameterIndices.Length);
+        Constant[] probe = probeLength == 0 ? Array.Empty<Constant>() : new Constant[probeLength];
         while (true)
         {
             for (int i = 0; i < parameterCount; i++)
                 binding[i] = _candidates[i][cursor[i]];
 
-            if (IsAllowed(binding))
+            if (IsAllowed(binding, probe))
                 yield return _actions.GetOrBuild(binding);
 
             int position = parameterCount - 1;
@@ -92,11 +98,11 @@ public sealed class FactoredAction
         }
     }
 
-    private bool IsAllowed(Constant[] binding)
+    private bool IsAllowed(Constant[] binding, Constant[] probe)
     {
         for (int i = 0; i < Exclusions.Count; i++)
         {
-            if (!Exclusions[i].IsSatisfiedBy(binding))
+            if (!Exclusions[i].IsSatisfiedBy(binding, probe))
                 return false;
         }
 
@@ -105,51 +111,92 @@ public sealed class FactoredAction
 
     public override string ToString()
     {
-        IEnumerable<string> parameters = _candidates.Select(candidates => candidates.Length == 1
-            ? candidates[0].Name
-            : $"{{{string.Join(",", candidates.Select(candidate => candidate.Name))}}}");
+        IEnumerable<string> parameters = _candidates.Select(Describe);
         return $"({Schema.Name} {string.Join(" ", parameters)})";
+
+        // A group can hold hundreds of thousands of objects, which no debugger view wants spelled out.
+        static string Describe(Constant[] candidates)
+        {
+            if (candidates.Length == 1) return candidates[0].Name;
+            IEnumerable<string> names = candidates.Take(4).Select(candidate => candidate.Name);
+            string shown = string.Join(",", names);
+            return candidates.Length <= 4
+                ? $"{{{shown}}}"
+                : $"{{{shown},... {candidates.Length} total}}";
+        }
     }
 }
 
 /// <summary>
-/// A constraint that the clique-free product representation cannot express, carried alongside the candidate sets
-/// so that a negative precondition does not have to couple two otherwise independent parameters.
+/// A precondition a Cartesian product cannot express on its own. Carrying it alongside the candidate sets lets a
+/// negative precondition rule out a few combinations instead of coupling two otherwise independent parameters.
 /// </summary>
 public sealed class FactoredExclusion
 {
     private readonly int[] _parameterIndices;
-    private readonly HashSet<Constant[]>? _forbiddenTuples;
+    private readonly Constant[]? _forbidden;
+    private readonly HashSet<Constant[]>? _lookup;
+    private IReadOnlyList<IReadOnlyList<Constant>>? _forbiddenView;
 
-    public IReadOnlyList<int> ParameterIndices => _parameterIndices;
+    /// <summary>The parameters this exclusion constrains, as indices into the schema's parameter list.</summary>
+    public ReadOnlySpan<int> ParameterIndices => _parameterIndices;
 
-    /// <summary>Requires two parameters to take different objects, as `(not (= ?x ?y))` does.</summary>
-    public bool IsDistinctness => _forbiddenTuples is null;
+    /// <summary>
+    /// True when the exclusion only requires its two parameters to differ, as `(not (= ?x ?y))` does. The
+    /// combinations it rules out are the diagonal, so <see cref="ForbiddenTuples"/> is empty.
+    /// </summary>
+    public bool IsDistinctness => _forbidden is null;
 
-    private FactoredExclusion(int[] parameterIndices, Constant[][]? forbiddenTuples)
+    /// <summary>The number of combinations ruled out, or the size of the diagonal for a distinctness exclusion.</summary>
+    public int ForbiddenTupleCount
+        => _forbidden is null ? 0 : _forbidden.Length / _parameterIndices.Length;
+
+    /// <summary>
+    /// The combinations ruled out, each aligned with <see cref="ParameterIndices"/>. Empty for a distinctness
+    /// exclusion. Materialized on first access, so reading it is only worth it to interpret the group.
+    /// </summary>
+    public IReadOnlyList<IReadOnlyList<Constant>> ForbiddenTuples
+        => _forbiddenView ??= BuildForbiddenView();
+
+    private FactoredExclusion(int[] parameterIndices, Constant[]? forbidden)
     {
         _parameterIndices = parameterIndices;
-        _forbiddenTuples = forbiddenTuples is null
-            ? null
-            : new HashSet<Constant[]>(forbiddenTuples, TupleComparer.Instance);
+        _forbidden = forbidden;
+        if (forbidden is null) return;
+
+        _lookup = new HashSet<Constant[]>(TupleComparer.Instance);
+        for (int offset = 0; offset < forbidden.Length; offset += parameterIndices.Length)
+            _lookup.Add(forbidden[offset..(offset + parameterIndices.Length)]);
     }
 
     internal static FactoredExclusion Distinctness(int left, int right)
         => new([left, right], null);
 
-    internal static FactoredExclusion ForbiddenTuples(int[] parameterIndices, Constant[][] forbiddenTuples)
-        => new(parameterIndices, forbiddenTuples);
+    /// <summary>`forbidden` holds the ruled-out combinations row-major, one row per `parameterIndices.Length`.</summary>
+    internal static FactoredExclusion ForbiddenCombinations(int[] parameterIndices, Constant[] forbidden)
+        => new(parameterIndices, forbidden);
 
-    internal bool IsSatisfiedBy(Constant[] binding)
+    internal bool IsSatisfiedBy(Constant[] binding, Constant[] probe)
     {
-        if (_forbiddenTuples is null)
+        if (_lookup is null)
             return !ReferenceEquals(binding[_parameterIndices[0]], binding[_parameterIndices[1]]);
 
-        var probe = new Constant[_parameterIndices.Length];
-        for (int i = 0; i < probe.Length; i++)
+        for (int i = 0; i < _parameterIndices.Length; i++)
             probe[i] = binding[_parameterIndices[i]];
 
-        return !_forbiddenTuples.Contains(probe);
+        return !_lookup.Contains(probe);
+    }
+
+    private IReadOnlyList<IReadOnlyList<Constant>> BuildForbiddenView()
+    {
+        if (_forbidden is null) return Array.Empty<IReadOnlyList<Constant>>();
+
+        int arity = _parameterIndices.Length;
+        var rows = new IReadOnlyList<Constant>[_forbidden.Length / arity];
+        for (int row = 0; row < rows.Length; row++)
+            rows[row] = Array.AsReadOnly(_forbidden[(row * arity)..((row + 1) * arity)]);
+
+        return Array.AsReadOnly(rows);
     }
 
     private sealed class TupleComparer : IEqualityComparer<Constant[]>

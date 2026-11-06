@@ -9,6 +9,12 @@ public interface IFactoredApplicableActionGenerator : IApplicableActionGenerator
     /// <summary>
     /// The applicable actions grouped into Cartesian products over the schema parameters. The groups are pairwise
     /// disjoint, so expanding all of them yields every applicable action exactly once.
+    /// <para>
+    /// The sequence is produced lazily and is not a snapshot: a consumer that stops early does not pay for the
+    /// groups it never reads, and enumerating the result twice solves the state twice. Materialize it if you need
+    /// a stable list. Unlike <see cref="IApplicableActionGenerator.GetApplicableActions(ExtendedState)"/>, this
+    /// stays bounded on states whose successors number in the millions.
+    /// </para>
     /// </summary>
     IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state);
 }
@@ -17,13 +23,18 @@ public interface IFactoredApplicableActionGenerator : IApplicableActionGenerator
 /// A lifted generator that answers each schema's precondition as a conjunctive query and reports the answers as
 /// Cartesian products instead of individual bindings. Parameters that the precondition leaves independent stay
 /// set-valued, which keeps states with an enormous branching factor representable.
+/// <para>
+/// It supports a fragment of PDDL: numeric conditions and effects, and cost expressions whose definedness cannot
+/// be established ahead of time, throw <see cref="NotSupportedException"/> while the problem is loaded. The
+/// <see cref="IApplicableActionGenerator"/> members expand every product, which is correct but unbounded; prefer
+/// <see cref="GetFactoredApplicableActions"/> on the instances this generator exists for.
+/// </para>
 /// </summary>
 public sealed partial class FactoredApplicableActionGenerator : IFactoredApplicableActionGenerator
 {
     public Problem Problem { get; }
     private readonly SchemaPlan[] _schemaPlans;
     private readonly Dictionary<Predicate, List<Fact>> _staticTrueFacts;
-    private readonly HashSet<Predicate> _changingPredicates;
     private int _observedGen0Collections;
 
     internal FactoredApplicableActionGenerator(Problem problem)
@@ -34,13 +45,6 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             .ToArray();
 
         _staticTrueFacts = new Dictionary<Predicate, List<Fact>>(ReferenceEqualityComparer.Instance);
-        _changingPredicates = new HashSet<Predicate>(ReferenceEqualityComparer.Instance);
-        foreach (FactoredAtom atom in _schemaPlans.SelectMany(plan => plan.Atoms))
-        {
-            if (atom.Predicate is null) continue;
-            if (atom.Kind == FactoredAtomKind.Fluent) _changingPredicates.Add(atom.Predicate);
-        }
-
         _ = problem.InitialState;
         foreach (FactoredAtom atom in _schemaPlans.SelectMany(plan => plan.Atoms))
         {
@@ -58,7 +62,9 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     }
 
     private List<Fact> StaticTrueFacts(Predicate predicate)
-        => _staticTrueFacts.GetValueOrDefault(predicate) ?? new List<Fact>();
+        => _staticTrueFacts.GetValueOrDefault(predicate) ?? EmptyFacts;
+
+    private static readonly List<Fact> EmptyFacts = new();
 
     public IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state)
     {
@@ -69,12 +75,27 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state)
     {
         ScavengeCollectedActions();
-        var facts = new StateFacts(_staticTrueFacts, state, _changingPredicates);
+        var facts = new StateFacts(_staticTrueFacts, state);
         foreach (SchemaPlan plan in _schemaPlans)
         {
             foreach (FactoredAction group in SolveSchema(plan, facts))
                 yield return group;
         }
+    }
+
+    private static IEnumerable<FactoredAction> SolveSchema(SchemaPlan plan, StateFacts facts)
+    {
+        if (plan.IsPermanentlyInapplicable) yield break;
+
+        TupleSet?[] tuples = MaterializeTrueTuples(plan, facts);
+        var candidates = new List<Constant>[plan.ParameterCount];
+        for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
+            candidates[parameter] = new List<Constant>(plan.Domains[parameter]);
+
+        if (!PropagateAll(plan, tuples, candidates, facts)) yield break;
+
+        foreach (FactoredAction group in Solve(plan, tuples, candidates, facts))
+            yield return group;
     }
 
     public IEnumerable<GroundAction> GetApplicableActions(ExtendedState state)
@@ -119,38 +140,21 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             throw new InvalidOperationException("State and applicable-action generator belong to different problem contexts.");
     }
 
-    private List<FactoredAction> SolveSchema(SchemaPlan plan, StateFacts facts)
-    {
-        var groups = new List<FactoredAction>();
-        if (plan.IsPermanentlyInapplicable) return groups;
-
-        TupleSet?[] tuples = MaterializeTrueTuples(plan, facts);
-        var candidates = new List<Constant>[plan.ParameterCount];
-        for (int parameter = 0; parameter < plan.ParameterCount; parameter++)
-            candidates[parameter] = new List<Constant>(plan.Domains[parameter]);
-
-        if (!PropagateAll(plan, tuples, candidates, facts)) return groups;
-
-        Solve(plan, tuples, candidates, facts, groups);
-        return groups;
-    }
-
     /// <summary>
     /// Enumerates assignments of a candidate set to every parameter. A parameter stays set-valued unless a positive
     /// precondition still ties it to another set-valued parameter, in which case the generator branches on it.
     /// </summary>
-    private void Solve(
+    private static IEnumerable<FactoredAction> Solve(
         SchemaPlan plan,
         TupleSet?[] tuples,
         List<Constant>[] candidates,
-        StateFacts facts,
-        List<FactoredAction> groups)
+        StateFacts facts)
     {
         int branchParameter = ChooseBranchParameter(plan, candidates);
         if (branchParameter < 0)
         {
-            groups.Add(BuildGroup(plan, tuples, candidates));
-            return;
+            yield return BuildGroup(plan, tuples, candidates);
+            yield break;
         }
 
         // Mirrors the representative-binding rule of the clique generator. Branching reaches a witness only once
@@ -160,7 +164,6 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         bool isWitnessBranch = plan.WitnessParameters[branchParameter];
 
         var worklist = new Stack<int>();
-        int before = groups.Count;
         foreach (Constant value in candidates[branchParameter])
         {
             List<Constant>[] branch = CloneCandidates(candidates);
@@ -171,8 +174,14 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             worklist.Push(branchParameter);
             if (!Propagate(plan, branchTuples, branch, facts, worklist)) continue;
 
-            Solve(plan, branchTuples, branch, facts, groups);
-            if (isWitnessBranch && groups.Count > before) break;
+            bool emitted = false;
+            foreach (FactoredAction group in Solve(plan, branchTuples, branch, facts))
+            {
+                emitted = true;
+                yield return group;
+            }
+
+            if (isWitnessBranch && emitted) yield break;
         }
     }
 
@@ -275,9 +284,9 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             }
 
             membership ??= new HashSet<Constant>?[plan.ParameterCount];
-            Constant[][] forbidden = CollectForbiddenTuples(atom, tuples[index]!, sets, membership);
+            Constant[] forbidden = CollectForbiddenCombinations(atom, tuples[index]!, sets, membership);
             if (forbidden.Length > 0)
-                exclusions.Add(FactoredExclusion.ForbiddenTuples(atom.Parameters, forbidden));
+                exclusions.Add(FactoredExclusion.ForbiddenCombinations(atom.Parameters, forbidden));
         }
 
         return new FactoredAction(
@@ -292,7 +301,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     /// Keeps only the tuples a member of this group could actually take, so that expansion tests a short list.
     /// The membership sets are built once per group and shared by its atoms.
     /// </summary>
-    private static Constant[][] CollectForbiddenTuples(
+    private static Constant[] CollectForbiddenCombinations(
         FactoredAtom atom,
         TupleSet trueTuples,
         Constant[][] sets,
@@ -305,7 +314,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
                 ReferenceEqualityComparer.Instance);
         }
 
-        var forbidden = new List<Constant[]>();
+        var forbidden = new List<Constant>();
         for (int row = 0; row < trueTuples.Count; row++)
         {
             bool reachable = true;
@@ -318,7 +327,9 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
                 }
             }
 
-            if (reachable) forbidden.Add(trueTuples.Row(row));
+            if (!reachable) continue;
+            for (int column = 0; column < trueTuples.Arity; column++)
+                forbidden.Add(trueTuples.At(row, column));
         }
 
         return forbidden.ToArray();

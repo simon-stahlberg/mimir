@@ -127,6 +127,71 @@ public class FactoredApplicableActionGeneratorTests
         Assert.True(sawExclusion, $"No {(expectDistinctness ? "distinctness" : "forbidden-tuple")} exclusion arose.");
     }
 
+    [Fact]
+    public void ReportsTheCombinationsAnExclusionRulesOut()
+    {
+        // schedule is the only benchmark domain whose negative preconditions span three or more parameters.
+        (Problem problem, FactoredApplicableActionGenerator factored, _) = Load("adl/schedule");
+
+        FactoredExclusion exclusion = factored
+            .GetFactoredApplicableActions(problem.InitialState.Expand())
+            .SelectMany(group => group.Exclusions)
+            .First(candidate => !candidate.IsDistinctness);
+
+        Assert.Equal(exclusion.ForbiddenTupleCount, exclusion.ForbiddenTuples.Count);
+        Assert.All(
+            exclusion.ForbiddenTuples,
+            tuple => Assert.Equal(exclusion.ParameterIndices.Length, tuple.Count));
+
+        // Every reported combination must really be absent from the group's members.
+        FactoredAction owner = factored
+            .GetFactoredApplicableActions(problem.InitialState.Expand())
+            .First(group => group.Exclusions.Any(candidate => !candidate.IsDistinctness));
+        int[] parameters = owner.Exclusions.First(candidate => !candidate.IsDistinctness)
+            .ParameterIndices.ToArray();
+        IReadOnlyList<IReadOnlyList<Constant>> forbidden = owner.Exclusions
+            .First(candidate => !candidate.IsDistinctness).ForbiddenTuples;
+
+        foreach (GroundAction member in owner.Expand())
+        {
+            Assert.DoesNotContain(
+                forbidden,
+                tuple => tuple
+                    .Select((value, column) => ReferenceEquals(member.Arguments[parameters[column]], value))
+                    .All(matches => matches));
+        }
+    }
+
+    [Fact]
+    public void StreamsGroupsAndStaysStableAcrossEnumerations()
+    {
+        (Problem problem, FactoredApplicableActionGenerator factored, _) = Load("strips/rovers");
+        ExtendedState state = problem.InitialState.Expand();
+
+        // Taking a prefix must not require solving every schema.
+        Assert.Single(factored.GetFactoredApplicableActions(state).Take(1));
+        Assert.Equal(3, factored.GetApplicableActions(state).Take(3).Count());
+
+        // The sequence is recomputed rather than cached, so a second pass must agree with the first.
+        Assert.Equal(
+            factored.GetApplicableActions(state).Select(action => action.ToString()).ToList(),
+            factored.GetApplicableActions(state).Select(action => action.ToString()).ToList());
+    }
+
+    private static (Problem Problem, FactoredApplicableActionGenerator Factored, CliqueApplicableActionGenerator Clique)
+        Load(string domainDirectory)
+    {
+        string directory = Path.Combine(BenchmarkPath, domainDirectory);
+        string problemFile = Directory
+            .EnumerateFiles(directory, "*.pddl")
+            .Order(StringComparer.Ordinal)
+            .First(path => !path.EndsWith("domain.pddl", StringComparison.OrdinalIgnoreCase));
+
+        var domain = Domain.FromFile(Path.Combine(directory, "domain.pddl"));
+        var problem = Problem.FromFile(domain, problemFile, ApplicableActionGeneratorType.Factored);
+        return (problem, new FactoredApplicableActionGenerator(problem), new CliqueApplicableActionGenerator(problem));
+    }
+
     private static void AssertParity(string directory, string problemFile, int stateLimit)
     {
         var domain = Domain.FromFile(Path.Combine(directory, "domain.pddl"));

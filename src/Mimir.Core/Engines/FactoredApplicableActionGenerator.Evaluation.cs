@@ -48,40 +48,35 @@ public sealed partial class FactoredApplicableActionGenerator
 
             return new TupleSet(values, Arity, matches);
         }
-
-        public Constant[] Row(int row)
-        {
-            var copy = new Constant[Arity];
-            Array.Copy(_values, row * Arity, copy, 0, Arity);
-            return copy;
-        }
     }
 
     /// <summary>
-    /// The true facts of every predicate the schemas mention, shared by all schemas expanded from one state.
-    /// Static extensions never change, so they are built once per generator.
+    /// The true facts of each predicate the schemas mention, shared by every schema expanded from one state.
+    /// Static extensions never change, so they are filtered once per generator; fluent ones are filtered on first
+    /// use, because a state usually leaves most schemas inapplicable before their predicates are ever read.
     /// </summary>
     internal sealed class StateFacts
     {
-        private static readonly List<Fact> None = new();
-
         private readonly Dictionary<Predicate, List<Fact>> _statics;
         private readonly Dictionary<Predicate, List<Fact>> _fluents = new(ReferenceEqualityComparer.Instance);
 
         public ExtendedState State { get; }
 
-        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state, HashSet<Predicate> fluents)
+        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state)
         {
             _statics = statics;
             State = state;
-            foreach (Predicate predicate in fluents)
-                _fluents[predicate] = state.State.Context.GetFacts(predicate).Where(state.IsTrue).ToList();
         }
 
         public List<Fact> GetTrueFacts(Predicate predicate)
-            => _statics.GetValueOrDefault(predicate)
-                ?? _fluents.GetValueOrDefault(predicate)
-                ?? None;
+        {
+            if (_statics.TryGetValue(predicate, out List<Fact>? statics)) return statics;
+            if (_fluents.TryGetValue(predicate, out List<Fact>? fluents)) return fluents;
+
+            fluents = State.State.Context.GetFacts(predicate).Where(State.IsTrue).ToList();
+            _fluents.Add(predicate, fluents);
+            return fluents;
+        }
     }
 
     /// <summary>
