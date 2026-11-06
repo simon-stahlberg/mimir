@@ -264,7 +264,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                     TransitionPruned?.Invoke(transition);
                     continue;
                 }
-                bool isNovel = tracker.IsNovel(child.State);
+                bool isNovel = tracker.IsNovel(child.State, current.State);
                 if (isGoal || isNovel)
                 {
                     TransitionDiscovered?.Invoke(transition);

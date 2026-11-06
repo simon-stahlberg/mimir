@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mimir.Core\Mimir.Core.csproj" />
     <ProjectReference Include="..\..\src\Mimir.Pddl\Mimir.Pddl.csproj" />
+    <ProjectReference Include="..\..\src\Mimir.Search\Mimir.Search.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

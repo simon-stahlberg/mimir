@@ -13,6 +13,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Mimir.Interop" />
     <InternalsVisibleTo Include="Mimir.Search.Tests" />
+    <InternalsVisibleTo Include="Mimir.FactoredParity" />
   </ItemGroup>
 
 </Project>

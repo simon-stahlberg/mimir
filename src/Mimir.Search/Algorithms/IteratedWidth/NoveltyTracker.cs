@@ -1,3 +1,4 @@
+using System.Numerics;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 
@@ -26,8 +27,7 @@ internal sealed class NoveltyTracker
     internal bool IsNovel(State state)
     {
         ArgumentNullException.ThrowIfNull(state);
-        if (!ReferenceEquals(state.Context, _context))
-            throw new InvalidOperationException("State and novelty tracker belong to different problem contexts.");
+        Validate(state);
 
         int[] ids = CollectSortedIndices(state);
         bool novel = false;
@@ -42,6 +42,105 @@ internal sealed class NoveltyTracker
             novel |= CheckTriples(ids);
 
         return novel;
+    }
+
+    /// <summary>
+    /// The same verdict as <see cref="IsNovel(State)"/>, reached without re-reading the whole state. Every atom of
+    /// a successor except the ones it adds was already true in the parent, and the parent was registered before it
+    /// could be expanded, so only tuples containing an added atom can be new.
+    /// </summary>
+    internal bool IsNovel(State state, State parent)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(parent);
+        Validate(state);
+        Validate(parent);
+
+        int[] added = CollectAddedIndices(state, parent);
+        if (added.Length == 0) return false;
+
+        bool novel = false;
+        if (_k >= 1)
+            novel |= CheckAtoms(added);
+
+        if (_k == 1) return novel;
+
+        int[] ids = CollectSortedIndices(state);
+        if (_k >= 2)
+            novel |= CheckPairsContaining(added, ids);
+
+        if (_k == 3)
+            novel |= CheckTriplesContaining(added, ids);
+
+        return novel;
+    }
+
+    private void Validate(State state)
+    {
+        if (!ReferenceEquals(state.Context, _context))
+            throw new InvalidOperationException("State and novelty tracker belong to different problem contexts.");
+    }
+
+    private bool CheckPairsContaining(int[] added, int[] ids)
+    {
+        bool novel = false;
+        foreach (int left in added)
+        {
+            foreach (int right in ids)
+            {
+                if (left == right) continue;
+                if (_table.RegisterPair(Math.Min(left, right), Math.Max(left, right)))
+                    novel = true;
+            }
+        }
+
+        return novel;
+    }
+
+    private bool CheckTriplesContaining(int[] added, int[] ids)
+    {
+        bool novel = false;
+        Span<int> triple = stackalloc int[3];
+        foreach (int first in added)
+        {
+            for (int i = 0; i < ids.Length - 1; i++)
+            {
+                if (ids[i] == first) continue;
+                for (int j = i + 1; j < ids.Length; j++)
+                {
+                    if (ids[j] == first) continue;
+                    triple[0] = first;
+                    triple[1] = ids[i];
+                    triple[2] = ids[j];
+                    triple.Sort();
+                    if (_table.RegisterTriple(triple[0], triple[1], triple[2]))
+                        novel = true;
+                }
+            }
+        }
+
+        return novel;
+    }
+
+    // The bits set in the successor but not in the parent, ascending. Reading the bitboards rather than the
+    // action's add list keeps this exact when an effect both adds and deletes an atom.
+    private static int[] CollectAddedIndices(State state, State parent)
+    {
+        ReadOnlySpan<ulong> stateWords = state.Bitboard;
+        ReadOnlySpan<ulong> parentWords = parent.Bitboard;
+        var added = new List<int>();
+        for (int word = 0; word < stateWords.Length; word++)
+        {
+            ulong bits = stateWords[word];
+            if (word < parentWords.Length) bits &= ~parentWords[word];
+            while (bits != 0)
+            {
+                added.Add((word * 64) + BitOperations.TrailingZeroCount(bits));
+                bits &= bits - 1;
+            }
+        }
+
+        return added.ToArray();
     }
 
     private bool CheckAtoms(int[] ids)
