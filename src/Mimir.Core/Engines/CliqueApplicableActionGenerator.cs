@@ -74,6 +74,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
     private sealed class ActionSchemaCache
     {
         public ActionGroundingPlan GroundingPlan = null!;
+        public bool RequiresTransitionDefinedCheck;
         public WeakReference<GroundAction>? NullaryAction;
         public CompiledConjunctiveCondition Preconditions = null!;
         public bool[] TransitionRelevantParameters = null!;
@@ -134,7 +135,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         private bool Collect(ReadOnlySpan<Constant> binding)
         {
             GroundAction action = _generator.GetOrBuildAction(_schemaCache, binding);
-            if (!action.IsTransitionDefined(_state))
+            if (_schemaCache.RequiresTransitionDefinedCheck && !action.IsTransitionDefined(_state))
                 return true;
             _actions.Add(action);
             return _actions.Count < _maxActions;
@@ -162,6 +163,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
             var schemaCache = new ActionSchemaCache
             {
                 GroundingPlan = groundingPlan,
+                RequiresTransitionDefinedCheck = groundingPlan.RequiresTransitionDefinedCheck,
             };
             if (schema.Parameters.Count == 0)
             {
@@ -195,7 +197,7 @@ public class CliqueApplicableActionGenerator : IApplicableActionGenerator
         _observedGen0Collections = GC.CollectionCount(0);
     }
 
-    internal void CollectApplicableActions(
+    public void CollectApplicableActions(
         ExtendedState state,
         List<GroundAction> destination)
     {

@@ -122,7 +122,7 @@ public class GroundedApplicableActionGenerator : IApplicableActionGenerator
         _root.Freeze();
     }
 
-    internal void CollectApplicableActions(
+    public void CollectApplicableActions(
         ExtendedState state,
         List<Action> destination)
     {

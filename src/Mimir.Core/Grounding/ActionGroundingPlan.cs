@@ -14,6 +14,8 @@ internal sealed class ActionGroundingPlan
     public bool[] PreconditionRelevantParameters { get; }
     public bool[] TransitionRelevantParameters { get; }
     public CompiledNumericExpression Cost { get; }
+    // False lets callers skip the per-action IsTransitionDefined probe entirely.
+    public bool RequiresTransitionDefinedCheck { get; }
     public CompiledGroundingLiteral<Fluent>[] FluentPreconditions { get; }
     public CompiledGroundingLiteral<Static>[] StaticPreconditions { get; }
     public CompiledGroundingLiteral<Derived>[] DerivedPreconditions { get; }
@@ -48,6 +50,7 @@ internal sealed class ActionGroundingPlan
         PreconditionRelevantParameters = preconditionRelevantParameters;
         TransitionRelevantParameters = transitionRelevantParameters;
         Cost = cost;
+        RequiresTransitionDefinedCheck = cost.CanBeUndefined || schema.NumericEffects.Count > 0;
         FluentPreconditions = fluentPreconditions;
         StaticPreconditions = staticPreconditions;
         DerivedPreconditions = derivedPreconditions;

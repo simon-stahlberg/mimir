@@ -57,8 +57,6 @@ internal sealed class BfsSearch : ISearchAlgorithm
 
         var open = new Queue<SearchNode>();
         var closed = new HashSet<State>();
-        GroundedApplicableActionGenerator? groundedGenerator = _actionGenerator as GroundedApplicableActionGenerator;
-        CliqueApplicableActionGenerator? cliqueGenerator = _actionGenerator as CliqueApplicableActionGenerator;
         var actions = new List<Action>();
 
         var root = new SearchNode(_initialState);
@@ -99,10 +97,7 @@ internal sealed class BfsSearch : ISearchAlgorithm
                 return SearchResult.Success(current.ExtractPlan(), new SearchStatistics(expanded, generated, stopwatch.Elapsed, maxDepth));
             }
 
-            if (groundedGenerator is not null)
-                groundedGenerator.CollectApplicableActions(extendedState, actions);
-            else
-                cliqueGenerator!.CollectApplicableActions(extendedState, actions);
+            _actionGenerator.CollectApplicableActions(extendedState, actions);
 
             for (int actionIndex = 0; actionIndex < actions.Count; actionIndex++)
             {

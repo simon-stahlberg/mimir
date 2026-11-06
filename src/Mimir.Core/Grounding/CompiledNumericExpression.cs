@@ -19,6 +19,9 @@ internal abstract class CompiledNumericExpression
 
     public abstract double Evaluate(InstanceContext context, Constant?[] bindings, State? state);
 
+    // Conservative: true when some binding could evaluate to NaN, which makes an action inapplicable (PDDL 2.1).
+    public abstract bool CanBeUndefined { get; }
+
     private protected static double ReadValue(GroundFunctionCall? call, State? state)
     {
         if (call is null) return NumericEvaluation.Undefined;
@@ -33,6 +36,8 @@ internal sealed class CompiledNumericConstant(NumericConstant constant) : Compil
     public override NumericExpression Ground(Problem problem, Constant?[] bindings) => constant;
 
     public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state) => constant.Value;
+
+    public override bool CanBeUndefined => double.IsNaN(constant.Value);
 }
 
 internal sealed class CompiledGroundFunctionCall(GroundFunctionCall call) : CompiledNumericExpression
@@ -46,6 +51,8 @@ internal sealed class CompiledGroundFunctionCall(GroundFunctionCall call) : Comp
         => ReferenceEquals(call.Context, context)
             ? ReadValue(call, state)
             : throw new ArgumentException("Numeric expression belongs to a different problem.");
+
+    public override bool CanBeUndefined => call.StateIndex is not null || double.IsNaN(call.InitialValue);
 }
 
 internal sealed class CompiledLiftedFunctionCall : CompiledNumericExpression
@@ -69,6 +76,8 @@ internal sealed class CompiledLiftedFunctionCall : CompiledNumericExpression
     public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
         => ReadValue(context.TryGetFunctionCall(_function, ResolveArguments(bindings)), state);
 
+    public override bool CanBeUndefined => true;
+
     private Constant[] ResolveArguments(Constant?[] bindings)
     {
         for (int i = 0; i < _terms.Length; i++) _arguments[i] = _terms[i].Resolve(bindings);
@@ -86,6 +95,9 @@ internal sealed class CompiledNumericBinary(
 
     public override double Evaluate(InstanceContext context, Constant?[] bindings, State? state)
         => NumericEvaluation.Apply(operation, left.Evaluate(context, bindings, state), right.Evaluate(context, bindings, state));
+
+    public override bool CanBeUndefined
+        => operation == NumericOperator.Divide || left.CanBeUndefined || right.CanBeUndefined;
 }
 
 internal sealed class CompiledNumericComparison
