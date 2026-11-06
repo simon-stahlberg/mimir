@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Mimir.Core\Mimir.Core.csproj" />
+    <ProjectReference Include="..\..\src\Mimir.Pddl\Mimir.Pddl.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Mimir.FactoredParity</AssemblyName>
+  </PropertyGroup>
+
+</Project>

@@ -148,6 +148,11 @@ public partial class Problem
         _initialActionGenerator = new Lazy<IApplicableActionGenerator>(
             CreateInitialActionGenerator,
             LazyThreadSafetyMode.ExecutionAndPublication);
+
+        // The factored generator supports a fragment of PDDL, so report an unsupported domain while loading it
+        // rather than at the first expansion.
+        if (GeneratorType == ApplicableActionGeneratorType.Factored)
+            _ = _initialActionGenerator.Value;
     }
 
     private static ProblemDefinition ValidateDefinition(Domain domain, ProblemDefinition definition)
@@ -181,7 +186,7 @@ public partial class Problem
         if (!ReferenceEquals(startState.Context, Context))
             throw new ArgumentException("State belongs to a different problem.", nameof(startState));
 
-        if (GeneratorType == ApplicableActionGeneratorType.Lifted || startState.Equals(InitialState))
+        if (GeneratorType != ApplicableActionGeneratorType.Grounded || startState.Equals(InitialState))
             return _initialActionGenerator.Value;
 
         if (_stateGenerators.TryGetValue(startState, out IApplicableActionGenerator? cached))
@@ -206,6 +211,7 @@ public partial class Problem
             ApplicableActionGeneratorType.Grounded =>
                 new GroundedApplicableActionGenerator(this, InitialState, new RpgGrounder()),
             ApplicableActionGeneratorType.Lifted => new CliqueApplicableActionGenerator(this),
+            ApplicableActionGeneratorType.Factored => new FactoredApplicableActionGenerator(this),
             _ => throw new InvalidOperationException($"Unknown generator type '{GeneratorType}'."),
         };
 

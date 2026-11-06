@@ -50,6 +50,7 @@ public static partial class Exports
         {
             "grounded" => ApplicableActionGeneratorType.Grounded,
             "lifted" => ApplicableActionGeneratorType.Lifted,
+            "factored" => ApplicableActionGeneratorType.Factored,
             _ => throw new ArgumentException($"Unknown applicable-action generator '{generator}'.", nameof(generator)),
         };
 
@@ -307,6 +308,7 @@ public static partial class Exports
         {
             ApplicableActionGeneratorType.Grounded => "grounded",
             ApplicableActionGeneratorType.Lifted => "lifted",
+            ApplicableActionGeneratorType.Factored => "factored",
             _ => null,
         });
     }

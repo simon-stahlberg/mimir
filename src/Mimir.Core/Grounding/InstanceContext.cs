@@ -326,6 +326,11 @@ public class InstanceContext
     internal GroundFunctionCall? TryGetFunctionCall(NumericFunction function, IReadOnlyList<Constant> arguments)
         => _functionCalls.GetValueOrDefault(new NumericFunctionKey(function, arguments));
 
+    // Lookups register undefined placeholders, so callers that need the extension must skip those.
+    internal IEnumerable<GroundFunctionCall> GetDefinedFunctionCalls(NumericFunction function)
+        => _functionCalls.Values.Where(call =>
+            ReferenceEquals(call.Function, function) && !double.IsNaN(call.InitialValue));
+
     private GroundFunctionCall RegisterFunctionCall(
         NumericFunction function,
         IReadOnlyList<Constant> arguments,

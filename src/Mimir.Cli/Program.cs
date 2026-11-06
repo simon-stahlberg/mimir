@@ -60,6 +60,7 @@ class Program
             {
                 "grounded" => Mimir.Core.Engines.ApplicableActionGeneratorType.Grounded,
                 "lifted" => Mimir.Core.Engines.ApplicableActionGeneratorType.Lifted,
+                "factored" => Mimir.Core.Engines.ApplicableActionGeneratorType.Factored,
                 _ => throw new ArgumentException($"Unknown generator type '{options.GeneratorType}'.", "generatorType")
             };
             problem = Problem.FromFile(domain, options.ProblemPath, generatorType);
