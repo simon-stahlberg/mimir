@@ -13,6 +13,8 @@ internal sealed class IwSearch : ISearchAlgorithm
     private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
     private readonly IApplicableActionGenerator _actionGenerator;
+    private readonly IFactoredApplicableActionGenerator? _factoredGenerator;
+    private readonly FactoredExpansion? _factoredExpansion;
 
     public event Action<SearchNode>? NodeExpanded;
     public event Action<SearchNode>? NodeGenerated;
@@ -39,6 +41,14 @@ internal sealed class IwSearch : ISearchAlgorithm
         _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
         _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
+
+        // Width 1 is the only case where a group's members collapse to a projection without losing a successor
+        // the search would have kept, so the shortcut is confined to it.
+        if (k == 1 && _actionGenerator is IFactoredApplicableActionGenerator factored)
+        {
+            _factoredGenerator = factored;
+            _factoredExpansion = new FactoredExpansion(initialState.Context.Problem);
+        }
     }
 
     public SearchResult Search(
@@ -172,6 +182,16 @@ internal sealed class IwSearch : ISearchAlgorithm
         return SearchResult.Failure(new SearchStatistics(1, generated, stopwatch.Elapsed, 0));
     }
 
+    private IEnumerable<Action> CandidateActions(ExtendedState state)
+    {
+        if (_factoredGenerator is null || _factoredExpansion is null)
+            return _actionGenerator.GetApplicableActions(state);
+
+        return _factoredGenerator
+            .GetFactoredApplicableActions(state)
+            .SelectMany(_factoredExpansion.Select);
+    }
+
     // BFS pruned at the given novelty width (width ≥ 1).
     private SearchResult SearchKN(
         int width,
@@ -236,7 +256,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                 return SearchResult.Success(current.ExtractPlan(), new SearchStatistics(expanded, generated, stopwatch.Elapsed, maxDepth));
             }
 
-            foreach (var action in _actionGenerator.GetApplicableActions(extendedState))
+            foreach (var action in CandidateActions(extendedState))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

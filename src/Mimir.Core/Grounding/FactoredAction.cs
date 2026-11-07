@@ -79,10 +79,7 @@ public sealed class FactoredAction
         var cursor = new int[parameterCount];
         var binding = new Constant[parameterCount];
         // One scratch row per enumeration keeps exclusion tests allocation-free without sharing state between them.
-        int probeLength = 0;
-        for (int i = 0; i < Exclusions.Count; i++)
-            probeLength = Math.Max(probeLength, Exclusions[i].ParameterIndices.Length);
-        Constant[] probe = probeLength == 0 ? Array.Empty<Constant>() : new Constant[probeLength];
+        var probe = new Constant[ProbeLength()];
         while (true)
         {
             for (int i = 0; i < parameterCount; i++)
@@ -96,6 +93,78 @@ public sealed class FactoredAction
                 cursor[position--] = 0;
             if (position < 0) yield break;
         }
+    }
+
+    /// <summary>
+    /// One member per distinct combination of <paramref name="parameterIndices"/>, with every other parameter
+    /// taking an arbitrary admissible value. A consumer that cannot tell two members apart unless they differ on
+    /// those parameters can use this instead of <see cref="Expand"/> and never build the rest of the product.
+    /// </summary>
+    public IEnumerable<Action> ExpandProjection(IReadOnlyList<int> parameterIndices)
+    {
+        ArgumentNullException.ThrowIfNull(parameterIndices);
+        foreach (int parameter in parameterIndices)
+        {
+            if (parameter < 0 || parameter >= _candidates.Length)
+                throw new ArgumentOutOfRangeException(nameof(parameterIndices), parameter, null);
+        }
+
+        int parameterCount = _candidates.Length;
+        foreach (Constant[] candidates in _candidates)
+        {
+            if (candidates.Length == 0) yield break;
+        }
+
+        var projected = parameterIndices.Distinct().Order().ToArray();
+        int[] free = Enumerable.Range(0, parameterCount).Except(projected).ToArray();
+        if (free.Length == 0)
+        {
+            foreach (Action action in Expand()) yield return action;
+            yield break;
+        }
+
+        var binding = new Constant[parameterCount];
+        var cursor = new int[projected.Length];
+        var probe = new Constant[ProbeLength()];
+        while (true)
+        {
+            for (int i = 0; i < projected.Length; i++)
+                binding[projected[i]] = _candidates[projected[i]][cursor[i]];
+
+            if (TryCompleteFreeParameters(free, binding, probe))
+                yield return _actions.GetOrBuild(binding);
+
+            int position = projected.Length - 1;
+            while (position >= 0 && ++cursor[position] == _candidates[projected[position]].Length)
+                cursor[position--] = 0;
+            if (position < 0) yield break;
+        }
+    }
+
+    // Exclusions can rule out the obvious completion, so walk the remaining sub-product until one is admissible.
+    private bool TryCompleteFreeParameters(int[] free, Constant[] binding, Constant[] probe)
+    {
+        var cursor = new int[free.Length];
+        while (true)
+        {
+            for (int i = 0; i < free.Length; i++)
+                binding[free[i]] = _candidates[free[i]][cursor[i]];
+
+            if (IsAllowed(binding, probe)) return true;
+
+            int position = free.Length - 1;
+            while (position >= 0 && ++cursor[position] == _candidates[free[position]].Length)
+                cursor[position--] = 0;
+            if (position < 0) return false;
+        }
+    }
+
+    private int ProbeLength()
+    {
+        int length = 0;
+        for (int i = 0; i < Exclusions.Count; i++)
+            length = Math.Max(length, Exclusions[i].ParameterIndices.Length);
+        return length;
     }
 
     private bool IsAllowed(Constant[] binding, Constant[] probe)
