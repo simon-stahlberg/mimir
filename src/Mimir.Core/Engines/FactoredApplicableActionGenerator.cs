@@ -421,7 +421,6 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
             plan.GroundingPlan,
             plan.Actions,
             sets,
-            plan.WitnessParameters,
             exclusions);
     }
 

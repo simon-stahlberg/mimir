@@ -1,6 +1,7 @@
 using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
+using Mimir.Search.Evaluation;
 using Action = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Search.Algorithms.IteratedWidth;
@@ -27,27 +28,38 @@ internal sealed class FactoredExpansion
     private readonly Dictionary<ActionSchema, SchemaEffectModel> _models;
     private readonly FluentIndex[] _goalAtoms;
     private readonly HashSet<Predicate> _goalPredicates;
-    private FactoredProjectionCache? _projections;
+    private readonly FactoredProjectionCache _projections;
 
     /// <summary>
     /// The shortcut for this generator, or null when the problem is outside what it reasons about. Declining
     /// leaves the search running on the ordinary expansion rather than failing outright.
     /// </summary>
-    internal static FactoredExpansion? TryCreate(IFactoredApplicableActionGenerator generator)
+    internal static FactoredExpansion? TryCreate(
+        IFactoredApplicableActionGenerator generator,
+        GoalCondition goal,
+        ExtendedState initialState)
     {
         ArgumentNullException.ThrowIfNull(generator);
+        ArgumentNullException.ThrowIfNull(goal);
+        ArgumentNullException.ThrowIfNull(initialState);
 
-        // A negated goal literal is satisfied by deleting an atom, so reaching the goal would no longer be
-        // decided by what a member adds, and classifying members by their added atoms would hide goal states.
-        foreach (Literal<Fact> literal in generator.Problem.Goal)
+        // Only a conjunction of positive atoms lets the add-class decide whether a member reaches the goal. An
+        // arbitrary expression may be satisfied without containing every literal, and a negated one is satisfied
+        // by deleting an atom, so in either case classifying members by what they add could hide a goal state.
+        if (goal.Expression is not null || goal.NumericConditions.Count > 0) return null;
+
+        foreach (Literal<Fact> literal in goal.GoalLiterals)
         {
             if (!literal.IsPositive) return null;
         }
 
-        return new FactoredExpansion(generator);
+        return new FactoredExpansion(generator, goal, initialState);
     }
 
-    private FactoredExpansion(IFactoredApplicableActionGenerator generator)
+    private FactoredExpansion(
+        IFactoredApplicableActionGenerator generator,
+        GoalCondition goal,
+        ExtendedState initialState)
     {
         _generator = generator;
         Problem problem = generator.Problem;
@@ -57,9 +69,14 @@ internal sealed class FactoredExpansion
         foreach (ActionSchema schema in problem.Domain.Actions)
             _models.Add(schema, SchemaEffectModel.Compile(schema));
 
-        _goalAtoms = CollectGoalAtoms(problem);
+        // The search's goal, not the problem's: a serialized width search aims at one subgoal at a time.
+        _goalAtoms = CollectGoalAtoms(goal);
         _goalPredicates = new HashSet<Predicate>(ReferenceEqualityComparer.Instance);
-        foreach (Literal<Fact> literal in problem.Goal) _goalPredicates.Add(literal.Value.Predicate);
+        foreach (Literal<Fact> literal in goal.GoalLiterals) _goalPredicates.Add(literal.Value.Predicate);
+
+        // Anchoring where the search starts keeps every delta a function of depth rather than of how far apart
+        // two expansions happen to fall in the queue.
+        _projections = generator.CreateProjectionCache(initialState);
     }
 
     /// <summary>
@@ -68,10 +85,6 @@ internal sealed class FactoredExpansion
     /// </summary>
     internal IEnumerable<Action> CandidateActions(ExtendedState state, int width, NoveltyTracker tracker)
     {
-        // The search starts at the initial state and the projections drift from it as it goes, so anchoring there
-        // keeps every delta a function of depth rather than of how far apart two expansions happen to be.
-        _projections ??= _generator.CreateProjectionCache(state);
-
         if (width is < 1 or > 2)
             return _generator.GetApplicableActions(state);
 
@@ -80,10 +93,10 @@ internal sealed class FactoredExpansion
 
     // Goals are positive here, so a class reaches the goal only by adding every goal atom the parent is missing.
     // A delete can still destroy one, which the pair loop handles.
-    private static FluentIndex[] CollectGoalAtoms(Problem problem)
+    private static FluentIndex[] CollectGoalAtoms(GoalCondition goal)
     {
         var atoms = new List<FluentIndex>();
-        foreach (Literal<Fact> literal in problem.Goal)
+        foreach (Literal<Fact> literal in goal.GoalLiterals)
         {
             if (literal.Value is Fact<Fluent> fluent) atoms.Add(new FluentIndex(fluent.LocalIndex));
         }

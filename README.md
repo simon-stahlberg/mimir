@@ -214,6 +214,20 @@ effects, and cost expressions whose definedness cannot be proven, throw
 `NotSupportedException` while the problem is loaded. Use the lifted generator for
 those domains.
 
+Iterated width uses the groups directly at widths 1 and 2, generating only the
+members novelty could tell apart rather than every applicable action. The
+shortcut stands aside, leaving the search on the ordinary expansion, for a
+schema whose conditional or quantified effects make its added atoms depend on
+more than its arguments, and for a goal that is not a conjunction of positive
+atoms.
+
+`CreateProjectionCache(state)` returns a cache of the relations satisfying each
+precondition, anchored on the state given. Passing it back to
+`GetFactoredApplicableActions` adapts those relations to a nearby state instead
+of rebuilding them, and restores them afterwards, so the anchor never moves and
+call order changes nothing. A cache belongs to one generator and to one caller
+at a time; passing none is always correct.
+
 The original initial-state generator stays cached. Other grounded generators
 are cached by live `State` object identity with a capacity of 16 and FIFO
 eviction; a cache hit does not refresh the eviction order. This bounds entry

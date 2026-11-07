@@ -2,6 +2,7 @@ using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Search.Algorithms.IteratedWidth;
+using Mimir.Search.Evaluation;
 using Xunit;
 using GroundAction = Mimir.Core.Grounding.Action;
 
@@ -33,7 +34,8 @@ public class PairSelectorTests
         Problem problem = Load(root, domainDirectory);
         var generator = (IFactoredApplicableActionGenerator)
             problem.GetApplicableActionGenerator(problem.InitialState);
-        FactoredExpansion expansion = Assert.IsType<FactoredExpansion>(FactoredExpansion.TryCreate(generator));
+        FactoredExpansion expansion = Assert.IsType<FactoredExpansion>(FactoredExpansion.TryCreate(
+            generator, GoalCondition.FromProblem(problem), problem.InitialState.Expand()));
 
         var tracker = new NoveltyTracker(2, problem.InitialState.Context);
         tracker.IsNovel(problem.InitialState);
@@ -91,7 +93,8 @@ public class PairSelectorTests
             problem.GetApplicableActionGenerator(problem.InitialState);
 
         Assert.Contains(problem.Goal, literal => !literal.IsPositive);
-        Assert.Null(FactoredExpansion.TryCreate(generator));
+        Assert.Null(FactoredExpansion.TryCreate(
+            generator, GoalCondition.FromProblem(problem), problem.InitialState.Expand()));
     }
 
     /// <summary>
@@ -113,6 +116,39 @@ public class PairSelectorTests
         Assert.Contains(
             model.Deletes,
             delete => delete.Parameters.Count(parameter => !addParameters.Contains(parameter)) > 1);
+    }
+
+    /// <summary>
+    /// A serialized width search aims at one subgoal at a time, so the expansion has to reason about the goal it
+    /// was given rather than the problem's. Aiming at a goal the problem does not state must still be handled.
+    /// </summary>
+    [Fact]
+    public void UsesTheSearchGoalRatherThanTheProblemGoal()
+    {
+        Problem problem = Load("examples", "childsnack");
+        var generator = (IFactoredApplicableActionGenerator)
+            problem.GetApplicableActionGenerator(problem.InitialState);
+        ExtendedState initial = problem.InitialState.Expand();
+
+        // One of the problem's goal atoms on its own, which is what serialization would aim at first.
+        var subgoal = GoalCondition.FromLiterals(problem, [problem.Goal[0]], []);
+        FactoredExpansion expansion = Assert.IsType<FactoredExpansion>(
+            FactoredExpansion.TryCreate(generator, subgoal, initial));
+
+        var tracker = new NoveltyTracker(2, problem.InitialState.Context);
+        tracker.IsNovel(problem.InitialState);
+        Assert.NotEmpty(expansion.CandidateActions(initial, 2, tracker).ToArray());
+    }
+
+    [Fact]
+    public void DeclinesWhenTheSearchGoalIsNotAPositiveConjunction()
+    {
+        Problem problem = Load("examples", "childsnack");
+        var generator = (IFactoredApplicableActionGenerator)
+            problem.GetApplicableActionGenerator(problem.InitialState);
+
+        Assert.Null(FactoredExpansion.TryCreate(
+            generator, GoalCondition.Always(problem), problem.InitialState.Expand()));
     }
 
     private static Problem Load(string root, string domainDirectory)

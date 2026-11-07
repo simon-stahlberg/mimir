@@ -11,7 +11,6 @@ public sealed class FactoredAction
     private readonly ActionGroundingPlan _plan;
     private readonly GroundActionCache _actions;
     private readonly Constant[][] _candidates;
-    private readonly bool[] _witnessParameters;
 
     public ActionSchema Schema => _plan.Schema;
     public int ParameterCount => _candidates.Length;
@@ -21,26 +20,16 @@ public sealed class FactoredAction
         ActionGroundingPlan plan,
         GroundActionCache actions,
         Constant[][] candidates,
-        bool[] witnessParameters,
         IReadOnlyList<FactoredExclusion> exclusions)
     {
         _plan = plan;
         _actions = actions;
         _candidates = candidates;
-        _witnessParameters = witnessParameters;
         Exclusions = exclusions;
     }
 
     /// <summary>The objects this parameter may take. The span is a view over the group and cannot alias it.</summary>
     public ReadOnlySpan<Constant> GetCandidates(int parameterIndex) => _candidates[parameterIndex];
-
-    public bool IsPinned(int parameterIndex) => _candidates[parameterIndex].Length == 1;
-
-    /// <summary>
-    /// True when the parameter occurs in no effect, effect condition or cost, so the group carries a single
-    /// representative rather than every value that satisfies the precondition.
-    /// </summary>
-    public bool IsWitness(int parameterIndex) => _witnessParameters[parameterIndex];
 
     /// <summary>
     /// The product of the candidate set sizes. Exact when <see cref="Exclusions"/> is empty, an upper bound otherwise.

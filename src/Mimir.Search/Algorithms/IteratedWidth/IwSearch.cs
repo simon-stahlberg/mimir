@@ -43,7 +43,7 @@ internal sealed class IwSearch : ISearchAlgorithm
 
         // IW(k) runs a width-1 pass on its way to k, and that pass can use the shortcut whatever k is.
         if (_actionGenerator is IFactoredApplicableActionGenerator factored)
-            _factoredExpansion = FactoredExpansion.TryCreate(factored);
+            _factoredExpansion = FactoredExpansion.TryCreate(factored, goalCondition, initialState.Expand());
     }
 
     public SearchResult Search(
