@@ -10,7 +10,7 @@ using GroundAction = Mimir.Core.Grounding.Action;
 
 if (args.Length > 1 && args[0] == "--iwsweep")
 {
-    Mimir.FactoredParity.IwFactored.Sweep(Path.GetFullPath(args[1]), args.Length > 2 ? int.Parse(args[2]) : 20);
+    Mimir.FactoredParity.IwFactored.Sweep(Path.GetFullPath(args[1]), args.Length > 2 ? int.Parse(args[2]) : 20, args.Length > 3 ? int.Parse(args[3]) : 1);
     return 0;
 }
 

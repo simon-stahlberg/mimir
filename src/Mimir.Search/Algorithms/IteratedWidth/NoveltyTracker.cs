@@ -75,6 +75,13 @@ internal sealed class NoveltyTracker
         return novel;
     }
 
+    /// <summary>Whether the atom has been true in any state seen so far. Does not register it.</summary>
+    internal bool IsAtomSeen(FluentIndex atom) => _table.ContainsAtom(atom.Value);
+
+    /// <summary>Whether the two atoms have been true together in any state seen so far. Does not register them.</summary>
+    internal bool IsPairSeen(FluentIndex first, FluentIndex second)
+        => _table.ContainsPair(first.Value, second.Value);
+
     private void Validate(State state)
     {
         if (!ReferenceEquals(state.Context, _context))
@@ -199,6 +206,15 @@ internal sealed class NoveltyTracker
         {
             _seenPairs = k >= 2 ? new HashSet<long>() : null;
             _seenTriples = k == 3 ? new HashSet<(int, int, int)>() : null;
+        }
+
+        public bool ContainsAtom(int atom) => _seenAtoms.Contains(atom);
+
+        public bool ContainsPair(int first, int second)
+        {
+            if (first == second) return true;
+            (int low, int high) = first < second ? (first, second) : (second, first);
+            return _seenPairs!.Contains((long)low << 32 | (uint)high);
         }
 
         public bool RegisterAtom(int atom)

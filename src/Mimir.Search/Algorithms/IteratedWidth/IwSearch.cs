@@ -13,7 +13,6 @@ internal sealed class IwSearch : ISearchAlgorithm
     private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
     private readonly IApplicableActionGenerator _actionGenerator;
-    private readonly IFactoredApplicableActionGenerator? _factoredGenerator;
     private readonly FactoredExpansion? _factoredExpansion;
 
     public event Action<SearchNode>? NodeExpanded;
@@ -44,10 +43,7 @@ internal sealed class IwSearch : ISearchAlgorithm
 
         // IW(k) runs a width-1 pass on its way to k, and that pass can use the shortcut whatever k is.
         if (_actionGenerator is IFactoredApplicableActionGenerator factored)
-        {
-            _factoredGenerator = factored;
-            _factoredExpansion = new FactoredExpansion(initialState.Context.Problem);
-        }
+            _factoredExpansion = FactoredExpansion.TryCreate(factored);
     }
 
     public SearchResult Search(
@@ -184,14 +180,11 @@ internal sealed class IwSearch : ISearchAlgorithm
     // Width 1 is the only case where a group's members collapse to a projection without losing a successor the
     // search would have kept: above it, novelty also turns on which atoms an action deletes, and members that
     // agree on every effect parameter are the same successor and were collapsed by the generator already.
-    private IEnumerable<Action> CandidateActions(ExtendedState state, int width)
+    private IEnumerable<Action> CandidateActions(ExtendedState state, int width, NoveltyTracker tracker)
     {
-        if (width != 1 || _factoredGenerator is null || _factoredExpansion is null)
-            return _actionGenerator.GetApplicableActions(state);
-
-        return _factoredGenerator
-            .GetFactoredApplicableActions(state)
-            .SelectMany(_factoredExpansion.Select);
+        return _factoredExpansion is null
+            ? _actionGenerator.GetApplicableActions(state)
+            : _factoredExpansion.CandidateActions(state, width, tracker);
     }
 
     // BFS pruned at the given novelty width (width ≥ 1).
@@ -258,7 +251,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                 return SearchResult.Success(current.ExtractPlan(), new SearchStatistics(expanded, generated, stopwatch.Elapsed, maxDepth));
             }
 
-            foreach (var action in CandidateActions(extendedState, width))
+            foreach (var action in CandidateActions(extendedState, width, tracker))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

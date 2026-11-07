@@ -9,7 +9,7 @@ namespace Mimir.FactoredParity;
 /// <summary>Runs IW(1) over the same instance with the lifted and the factored generator and compares.</summary>
 internal static class IwFactored
 {
-    public static void Sweep(string benchmarkRoot, int seconds)
+    public static void Sweep(string benchmarkRoot, int seconds, int width)
     {
         int compared = 0;
         int disagreements = 0;
@@ -33,8 +33,8 @@ internal static class IwFactored
                 continue;
             }
 
-            (SearchStatus Status, int Expanded, double Seconds) left = Solve(lifted, seconds);
-            (SearchStatus Status, int Expanded, double Seconds) right = Solve(factored, seconds);
+            (SearchStatus Status, int Expanded, double Seconds) left = Solve(lifted, seconds, width);
+            (SearchStatus Status, int Expanded, double Seconds) right = Solve(factored, seconds, width);
             compared++;
             liftedSeconds += left.Seconds;
             factoredSeconds += right.Seconds;
@@ -53,11 +53,11 @@ internal static class IwFactored
         Console.WriteLine($"factored seconds   : {factoredSeconds:F1}");
     }
 
-    private static (SearchStatus Status, int Expanded, double Seconds) Solve(Problem problem, int seconds)
+    private static (SearchStatus Status, int Expanded, double Seconds) Solve(Problem problem, int seconds, int width)
     {
         using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(seconds));
         var stopwatch = Stopwatch.StartNew();
-        PlanResult result = new IteratedWidthPlanner(1).Solve(problem, cancellationToken: cancellation.Token);
+        PlanResult result = new IteratedWidthPlanner(width).Solve(problem, cancellationToken: cancellation.Token);
         stopwatch.Stop();
         return (result.Status, result.Statistics.NodesExpanded, stopwatch.Elapsed.TotalSeconds);
     }

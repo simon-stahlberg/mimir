@@ -116,23 +116,22 @@ public sealed class FactoredAction
         }
 
         var projected = parameterIndices.Distinct().Order().ToArray();
-        int[] free = Enumerable.Range(0, parameterCount).Except(projected).ToArray();
-        if (free.Length == 0)
+        if (projected.Length == parameterCount)
         {
             foreach (Action action in Expand()) yield return action;
             yield break;
         }
 
-        var binding = new Constant[parameterCount];
+        var partial = new Constant?[parameterCount];
         var cursor = new int[projected.Length];
-        var probe = new Constant[ProbeLength()];
         while (true)
         {
+            Array.Clear(partial);
             for (int i = 0; i < projected.Length; i++)
-                binding[projected[i]] = _candidates[projected[i]][cursor[i]];
+                partial[projected[i]] = _candidates[projected[i]][cursor[i]];
 
-            if (TryCompleteFreeParameters(free, binding, probe))
-                yield return _actions.GetOrBuild(binding);
+            if (TryCompleteMember(partial) is { } action)
+                yield return action;
 
             int position = projected.Length - 1;
             while (position >= 0 && ++cursor[position] == _candidates[projected[position]].Length)
@@ -141,21 +140,48 @@ public sealed class FactoredAction
         }
     }
 
-    // Exclusions can rule out the obvious completion, so walk the remaining sub-product until one is admissible.
-    private bool TryCompleteFreeParameters(int[] free, Constant[] binding, Constant[] probe)
+    /// <summary>
+    /// Fills the unassigned slots of <paramref name="partialBinding"/> with objects this group admits, or returns
+    /// null when no completion satisfies the exclusions. A null entry is a slot to fill; a non-null one is held
+    /// fixed and must be one of that parameter's candidates.
+    /// </summary>
+    public Action? TryCompleteMember(ReadOnlySpan<Constant?> partialBinding)
     {
-        var cursor = new int[free.Length];
+        if (partialBinding.Length != _candidates.Length)
+            throw new ArgumentException("The partial binding must have one entry per parameter.", nameof(partialBinding));
+
+        var binding = new Constant[_candidates.Length];
+        var free = new List<int>();
+        for (int parameter = 0; parameter < _candidates.Length; parameter++)
+        {
+            if (partialBinding[parameter] is { } value)
+            {
+                if (Array.IndexOf(_candidates[parameter], value) < 0) return null;
+                binding[parameter] = value;
+                continue;
+            }
+
+            if (_candidates[parameter].Length == 0) return null;
+            free.Add(parameter);
+        }
+
+        var probe = new Constant[ProbeLength()];
+        if (free.Count == 0)
+            return IsAllowed(binding, probe) ? _actions.GetOrBuild(binding) : null;
+
+        // Exclusions can rule out the obvious completion, so walk the free sub-product until one is admissible.
+        var cursor = new int[free.Count];
         while (true)
         {
-            for (int i = 0; i < free.Length; i++)
+            for (int i = 0; i < free.Count; i++)
                 binding[free[i]] = _candidates[free[i]][cursor[i]];
 
-            if (IsAllowed(binding, probe)) return true;
+            if (IsAllowed(binding, probe)) return _actions.GetOrBuild(binding);
 
-            int position = free.Length - 1;
+            int position = free.Count - 1;
             while (position >= 0 && ++cursor[position] == _candidates[free[position]].Length)
                 cursor[position--] = 0;
-            if (position < 0) return false;
+            if (position < 0) return null;
         }
     }
 
