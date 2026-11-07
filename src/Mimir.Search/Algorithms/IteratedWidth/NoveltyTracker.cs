@@ -9,6 +9,8 @@ internal sealed class NoveltyTracker
     private readonly int _k;
     private readonly InstanceContext _context;
     private readonly SparseNoveltyTable _table;
+    // Reused across successors: a search generates millions of them and each would otherwise allocate.
+    private int[] _addedBuffer = new int[16];
 
     internal NoveltyTracker(int k, InstanceContext context)
     {
@@ -56,22 +58,20 @@ internal sealed class NoveltyTracker
         Validate(state);
         Validate(parent);
 
-        int[] added = CollectAddedIndices(state, parent);
-        if (added.Length == 0) return false;
+        int addedCount = CollectAddedIndices(state, parent);
+        if (addedCount == 0) return false;
 
+        ReadOnlySpan<int> added = _addedBuffer.AsSpan(0, addedCount);
         bool novel = false;
         if (_k >= 1)
             novel |= CheckAtoms(added);
 
         if (_k == 1) return novel;
+        if (_k == 2) return CheckPairsContaining(added, state) || novel;
 
         int[] ids = CollectSortedIndices(state);
-        if (_k >= 2)
-            novel |= CheckPairsContaining(added, ids);
-
-        if (_k == 3)
-            novel |= CheckTriplesContaining(added, ids);
-
+        novel |= CheckPairsContaining(added, ids);
+        novel |= CheckTriplesContaining(added, ids);
         return novel;
     }
 
@@ -88,7 +88,7 @@ internal sealed class NoveltyTracker
             throw new InvalidOperationException("State and novelty tracker belong to different problem contexts.");
     }
 
-    private bool CheckPairsContaining(int[] added, int[] ids)
+    private bool CheckPairsContaining(ReadOnlySpan<int> added, int[] ids)
     {
         bool novel = false;
         foreach (int left in added)
@@ -104,7 +104,23 @@ internal sealed class NoveltyTracker
         return novel;
     }
 
-    private bool CheckTriplesContaining(int[] added, int[] ids)
+    /// <summary>
+    /// Pairs each added atom with the state's own, read straight off the bitboard. Materializing the state's
+    /// atoms first costs an allocation and a sort per successor, and the pair key is normalized anyway.
+    /// </summary>
+    private bool CheckPairsContaining(ReadOnlySpan<int> added, State state)
+    {
+        bool novel = false;
+        ReadOnlySpan<ulong> words = state.Bitboard;
+        foreach (int left in added)
+        {
+            if (_table.RegisterPairsWith(left, words)) novel = true;
+        }
+
+        return novel;
+    }
+
+    private bool CheckTriplesContaining(ReadOnlySpan<int> added, int[] ids)
     {
         bool novel = false;
         Span<int> triple = stackalloc int[3];
@@ -131,26 +147,27 @@ internal sealed class NoveltyTracker
 
     // The bits set in the successor but not in the parent, ascending. Reading the bitboards rather than the
     // action's add list keeps this exact when an effect both adds and deletes an atom.
-    private static int[] CollectAddedIndices(State state, State parent)
+    private int CollectAddedIndices(State state, State parent)
     {
         ReadOnlySpan<ulong> stateWords = state.Bitboard;
         ReadOnlySpan<ulong> parentWords = parent.Bitboard;
-        var added = new List<int>();
+        int count = 0;
         for (int word = 0; word < stateWords.Length; word++)
         {
             ulong bits = stateWords[word];
             if (word < parentWords.Length) bits &= ~parentWords[word];
             while (bits != 0)
             {
-                added.Add((word * 64) + BitOperations.TrailingZeroCount(bits));
+                if (count == _addedBuffer.Length) Array.Resize(ref _addedBuffer, count * 2);
+                _addedBuffer[count++] = (word * 64) + BitOperations.TrailingZeroCount(bits);
                 bits &= bits - 1;
             }
         }
 
-        return added.ToArray();
+        return count;
     }
 
-    private bool CheckAtoms(int[] ids)
+    private bool CheckAtoms(ReadOnlySpan<int> ids)
     {
         bool novel = false;
         foreach (int id in ids)
@@ -199,12 +216,18 @@ internal sealed class NoveltyTracker
     private sealed class SparseNoveltyTable
     {
         private readonly HashSet<int> _seenAtoms = new();
-        private readonly HashSet<long>? _seenPairs;
         private readonly HashSet<(int, int, int)>? _seenTriples;
+
+        // Seen pairs as one bitset per atom, stored both ways round. Costs more memory than a hash set of keys,
+        // but a state's atoms arrive as a bitboard, so a whole word of partners is tested with one AND and a
+        // state that introduces no pair is dismissed in a handful of them instead of one probe per atom.
+        private ulong[]?[] _pairRows;
+        private int _pairRowWords;
 
         public SparseNoveltyTable(int k)
         {
-            _seenPairs = k >= 2 ? new HashSet<long>() : null;
+            _pairRows = k >= 2 ? new ulong[]?[64] : Array.Empty<ulong[]?>();
+            _pairRowWords = 1;
             _seenTriples = k == 3 ? new HashSet<(int, int, int)>() : null;
         }
 
@@ -213,8 +236,63 @@ internal sealed class NoveltyTracker
         public bool ContainsPair(int first, int second)
         {
             if (first == second) return true;
-            (int low, int high) = first < second ? (first, second) : (second, first);
-            return _seenPairs!.Contains((long)low << 32 | (uint)high);
+            if (first >= _pairRows.Length) return false;
+            ulong[]? row = _pairRows[first];
+            int word = second >> 6;
+            return row is not null && word < row.Length && (row[word] & (1UL << (second & 63))) != 0;
+        }
+
+        /// <summary>
+        /// Registers every pair joining <paramref name="atom"/> to an atom of <paramref name="stateWords"/>, and
+        /// reports whether any of them is new.
+        /// </summary>
+        public bool RegisterPairsWith(int atom, ReadOnlySpan<ulong> stateWords)
+        {
+            ulong[] row = GetOrCreateRow(atom, stateWords.Length);
+            bool novel = false;
+            int limit = Math.Min(stateWords.Length, row.Length);
+            for (int word = 0; word < limit; word++)
+            {
+                ulong bits = stateWords[word] & ~row[word];
+                if (word == atom >> 6) bits &= ~(1UL << (atom & 63));
+                if (bits == 0) continue;
+
+                row[word] |= bits;
+                novel = true;
+                ulong pending = bits;
+                while (pending != 0)
+                {
+                    int other = (word << 6) + BitOperations.TrailingZeroCount(pending);
+                    pending &= pending - 1;
+                    GetOrCreateRow(other, (atom >> 6) + 1)[atom >> 6] |= 1UL << (atom & 63);
+                }
+            }
+
+            return novel;
+        }
+
+        private ulong[] GetOrCreateRow(int atom, int words)
+        {
+            if (atom >= _pairRows.Length)
+            {
+                int length = _pairRows.Length == 0 ? 64 : _pairRows.Length;
+                while (atom >= length) length *= 2;
+                Array.Resize(ref _pairRows, length);
+            }
+
+            if (words > _pairRowWords) _pairRowWords = words;
+            ulong[]? row = _pairRows[atom];
+            if (row is null)
+            {
+                row = new ulong[_pairRowWords];
+                _pairRows[atom] = row;
+                return row;
+            }
+
+            if (row.Length >= words) return row;
+            Array.Resize(ref row, Math.Max(words, _pairRowWords));
+            _pairRows[atom] = row;
+            return row;
         }
 
         public bool RegisterAtom(int atom)
@@ -230,8 +308,19 @@ internal sealed class NoveltyTracker
             if (first >= second)
                 throw new InvalidOperationException("Novelty pairs must contain sorted, distinct fact indices.");
 
-            long key = (long)first << 32 | (uint)second;
-            return _seenPairs!.Add(key);
+            return RegisterPairTrusted(first, second);
+        }
+
+        // Called once per atom of every successor, so the caller guarantees sorted, distinct, non-negative ids.
+        public bool RegisterPairTrusted(int first, int second)
+        {
+            ulong[] row = GetOrCreateRow(first, (second >> 6) + 1);
+            ulong mask = 1UL << (second & 63);
+            if ((row[second >> 6] & mask) != 0) return false;
+
+            row[second >> 6] |= mask;
+            GetOrCreateRow(second, (first >> 6) + 1)[first >> 6] |= 1UL << (first & 63);
+            return true;
         }
 
         public bool RegisterTriple(int first, int second, int third)

@@ -35,6 +35,10 @@ internal sealed class PairSelector
     /// <summary>Atoms some member of the current class deletes, mapped to the parameter whose value produced it.</summary>
     private readonly Dictionary<FluentIndex, int> _deletable = new();
 
+    // Reused across classes and members; a group can have thousands of each.
+    private readonly HashSet<FluentIndex> _wanted = new();
+    private readonly HashSet<FluentIndex> _deleted = new();
+
     internal PairSelector(
         InstanceContext context,
         FactoredAction group,
@@ -99,7 +103,8 @@ internal sealed class PairSelector
         // A brand new atom makes every pair containing it new too, which saves scanning the shared pairs.
         bool fresh = HasUnseenAddedAtom();
 
-        var wanted = new HashSet<FluentIndex>();
+        HashSet<FluentIndex> wanted = _wanted;
+        wanted.Clear();
         foreach (FluentIndex partner in _deletable.Keys)
         {
             if (fresh || HasUnseenPairWith(partner)) wanted.Add(partner);
@@ -267,13 +272,13 @@ internal sealed class PairSelector
         for (int parameter = 0; parameter < _scratch.Length; parameter++)
             _scratch[parameter] = action.Arguments[parameter];
 
-        var deleted = new HashSet<FluentIndex>();
+        _deleted.Clear();
         foreach (EffectLiteral delete in _model.Deletes)
         {
-            if (delete.Resolve(_context, _scratch) is { } atom) deleted.Add(atom);
+            if (delete.Resolve(_context, _scratch) is { } atom) _deleted.Add(atom);
         }
 
-        return deleted;
+        return _deleted;
     }
 
     private static bool IsFullyBound(EffectLiteral literal, Constant?[] binding)
