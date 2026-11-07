@@ -107,7 +107,7 @@ internal sealed class PairSelector
 
         // Deleting a partner is the only way a member can leave its pair unclaimed, so the next member to try is
         // one that spares it. A goal atom is tracked the same way: losing it would hide a goal state.
-        bool wantsGoalAtoms = ReachesGoal();
+        bool wantsGoalAtoms = TouchesGoal();
         _spared.Clear();
         while (true)
         {
@@ -205,15 +205,20 @@ internal sealed class PairSelector
         }
     }
 
-    private bool ReachesGoal()
+    /// <summary>
+    /// Whether the class could change how much of the goal holds. A search may stop on a state that merely
+    /// achieves one more goal atom, so this asks whether the class achieves any rather than all of them; the
+    /// weaker test keeps members a stricter one would have dropped, and is right for both.
+    /// </summary>
+    private bool TouchesGoal()
     {
-        if (_unsatisfiedGoals.Length == 0) return false;
+        // An added atom with no registered fact cannot be a goal atom, which is registered with the goal.
         foreach (FluentIndex goalAtom in _unsatisfiedGoals)
         {
-            if (!_added.Contains(goalAtom)) return false;
+            if (_added.Contains(goalAtom)) return true;
         }
 
-        return true;
+        return false;
     }
 
     private static bool IsFullyBound(EffectLiteral literal, Constant?[] binding)

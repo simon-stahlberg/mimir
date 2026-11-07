@@ -26,6 +26,11 @@ public static class PlannerFactory
             "iw1" => new IteratedWidthPlanner(1),
             "iw2" => new IteratedWidthPlanner(2),
             "iw3" => new IteratedWidthPlanner(3),
+            // Serialized iterated width, widening up to k each round.
+            "siw" => new SerializedIteratedWidthPlanner(),
+            "siw1" => new SerializedIteratedWidthPlanner(1),
+            "siw2" => new SerializedIteratedWidthPlanner(2),
+            "siw3" => new SerializedIteratedWidthPlanner(3),
             _ => throw new ArgumentException($"Unknown algorithm type '{algorithmType}'.", nameof(algorithmType))
         };
     }

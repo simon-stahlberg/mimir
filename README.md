@@ -221,6 +221,15 @@ schema whose conditional or quantified effects make its added atoms depend on
 more than its arguments, and for a goal that is not a conjunction of positive
 atoms.
 
+Serialized iterated width is available as `siw`, or `siw1`..`siw3` to cap the
+width a round may widen to; `siw` is `siw2`. Each round searches from where the
+last one stopped for the first state leaving fewer goal atoms unachieved, so the
+number of rounds is bounded by the goal's size. It solves far more than plain
+iterated width — 46 against 15 of 71 benchmark instances — but is a gamble
+rather than a refinement: committing to the nearest state that achieves one more
+goal atom can strand the search, and there are instances `iw2` solves that `siw`
+cannot.
+
 `CreateProjectionCache(state)` returns a cache of the relations satisfying each
 precondition, anchored on the state given. Passing it back to
 `GetFactoredApplicableActions` adapts those relations to a nearby state instead

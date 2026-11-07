@@ -12,6 +12,9 @@ internal sealed class IwSearch : ISearchAlgorithm
     private readonly State _initialState;
     private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
+    // What this search is looking for. Serialization wants the first state with fewer goals left to achieve,
+    // which is not a condition over atoms, so it is supplied rather than derived from the goal.
+    private readonly Func<ExtendedState, bool> _isTarget;
     private readonly IApplicableActionGenerator _actionGenerator;
     private readonly FactoredExpansion? _factoredExpansion;
 
@@ -28,6 +31,16 @@ internal sealed class IwSearch : ISearchAlgorithm
         State initialState,
         GoalCondition goalCondition,
         IDeadEndDetector? deadEndDetector)
+        : this(k, initialState, goalCondition, deadEndDetector, target: null)
+    {
+    }
+
+    public IwSearch(
+        int k,
+        State initialState,
+        GoalCondition goalCondition,
+        IDeadEndDetector? deadEndDetector,
+        Func<ExtendedState, bool>? target)
     {
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
@@ -39,6 +52,7 @@ internal sealed class IwSearch : ISearchAlgorithm
         _initialState = initialState;
         _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
+        _isTarget = target ?? goalCondition.IsSatisfied;
         _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
 
         // IW(k) runs a width-1 pass on its way to k, and that pass can use the shortcut whatever k is.
@@ -132,7 +146,7 @@ internal sealed class IwSearch : ISearchAlgorithm
         int generated = 1;
         ExtendedState extendedInitialState = _initialState.Expand();
 
-        if (_goalCondition.IsSatisfied(extendedInitialState))
+        if (_isTarget(extendedInitialState))
         {
             stopwatch.Stop();
             return SearchResult.Success([], new SearchStatistics(0, generated, stopwatch.Elapsed, 0));
@@ -156,6 +170,7 @@ internal sealed class IwSearch : ISearchAlgorithm
             var transition = new SearchTransition(_initialState, action, action.Cost, nextState);
             TransitionGenerated?.Invoke(transition);
             ExtendedState next = nextState.Expand();
+            // Dead ends are judged against the real goal even when the search is aiming at something nearer.
             if (!_goalCondition.IsSatisfied(next) && (_deadEndDetector?.IsDeadEnd(next, _goalCondition) ?? false))
             {
                 TransitionPruned?.Invoke(transition);
@@ -166,7 +181,7 @@ internal sealed class IwSearch : ISearchAlgorithm
             NodeGenerated?.Invoke(child);
             TransitionDiscovered?.Invoke(transition);
 
-            if (_goalCondition.IsSatisfied(nextState.Expand()))
+            if (_isTarget(nextState.Expand()))
             {
                 stopwatch.Stop();
                 return SearchResult.Success(child.ExtractPlan(), new SearchStatistics(1, generated, stopwatch.Elapsed, 0));
@@ -245,7 +260,7 @@ internal sealed class IwSearch : ISearchAlgorithm
             maxDepth = Math.Max(maxDepth, current.Depth);
 
             ExtendedState extendedState = currentEntry.ExtendedState;
-            if (_goalCondition.IsSatisfied(extendedState))
+            if (_isTarget(extendedState))
             {
                 stopwatch.Stop();
                 return SearchResult.Success(current.ExtractPlan(), new SearchStatistics(expanded, generated, stopwatch.Elapsed, maxDepth));
@@ -273,7 +288,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                 NodeGenerated?.Invoke(child);
 
                 ExtendedState extendedNextState = nextState.Expand();
-                bool isGoal = _goalCondition.IsSatisfied(extendedNextState);
+                bool isGoal = _isTarget(extendedNextState);
                 if (!isGoal && (_deadEndDetector?.IsDeadEnd(extendedNextState, _goalCondition) ?? false))
                 {
                     TransitionPruned?.Invoke(transition);
