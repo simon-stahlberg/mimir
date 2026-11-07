@@ -9,7 +9,6 @@ namespace Mimir.Search.Algorithms.IteratedWidth;
 internal sealed class IwSearch : ISearchAlgorithm
 {
     private readonly int _k;
-    private readonly NoveltyKind _noveltyKind;
     private readonly State _initialState;
     private readonly IDeadEndDetector? _deadEndDetector;
     private readonly GoalCondition _goalCondition;
@@ -28,16 +27,6 @@ internal sealed class IwSearch : ISearchAlgorithm
         State initialState,
         GoalCondition goalCondition,
         IDeadEndDetector? deadEndDetector)
-        : this(k, NoveltyKind.Atoms, initialState, goalCondition, deadEndDetector)
-    {
-    }
-
-    public IwSearch(
-        int k,
-        NoveltyKind noveltyKind,
-        State initialState,
-        GoalCondition goalCondition,
-        IDeadEndDetector? deadEndDetector)
     {
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
@@ -46,7 +35,6 @@ internal sealed class IwSearch : ISearchAlgorithm
             throw new NotSupportedException("IW does not support problems with changing numeric fluents.");
 
         _k = k;
-        _noveltyKind = noveltyKind;
         _initialState = initialState;
         _deadEndDetector = deadEndDetector;
         _goalCondition = goalCondition;
@@ -197,7 +185,7 @@ internal sealed class IwSearch : ISearchAlgorithm
             return SearchResult.Canceled(new SearchStatistics(0, 0, stopwatch.Elapsed, 0));
         }
 
-        var tracker = new NoveltyTracker(width, _noveltyKind, _initialState.Context);
+        var tracker = new NoveltyTracker(width, _initialState.Context);
         var open = new Queue<(SearchNode Node, ExtendedState ExtendedState)>();
         var closed = new HashSet<State>();
 
@@ -276,7 +264,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                     TransitionPruned?.Invoke(transition);
                     continue;
                 }
-                bool isNovel = tracker.IsNovel(child.State, current.State, action);
+                bool isNovel = tracker.IsNovel(child.State, current.State);
                 if (isGoal || isNovel)
                 {
                     TransitionDiscovered?.Invoke(transition);

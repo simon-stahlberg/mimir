@@ -21,7 +21,7 @@ internal static class IwProfile
         var clique = new CliqueApplicableActionGenerator(problem);
         var factored = new FactoredApplicableActionGenerator(problem);
         GoalCondition goal = GoalCondition.FromProblem(problem);
-        var tracker = new NoveltyTracker(1, NoveltyKind.Atoms, problem.InitialState.Context);
+        var tracker = new NoveltyTracker(1, problem.InitialState.Context);
         tracker.IsNovel(problem.InitialState);
 
         var generate = new Stopwatch();
@@ -73,7 +73,7 @@ internal static class IwProfile
                 goalTime.Stop();
 
                 novelty.Start();
-                bool isNovel = tracker.IsNovel(successor, state, action);
+                bool isNovel = tracker.IsNovel(successor, state);
                 novelty.Stop();
 
                 if (isGoal || isNovel) { novel++; open.Enqueue(successor); }

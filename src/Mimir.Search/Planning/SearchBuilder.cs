@@ -225,14 +225,12 @@ public class SearchBuilder
         return ucs;
     }
 
-    public ISearchAlgorithm BuildIw(int k) => BuildIw(k, NoveltyKind.Atoms);
-
-    public ISearchAlgorithm BuildIw(int k, NoveltyKind noveltyKind)
+    public ISearchAlgorithm BuildIw(int k)
     {
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
         Validate();
-        var iw = new IwSearch(k, noveltyKind, _initialState!, _goalCondition!, _deadEndDetector);
+        var iw = new IwSearch(k, _initialState!, _goalCondition!, _deadEndDetector);
         foreach (var cb in _onNodeExpanded) iw.NodeExpanded += cb;
         foreach (var cb in _onNodeGenerated) iw.NodeGenerated += cb;
         foreach (var cb in _onWidthStarted) iw.WidthStarted += cb;

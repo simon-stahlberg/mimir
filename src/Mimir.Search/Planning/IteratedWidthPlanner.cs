@@ -9,20 +9,13 @@ namespace Mimir.Search.Planning;
 public class IteratedWidthPlanner : IPlanner
 {
     private readonly int _k;
-    private readonly Algorithms.IteratedWidth.NoveltyKind _noveltyKind;
 
     public IteratedWidthPlanner(int k)
-        : this(k, Algorithms.IteratedWidth.NoveltyKind.Atoms)
-    {
-    }
-
-    public IteratedWidthPlanner(int k, Algorithms.IteratedWidth.NoveltyKind noveltyKind)
     {
         if (k is < 0 or > 3)
             throw new ArgumentOutOfRangeException(nameof(k), "IW(k) supports k = 0..3.");
 
         _k = k;
-        _noveltyKind = noveltyKind;
     }
 
     public PlanResult Solve(
@@ -44,7 +37,7 @@ public class IteratedWidthPlanner : IPlanner
             .WithInitialState(inputs.StartState)
             .WithGoal(inputs.Goal)
             .WithDeadEndDetector(deadEndDetector)
-            .BuildIw(_k, _noveltyKind);
+            .BuildIw(_k);
 
         setupStopwatch.Stop();
         if (cancellationToken.IsCancellationRequested)

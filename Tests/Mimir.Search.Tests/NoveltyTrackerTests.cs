@@ -51,7 +51,7 @@ public class NoveltyTrackerTests
                 if (!closed.Add(successor)) continue;
 
                 // Order matters: both trackers must see the same state before either registers it.
-                bool incrementalVerdict = incremental.IsNovel(successor, parent, action);
+                bool incrementalVerdict = incremental.IsNovel(successor, parent);
                 bool fullVerdict = full.IsNovel(successor);
                 Assert.Equal(fullVerdict, incrementalVerdict);
                 compared++;
@@ -64,55 +64,14 @@ public class NoveltyTrackerTests
     }
 
     [Fact]
-    public void ASuccessorThatAddsNothingIsNeverNovelUnderAtomNovelty()
+    public void ASuccessorThatAddsNothingIsNeverNovel()
     {
         Problem problem = SearchTestHelpers.LoadProblem(
             "gripper",
             generatorType: ApplicableActionGeneratorType.Lifted);
-        IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(problem.InitialState);
-        GroundAction action = generator.GetApplicableActions(problem.InitialState.Expand()).First();
-
-        var tracker = new NoveltyTracker(1, NoveltyKind.Atoms, problem.InitialState.Context);
+        var tracker = new NoveltyTracker(1, problem.InitialState.Context);
         tracker.IsNovel(problem.InitialState);
 
-        Assert.False(tracker.IsNovel(problem.InitialState, problem.InitialState, action));
-    }
-
-    /// <summary>
-    /// Argument novelty sees a parameter that atom novelty cannot: childsnack's make_sandwich adds only
-    /// at_kitchen_sandwich(?s), so which bread it consumes changes no atom that becomes true.
-    /// </summary>
-    [Fact]
-    public void ArgumentNoveltySeparatesBindingsAtomNoveltyCannot()
-    {
-        Problem problem = SearchTestHelpers.LoadProblem(
-            "childsnack",
-            generatorType: ApplicableActionGeneratorType.Lifted);
-        IApplicableActionGenerator generator = problem.GetApplicableActionGenerator(problem.InitialState);
-        ExtendedState state = problem.InitialState.Expand();
-
-        GroundAction[] sandwiches = generator
-            .GetApplicableActions(state)
-            .Where(action => action.Schema.Name.StartsWith("make_sandwich", StringComparison.OrdinalIgnoreCase))
-            .ToArray();
-        Assert.NotEmpty(sandwiches);
-
-        var atoms = new NoveltyTracker(1, NoveltyKind.Atoms, state.State.Context);
-        var arguments = new NoveltyTracker(1, NoveltyKind.Arguments, state.State.Context);
-        atoms.IsNovel(problem.InitialState);
-        arguments.IsNovel(problem.InitialState);
-
-        int atomNovel = 0;
-        int argumentNovel = 0;
-        foreach (GroundAction action in sandwiches)
-        {
-            State successor = state.Apply(action);
-            if (atoms.IsNovel(successor, problem.InitialState, action)) atomNovel++;
-            if (arguments.IsNovel(successor, problem.InitialState, action)) argumentNovel++;
-        }
-
-        Assert.True(
-            argumentNovel >= atomNovel,
-            $"Argument novelty kept {argumentNovel} of {sandwiches.Length}, atom novelty {atomNovel}.");
+        Assert.False(tracker.IsNovel(problem.InitialState, problem.InitialState));
     }
 }
