@@ -13,6 +13,7 @@ internal sealed class GroundActionCache
     private readonly Problem _problem;
     private readonly Dictionary<BindingKey, Entry> _entries = new(BindingKeyComparer.Instance);
     private readonly List<BindingKey> _staleBindings = new();
+    private int _countAtLastScavenge;
 
     public GroundActionCache(ActionGroundingPlan plan, Problem problem)
     {
@@ -42,8 +43,15 @@ internal sealed class GroundActionCache
         return action;
     }
 
+    /// <summary>
+    /// Drops the keys of actions no consumer still holds. Walking the whole cache costs its size, and a search
+    /// asks after every state, so wait until it has grown enough that the walk amortizes against the insertions
+    /// that caused it.
+    /// </summary>
     public void Scavenge()
     {
+        if (_entries.Count < (2 * _countAtLastScavenge) + 64) return;
+
         foreach ((BindingKey binding, Entry entry) in _entries)
         {
             if (!entry.Reference.TryGetTarget(out _)) _staleBindings.Add(binding);
@@ -53,6 +61,7 @@ internal sealed class GroundActionCache
             _entries.Remove(binding);
 
         _staleBindings.Clear();
+        _countAtLastScavenge = _entries.Count;
     }
 
     private sealed class Entry(Constant[] arguments, Action action)
