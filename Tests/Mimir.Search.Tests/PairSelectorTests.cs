@@ -43,7 +43,7 @@ public class PairSelectorTests
         open.Enqueue(problem.InitialState);
 
         int checkedStates = 0;
-        while (open.Count > 0 && checkedStates < 25)
+        while (open.Count > 0 && checkedStates < 60)
         {
             State parent = open.Dequeue();
             ExtendedState extended = parent.Expand();
@@ -92,6 +92,27 @@ public class PairSelectorTests
 
         Assert.Contains(problem.Goal, literal => !literal.IsPositive);
         Assert.Null(FactoredExpansion.TryCreate(generator));
+    }
+
+    /// <summary>
+    /// childsnack's serve_sandwich adds served(?c) but deletes ontray(?s ?t), so its delete literal mentions two
+    /// parameters that the add-class does not fix. Sparing such an atom needs no enumeration of what the class
+    /// could delete, so the schema must still be handled rather than falling back to the whole product.
+    /// </summary>
+    [Fact]
+    public void HandlesDeletesOverParametersTheAddClassDoesNotFix()
+    {
+        var domain = Domain.FromFile(Path.Combine(ExamplesPath, "childsnack", "domain.pddl"));
+        ActionSchema serve = domain.Actions.First(schema =>
+            schema.Name.Equals("serve_sandwich", StringComparison.OrdinalIgnoreCase));
+
+        SchemaEffectModel model = SchemaEffectModel.Compile(serve);
+        Assert.True(model.IsEligible);
+
+        int[] addParameters = model.AddParameters;
+        Assert.Contains(
+            model.Deletes,
+            delete => delete.Parameters.Count(parameter => !addParameters.Contains(parameter)) > 1);
     }
 
     private static Problem Load(string root, string domainDirectory)

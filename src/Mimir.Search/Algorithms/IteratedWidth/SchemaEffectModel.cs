@@ -10,11 +10,7 @@ namespace Mimir.Search.Algorithms.IteratedWidth;
 /// </summary>
 internal sealed class SchemaEffectModel
 {
-    /// <summary>
-    /// False when the added and deleted atoms are not a function of the binding alone, or when a delete literal
-    /// leaves more than one parameter free of the add parameters. Sparing such an atom would mean searching a
-    /// sub-product rather than picking another value, which is not worth the complexity yet.
-    /// </summary>
+    /// <summary>False when the added and deleted atoms are not a function of the binding alone.</summary>
     public bool IsEligible { get; }
 
     /// <summary>Parameters occurring in positive effects; they fix which atoms the action makes true.</summary>
@@ -57,11 +53,6 @@ internal sealed class SchemaEffectModel
             }
 
             deletes.Add(literal);
-        }
-
-        foreach (EffectLiteral delete in deletes)
-        {
-            if (delete.Parameters.Count(parameter => !addParameters.Contains(parameter)) > 1) return ineligible;
         }
 
         return new SchemaEffectModel(true, addParameters.ToArray(), adds.ToArray(), deletes.ToArray());

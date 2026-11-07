@@ -117,7 +117,6 @@ internal sealed class FactoredExpansion
 
     private IEnumerable<Action> SelectByPairs(ExtendedState state, NoveltyTracker tracker)
     {
-        int[] parentAtoms = CollectAtoms(state.State);
         FluentIndex[] unsatisfiedGoals = _goalAtoms.Where(atom => !state.State.IsTrueUnchecked(atom)).ToArray();
 
         foreach (FactoredAction group in _generator.GetFactoredApplicableActions(state))
@@ -129,7 +128,7 @@ internal sealed class FactoredExpansion
                 continue;
             }
 
-            var selector = new PairSelector(_context, group, model, tracker, parentAtoms, unsatisfiedGoals, _goalAtoms);
+            var selector = new PairSelector(_context, group, model, tracker, state.State, unsatisfiedGoals, _goalAtoms);
             foreach (Action action in selector.Select()) yield return action;
         }
     }
@@ -149,12 +148,5 @@ internal sealed class FactoredExpansion
 
         long emitted = classes * (1 + model.Deletes.Length);
         return emitted < group.MemberCountUpperBound;
-    }
-
-    private static int[] CollectAtoms(State state)
-    {
-        var atoms = new List<int>();
-        foreach (Fact<Fluent> fact in state.GetTrueFacts()) atoms.Add(fact.LocalIndex);
-        return atoms.ToArray();
     }
 }

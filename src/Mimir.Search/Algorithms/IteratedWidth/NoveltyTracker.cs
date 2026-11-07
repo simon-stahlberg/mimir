@@ -82,6 +82,10 @@ internal sealed class NoveltyTracker
     internal bool IsPairSeen(FluentIndex first, FluentIndex second)
         => _table.ContainsPair(first.Value, second.Value);
 
+    /// <summary>Whether pairing the atom with the state would introduce anything new. Does not register them.</summary>
+    internal bool HasUnseenPairWith(FluentIndex atom, State state)
+        => _table.HasUnseenPairWith(atom.Value, state.Bitboard);
+
     private void Validate(State state)
     {
         if (!ReferenceEquals(state.Context, _context))
@@ -240,6 +244,21 @@ internal sealed class NoveltyTracker
             ulong[]? row = _pairRows[first];
             int word = second >> 6;
             return row is not null && word < row.Length && (row[word] & (1UL << (second & 63))) != 0;
+        }
+
+        /// <summary>Whether any atom of the state has not yet been paired with <paramref name="atom"/>.</summary>
+        public bool HasUnseenPairWith(int atom, ReadOnlySpan<ulong> stateWords)
+        {
+            if (atom >= _pairRows.Length || _pairRows[atom] is not { } row) return true;
+
+            for (int word = 0; word < stateWords.Length; word++)
+            {
+                ulong bits = word < row.Length ? stateWords[word] & ~row[word] : stateWords[word];
+                if (word == atom >> 6) bits &= ~(1UL << (atom & 63));
+                if (bits != 0) return true;
+            }
+
+            return false;
         }
 
         /// <summary>
