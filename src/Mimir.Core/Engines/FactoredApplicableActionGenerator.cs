@@ -17,6 +17,16 @@ public interface IFactoredApplicableActionGenerator : IApplicableActionGenerator
     /// </para>
     /// </summary>
     IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state);
+
+    /// <summary>
+    /// The same groups, reusing and updating <paramref name="cache"/> instead of projecting every precondition's
+    /// extension again. The cache is written to, which is why it is a parameter rather than something the
+    /// generator keeps: its lifetime and its sharing are the caller's to decide.
+    /// </summary>
+    IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state, FactoredProjectionCache cache);
+
+    /// <summary>A cache this generator can use. It may not be passed to any other.</summary>
+    FactoredProjectionCache CreateProjectionCache();
 }
 
 /// <summary>
@@ -37,6 +47,9 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private readonly Dictionary<Predicate, List<Fact>> _staticTrueFacts;
     private int _observedGen0Collections;
     private readonly int _projectionCount;
+    private readonly Dictionary<Predicate, List<FactoredAtom>> _atomsByPredicate;
+    private readonly List<int> _addedFacts = new();
+    private readonly List<int> _removedFacts = new();
 
     internal FactoredApplicableActionGenerator(Problem problem)
     {
@@ -57,6 +70,19 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         }
 
         _projectionCount = AssignProjectionIds(_schemaPlans);
+        _atomsByPredicate = new Dictionary<Predicate, List<FactoredAtom>>(ReferenceEqualityComparer.Instance);
+        foreach (FactoredAtom atom in _schemaPlans.SelectMany(plan => plan.Atoms))
+        {
+            if (atom.Kind != FactoredAtomKind.Fluent) continue;
+            if (!_atomsByPredicate.TryGetValue(atom.Predicate!, out List<FactoredAtom>? atoms))
+            {
+                atoms = new List<FactoredAtom>();
+                _atomsByPredicate.Add(atom.Predicate!, atoms);
+            }
+
+            // One atom per shape is enough: the cache holds one projection for all of them.
+            if (atoms.All(existing => existing.ProjectionId != atom.ProjectionId)) atoms.Add(atom);
+        }
         foreach (SchemaPlan plan in _schemaPlans)
             plan.UnchangingTuples = ProjectUnchangingTuples(plan);
 
@@ -84,6 +110,44 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         return identifiers.Count;
     }
 
+    /// <summary>
+    /// Brings the cache up to the state, by patching the rows of the atoms whose predicate changed when few
+    /// atoms did, and by projecting afresh when so many did that patching would cost more than rebuilding.
+    /// </summary>
+    private void RefreshCache(ExtendedState state, FactoredProjectionCache cache)
+    {
+        int threshold = Math.Max(16, state.State.Bitboard.Length);
+        if (!cache.TryDescribeDelta(state.State, _addedFacts, _removedFacts, threshold))
+        {
+            Array.Clear(cache.Projections);
+            cache.Remember(state.State);
+            return;
+        }
+
+        foreach (int fact in _removedFacts) PatchRow(cache, state, fact, add: false);
+        foreach (int fact in _addedFacts) PatchRow(cache, state, fact, add: true);
+        cache.Remember(state.State);
+    }
+
+    private void PatchRow(FactoredProjectionCache cache, ExtendedState state, int fact, bool add)
+    {
+        Fact<Fluent> changed = Problem.Context.GetFact(new FluentIndex(fact));
+        if (!_atomsByPredicate.TryGetValue(changed.Predicate, out List<FactoredAtom>? atoms)) return;
+
+        foreach (FactoredAtom atom in atoms)
+        {
+            if (cache.Projections[atom.ProjectionId] is not TupleSet rows) continue;
+            if (!add)
+            {
+                rows.Remove(fact);
+                continue;
+            }
+
+            var projected = new Constant[atom.Parameters.Length];
+            if (atom.TryProject(changed.Arguments, projected)) rows.Add(fact, projected);
+        }
+    }
+
     private List<Fact> StaticTrueFacts(Predicate predicate)
         => _staticTrueFacts.GetValueOrDefault(predicate) ?? EmptyFacts;
 
@@ -92,13 +156,26 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     public IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state)
     {
         ValidateState(state);
-        return EnumerateGroups(state);
+        return EnumerateGroups(state, cache: null);
     }
 
-    private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state)
+    public IEnumerable<FactoredAction> GetFactoredApplicableActions(
+        ExtendedState state,
+        FactoredProjectionCache cache)
+    {
+        ValidateState(state);
+        ArgumentNullException.ThrowIfNull(cache);
+        cache.EnsureOwnedBy(this);
+        return EnumerateGroups(state, cache);
+    }
+
+    public FactoredProjectionCache CreateProjectionCache() => new(this, _projectionCount);
+
+    private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state, FactoredProjectionCache? cache)
     {
         ScavengeCollectedActions();
-        var facts = new StateFacts(_staticTrueFacts, state, _projectionCount);
+        if (cache is not null) RefreshCache(state, cache);
+        var facts = new StateFacts(_staticTrueFacts, state, _projectionCount, cache);
         foreach (SchemaPlan plan in _schemaPlans)
         {
             foreach (FactoredAction group in SolveSchema(plan, facts))
@@ -124,14 +201,14 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     public IEnumerable<GroundAction> GetApplicableActions(ExtendedState state)
     {
         ValidateState(state);
-        return EnumerateGroups(state).SelectMany(group => group.Expand());
+        return EnumerateGroups(state, cache: null).SelectMany(group => group.Expand());
     }
 
     public IEnumerable<GroundAction> GetApplicableActions(ExtendedState state, int maxActions)
     {
         ValidateState(state);
         if (maxActions < 0) throw new ArgumentOutOfRangeException(nameof(maxActions));
-        return EnumerateGroups(state).SelectMany(group => group.Expand()).Take(maxActions);
+        return EnumerateGroups(state, cache: null).SelectMany(group => group.Expand()).Take(maxActions);
     }
 
     public void CollectApplicableActions(ExtendedState state, List<GroundAction> destination)
@@ -140,7 +217,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         ArgumentNullException.ThrowIfNull(destination);
 
         destination.Clear();
-        foreach (FactoredAction group in EnumerateGroups(state))
+        foreach (FactoredAction group in EnumerateGroups(state, cache: null))
             destination.AddRange(group.Expand());
     }
 

@@ -13,10 +13,12 @@ public sealed partial class FactoredApplicableActionGenerator
     {
         public static readonly TupleSet Empty = new(Array.Empty<Constant>(), arity: 0, count: 0);
 
-        private readonly Constant[] _values;
+        private Constant[] _values;
+        private int[]? _factByRow;
+        private Dictionary<int, int>? _rowByFact;
 
         public int Arity { get; }
-        public int Count { get; }
+        public int Count { get; private set; }
 
         public TupleSet(Constant[] values, int arity, int count)
         {
@@ -27,6 +29,7 @@ public sealed partial class FactoredApplicableActionGenerator
 
         public Constant At(int row, int column) => _values[(row * Arity) + column];
 
+        /// <summary>The rows agreeing with a fixed value, as a plain set; the result is never tracked.</summary>
         public TupleSet Where(int column, Constant value)
         {
             int matches = 0;
@@ -35,7 +38,7 @@ public sealed partial class FactoredApplicableActionGenerator
                 if (ReferenceEquals(At(row, column), value)) matches++;
             }
 
-            if (matches == Count) return this;
+            if (matches == Count && _rowByFact is null) return this;
 
             var values = new Constant[matches * Arity];
             int next = 0;
@@ -47,6 +50,48 @@ public sealed partial class FactoredApplicableActionGenerator
             }
 
             return new TupleSet(values, Arity, matches);
+        }
+
+        /// <summary>
+        /// Lets rows be added and removed as the state changes, at the cost of an index from fact to row. Only a
+        /// projection kept across states needs this; one built for a single state is read and dropped.
+        /// </summary>
+        public void StartTracking(IReadOnlyList<int> facts)
+        {
+            _factByRow = facts.ToArray();
+            _rowByFact = new Dictionary<int, int>(facts.Count);
+            for (int row = 0; row < facts.Count; row++) _rowByFact[facts[row]] = row;
+        }
+
+        public void Add(int fact, ReadOnlySpan<Constant> row)
+        {
+            if (_rowByFact!.ContainsKey(fact)) return;
+
+            int required = (Count + 1) * Arity;
+            if (required > _values.Length)
+                Array.Resize(ref _values, Math.Max(required, Math.Max(_values.Length * 2, 8)));
+            if (Count == _factByRow!.Length)
+                Array.Resize(ref _factByRow, Math.Max(Count * 2, 8));
+
+            row.CopyTo(_values.AsSpan(Count * Arity, Arity));
+            _factByRow[Count] = fact;
+            _rowByFact[fact] = Count;
+            Count++;
+        }
+
+        /// <summary>Swaps the last row into the vacated slot, so removal costs the arity rather than the count.</summary>
+        public void Remove(int fact)
+        {
+            if (!_rowByFact!.Remove(fact, out int row)) return;
+
+            Count--;
+            if (row != Count)
+            {
+                Array.Copy(_values, Count * Arity, _values, row * Arity, Arity);
+                int moved = _factByRow![Count];
+                _factByRow[row] = moved;
+                _rowByFact[moved] = row;
+            }
         }
     }
 
@@ -60,20 +105,37 @@ public sealed partial class FactoredApplicableActionGenerator
         private readonly Dictionary<Predicate, List<Fact>> _statics;
         private readonly Dictionary<Predicate, List<Fact>> _fluents = new(ReferenceEqualityComparer.Instance);
         private readonly TupleSet?[] _projections;
+        private readonly object?[]? _cached;
 
         public ExtendedState State { get; }
 
-        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state, int projectionCount)
+        public StateFacts(
+            Dictionary<Predicate, List<Fact>> statics,
+            ExtendedState state,
+            int projectionCount,
+            FactoredProjectionCache? cache)
         {
             _statics = statics;
             State = state;
+            _cached = cache?.Projections;
             _projections = projectionCount == 0 ? Array.Empty<TupleSet?>() : new TupleSet?[projectionCount];
         }
 
-        /// <summary>The projection for an atom's shape in this state, computed on first use and shared after.</summary>
+        /// <summary>
+        /// The projection for an atom's shape in this state. A carried cache supplies it already patched; without
+        /// one it is built on first use and shared by the atoms of this state only.
+        /// </summary>
         public TupleSet GetProjection(FactoredAtom atom)
-            => _projections[atom.ProjectionId]
-                ??= ProjectFacts(atom, GetTrueFacts(atom.Predicate!));
+        {
+            if (_cached is null)
+                return _projections[atom.ProjectionId] ??= ProjectFacts(atom, GetTrueFacts(atom.Predicate!));
+
+            if (_cached[atom.ProjectionId] is TupleSet cached) return cached;
+
+            TupleSet built = ProjectTracked(atom, GetTrueFacts(atom.Predicate!));
+            _cached[atom.ProjectionId] = built;
+            return built;
+        }
 
         public List<Fact> GetTrueFacts(Predicate predicate)
         {
@@ -119,6 +181,27 @@ public sealed partial class FactoredApplicableActionGenerator
         }
 
         return tuples;
+    }
+
+    /// <summary>As <see cref="ProjectFacts"/>, but able to take rows in and out as the state changes.</summary>
+    private static TupleSet ProjectTracked(FactoredAtom atom, List<Fact> trueFacts)
+    {
+        int arity = atom.Parameters.Length;
+        var values = new Constant[trueFacts.Count * arity];
+        var projected = new Constant[arity];
+        var facts = new List<int>(trueFacts.Count);
+        int count = 0;
+        foreach (Fact fact in trueFacts)
+        {
+            if (!atom.TryProject(fact.Arguments, projected)) continue;
+            Array.Copy(projected, 0, values, count * arity, arity);
+            facts.Add(((Fact<Fluent>)fact).LocalIndex);
+            count++;
+        }
+
+        var rows = new TupleSet(values, arity, count);
+        rows.StartTracking(facts);
+        return rows;
     }
 
     private static TupleSet ProjectFacts(FactoredAtom atom, List<Fact> trueFacts)

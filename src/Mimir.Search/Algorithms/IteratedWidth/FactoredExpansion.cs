@@ -27,6 +27,7 @@ internal sealed class FactoredExpansion
     private readonly Dictionary<ActionSchema, SchemaEffectModel> _models;
     private readonly FluentIndex[] _goalAtoms;
     private readonly HashSet<Predicate> _goalPredicates;
+    private readonly FactoredProjectionCache _projections;
 
     /// <summary>
     /// The shortcut for this generator, or null when the problem is outside what it reasons about. Declining
@@ -56,6 +57,7 @@ internal sealed class FactoredExpansion
         foreach (ActionSchema schema in problem.Domain.Actions)
             _models.Add(schema, SchemaEffectModel.Compile(schema));
 
+        _projections = generator.CreateProjectionCache();
         _goalAtoms = CollectGoalAtoms(problem);
         _goalPredicates = new HashSet<Predicate>(ReferenceEqualityComparer.Instance);
         foreach (Literal<Fact> literal in problem.Goal) _goalPredicates.Add(literal.Value.Predicate);
@@ -88,7 +90,7 @@ internal sealed class FactoredExpansion
 
     private IEnumerable<Action> SelectByAddedAtoms(ExtendedState state)
     {
-        foreach (FactoredAction group in _generator.GetFactoredApplicableActions(state))
+        foreach (FactoredAction group in _generator.GetFactoredApplicableActions(state, _projections))
         {
             SchemaEffectModel model = _models[group.Schema];
             IEnumerable<Action> members = model.IsEligible
@@ -119,7 +121,7 @@ internal sealed class FactoredExpansion
     {
         FluentIndex[] unsatisfiedGoals = _goalAtoms.Where(atom => !state.State.IsTrueUnchecked(atom)).ToArray();
 
-        foreach (FactoredAction group in _generator.GetFactoredApplicableActions(state))
+        foreach (FactoredAction group in _generator.GetFactoredApplicableActions(state, _projections))
         {
             SchemaEffectModel model = _models[group.Schema];
             if (!model.IsEligible || !IsWorthSelecting(group, model))
