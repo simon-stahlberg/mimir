@@ -32,6 +32,31 @@ public sealed partial class FactoredApplicableActionGenerator
         /// <summary>The distinct parameters this atom mentions, ascending. Projected tuples follow this order.</summary>
         public required int[] Parameters { get; init; }
 
+        /// <summary>
+        /// Identifies atoms that project to the same tuples. Two atoms match when they read the same predicate
+        /// through the same argument pattern, whatever schema they belong to or which parameters they name, so
+        /// one projection serves them all for a given state.
+        /// </summary>
+        public int ProjectionId { get; set; } = -1;
+
+        /// <summary>The argument pattern: a constant's name, or which projected column the position feeds.</summary>
+        public string ProjectionShape()
+        {
+            var shape = new System.Text.StringBuilder();
+            for (int position = 0; position < ArgumentSlots.Length; position++)
+            {
+                if (ArgumentSlots[position] < 0)
+                {
+                    shape.Append('=').Append(ArgumentConstants[position]!.Name);
+                    continue;
+                }
+
+                shape.Append('#').Append(Array.IndexOf(Parameters, ArgumentSlots[position]));
+            }
+
+            return shape.ToString();
+        }
+
         public bool IsPositive => Polarity == Polarity.Positive;
 
         /// <summary>Derived extensions can be far larger than the bindings that reach them, so they are probed

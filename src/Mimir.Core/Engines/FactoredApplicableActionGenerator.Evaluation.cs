@@ -59,14 +59,21 @@ public sealed partial class FactoredApplicableActionGenerator
     {
         private readonly Dictionary<Predicate, List<Fact>> _statics;
         private readonly Dictionary<Predicate, List<Fact>> _fluents = new(ReferenceEqualityComparer.Instance);
+        private readonly TupleSet?[] _projections;
 
         public ExtendedState State { get; }
 
-        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state)
+        public StateFacts(Dictionary<Predicate, List<Fact>> statics, ExtendedState state, int projectionCount)
         {
             _statics = statics;
             State = state;
+            _projections = projectionCount == 0 ? Array.Empty<TupleSet?>() : new TupleSet?[projectionCount];
         }
+
+        /// <summary>The projection for an atom's shape in this state, computed on first use and shared after.</summary>
+        public TupleSet GetProjection(FactoredAtom atom)
+            => _projections[atom.ProjectionId]
+                ??= ProjectFacts(atom, GetTrueFacts(atom.Predicate!));
 
         public List<Fact> GetTrueFacts(Predicate predicate)
         {
@@ -90,7 +97,7 @@ public sealed partial class FactoredApplicableActionGenerator
         {
             FactoredAtom atom = plan.Atoms[index];
             if (atom.Kind != FactoredAtomKind.Fluent) continue;
-            tuples[index] = ProjectFacts(atom, facts.GetTrueFacts(atom.Predicate!));
+            tuples[index] = facts.GetProjection(atom);
         }
 
         return tuples;

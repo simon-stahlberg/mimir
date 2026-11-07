@@ -36,6 +36,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private readonly SchemaPlan[] _schemaPlans;
     private readonly Dictionary<Predicate, List<Fact>> _staticTrueFacts;
     private int _observedGen0Collections;
+    private readonly int _projectionCount;
 
     internal FactoredApplicableActionGenerator(Problem problem)
     {
@@ -55,10 +56,32 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
                 .ToList();
         }
 
+        _projectionCount = AssignProjectionIds(_schemaPlans);
         foreach (SchemaPlan plan in _schemaPlans)
             plan.UnchangingTuples = ProjectUnchangingTuples(plan);
 
         _observedGen0Collections = GC.CollectionCount(0);
+    }
+
+    // Atoms reading the same predicate through the same argument pattern share one projection per state.
+    private static int AssignProjectionIds(SchemaPlan[] plans)
+    {
+        var identifiers = new Dictionary<(Predicate, string), int>();
+        foreach (FactoredAtom atom in plans.SelectMany(plan => plan.Atoms))
+        {
+            if (atom.Kind != FactoredAtomKind.Fluent) continue;
+
+            (Predicate, string) key = (atom.Predicate!, atom.ProjectionShape());
+            if (!identifiers.TryGetValue(key, out int identifier))
+            {
+                identifier = identifiers.Count;
+                identifiers.Add(key, identifier);
+            }
+
+            atom.ProjectionId = identifier;
+        }
+
+        return identifiers.Count;
     }
 
     private List<Fact> StaticTrueFacts(Predicate predicate)
@@ -75,7 +98,7 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state)
     {
         ScavengeCollectedActions();
-        var facts = new StateFacts(_staticTrueFacts, state);
+        var facts = new StateFacts(_staticTrueFacts, state, _projectionCount);
         foreach (SchemaPlan plan in _schemaPlans)
         {
             foreach (FactoredAction group in SolveSchema(plan, facts))
