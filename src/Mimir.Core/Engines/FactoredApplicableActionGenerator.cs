@@ -25,8 +25,12 @@ public interface IFactoredApplicableActionGenerator : IApplicableActionGenerator
     /// </summary>
     IEnumerable<FactoredAction> GetFactoredApplicableActions(ExtendedState state, FactoredProjectionCache cache);
 
-    /// <summary>A cache this generator can use. It may not be passed to any other.</summary>
-    FactoredProjectionCache CreateProjectionCache();
+    /// <summary>
+    /// A cache anchored on <paramref name="referenceState"/>, which the overload above adapts to nearby states.
+    /// The anchor is fixed here and never moves, so pick a state the search stays close to. It may not be passed
+    /// to any other generator.
+    /// </summary>
+    FactoredProjectionCache CreateProjectionCache(ExtendedState referenceState);
 }
 
 /// <summary>
@@ -48,8 +52,6 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     private int _observedGen0Collections;
     private readonly int _projectionCount;
     private readonly Dictionary<Predicate, List<FactoredAtom>> _atomsByPredicate;
-    private readonly List<int> _addedFacts = new();
-    private readonly List<int> _removedFacts = new();
 
     internal FactoredApplicableActionGenerator(Problem problem)
     {
@@ -110,26 +112,13 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
         return identifiers.Count;
     }
 
-    /// <summary>
-    /// Brings the cache up to the state, by patching the rows of the atoms whose predicate changed when few
-    /// atoms did, and by projecting afresh when so many did that patching would cost more than rebuilding.
-    /// </summary>
-    private void RefreshCache(ExtendedState state, FactoredProjectionCache cache)
+    private void Patch(FactoredProjectionCache cache, List<int> toAdd, List<int> toRemove)
     {
-        int threshold = Math.Max(16, state.State.Bitboard.Length);
-        if (!cache.TryDescribeDelta(state.State, _addedFacts, _removedFacts, threshold))
-        {
-            Array.Clear(cache.Projections);
-            cache.Remember(state.State);
-            return;
-        }
-
-        foreach (int fact in _removedFacts) PatchRow(cache, state, fact, add: false);
-        foreach (int fact in _addedFacts) PatchRow(cache, state, fact, add: true);
-        cache.Remember(state.State);
+        foreach (int fact in toRemove) PatchRow(cache, fact, add: false);
+        foreach (int fact in toAdd) PatchRow(cache, fact, add: true);
     }
 
-    private void PatchRow(FactoredProjectionCache cache, ExtendedState state, int fact, bool add)
+    private void PatchRow(FactoredProjectionCache cache, int fact, bool add)
     {
         Fact<Fluent> changed = Problem.Context.GetFact(new FluentIndex(fact));
         if (!_atomsByPredicate.TryGetValue(changed.Predicate, out List<FactoredAtom>? atoms)) return;
@@ -165,21 +154,60 @@ public sealed partial class FactoredApplicableActionGenerator : IFactoredApplica
     {
         ValidateState(state);
         ArgumentNullException.ThrowIfNull(cache);
-        cache.EnsureOwnedBy(this);
+        cache.EnsureUsableBy(this);
         return EnumerateGroups(state, cache);
     }
 
-    public FactoredProjectionCache CreateProjectionCache() => new(this, _projectionCount);
+    public FactoredProjectionCache CreateProjectionCache(ExtendedState referenceState)
+    {
+        ValidateState(referenceState);
+
+        var facts = new StateFacts(_staticTrueFacts, referenceState, _projectionCount, cache: null);
+        var projections = new object?[_projectionCount];
+        foreach (FactoredAtom atom in _atomsByPredicate.Values.SelectMany(atoms => atoms))
+            projections[atom.ProjectionId] = ProjectTracked(atom, facts.GetTrueFacts(atom.Predicate!));
+
+        ReadOnlySpan<ulong> words = referenceState.State.Bitboard;
+        return new FactoredProjectionCache(this, words.ToArray(), projections);
+    }
 
     private IEnumerable<FactoredAction> EnumerateGroups(ExtendedState state, FactoredProjectionCache? cache)
     {
         ScavengeCollectedActions();
-        if (cache is not null) RefreshCache(state, cache);
-        var facts = new StateFacts(_staticTrueFacts, state, _projectionCount, cache);
-        foreach (SchemaPlan plan in _schemaPlans)
+
+        // Patching costs the delta twice, since the relations have to be put back; past that, projecting is cheaper.
+        var added = new List<int>();
+        var removed = new List<int>();
+        bool borrowed = cache is not null
+            && cache.TryDescribeDelta(state.State, added, removed, Math.Max(16, state.State.Bitboard.Length * 4));
+
+        var facts = new StateFacts(_staticTrueFacts, state, _projectionCount, borrowed ? cache : null);
+        if (!borrowed)
         {
-            foreach (FactoredAction group in SolveSchema(plan, facts))
-                yield return group;
+            foreach (SchemaPlan plan in _schemaPlans)
+            {
+                foreach (FactoredAction group in SolveSchema(plan, facts))
+                    yield return group;
+            }
+
+            yield break;
+        }
+
+        cache!.IsBorrowed = true;
+        Patch(cache, added, removed);
+        try
+        {
+            foreach (SchemaPlan plan in _schemaPlans)
+            {
+                foreach (FactoredAction group in SolveSchema(plan, facts))
+                    yield return group;
+            }
+        }
+        finally
+        {
+            // The inverse delta restores the anchor, so the next call starts from the same place as this one.
+            Patch(cache, removed, added);
+            cache.IsBorrowed = false;
         }
     }
 

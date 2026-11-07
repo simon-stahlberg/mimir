@@ -27,7 +27,7 @@ internal sealed class FactoredExpansion
     private readonly Dictionary<ActionSchema, SchemaEffectModel> _models;
     private readonly FluentIndex[] _goalAtoms;
     private readonly HashSet<Predicate> _goalPredicates;
-    private readonly FactoredProjectionCache _projections;
+    private FactoredProjectionCache? _projections;
 
     /// <summary>
     /// The shortcut for this generator, or null when the problem is outside what it reasons about. Declining
@@ -57,7 +57,6 @@ internal sealed class FactoredExpansion
         foreach (ActionSchema schema in problem.Domain.Actions)
             _models.Add(schema, SchemaEffectModel.Compile(schema));
 
-        _projections = generator.CreateProjectionCache();
         _goalAtoms = CollectGoalAtoms(problem);
         _goalPredicates = new HashSet<Predicate>(ReferenceEqualityComparer.Instance);
         foreach (Literal<Fact> literal in problem.Goal) _goalPredicates.Add(literal.Value.Predicate);
@@ -69,6 +68,10 @@ internal sealed class FactoredExpansion
     /// </summary>
     internal IEnumerable<Action> CandidateActions(ExtendedState state, int width, NoveltyTracker tracker)
     {
+        // The search starts at the initial state and the projections drift from it as it goes, so anchoring there
+        // keeps every delta a function of depth rather than of how far apart two expansions happen to be.
+        _projections ??= _generator.CreateProjectionCache(state);
+
         if (width is < 1 or > 2)
             return _generator.GetApplicableActions(state);
 

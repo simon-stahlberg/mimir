@@ -32,7 +32,7 @@ public class FactoredProjectionCacheTests
         Problem problem = Load(root, domainDirectory);
         var generator = (IFactoredApplicableActionGenerator)
             problem.GetApplicableActionGenerator(problem.InitialState);
-        FactoredProjectionCache cache = generator.CreateProjectionCache();
+        FactoredProjectionCache cache = generator.CreateProjectionCache(problem.InitialState.Expand());
 
         var open = new Queue<State>();
         var closed = new HashSet<State> { problem.InitialState };
@@ -58,20 +58,42 @@ public class FactoredProjectionCacheTests
         Assert.True(visited > 1, $"Only {visited} state(s) were compared for '{domainDirectory}'.");
     }
 
+    /// <summary>
+    /// A call borrows the relations and has to put them back, so using the same cache twice on different states
+    /// must give the same answers as using it once each.
+    /// </summary>
     [Fact]
-    public void ClearingACacheRestoresFreshProjection()
+    public void ACacheIsUnchangedByUse()
     {
         Problem problem = Load("examples", "childsnack");
         var generator = (IFactoredApplicableActionGenerator)
             problem.GetApplicableActionGenerator(problem.InitialState);
-        FactoredProjectionCache cache = generator.CreateProjectionCache();
-        ExtendedState state = problem.InitialState.Expand();
+        ExtendedState initial = problem.InitialState.Expand();
+        FactoredProjectionCache cache = generator.CreateProjectionCache(initial);
 
-        List<string> first = Describe(generator.GetFactoredApplicableActions(state, cache));
-        cache.Clear();
-        List<string> afterClear = Describe(generator.GetFactoredApplicableActions(state, cache));
+        List<string> first = Describe(generator.GetFactoredApplicableActions(initial, cache));
+        GroundAction step = generator.GetApplicableActions(initial).First();
+        _ = Describe(generator.GetFactoredApplicableActions(initial.Apply(step).Expand(), cache));
+        List<string> again = Describe(generator.GetFactoredApplicableActions(initial, cache));
 
-        Assert.Equal(first, afterClear);
+        Assert.Equal(first, again);
+    }
+
+    [Fact]
+    public void RejectsACacheThatIsStillInUse()
+    {
+        Problem problem = Load("examples", "childsnack");
+        var generator = (IFactoredApplicableActionGenerator)
+            problem.GetApplicableActionGenerator(problem.InitialState);
+        ExtendedState initial = problem.InitialState.Expand();
+        FactoredProjectionCache cache = generator.CreateProjectionCache(initial);
+
+        using IEnumerator<FactoredAction> outstanding =
+            generator.GetFactoredApplicableActions(initial, cache).GetEnumerator();
+        Assert.True(outstanding.MoveNext());
+
+        Assert.Throws<InvalidOperationException>(
+            () => generator.GetFactoredApplicableActions(initial, cache).ToList());
     }
 
     [Fact]
@@ -80,7 +102,8 @@ public class FactoredProjectionCacheTests
         Problem problem = Load("examples", "childsnack");
         var generator = (IFactoredApplicableActionGenerator)
             problem.GetApplicableActionGenerator(problem.InitialState);
-        FactoredProjectionCache foreign = new FactoredApplicableActionGenerator(problem).CreateProjectionCache();
+        FactoredProjectionCache foreign = new FactoredApplicableActionGenerator(problem)
+            .CreateProjectionCache(problem.InitialState.Expand());
 
         Assert.Throws<InvalidOperationException>(
             () => generator.GetFactoredApplicableActions(problem.InitialState.Expand(), foreign).ToList());
