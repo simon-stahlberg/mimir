@@ -87,7 +87,7 @@ internal static class IwFactored
         }
     }
 
-    public static void Run(string domainPath, string problemPath, int seconds)
+    public static void Run(string domainPath, string problemPath, int seconds, int width)
     {
         var domain = Domain.FromFile(domainPath);
         Console.WriteLine($"{Path.GetFileName(problemPath),-28}{"status",-12}{"expanded",10}{"generated",12}{"seconds",10}");
@@ -108,7 +108,7 @@ internal static class IwFactored
 
             using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(seconds));
             var stopwatch = Stopwatch.StartNew();
-            PlanResult result = new IteratedWidthPlanner(1).Solve(problem, cancellationToken: cancellation.Token);
+            PlanResult result = new IteratedWidthPlanner(width).Solve(problem, cancellationToken: cancellation.Token);
             stopwatch.Stop();
 
             string status = result.IsSuccess ? $"plan({result.PlanLength})" : result.Status.ToString();

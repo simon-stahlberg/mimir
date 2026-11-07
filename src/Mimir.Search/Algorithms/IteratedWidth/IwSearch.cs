@@ -42,9 +42,8 @@ internal sealed class IwSearch : ISearchAlgorithm
         _goalCondition = goalCondition;
         _actionGenerator = initialState.Context.Problem.GetApplicableActionGenerator(initialState);
 
-        // Width 1 is the only case where a group's members collapse to a projection without losing a successor
-        // the search would have kept, so the shortcut is confined to it.
-        if (k == 1 && _actionGenerator is IFactoredApplicableActionGenerator factored)
+        // IW(k) runs a width-1 pass on its way to k, and that pass can use the shortcut whatever k is.
+        if (_actionGenerator is IFactoredApplicableActionGenerator factored)
         {
             _factoredGenerator = factored;
             _factoredExpansion = new FactoredExpansion(initialState.Context.Problem);
@@ -182,9 +181,12 @@ internal sealed class IwSearch : ISearchAlgorithm
         return SearchResult.Failure(new SearchStatistics(1, generated, stopwatch.Elapsed, 0));
     }
 
-    private IEnumerable<Action> CandidateActions(ExtendedState state)
+    // Width 1 is the only case where a group's members collapse to a projection without losing a successor the
+    // search would have kept: above it, novelty also turns on which atoms an action deletes, and members that
+    // agree on every effect parameter are the same successor and were collapsed by the generator already.
+    private IEnumerable<Action> CandidateActions(ExtendedState state, int width)
     {
-        if (_factoredGenerator is null || _factoredExpansion is null)
+        if (width != 1 || _factoredGenerator is null || _factoredExpansion is null)
             return _actionGenerator.GetApplicableActions(state);
 
         return _factoredGenerator
@@ -256,7 +258,7 @@ internal sealed class IwSearch : ISearchAlgorithm
                 return SearchResult.Success(current.ExtractPlan(), new SearchStatistics(expanded, generated, stopwatch.Elapsed, maxDepth));
             }
 
-            foreach (var action in CandidateActions(extendedState))
+            foreach (var action in CandidateActions(extendedState, width))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

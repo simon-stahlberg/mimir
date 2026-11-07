@@ -14,14 +14,14 @@ namespace Mimir.FactoredParity;
 /// </summary>
 internal static class IwProfile
 {
-    public static void Run(string domainPath, string problemPath, int stateLimit)
+    public static void Run(string domainPath, string problemPath, int stateLimit, int width)
     {
         var domain = Domain.FromFile(domainPath);
         var problem = Problem.FromFile(domain, problemPath, ApplicableActionGeneratorType.Factored);
         var clique = new CliqueApplicableActionGenerator(problem);
         var factored = new FactoredApplicableActionGenerator(problem);
         GoalCondition goal = GoalCondition.FromProblem(problem);
-        var tracker = new NoveltyTracker(1, problem.InitialState.Context);
+        var tracker = new NoveltyTracker(width, problem.InitialState.Context);
         tracker.IsNovel(problem.InitialState);
 
         var generate = new Stopwatch();
@@ -84,7 +84,7 @@ internal static class IwProfile
             + closedTime.Elapsed.TotalMilliseconds + goalTime.Elapsed.TotalMilliseconds
             + novelty.Elapsed.TotalMilliseconds;
 
-        Console.WriteLine($"{Path.GetFileName(problemPath),-30} expanded={expanded}  applicable={applicable}  "
+        Console.WriteLine($"{Path.GetFileName(problemPath),-26} k={width} expanded={expanded}  applicable={applicable}  "
             + $"duplicates={duplicates}  kept={novel}  groups={groupCount}");
         Console.WriteLine($"  kept / applicable      {(applicable == 0 ? 0 : 100.0 * novel / applicable),8:F2} %");
         Console.WriteLine($"  generate (clique)      {generate.Elapsed.TotalMilliseconds,8:F1} ms");

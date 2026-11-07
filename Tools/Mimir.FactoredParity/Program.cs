@@ -16,13 +16,13 @@ if (args.Length > 1 && args[0] == "--iwsweep")
 
 if (args.Length > 2 && args[0] == "--iwfactored")
 {
-    Mimir.FactoredParity.IwFactored.Run(args[1], args[2], args.Length > 3 ? int.Parse(args[3]) : 30);
+    Mimir.FactoredParity.IwFactored.Run(args[1], args[2], args.Length > 3 ? int.Parse(args[3]) : 30, args.Length > 4 ? int.Parse(args[4]) : 1);
     return 0;
 }
 
 if (args.Length > 2 && args[0] == "--iwprofile")
 {
-    Mimir.FactoredParity.IwProfile.Run(args[1], args[2], args.Length > 3 ? int.Parse(args[3]) : 200);
+    Mimir.FactoredParity.IwProfile.Run(args[1], args[2], args.Length > 3 ? int.Parse(args[3]) : 200, args.Length > 4 ? int.Parse(args[4]) : 1);
     return 0;
 }
 
