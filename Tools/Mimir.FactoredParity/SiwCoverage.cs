@@ -29,15 +29,7 @@ internal static class SiwCoverage
     /// </summary>
     public static void Compare(string benchmarkRoot, int seconds, int maximumWidth, string generatorCodes, int instancesPerDomain)
     {
-        ApplicableActionGeneratorType[] generators = generatorCodes
-            .Select(code => code switch
-            {
-                'g' => ApplicableActionGeneratorType.Grounded,
-                'l' => ApplicableActionGeneratorType.Lifted,
-                'f' => ApplicableActionGeneratorType.Factored,
-                _ => throw new ArgumentException($"Unknown generator code '{code}'.", nameof(generatorCodes)),
-            })
-            .ToArray();
+        ApplicableActionGeneratorType[] generators = ParseGenerators(generatorCodes);
 
         var tallies = generators.ToDictionary(generator => generator, _ => new Tally());
         var solvedBy = new Dictionary<string, HashSet<ApplicableActionGeneratorType>>(StringComparer.Ordinal);
@@ -131,6 +123,91 @@ internal static class SiwCoverage
             Console.WriteLine(
                 $"{generator,-12}{tally.Solved,8}{tally.Invalid,9}{tally.Unsupported,13}{tally.Seconds,10:F1}  {widths}");
         }
+    }
+
+    private static ApplicableActionGeneratorType[] ParseGenerators(string codes)
+        => codes.Select(code => code switch
+        {
+            'g' => ApplicableActionGeneratorType.Grounded,
+            'l' => ApplicableActionGeneratorType.Lifted,
+            'f' => ApplicableActionGeneratorType.Factored,
+            _ => throw new ArgumentException($"Unknown generator code '{code}'.", nameof(codes)),
+        }).ToArray();
+
+    /// <summary>
+    /// Runs every instance of a single domain in name order, which for the usual naming is also size order, so the
+    /// table shows how each generator degrades as instances grow rather than how it does on one sample.
+    /// </summary>
+    public static void Scale(string domainDirectory, int seconds, int maximumWidth, string generatorCodes)
+    {
+        ApplicableActionGeneratorType[] generators = ParseGenerators(generatorCodes);
+        string domainPath = Path.Combine(domainDirectory, "domain.pddl");
+        var domain = Domain.FromFile(domainPath);
+        string label = Path.GetFileName(Path.TrimEndingDirectorySeparator(domainDirectory));
+
+        Console.WriteLine($"# {label}  (SIW, kmax={maximumWidth}, {seconds}s cap)");
+        Console.WriteLine($"{"instance",-34}{"generator",-10}{"ok",4}{"seconds",9}{"expanded",10}{"generated",12}{"plan",7}");
+
+        foreach (string problemPath in Directory
+                     .EnumerateFiles(domainDirectory, "*.pddl")
+                     .Where(path => !string.Equals(Path.GetFileName(path), "domain.pddl", StringComparison.OrdinalIgnoreCase))
+                     .OrderBy(path => path, StringComparer.Ordinal))
+        {
+            string name = Path.GetFileNameWithoutExtension(problemPath);
+            foreach (ApplicableActionGeneratorType generator in generators)
+            {
+                Problem problem;
+                try
+                {
+                    problem = Problem.FromFile(domain, problemPath, generator);
+                }
+                catch (Exception exception) when (exception is NotSupportedException
+                                                      or Mimir.Pddl.Analysis.PddlValidationException or PddlLoadException)
+                {
+                    Console.WriteLine($"{name,-34}{generator,-10}{"n/a",4}  {Shorten(exception.Message)}");
+                    continue;
+                }
+
+                var goal = GoalCondition.FromProblem(problem);
+                int invalid = 0;
+                Measurement run = Solve(
+                    new SerializedIteratedWidthPlanner(maximumWidth), problem, goal, seconds, _ => invalid++);
+                Console.WriteLine(
+                    $"{name,-34}{generator,-10}{(run.Solved ? "ok" : invalid > 0 ? "BAD" : "-"),4}{run.Seconds,9:F2}"
+                    + $"{run.Expanded,10}{run.Generated,12}{run.PlanLength,7}");
+                Console.Out.Flush();
+            }
+        }
+    }
+
+    /// <summary>
+    /// One instance, one generator, one line of CSV. Running each measurement as its own process is what lets the
+    /// whole-process wall clock be compared against an external planner on equal terms, grounding included.
+    /// </summary>
+    public static void One(string domainPath, string problemPath, int seconds, int maximumWidth, string generatorCode)
+    {
+        var total = Stopwatch.StartNew();
+        ApplicableActionGeneratorType generator = ParseGenerators(generatorCode)[0];
+        var domain = Domain.FromFile(domainPath);
+        Problem problem = Problem.FromFile(domain, problemPath, generator);
+        var goal = GoalCondition.FromProblem(problem);
+
+        int invalid = 0;
+        Measurement run = Solve(
+            new SerializedIteratedWidthPlanner(maximumWidth), problem, goal, seconds, _ => invalid++);
+        total.Stop();
+
+        string status = run.Solved ? "ok" : invalid > 0 ? "invalid" : "unsolved";
+        Console.WriteLine(string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"RESULT,{status},{total.Elapsed.TotalSeconds:F3},{run.Seconds:F3},"
+            + $"{run.Expanded},{run.Generated},{run.PlanLength}"));
+    }
+
+    private static string Shorten(string message)
+    {
+        int stop = message.IndexOf(';');
+        return stop < 0 ? message : message[..stop];
     }
 
     public static void Run(string benchmarkRoot, int seconds, int maximumWidth)
