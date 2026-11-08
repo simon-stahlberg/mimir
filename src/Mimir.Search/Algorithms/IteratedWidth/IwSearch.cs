@@ -288,12 +288,16 @@ internal sealed class IwSearch : ISearchAlgorithm
                 NodeGenerated?.Invoke(child);
 
                 ExtendedState extendedNextState = nextState.Expand();
-                bool isGoal = _isTarget(extendedNextState);
-                if (!isGoal && (_deadEndDetector?.IsDeadEnd(extendedNextState, _goalCondition) ?? false))
+                // Judged against the real goal, and ahead of the target test rather than after it: a state that
+                // reaches the nearer target is worthless if the goals left over can no longer be reached from it.
+                if (!_goalCondition.IsSatisfied(extendedNextState)
+                    && (_deadEndDetector?.IsDeadEnd(extendedNextState, _goalCondition) ?? false))
                 {
                     TransitionPruned?.Invoke(transition);
                     continue;
                 }
+
+                bool isGoal = _isTarget(extendedNextState);
                 bool isNovel = tracker.IsNovel(child.State, current.State);
                 if (isGoal || isNovel)
                 {

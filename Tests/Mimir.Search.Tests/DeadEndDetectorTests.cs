@@ -207,6 +207,25 @@ public sealed class DeadEndDetectorTests
         }
     }
 
+    [Fact]
+    public void FfReportsAStateThatCannotReachTheGoalAsDead()
+    {
+        Problem problem = CreateProblem();
+        var generator = problem.GetApplicableActionGenerator(problem.InitialState);
+        var lose = generator.GetApplicableActions(problem.InitialState.Expand()).Single(a => a.Schema.Name == "lose");
+        ExtendedState dead = problem.InitialState.Expand().Apply(lose).Expand();
+        var detector = new FfDeadEndDetector(problem);
+        GoalCondition goal = GoalCondition.FromProblem(problem);
+        GoalCondition hindsight = GoalCondition.FromLiterals(problem,
+            [new Literal<Fact>(SearchTestHelpers.GetFluentFact(problem, "dead"), Polarity.Positive)],
+            []);
+
+        Assert.True(detector.IsDeadEnd(dead, goal));
+        // The delete relaxation only has to reach the goal it is asked about.
+        Assert.False(detector.IsDeadEnd(dead, hindsight));
+        Assert.False(detector.IsDeadEnd(problem.InitialState.Expand(), goal));
+    }
+
     private static Problem CreateProblem() => SearchTestHelpers.CreateProblemFromText("""
         (define (domain detection) (:requirements :strips)
           (:predicates (ready) (safe) (dead) (goal))

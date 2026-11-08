@@ -104,6 +104,39 @@ public class SerializedIteratedWidthTests
         Assert.Empty(result.Plan);
     }
 
+    /// <summary>
+    /// The detector decides which state a round may commit to. Where no round is stranded it must change nothing,
+    /// because a round it rejects is one the search has to keep looking for.
+    /// </summary>
+    [Theory]
+    [InlineData("gripper")]
+    [InlineData("miconic")]
+    [InlineData("logistics")]
+    public void ARoundRejectsOnlyStatesThatStrandTheRemainingGoals(string domainDirectory)
+    {
+        Problem problem = SearchTestHelpers.LoadProblem(
+            domainDirectory,
+            generatorType: ApplicableActionGeneratorType.Factored);
+        var goal = GoalCondition.FromProblem(problem);
+
+        PlanResult without = new SerializedIteratedWidthPlanner().Solve(problem);
+        PlanResult with = new SerializedIteratedWidthPlanner().Solve(
+            problem, deadEndDetector: new FfDeadEndDetector(problem));
+
+        Assert.True(without.IsSuccess);
+        Assert.True(with.IsSuccess);
+        Assert.Equal(without.PlanLength, with.PlanLength);
+
+        State state = problem.InitialState;
+        foreach (GroundAction action in with.Plan)
+        {
+            Assert.True(action.IsApplicable(state.Expand()));
+            state = state.Expand().Apply(action);
+        }
+
+        Assert.True(goal.IsSatisfied(state.Expand()));
+    }
+
     [Fact]
     public void PlannerFactoryBuildsSiw()
     {

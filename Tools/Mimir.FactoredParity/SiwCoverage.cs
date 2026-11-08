@@ -184,7 +184,8 @@ internal static class SiwCoverage
     /// One instance, one generator, one line of CSV. Running each measurement as its own process is what lets the
     /// whole-process wall clock be compared against an external planner on equal terms, grounding included.
     /// </summary>
-    public static void One(string domainPath, string problemPath, int seconds, int maximumWidth, string generatorCode)
+    public static void One(
+        string domainPath, string problemPath, int seconds, int maximumWidth, string generatorCode, string detector)
     {
         var total = Stopwatch.StartNew();
         ApplicableActionGeneratorType generator = ParseGenerators(generatorCode)[0];
@@ -192,16 +193,27 @@ internal static class SiwCoverage
         Problem problem = Problem.FromFile(domain, problemPath, generator);
         var goal = GoalCondition.FromProblem(problem);
 
+        IDeadEndDetector? deadEndDetector = detector switch
+        {
+            "none" => null,
+            "ff" => new FfDeadEndDetector(problem),
+            "h2" => new H2DeadEndDetector(problem),
+            _ => throw new ArgumentException($"Unknown detector '{detector}'.", nameof(detector)),
+        };
+
         int invalid = 0;
-        Measurement run = Solve(
-            new SerializedIteratedWidthPlanner(maximumWidth), problem, goal, seconds, _ => invalid++);
+        var planner = new SerializedIteratedWidthPlanner(maximumWidth);
+        var widths = new List<int>();
+        planner.RoundCompleted += widths.Add;
+        Measurement run = Solve(planner, problem, goal, seconds, _ => invalid++, deadEndDetector);
         total.Stop();
 
         string status = run.Solved ? "ok" : invalid > 0 ? "invalid" : "unsolved";
         Console.WriteLine(string.Create(
             System.Globalization.CultureInfo.InvariantCulture,
             $"RESULT,{status},{total.Elapsed.TotalSeconds:F3},{run.Seconds:F3},"
-            + $"{run.Expanded},{run.Generated},{run.PlanLength}"));
+            + $"{run.Expanded},{run.Generated},{run.PlanLength},"
+            + $"{widths.Count},{goal.GoalLiterals.Count}"));
     }
 
     private static string Shorten(string message)
@@ -277,11 +289,13 @@ internal static class SiwCoverage
         Problem problem,
         GoalCondition goal,
         int seconds,
-        System.Action<int>? reportInvalid)
+        System.Action<int>? reportInvalid,
+        IDeadEndDetector? deadEndDetector = null)
     {
         using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(seconds));
         var stopwatch = Stopwatch.StartNew();
-        PlanResult result = planner.Solve(problem, cancellationToken: cancellation.Token);
+        PlanResult result = planner.Solve(
+            problem, cancellationToken: cancellation.Token, deadEndDetector: deadEndDetector);
         stopwatch.Stop();
 
         var measured = new Measurement(

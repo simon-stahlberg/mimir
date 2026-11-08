@@ -14,7 +14,8 @@ if (args.Length > 2 && args[0] == "--siwone")
         args[1], args[2],
         args.Length > 3 ? int.Parse(args[3]) : 60,
         args.Length > 4 ? int.Parse(args[4]) : 2,
-        args.Length > 5 ? args[5] : "f");
+        args.Length > 5 ? args[5] : "f",
+        args.Length > 6 ? args[6] : "none");
     return 0;
 }
 

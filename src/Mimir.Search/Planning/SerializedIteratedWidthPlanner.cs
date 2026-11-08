@@ -106,12 +106,16 @@ public class SerializedIteratedWidthPlanner : IPlanner
     {
         for (int width = 0; width <= _maximumWidth; width++)
         {
+            // The detector gates which state a round may commit to, rather than pruning every state the round
+            // generates: reaching one more goal atom is worthless if the atoms left over become unreachable,
+            // and a test strong enough to notice that is far too costly to run on every successor.
             var search = new IwSearch(
                 width,
                 from,
                 inputs.Goal,
-                deadEndDetector,
-                state => inputs.Goal.CountUnsatisfiedGoals(state) < remaining);
+                deadEndDetector: null,
+                state => inputs.Goal.CountUnsatisfiedGoals(state) < remaining
+                         && (deadEndDetector is null || !deadEndDetector.IsDeadEnd(state, inputs.Goal)));
 
             SearchResult result = search.Search(cancellationToken);
             expanded += result.Statistics.NodesExpanded;

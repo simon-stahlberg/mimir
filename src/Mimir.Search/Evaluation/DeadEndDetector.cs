@@ -26,6 +26,27 @@ public sealed class H2DeadEndDetector : IDeadEndDetector
     }
 }
 
+/// <summary>
+/// Reports a state as a dead end when the delete relaxation cannot reach the goal from it. Weaker than h2, but
+/// it needs no precomputation over atom pairs, so it stays affordable on instances where h2 does not.
+/// </summary>
+public sealed class FfDeadEndDetector : IDeadEndDetector
+{
+    private readonly LiftedFfHeuristic _heuristic;
+
+    public FfDeadEndDetector(Problem problem)
+    {
+        ArgumentNullException.ThrowIfNull(problem);
+        _heuristic = new LiftedFfHeuristic(problem);
+    }
+
+    public bool IsDeadEnd(ExtendedState state, GoalCondition goal)
+    {
+        ArgumentNullException.ThrowIfNull(goal);
+        return double.IsPositiveInfinity(_heuristic.Evaluate(state, goal).Value);
+    }
+}
+
 public sealed class DisjunctiveDeadEndDetector : IDeadEndDetector
 {
     private readonly IDeadEndDetector[] _detectors;
