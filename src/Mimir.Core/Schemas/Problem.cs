@@ -57,7 +57,7 @@ public partial class Problem
     public static Problem FromFile(
         Domain domain,
         string problemFilePath,
-        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
+        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Factored)
     {
         return new Problem(domain, ParseProblemFile(domain, problemFilePath), problemFilePath, generatorType);
     }
@@ -65,7 +65,7 @@ public partial class Problem
     public static Problem FromText(
         Domain domain,
         string pddlText,
-        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
+        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Factored)
     {
         ArgumentNullException.ThrowIfNull(domain);
         ArgumentNullException.ThrowIfNull(pddlText);

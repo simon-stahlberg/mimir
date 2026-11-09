@@ -1,4 +1,5 @@
 using Mimir.Core.Grounding;
+using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Xunit;
 
@@ -20,7 +21,7 @@ public class NumericPlanningTests
 (define (problem p) (:domain numeric) (:objects a b - truck)
  (:init (= (fuel a) 4) (= (fuel b) 8) (= (distance a) 4) (= (distance b) 7) (= (saved) 0) (= (total-cost) 0))
  (:goal {{goal}}) (:metric minimize (total-cost)))
-""");
+""", ApplicableActionGeneratorType.Lifted);
     }
 
     [Fact]
@@ -124,7 +125,7 @@ public class NumericPlanningTests
 """);
         Problem problem = Problem.FromText(domain, """
 (define (problem p) (:domain missing) (:objects a b) (:init (= (fuel a) 2)) (:goal (and)))
-""");
+""", ApplicableActionGeneratorType.Lifted);
         Constant b = problem.ObjectLookup["b"];
         var write = problem.GroundAction(domain.Actions[0], b);
         var bump = problem.GroundAction(domain.Actions[1], b);
@@ -186,7 +187,7 @@ public class NumericPlanningTests
 """);
         Problem problem = Problem.FromText(domain, """
 (define (problem p) (:domain alias) (:objects a b) (:init (= (fuel a) 4) (= (fuel b) 8)) (:goal (and)))
-""");
+""", ApplicableActionGeneratorType.Lifted);
         Constant a = problem.ObjectLookup["a"];
         var alias = problem.GroundAction(domain.Actions[0], a, a);
         Assert.False(alias.IsApplicable(problem.InitialState.Expand()));

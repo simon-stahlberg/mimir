@@ -1,4 +1,5 @@
 using Mimir.Core.Grounding;
+using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Xunit;
 using GroundAction = Mimir.Core.Grounding.Action;
@@ -33,7 +34,7 @@ public class BuilderParityTests
               (:objects a - item)
               (:init (ready a))
               (:goal (and (marked a) (not (marked home)) (= a a))))
-            """);
+            """, ApplicableActionGeneratorType.Grounded);
 
         Domain builtDomain = new DomainBuilder("typed-parity")
             .Requirements()
@@ -112,7 +113,7 @@ public class BuilderParityTests
               (:objects a b - item)
               (:init (enabled) (selected a))
               (:goal (done a)))
-            """);
+            """, ApplicableActionGeneratorType.Grounded);
 
         DomainBuilder domainBuilder = new DomainBuilder("effect-parity")
             .Requirements()
@@ -196,7 +197,7 @@ public class BuilderParityTests
               (:objects a b - item)
               (:init (seed a) (link a b))
               (:goal (done b)))
-            """);
+            """, ApplicableActionGeneratorType.Grounded);
 
         Domain builtDomain = new DomainBuilder("derived-parity")
             .Requirements()
@@ -286,7 +287,7 @@ public class BuilderParityTests
               (:init (ready a) (= (price a) 2.5) (= (total-cost) 0))
               (:goal (done a))
               (:metric minimize (total-cost)))
-            """);
+            """, ApplicableActionGeneratorType.Grounded);
 
         Domain builtDomain = new DomainBuilder("cost-parity")
             .Requirements()

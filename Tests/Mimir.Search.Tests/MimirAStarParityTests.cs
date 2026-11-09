@@ -1,3 +1,4 @@
+using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Mimir.Search;
 using Mimir.Search.Evaluation;
@@ -17,7 +18,8 @@ public class MimirAStarParityTests
         var domain = Domain.FromFile(Path.Combine(BenchmarkPath, "delivery", "domain.pddl"));
         var problem = Problem.FromFile(
             domain,
-            Path.Combine(BenchmarkPath, "delivery", "instance_s-7_p-3_v-0.pddl"));
+            Path.Combine(BenchmarkPath, "delivery", "instance_s-7_p-3_v-0.pddl"),
+            ApplicableActionGeneratorType.Grounded);
 
         var generator = SearchTestHelpers.CreateGroundedGenerator(problem);
         SearchResult result = new SearchBuilder()

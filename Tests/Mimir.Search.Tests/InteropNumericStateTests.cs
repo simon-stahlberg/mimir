@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Mimir.Core.Grounding;
+using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Mimir.Interop;
 using Xunit;
@@ -22,7 +23,7 @@ public unsafe class InteropNumericStateTests
         Problem problem = Problem.FromText(domain, """
 (define (problem storage) (:domain numeric-interop) (:objects a b)
   (:init (= (fuel a) 20) (= (fuel b) 35)) (:goal ()))
-""");
+""", ApplicableActionGeneratorType.Lifted);
         Assert.Equal(2, problem.Context.NumericStateSize);
         GroundFunctionCall first = problem.FunctionCall("fuel", "a");
         GroundFunctionCall second = problem.FunctionCall("fuel", "b");

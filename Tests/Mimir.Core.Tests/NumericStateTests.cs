@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Mimir.Core.Grounding;
+using Mimir.Core.Engines;
 using Mimir.Core.Schemas;
 using Xunit;
 using Action = Mimir.Core.Grounding.Action;
@@ -101,7 +102,7 @@ public class NumericStateTests
   (:functions (fuel))
   (:action wait :parameters () :precondition (and) :effect (when (> (fuel) 10) (increase (fuel) 1))))
 """);
-        Problem problem = Problem.FromText(domain, "(define (problem p) (:domain idle) (:init (= (fuel) 2)) (:goal ()))");
+        Problem problem = Problem.FromText(domain, "(define (problem p) (:domain idle) (:init (= (fuel) 2)) (:goal ()))", ApplicableActionGeneratorType.Lifted);
         State initial = problem.InitialState;
 
         Assert.Same(initial, initial.Expand().Apply(problem.GroundAction(domain.Actions.Single())));
@@ -244,6 +245,6 @@ public class NumericStateTests
   (:objects truck1 truck2 truck3)
   (:init (= (fuel truck1) 20) (= (fuel truck2) 35) (= (distance) 7))
   (:goal ()))
-""");
+""", ApplicableActionGeneratorType.Lifted);
     }
 }

@@ -22,14 +22,15 @@ internal static class SearchTestHelpers
         return Problem.FromFile(domain, problemPath, generatorType);
     }
 
-    public static Problem LoadUnsolvableProblem(string problemPrefix)
+    public static Problem LoadUnsolvableProblem(string problemPrefix,
+        ApplicableActionGeneratorType generatorType = ApplicableActionGeneratorType.Grounded)
     {
         var basePath = Path.Combine(BasePath, "Unsolvable");
         var domainPath = Path.Combine(basePath, $"{problemPrefix}_domain.pddl");
         var problemPath = Path.Combine(basePath, $"{problemPrefix}_unsolvable.pddl");
 
         var domain = Domain.FromFile(domainPath);
-        return Problem.FromFile(domain, problemPath);
+        return Problem.FromFile(domain, problemPath, generatorType);
     }
 
     public static Problem CreateProblemFromText(string domainText, string problemText,

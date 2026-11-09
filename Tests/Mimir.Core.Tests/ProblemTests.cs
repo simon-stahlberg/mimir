@@ -221,18 +221,19 @@ public class ProblemTests
         string problemPath = Path.Combine(BasePath, domainDir, "p01.pddl");
 
         Domain domain = Domain.FromFile(domainPath);
+        const ApplicableActionGeneratorType numeric = ApplicableActionGeneratorType.Lifted;
         if (domainDir == "refuel-adl")
         {
             Assert.Equal(PddlLoadErrorCode.UnsupportedFeature,
-                Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath)).ErrorCode);
+                Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath, numeric)).ErrorCode);
             return;
         }
         if (domainDir == "zenotravel")
         {
-            Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath));
+            Assert.Throws<PddlLoadException>(() => Problem.FromFile(domain, problemPath, numeric));
             return;
         }
-        Problem problem = Problem.FromFile(domain, problemPath);
+        Problem problem = Problem.FromFile(domain, problemPath, numeric);
         Assert.True(problem.HasNumericPlanning);
         Assert.NotEmpty(problem.GetApplicableActionGenerator(problem.InitialState).GetApplicableActions(problem.InitialState.Expand()));
 
