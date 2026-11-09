@@ -76,9 +76,36 @@ public sealed class FactoredFfHeuristic : IHeuristic
 
         Reset();
         int depth = BuildLayers(state, target);
-        return depth < 0
-            ? new HeuristicEvaluation(double.PositiveInfinity)
-            : new HeuristicEvaluation(ExtractRelaxedPlan(target, depth));
+        if (depth < 0) return new HeuristicEvaluation(double.PositiveInfinity);
+
+        var helpful = new List<GroundAction>();
+        double cost = ExtractRelaxedPlan(target, depth, helpful);
+        return new HeuristicEvaluation(cost, candidate => IsHelpful(helpful, candidate));
+    }
+
+    /// <summary>
+    /// The relaxed plan's first step is a set of actions applicable now, and those are the ones worth trying
+    /// first. A group's members differ only in parameters its add effects never mention, so two members that
+    /// agree on those parameters are the same step as far as the relaxed plan is concerned.
+    /// </summary>
+    private bool IsHelpful(List<GroundAction> helpful, GroundAction candidate)
+    {
+        foreach (GroundAction step in helpful)
+        {
+            if (!ReferenceEquals(step.Schema, candidate.Schema)) continue;
+            if (!_models.TryGetValue(step.Schema, out SchemaEffectModel? model)) continue;
+
+            bool same = true;
+            foreach (int parameter in model.AddParameters)
+            {
+                if (parameter >= step.Arguments.Count || parameter >= candidate.Arguments.Count) continue;
+                if (!Equals(step.Arguments[parameter], candidate.Arguments[parameter])) { same = false; break; }
+            }
+
+            if (same) return true;
+        }
+
+        return false;
     }
 
     private void Reset()
@@ -182,7 +209,7 @@ public sealed class FactoredFfHeuristic : IHeuristic
     /// Standard relaxed-plan extraction: each subgoal is handed to the action that first reached it, whose own
     /// preconditions become subgoals at the earlier layers they were reached at.
     /// </summary>
-    private double ExtractRelaxedPlan(GoalCondition goal, int depth)
+    private double ExtractRelaxedPlan(GoalCondition goal, int depth, List<GroundAction> helpful)
     {
         while (_subgoalsByLayer.Count <= depth) _subgoalsByLayer.Add([]);
         for (int i = 0; i <= depth; i++) _subgoalsByLayer[i].Clear();
@@ -206,6 +233,7 @@ public sealed class FactoredFfHeuristic : IHeuristic
                 if (!_selected.Add(supporter)) continue;
 
                 cost += supporter.Cost;
+                if (level == 1) helpful.Add(supporter);
                 foreach (int precondition in Bits(supporter.PositiveFluentPreconditions))
                 {
                     if (precondition >= _layer.Length || _marked[precondition]) continue;
