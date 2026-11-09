@@ -9,6 +9,15 @@ internal sealed class NoveltyTracker
     private readonly int _k;
     private readonly InstanceContext _context;
     private readonly SparseNoveltyTable _table;
+    private int[] _uncoveredBuffer = new int[64];
+
+    /// <summary>Prototype switch, so the cover fast path can be measured against plain triple enumeration.</summary>
+    /// <summary>Off only so that tests and measurements can compare the shortcut against plain enumeration.</summary>
+    internal bool UseCoverFastPath { get; set; } = true;
+
+    internal long CoverHits;
+    internal long CoverMisses;
+
     // Reused across successors: a search generates millions of them and each would otherwise allocate.
     private int[] _addedBuffer = new int[16];
 
@@ -71,7 +80,36 @@ internal sealed class NoveltyTracker
 
         int[] ids = CollectSortedIndices(state);
         novel |= CheckPairsContaining(added, ids);
-        novel |= CheckTriplesContaining(added, ids);
+
+        if (!UseCoverFastPath)
+        {
+            novel |= CheckTriplesContaining(added, ids);
+            return novel;
+        }
+
+        // Only atoms whose cover does not already contain this state can contribute a new triple.
+        if (_uncoveredBuffer.Length < added.Length) _uncoveredBuffer = new int[added.Length];
+        int uncovered = 0;
+        foreach (int atom in added)
+            if (!_table.CoversAll(atom, ids)) _uncoveredBuffer[uncovered++] = atom;
+
+        if (uncovered == 0)
+        {
+            CoverHits++;
+            return novel;
+        }
+
+        CoverMisses++;
+
+        // A cover that does not contain the state still covers every pair drawn from the part that overlaps it,
+        // so only triples touching an atom outside the cover have to be registered.
+        ReadOnlySpan<int> fresh = _uncoveredBuffer.AsSpan(0, uncovered);
+        foreach (int atom in fresh)
+        {
+            novel |= CheckTriplesOutsideCover(atom, ids);
+            _table.SetCover(atom, ids);
+        }
+
         return novel;
     }
 
@@ -119,6 +157,32 @@ internal sealed class NoveltyTracker
         foreach (int left in added)
         {
             if (_table.RegisterPairsWith(left, words)) novel = true;
+        }
+
+        return novel;
+    }
+
+    private bool CheckTriplesOutsideCover(int atom, int[] ids)
+    {
+        bool novel = false;
+        Span<int> triple = stackalloc int[3];
+        for (int i = 0; i < ids.Length; i++)
+        {
+            if (ids[i] == atom) continue;
+            bool leftInside = _table.CoverContains(atom, ids[i]);
+            for (int j = i + 1; j < ids.Length; j++)
+            {
+                if (ids[j] == atom) continue;
+                // Both endpoints inside the cover means this triple was registered when the cover was set.
+                if (leftInside && _table.CoverContains(atom, ids[j])) continue;
+
+                triple[0] = atom;
+                triple[1] = ids[i];
+                triple[2] = ids[j];
+                triple.Sort();
+                if (_table.RegisterTriple(triple[0], triple[1], triple[2]))
+                    novel = true;
+            }
         }
 
         return novel;
@@ -226,6 +290,9 @@ internal sealed class NoveltyTracker
         // but a state's atoms arrive as a bitboard, so a whole word of partners is tested with one AND and a
         // state that introduces no pair is dismissed in a handful of them instead of one probe per atom.
         private ulong[]?[] _pairRows;
+        // For each atom, the atom set it was last fully triple-registered against. Every pair drawn from that
+        // set has been seen with the atom, so a later state inside it can contribute no triple containing it.
+        private ulong[]?[] _coverRows = Array.Empty<ulong[]?>();
         private int _pairRowWords;
 
         public SparseNoveltyTable(int k)
@@ -236,6 +303,43 @@ internal sealed class NoveltyTracker
         }
 
         public bool ContainsAtom(int atom) => _seenAtoms.Contains(atom);
+
+        public bool CoversAll(int atom, int[] ids)
+        {
+            if (atom >= _coverRows.Length || _coverRows[atom] is not { } row) return false;
+            foreach (int id in ids)
+            {
+                int word = id >> 6;
+                if (word >= row.Length || (row[word] & (1UL << (id & 63))) == 0) return false;
+            }
+
+            return true;
+        }
+
+        public bool CoverContains(int atom, int id)
+        {
+            if (atom >= _coverRows.Length || _coverRows[atom] is not { } row) return false;
+            int word = id >> 6;
+            return word < row.Length && (row[word] & (1UL << (id & 63))) != 0;
+        }
+
+        public void SetCover(int atom, int[] ids)
+        {
+            if (atom >= _coverRows.Length)
+            {
+                int length = _coverRows.Length == 0 ? 64 : _coverRows.Length;
+                while (atom >= length) length *= 2;
+                Array.Resize(ref _coverRows, length);
+            }
+
+            int needed = ids.Length == 0 ? 1 : (ids[^1] >> 6) + 1;
+            ulong[]? row = _coverRows[atom];
+            if (row is null || row.Length < needed) row = new ulong[Math.Max(needed, 4)];
+            else Array.Clear(row);
+
+            foreach (int id in ids) row[id >> 6] |= 1UL << (id & 63);
+            _coverRows[atom] = row;
+        }
 
         public bool ContainsPair(int first, int second)
         {
