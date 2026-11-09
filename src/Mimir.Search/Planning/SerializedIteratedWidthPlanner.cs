@@ -104,27 +104,30 @@ public class SerializedIteratedWidthPlanner : IPlanner
         ref int expanded,
         ref int generated)
     {
-        for (int width = 0; width <= _maximumWidth; width++)
+        // The detector gates which state a round may commit to, rather than pruning every state the round
+        // generates: reaching one more goal atom is worthless if the atoms left over become unreachable,
+        // and a test strong enough to notice that is far too costly to run on every successor.
+        var search = new IwSearch(
+            _maximumWidth,
+            from,
+            inputs.Goal,
+            deadEndDetector: null,
+            state => inputs.Goal.CountUnsatisfiedGoals(state) < remaining
+                     && (deadEndDetector is null || !deadEndDetector.IsDeadEnd(state, inputs.Goal)));
+
+        // The search widens from zero itself, so the round asks for the widest it will accept and reports back
+        // the width that actually found the state. Looping here as well would repeat every narrower pass.
+        int reached = 0;
+        search.WidthStarted += width => reached = width;
+
+        SearchResult result = search.Search(cancellationToken);
+        expanded += result.Statistics.NodesExpanded;
+        generated += result.Statistics.NodesGenerated;
+
+        if (result.IsCanceled) return result;
+        if (result.IsSuccess)
         {
-            // The detector gates which state a round may commit to, rather than pruning every state the round
-            // generates: reaching one more goal atom is worthless if the atoms left over become unreachable,
-            // and a test strong enough to notice that is far too costly to run on every successor.
-            var search = new IwSearch(
-                width,
-                from,
-                inputs.Goal,
-                deadEndDetector: null,
-                state => inputs.Goal.CountUnsatisfiedGoals(state) < remaining
-                         && (deadEndDetector is null || !deadEndDetector.IsDeadEnd(state, inputs.Goal)));
-
-            SearchResult result = search.Search(cancellationToken);
-            expanded += result.Statistics.NodesExpanded;
-            generated += result.Statistics.NodesGenerated;
-
-            if (result.IsCanceled) return result;
-            if (!result.IsSuccess) continue;
-
-            RoundCompleted?.Invoke(width);
+            RoundCompleted?.Invoke(reached);
             return result;
         }
 
