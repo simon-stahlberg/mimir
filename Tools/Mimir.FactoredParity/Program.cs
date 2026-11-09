@@ -10,7 +10,12 @@ using GroundAction = Mimir.Core.Grounding.Action;
 
 if (args.Length > 2 && args[0] == "--throughput")
 {
-    Mimir.FactoredParity.Throughput.Run(Path.GetFullPath(args[1]), args[2..^1], int.Parse(args[^1]));
+    bool hasCodes = args[^1].All(c => c is 'g' or 'l' or 'f');
+    Mimir.FactoredParity.Throughput.Run(
+        Path.GetFullPath(args[1]),
+        hasCodes ? args[2..^2] : args[2..^1],
+        int.Parse(hasCodes ? args[^2] : args[^1]),
+        hasCodes ? args[^1] : "glf");
     return 0;
 }
 

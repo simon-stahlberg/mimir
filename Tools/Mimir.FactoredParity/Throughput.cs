@@ -12,19 +12,20 @@ namespace Mimir.FactoredParity;
 /// </summary>
 internal static class Throughput
 {
-    public static void Run(string domainDirectory, string[] problems, int seconds)
+    public static void Run(string domainDirectory, string[] problems, int seconds, string generatorCodes = "glf")
     {
         var domain = Domain.FromFile(Path.Combine(domainDirectory, "domain.pddl"));
         Console.WriteLine($"{"instance",-26}{"generator",-10}{"expanded",11}{"generated",13}{"seconds",9}{"exp/s",11}");
 
         foreach (string name in problems)
         {
-            foreach (ApplicableActionGeneratorType type in new[]
+            foreach (ApplicableActionGeneratorType type in generatorCodes.Select(code => code switch
                      {
-                         ApplicableActionGeneratorType.Grounded,
-                         ApplicableActionGeneratorType.Lifted,
-                         ApplicableActionGeneratorType.Factored,
-                     })
+                         'g' => ApplicableActionGeneratorType.Grounded,
+                         'l' => ApplicableActionGeneratorType.Lifted,
+                         'f' => ApplicableActionGeneratorType.Factored,
+                         _ => throw new ArgumentException($"Unknown generator '{code}'.", nameof(generatorCodes)),
+                     }))
             {
                 Problem problem;
                 try
