@@ -26,7 +26,7 @@ namespace Mimir.Search.Planning;
 /// iterated width solves instances of it that this cannot.
 /// </para>
 /// </summary>
-public class SerializedIteratedWidthPlanner : IPlanner
+public sealed class SerializedIteratedWidthPlanner : IPlanner
 {
     private readonly int _maximumWidth;
 
