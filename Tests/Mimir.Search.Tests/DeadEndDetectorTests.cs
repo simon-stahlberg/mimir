@@ -1,9 +1,11 @@
+using Mimir.Core.Engines;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Search.Evaluation;
 using Mimir.Search.Heuristics;
 using Mimir.Search.Planning;
 using Xunit;
+using GroundAction = Mimir.Core.Grounding.Action;
 using Successors = System.Collections.Generic.IReadOnlyList<(Mimir.Core.Grounding.Action Action, Mimir.Core.Grounding.ExtendedState State)>;
 
 namespace Mimir.Search.Tests;
@@ -224,6 +226,46 @@ public sealed class DeadEndDetectorTests
         // The delete relaxation only has to reach the goal it is asked about.
         Assert.False(detector.IsDeadEnd(dead, hindsight));
         Assert.False(detector.IsDeadEnd(problem.InitialState.Expand(), goal));
+    }
+
+    /// <summary>
+    /// The factored relaxed graph projects away the parameters that do not affect what an action adds, so it
+    /// reaches the same atoms as enumerating every binding and has to reach the same verdict.
+    /// </summary>
+    [Theory]
+    [InlineData("gripper")]
+    [InlineData("childsnack")]
+    [InlineData("logistics")]
+    [InlineData("miconic")]
+    public void TheFactoredRelaxedGraphAgreesWithBindingEnumeration(string domainDirectory)
+    {
+        Problem problem = SearchTestHelpers.LoadProblem(
+            domainDirectory,
+            generatorType: ApplicableActionGeneratorType.Factored);
+        var goal = GoalCondition.FromProblem(problem);
+        var factored = new FfDeadEndDetector(problem, factored: true);
+        var lifted = new FfDeadEndDetector(problem, factored: false);
+        Assert.True(factored.UsesFactoredGraph);
+
+        var queue = new Queue<State>();
+        var seen = new HashSet<State> { problem.InitialState };
+        queue.Enqueue(problem.InitialState);
+        var generator = problem.GetApplicableActionGenerator(problem.InitialState);
+        int checksRun = 0;
+
+        while (queue.Count > 0 && checksRun < 120)
+        {
+            ExtendedState state = queue.Dequeue().Expand();
+            Assert.Equal(lifted.IsDeadEnd(state, goal), factored.IsDeadEnd(state, goal));
+            checksRun++;
+            foreach (GroundAction action in generator.GetApplicableActions(state).Take(4))
+            {
+                State next = state.Apply(action);
+                if (seen.Add(next)) queue.Enqueue(next);
+            }
+        }
+
+        Assert.True(checksRun > 1);
     }
 
     private static Problem CreateProblem() => SearchTestHelpers.CreateProblemFromText("""

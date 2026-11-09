@@ -32,18 +32,30 @@ public sealed class H2DeadEndDetector : IDeadEndDetector
 /// </summary>
 public sealed class FfDeadEndDetector : IDeadEndDetector
 {
-    private readonly LiftedFfHeuristic _heuristic;
+    private readonly LiftedFfHeuristic? _heuristic;
+    private readonly FactoredRelaxedReachability? _factored;
 
     public FfDeadEndDetector(Problem problem)
+        : this(problem, factored: true)
+    {
+    }
+
+    /// <summary>Reachability over factored groups where the problem allows it, enumerating bindings otherwise.</summary>
+    public FfDeadEndDetector(Problem problem, bool factored)
     {
         ArgumentNullException.ThrowIfNull(problem);
-        _heuristic = new LiftedFfHeuristic(problem);
+        _factored = factored ? FactoredRelaxedReachability.TryCreate(problem) : null;
+        if (_factored is null) _heuristic = new LiftedFfHeuristic(problem);
     }
+
+    public bool UsesFactoredGraph => _factored is not null;
 
     public bool IsDeadEnd(ExtendedState state, GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
-        return double.IsPositiveInfinity(_heuristic.Evaluate(state, goal).Value);
+        return _factored is not null
+            ? !_factored.CanReach(state, goal)
+            : double.IsPositiveInfinity(_heuristic!.Evaluate(state, goal).Value);
     }
 }
 
