@@ -33,7 +33,7 @@ public sealed class H2DeadEndDetector : IDeadEndDetector
 public sealed class FfDeadEndDetector : IDeadEndDetector
 {
     private readonly LiftedFfHeuristic? _heuristic;
-    private readonly FactoredRelaxedReachability? _factored;
+    private readonly FactoredFfHeuristic? _factored;
 
     public FfDeadEndDetector(Problem problem)
         : this(problem, factored: true)
@@ -44,7 +44,7 @@ public sealed class FfDeadEndDetector : IDeadEndDetector
     public FfDeadEndDetector(Problem problem, bool factored)
     {
         ArgumentNullException.ThrowIfNull(problem);
-        _factored = factored ? FactoredRelaxedReachability.TryCreate(problem) : null;
+        _factored = factored ? FactoredFfHeuristic.TryCreate(problem) : null;
         if (_factored is null) _heuristic = new LiftedFfHeuristic(problem);
     }
 
@@ -53,9 +53,11 @@ public sealed class FfDeadEndDetector : IDeadEndDetector
     public bool IsDeadEnd(ExtendedState state, GoalCondition goal)
     {
         ArgumentNullException.ThrowIfNull(goal);
-        return _factored is not null
-            ? !_factored.CanReach(state, goal)
-            : double.IsPositiveInfinity(_heuristic!.Evaluate(state, goal).Value);
+        if (_factored is null)
+            return double.IsPositiveInfinity(_heuristic!.Evaluate(state, goal).Value);
+
+        // A goal outside the relaxation is one this cannot call dead, so it does not.
+        return FactoredFfHeuristic.CanRepresent(goal) && !_factored.IsGoalReachable(state, goal);
     }
 }
 

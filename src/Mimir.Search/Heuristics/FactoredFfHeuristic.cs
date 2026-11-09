@@ -11,6 +11,10 @@ namespace Mimir.Search.Heuristics;
 /// FF over a relaxed planning graph built from factored action groups. A layer costs one projection per group
 /// rather than one step per ground action, and a member is only ever materialised for the projection that adds
 /// an atom -- so the number of instances the graph never enumerates is the number it never pays for.
+/// <para>
+/// One graph is reused across evaluations, so a single instance answers one state at a time. Evaluating several
+/// states at once needs an instance each.
+/// </para>
 /// </summary>
 public sealed class FactoredFfHeuristic : IHeuristic
 {
@@ -49,6 +53,7 @@ public sealed class FactoredFfHeuristic : IHeuristic
     public static FactoredFfHeuristic? TryCreate(Problem problem, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
+        if (goal is not null && !CanRepresent(goal)) return null;
         if (problem.GetApplicableActionGenerator(problem.InitialState)
             is not IFactoredApplicableActionGenerator generator)
             return null;
@@ -66,13 +71,34 @@ public sealed class FactoredFfHeuristic : IHeuristic
         return new FactoredFfHeuristic(problem, goal, generator, models);
     }
 
+    /// <summary>
+    /// Whether the relaxation can speak about this goal at all. A relaxation that never deletes cannot judge a
+    /// negative literal, says nothing about a numeric comparison, and reading an arbitrary expression as the
+    /// conjunction of the atoms inside it would answer a different question than the one asked.
+    /// </summary>
+    public static bool CanRepresent(GoalCondition goal)
+    {
+        ArgumentNullException.ThrowIfNull(goal);
+        if (goal.Expression is not null || goal.NumericConditions.Count > 0) return false;
+
+        foreach (Literal<Fact> literal in goal.GoalLiterals)
+            if (!literal.IsPositive) return false;
+
+        return true;
+    }
+
+    /// <summary>Whether the delete relaxation reaches the goal, without paying for a relaxed plan.</summary>
+    public bool IsGoalReachable(ExtendedState state, GoalCondition goal)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        Reset();
+        return BuildLayers(state, Require(goal)) >= 0;
+    }
+
     public HeuristicEvaluation Evaluate(ExtendedState state, GoalCondition? goal = null)
     {
         ArgumentNullException.ThrowIfNull(state);
-        GoalCondition target = goal ?? _goal ?? GoalCondition.FromProblem(_problem);
-        foreach (Literal<Fact> literal in target.GoalLiterals)
-            if (!literal.IsPositive)
-                throw new NotSupportedException("Factored FF needs positive goal literals; deletes are relaxed away.");
+        GoalCondition target = Require(goal ?? _goal ?? GoalCondition.FromProblem(_problem));
 
         Reset();
         int depth = BuildLayers(state, target);
@@ -81,6 +107,17 @@ public sealed class FactoredFfHeuristic : IHeuristic
         var helpful = new List<GroundAction>();
         double cost = ExtractRelaxedPlan(target, depth, helpful);
         return new HeuristicEvaluation(cost, candidate => IsHelpful(helpful, candidate));
+    }
+
+    private static GoalCondition Require(GoalCondition goal)
+    {
+        ArgumentNullException.ThrowIfNull(goal);
+        if (!CanRepresent(goal))
+            throw new NotSupportedException(
+                "Factored FF needs a goal that is a conjunction of positive atoms; "
+                + "negative literals, numeric comparisons and arbitrary expressions are outside its relaxation.");
+
+        return goal;
     }
 
     /// <summary>
@@ -98,7 +135,6 @@ public sealed class FactoredFfHeuristic : IHeuristic
             bool same = true;
             foreach (int parameter in model.AddParameters)
             {
-                if (parameter >= step.Arguments.Count || parameter >= candidate.Arguments.Count) continue;
                 if (!Equals(step.Arguments[parameter], candidate.Arguments[parameter])) { same = false; break; }
             }
 
@@ -163,7 +199,7 @@ public sealed class FactoredFfHeuristic : IHeuristic
 
         while (true)
         {
-            if (GoalReached(goal)) return layer;
+            if (GoalReached(goal, expanded)) return layer;
 
             _added.Clear();
             _fresh.Clear();
@@ -194,12 +230,19 @@ public sealed class FactoredFfHeuristic : IHeuristic
         }
     }
 
-    private bool GoalReached(GoalCondition goal)
+    private bool GoalReached(GoalCondition goal, ExtendedState relaxed)
     {
         foreach (Literal<Fact> literal in goal.GoalLiterals)
         {
             int index = FluentIndexOf(literal.Value);
-            if (index < 0 || index >= _layer.Length || _layer[index] == Unreached) return false;
+            if (index < 0)
+            {
+                // Statics never change and derived atoms are read off the relaxed state, so neither has a layer.
+                if (!relaxed.IsTrue(literal.Value)) return false;
+                continue;
+            }
+
+            if (index >= _layer.Length || _layer[index] == Unreached) return false;
         }
 
         return true;
