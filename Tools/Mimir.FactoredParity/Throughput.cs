@@ -12,7 +12,8 @@ namespace Mimir.FactoredParity;
 /// </summary>
 internal static class Throughput
 {
-    public static void Run(string domainDirectory, string[] problems, int seconds, string generatorCodes = "glf")
+    public static void Run(
+        string domainDirectory, string[] problems, int seconds, string generatorCodes = "glf", string spec = "bfs")
     {
         var domain = Domain.FromFile(Path.Combine(domainDirectory, "domain.pddl"));
         Console.WriteLine($"{"instance",-26}{"generator",-10}{"expanded",11}{"generated",13}{"seconds",9}{"exp/s",11}");
@@ -41,7 +42,8 @@ internal static class Throughput
 
                 using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(seconds));
                 var stopwatch = Stopwatch.StartNew();
-                PlanResult result = new BreadthFirstPlanner().Solve(problem, cancellationToken: cancellation.Token);
+                PlanResult result = PlannerFactory.CreateFromSpec(spec)
+                    .Solve(problem, cancellationToken: cancellation.Token);
                 stopwatch.Stop();
 
                 double elapsed = stopwatch.Elapsed.TotalSeconds;

@@ -15,7 +15,8 @@ if (args.Length > 2 && args[0] == "--throughput")
         Path.GetFullPath(args[1]),
         hasCodes ? args[2..^2] : args[2..^1],
         int.Parse(hasCodes ? args[^2] : args[^1]),
-        hasCodes ? args[^1] : "glf");
+        hasCodes ? args[^1] : "glf",
+        Environment.GetEnvironmentVariable("MIMIR_SPEC") ?? "bfs");
     return 0;
 }
 
