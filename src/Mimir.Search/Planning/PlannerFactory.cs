@@ -55,12 +55,19 @@ public static class PlannerFactory
 
         _ = heuristicType.Trim().ToLowerInvariant() switch
         {
-            "blind" or "goal-count" or "goalcount" or "lifted-ff" or "liftedff" => true,
+            "blind" or "goal-count" or "goalcount" or "lifted-ff" or "liftedff"
+                or "factored-ff" or "factoredff" => true,
             _ => throw new ArgumentException($"Unknown heuristic type '{heuristicType}'.", nameof(heuristicType))
         };
 
         return (start, goal) => CreateHeuristic(heuristicType, start.Context.Problem, goal);
     }
+
+    private static IHeuristic CreateFactoredFf(Problem problem, GoalCondition? goal)
+        => FactoredFfHeuristic.TryCreate(problem, goal)
+           ?? throw new NotSupportedException(
+               "Factored FF needs a factored generator and a problem without negative preconditions, "
+               + "conditional effects or numeric effects. Use 'lifted-ff' instead.");
 
     public static IHeuristic CreateHeuristic(string heuristicType, Problem problem, GoalCondition? goal = null)
     {
@@ -74,6 +81,8 @@ public static class PlannerFactory
             "goalcount" => new GoalCountHeuristic(problem, goal),
             "lifted-ff" => new LiftedFfHeuristic(problem, goal),
             "liftedff" => new LiftedFfHeuristic(problem, goal),
+            "factored-ff" => CreateFactoredFf(problem, goal),
+            "factoredff" => CreateFactoredFf(problem, goal),
             _ => throw new ArgumentException($"Unknown heuristic type '{heuristicType}'.", nameof(heuristicType))
         };
     }

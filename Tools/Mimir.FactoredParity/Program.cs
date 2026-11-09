@@ -20,6 +20,12 @@ if (args.Length > 2 && args[0] == "--throughput")
     return 0;
 }
 
+if (args.Length > 2 && args[0] == "--ffvalue")
+{
+    Mimir.FactoredParity.FfValueCompare.Run(Path.GetFullPath(args[1]), args[2..^1], int.Parse(args[^1]));
+    return 0;
+}
+
 if (args.Length > 2 && args[0] == "--ffcompare")
 {
     Mimir.FactoredParity.FfCompare.Run(Path.GetFullPath(args[1]), args[2..^1], int.Parse(args[^1]));

@@ -5,6 +5,7 @@ using Mimir.Search.Evaluation;
 using Mimir.Search.Heuristics;
 using Mimir.Search.Planning;
 using Xunit;
+using GroundAction = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Search.Tests;
 
@@ -3202,5 +3203,73 @@ public class LiftedFfHeuristicTests
         Assert.Equal(
             new FFHeuristic(generator).Evaluate(state.Expand()).Value,
             new LiftedFfHeuristic(problem).Evaluate(state.Expand()).Value);
+    }
+
+    /// <summary>
+    /// The factored graph reaches the same atoms at the same layers as enumerating every binding, so the relaxed
+    /// plan it extracts has to be the same size give or take the choice of supporter, which FF never pinned down.
+    /// </summary>
+    [Theory]
+    [InlineData("gripper")]
+    [InlineData("childsnack")]
+    [InlineData("logistics")]
+    [InlineData("miconic")]
+    [InlineData("delivery")]
+    public void FactoredFfTracksTheBindingEnumeratingFf(string domainDirectory)
+    {
+        Problem problem = SearchTestHelpers.LoadProblem(
+            domainDirectory,
+            generatorType: ApplicableActionGeneratorType.Factored);
+        var goal = GoalCondition.FromProblem(problem);
+        FactoredFfHeuristic? factored = FactoredFfHeuristic.TryCreate(problem, goal);
+        Assert.NotNull(factored);
+        var lifted = new LiftedFfHeuristic(problem, goal);
+
+        var queue = new Queue<State>();
+        var seen = new HashSet<State> { problem.InitialState };
+        queue.Enqueue(problem.InitialState);
+        var generator = problem.GetApplicableActionGenerator(problem.InitialState);
+        int checksRun = 0;
+
+        while (queue.Count > 0 && checksRun < 60)
+        {
+            ExtendedState state = queue.Dequeue().Expand();
+            double a = lifted.Evaluate(state, goal).Value;
+            double b = factored!.Evaluate(state, goal).Value;
+            Assert.Equal(double.IsPositiveInfinity(a), double.IsPositiveInfinity(b));
+            if (!double.IsPositiveInfinity(a))
+            {
+                // One action of slack for the supporter each picked, plus a margin that grows with the estimate.
+                Assert.True(Math.Abs(a - b) <= 1 + (0.2 * Math.Max(a, 1)),
+                    $"{domainDirectory}: lifted {a} against factored {b}.");
+            }
+
+            checksRun++;
+            foreach (GroundAction action in generator.GetApplicableActions(state).Take(4))
+            {
+                State next = state.Apply(action);
+                if (seen.Add(next)) queue.Enqueue(next);
+            }
+        }
+
+        Assert.True(checksRun > 1);
+    }
+
+    [Fact]
+    public void FactoredFfIsZeroExactlyAtTheGoal()
+    {
+        Problem problem = SearchTestHelpers.LoadProblem(
+            "gripper", generatorType: ApplicableActionGeneratorType.Factored);
+        var goal = GoalCondition.FromProblem(problem);
+        FactoredFfHeuristic factored = FactoredFfHeuristic.TryCreate(problem, goal)!;
+
+        Assert.True(factored.Evaluate(problem.InitialState.Expand(), goal).Value > 0);
+
+        PlanResult solved = new GreedyBestFirstPlanner(
+            (_, g) => FactoredFfHeuristic.TryCreate(problem, g)!).Solve(problem);
+        Assert.True(solved.IsSuccess);
+        State goalState = solved.Plan.Aggregate(
+            problem.InitialState, (state, action) => state.Expand().Apply(action));
+        Assert.Equal(0d, factored.Evaluate(goalState.Expand(), goal).Value);
     }
 }
