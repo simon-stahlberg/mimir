@@ -311,9 +311,14 @@ def test_partial_plan_encoding_layout_matches_relations(blocks: pymimir.Problem)
             if value is not None:
                 assert (parameter, object_ids[value]) in bound
     node_by_step_id = {step.id: layout.step_node_ids[index] for index, step in enumerate(steps)}
-    assert _rows(relations["plan_before_plan"], 2) == {
-        (node_by_step_id[a], node_by_step_id[b]) for a, b in plan.ordering_closure()
-    }
+    closure = set(plan.ordering_closure())
+    reduction = {(a, b) for a, b in closure if not any((a, step.id) in closure and (step.id, b) in closure for step in steps)}
+    assert reduction < closure
+    assert _rows(relations["plan_before_plan"], 2) == {(node_by_step_id[a], node_by_step_id[b]) for a, b in reduction}
+    actions = [step.id for step in steps if step.kind is pymimir.StepKind.STEP]
+    unordered = [(a, b) for a in actions for b in actions if a < b and (a, b) not in closure and (b, a) not in closure]
+    assert unordered
+    assert relations["plan_unordered_plan"] == [node_by_step_id[step_id] for pair in unordered for step_id in pair]
     for index, flaw in enumerate(flaws.flaws):
         if flaw.kind is pymimir.FlawKind.OPEN_CONDITION:
             assert flaw.atom is not None
@@ -334,6 +339,8 @@ def test_relation_list_is_derived_from_the_domain(blocks: pymimir.Problem) -> No
     assert len(names) == len(set(names))
     by_name = dict(relations)
     assert by_name["plan_threat"] == 3
+    assert by_name["plan_before"] == 2
+    assert by_name["plan_unordered"] == 2
     assert by_name["plan_action_stack"] == 3
     assert by_name["plan_tombstone_action_pickup"] == 2
     assert by_name["plan_link_on"] == 3

@@ -32,6 +32,7 @@ public static partial class Encoding
         ("plan_res_noop", 1),
         ("plan_bound", 2),
         ("plan_before", 2),
+        ("plan_unordered", 2),
         ("plan_produces", 2),
         ("plan_consumes", 2),
         ("plan_open_consumer", 2),
@@ -89,7 +90,10 @@ public static partial class Encoding
         PlanStep[] steps = plan.Steps.ToArray();
         CausalLink[] links = plan.Links.ToArray();
         Tombstone[] tombstones = plan.Tombstones.ToArray();
-        (int Before, int After)[] ordering = plan.OrderingClosure.ToArray();
+        // The transitive reduction: a pair with a step strictly in between is implied by that step.
+        (int Before, int After)[] ordering = plan.OrderingClosure
+            .Where(pair => !steps.Any(step => plan.IsBefore(pair.Before, step.Id) && plan.IsBefore(step.Id, pair.After)))
+            .ToArray();
         IReadOnlyList<Flaw> flawValues = flaws.Flaws;
         IReadOnlyList<GhostStep> ghosts = flaws.Ghosts;
 
@@ -165,6 +169,18 @@ public static partial class Encoding
             List<int> ids = context.GetOrCreateRelation($"plan_before{suffix}");
             ids.Add(StepNode(before));
             ids.Add(StepNode(after));
+        }
+
+        // Steps are listed by ascending id, so every unordered pair is emitted lower id first.
+        for (int first = 0; first < steps.Length; first++)
+        {
+            if (steps[first].Kind != StepKind.Step) continue;
+            for (int second = first + 1; second < steps.Length; second++)
+            {
+                if (steps[second].Kind != StepKind.Step) continue;
+                if (plan.IsBefore(steps[first].Id, steps[second].Id) || plan.IsBefore(steps[second].Id, steps[first].Id)) continue;
+                AppendPair(context, $"plan_unordered{suffix}", layout.StepNodeIds[first], layout.StepNodeIds[second]);
+            }
         }
 
         for (int index = 0; index < links.Length; index++)

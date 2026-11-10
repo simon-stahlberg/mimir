@@ -92,8 +92,17 @@ public class PlanSpaceEncodingTests
         Assert.Contains(Parameter(unstack, 0), context.Relations["plan_unbound_p"]);
         Assert.DoesNotContain(Parameter(unstack, 1), context.Relations["plan_unbound_p"]);
 
-        int[] expectedBefore = plan.OrderingClosure.SelectMany(pair => new[] { Node(plan.GetStep(pair.Before)), Node(plan.GetStep(pair.After)) }).ToArray();
+        Assert.Equal(8, plan.OrderingClosure.Count);
+        int[] expectedBefore =
+        [
+            layout.StepNodeIds[0], Node(unstack),
+            layout.StepNodeIds[0], Node(pickup),
+            Node(stack), layout.StepNodeIds[1],
+            Node(unstack), layout.StepNodeIds[1],
+            Node(pickup), Node(stack),
+        ];
         Assert.Equal(expectedBefore, context.Relations["plan_before_p"]);
+        Assert.Equal([Node(stack), Node(unstack), Node(unstack), Node(pickup)], context.Relations["plan_unordered_p"]);
 
         CausalLink clearLink = links.Single(link => link.Fact.ToString() == "(clear b2)");
         int clearLinkNode = layout.LinkNodeIds[links.IndexOf(clearLink)];
@@ -212,11 +221,49 @@ public class PlanSpaceEncodingTests
         Assert.Equal(1, relations["plan_initial_s"]);
         Assert.Equal(3, relations["plan_threat_s"]);
         Assert.Equal(2, relations["plan_res_bind_s"]);
+        Assert.Equal(2, relations["plan_before_s"]);
+        Assert.Equal(2, relations["plan_unordered_s"]);
         Assert.Equal(3, relations["plan_action_stack_s"]);
         Assert.Equal(2, relations["plan_tombstone_action_pickup_s"]);
         Assert.Equal(3, relations["plan_link_on_s"]);
         Assert.Equal(1, relations["plan_open_arm-empty_s"]);
-        Assert.Equal(24 + 2 * problem.Domain.Actions.Count + 2 * problem.Domain.Fluents.Count, relations.Count);
+        Assert.Equal(25 + 2 * problem.Domain.Actions.Count + 2 * problem.Domain.Fluents.Count, relations.Count);
+    }
+
+    [Fact]
+    public void OrderingIsEncodedAsItsReductionAndTheUnorderedStepPairs()
+    {
+        Problem problem = LoadBlocks();
+        var plan = PartialOrderPlan.Empty(problem, new PlanSpaceOptions());
+        FlawSet flaws = plan.ComputeFlaws();
+        var context = new EncodingContext();
+        context.BeginInstance(problem);
+        PlanEncodingLayout layout = Encoding.EncodePartialPlan(context, plan, flaws);
+        context.EndInstance();
+        Assert.Equal([layout.StepNodeIds[0], layout.StepNodeIds[1]], context.Relations["plan_before"]);
+        Assert.False(context.Relations.ContainsKey("plan_unordered"));
+
+        int[] chosen = new int[flaws.Flaws.Count];
+        Choose(flaws, chosen, "(on b2 b3)", resolver => IsGhost(flaws, resolver, "(stack b2 b3)"));
+        Choose(flaws, chosen, "(clear b1)", resolver => IsGhost(flaws, resolver, "(unstack ? b1)"));
+        plan.Apply(flaws, chosen, []);
+        flaws = plan.ComputeFlaws();
+        context = new EncodingContext();
+        context.BeginInstance(problem);
+        layout = Encoding.EncodePartialPlan(context, plan, flaws);
+        context.EndInstance();
+
+        Assert.Equal(["stack", "unstack"], plan.Steps.Skip(2).Select(step => step.Schema!.Name));
+        Assert.Contains((0, 1), plan.OrderingClosure);
+        int[] expectedBefore =
+        [
+            layout.StepNodeIds[0], layout.StepNodeIds[2],
+            layout.StepNodeIds[0], layout.StepNodeIds[3],
+            layout.StepNodeIds[2], layout.StepNodeIds[1],
+            layout.StepNodeIds[3], layout.StepNodeIds[1],
+        ];
+        Assert.Equal(expectedBefore, context.Relations["plan_before"]);
+        Assert.Equal([layout.StepNodeIds[2], layout.StepNodeIds[3]], context.Relations["plan_unordered"]);
     }
 
     [Fact]
