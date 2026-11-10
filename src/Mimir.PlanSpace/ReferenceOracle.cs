@@ -36,14 +36,14 @@ public static class ReferenceOracle
             .Select(step => step.Id)
             .ToList();
 
-        var claimedGhosts = new Dictionary<int, int>();
+        int[] openConditionTargets = OpenConditionTargets(flaws, matching, reference);
         var targets = new int[flaws.Flaws.Count];
         for (int i = 0; i < targets.Length; i++)
         {
             Flaw flaw = flaws.Flaws[i];
             targets[i] = flaw.Kind switch
             {
-                FlawKind.OpenCondition => OpenConditionTarget(flaw, flaws, matching, reference, claimedGhosts),
+                FlawKind.OpenCondition => openConditionTargets[i],
                 FlawKind.Threat => ThreatTarget(flaw, current, matching, reference),
                 FlawKind.UnboundParameter => UnboundParameterTarget(flaw, matching, reference),
                 _ => throw new NotSupportedException(flaw.Kind.ToString())
@@ -53,8 +53,47 @@ public static class ReferenceOracle
         return new OracleTargets(targets, deletions, matching.MatchedStepCount);
     }
 
-    private static int OpenConditionTarget(Flaw flaw, FlawSet flaws, Matching matching, PartialOrderPlan reference, Dictionary<int, int> claimedGhosts)
+    // Apply merges equal ghosts adopted in one round into one step and creates one step per distinct ghost,
+    // so each reference step is adopted through one ghost per round, the most bound one among its open
+    // conditions, and each ghost stands for one reference step, the earliest; the other open conditions
+    // wait for the next round and link to the created step.
+    private static int[] OpenConditionTargets(FlawSet flaws, Matching matching, PartialOrderPlan reference)
     {
+        var targets = new int[flaws.Flaws.Count];
+        var adoptedReferences = new int[flaws.Flaws.Count];
+        var ghostByReference = new Dictionary<int, int>();
+        for (int i = 0; i < targets.Length; i++)
+        {
+            Flaw flaw = flaws.Flaws[i];
+            adoptedReferences[i] = -1;
+            if (flaw.Kind != FlawKind.OpenCondition) continue;
+            targets[i] = OpenConditionTarget(flaw, flaws, matching, reference, out adoptedReferences[i]);
+            if (adoptedReferences[i] < 0) continue;
+
+            int ghostIndex = flaw.Resolvers[targets[i]].GhostIndex;
+            if (ghostByReference.TryGetValue(adoptedReferences[i], out int chosen) && BoundCount(flaws.Ghosts[chosen]) >= BoundCount(flaws.Ghosts[ghostIndex])) continue;
+            ghostByReference[adoptedReferences[i]] = ghostIndex;
+        }
+
+        var referenceByGhost = new Dictionary<int, int>();
+        foreach (int referenceId in ghostByReference.Keys.Order()) referenceByGhost.TryAdd(ghostByReference[referenceId], referenceId);
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            if (adoptedReferences[i] < 0) continue;
+            int ghostIndex = flaws.Flaws[i].Resolvers[targets[i]].GhostIndex;
+            if (ghostByReference[adoptedReferences[i]] != ghostIndex || referenceByGhost[ghostIndex] != adoptedReferences[i]) targets[i] = 0;
+        }
+
+        return targets;
+    }
+
+    private static int BoundCount(GhostStep ghost) => ghost.Binding.Count(constant => constant is not null);
+
+    // adoptedReference is the reference step the target adopts a ghost for, -1 when it links or does nothing.
+    private static int OpenConditionTarget(Flaw flaw, FlawSet flaws, Matching matching, PartialOrderPlan reference, out int adoptedReference)
+    {
+        adoptedReference = -1;
         if (!matching.TryGetReference(flaw.StepId, out int referenceConsumer)) return 0;
 
         CausalLink? referenceLink = reference.Links.FirstOrDefault(link => link.ConsumerId == referenceConsumer && link.Fact.Equals(flaw.Fact));
@@ -66,13 +105,7 @@ public static class ReferenceOracle
         PlanStep referenceProducer = reference.GetStep(referenceLink.ProducerId);
         int target = IndexOf(flaw, resolver => resolver.Kind == ResolverKind.AdoptGhost
             && IsConsistent(flaws.Ghosts[resolver.GhostIndex], referenceProducer));
-        if (target == 0) return 0;
-
-        // Apply merges equal ghosts adopted in one round into a single step, so a ghost standing for a
-        // second reference step with the same schema and binding has to wait for the next round.
-        int ghostIndex = flaw.Resolvers[target].GhostIndex;
-        if (claimedGhosts.TryGetValue(ghostIndex, out int claimedBy)) return claimedBy == referenceProducer.Id ? target : 0;
-        claimedGhosts.Add(ghostIndex, referenceProducer.Id);
+        if (target > 0) adoptedReference = referenceProducer.Id;
         return target;
     }
 
