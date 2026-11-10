@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mimir.Learning\Mimir.Learning.csproj" />
+    <ProjectReference Include="..\..\src\Mimir.PlanSpace\Mimir.PlanSpace.csproj" />
   </ItemGroup>
 
 </Project>

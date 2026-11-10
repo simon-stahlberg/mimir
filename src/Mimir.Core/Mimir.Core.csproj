@@ -11,6 +11,8 @@
     <InternalsVisibleTo Include="Mimir.Search" />
     <InternalsVisibleTo Include="Mimir.Search.Tests" />
     <InternalsVisibleTo Include="Mimir.Interop" />
+    <InternalsVisibleTo Include="Mimir.PlanSpace" />
+    <InternalsVisibleTo Include="Mimir.PlanSpace.Tests" />
   </ItemGroup>
 
   <PropertyGroup>

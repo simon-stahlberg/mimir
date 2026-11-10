@@ -9,7 +9,7 @@ problem-bound factories, and search with :func:`bfs`, :func:`ucs`,
 :mod:`pymimir.advanced` are explicitly unstable.
 """
 
-from . import builders, heuristics, learning, model, numeric, search, state_space
+from . import builders, heuristics, learning, model, numeric, plan_space, search, state_space
 from .builders import (
     Numeric,
     NumericExpressionSpec,
@@ -98,6 +98,25 @@ from .learning import (
     encode_transition_effects,
     encode_virtual_node,
 )
+from .plan_space import (
+    CausalLink,
+    EditResult,
+    Flaw,
+    FlawKind,
+    FlawSet,
+    GhostStep,
+    OracleTargets,
+    PartialOrderPlan,
+    PlanEncodingLayout,
+    PlanStep,
+    Resolver,
+    ResolverKind,
+    StepKind,
+    Tombstone,
+    encode_partial_plan,
+    oracle_targets,
+    partial_plan_relations,
+)
 
 __version__: str = "0.14.0b6"
 
@@ -133,6 +152,10 @@ __all__ = [
     "encode_state", "encode_goal",
     "encode_action_list", "encode_transition_effects", "encode_virtual_node",
     "encode_expressive_state", "encode_expressive_goal",
+    # Plan space
+    "plan_space", "StepKind", "FlawKind", "ResolverKind", "PlanStep", "CausalLink", "Tombstone",
+    "GhostStep", "Resolver", "Flaw", "FlawSet", "EditResult", "OracleTargets", "PartialOrderPlan",
+    "oracle_targets", "PlanEncodingLayout", "encode_partial_plan", "partial_plan_relations",
     # Errors
     "MimirError", "PddlError", "StateSpaceLimitExceeded", "UnsupportedError",
 ]
