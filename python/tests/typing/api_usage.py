@@ -147,36 +147,6 @@ def use_public_api(
     pymimir.encode_virtual_node(context)
     pymimir.encode_expressive_state(context, state)
     pymimir.encode_expressive_goal(context, state, problem.goal)
-    partial_plan: pymimir.PartialOrderPlan = pymimir.PartialOrderPlan.empty(problem, tombstone_capacity=2, tombstone_lifespan=2)
-    reference: pymimir.plan_space.PartialOrderPlan = pymimir.PartialOrderPlan.from_sequential_plan(problem, actions)
-    plan_steps: tuple[pymimir.PlanStep, ...] = partial_plan.steps
-    plan_links: tuple[pymimir.CausalLink, ...] = partial_plan.links
-    plan_tombstones: tuple[pymimir.Tombstone, ...] = partial_plan.tombstones
-    plan_round: int = partial_plan.round
-    ordered: bool = partial_plan.is_before(0, 1)
-    closure: tuple[tuple[int, int], ...] = partial_plan.ordering_closure()
-    flaw_set: pymimir.FlawSet = partial_plan.compute_flaws()
-    flaw_values: tuple[pymimir.Flaw, ...] = flaw_set.flaws
-    ghosts: tuple[pymimir.GhostStep, ...] = flaw_set.ghosts
-    first_kind: pymimir.FlawKind | None = flaw_values[0].kind if flaw_values else None
-    first_resolver: pymimir.Resolver | None = flaw_values[0].resolvers[0] if flaw_values else None
-    resolver_kind: pymimir.ResolverKind = pymimir.ResolverKind.NOOP
-    step_kind: pymimir.StepKind = plan_steps[0].kind
-    targets: pymimir.OracleTargets = pymimir.oracle_targets(partial_plan, flaw_set, reference)
-    layout: pymimir.PlanEncodingLayout = pymimir.encode_partial_plan(context, partial_plan, flaw_set, suffix="_plan")
-    edit: pymimir.EditResult = partial_plan.apply(flaw_set, targets.resolver_index_per_flaw, targets.step_ids_to_delete)
-    plan_solved: bool = partial_plan.is_solution()
-    linearized: list[pymimir.GroundAction] = reference.linearize()
-    plan_copy: pymimir.PartialOrderPlan = partial_plan.clone()
-    plan_goal: pymimir.GroundConjunctiveCondition = partial_plan.goal
-    relabeled: pymimir.PartialOrderPlan = partial_plan.with_goal(problem.goal)
-    pruned: pymimir.PartialOrderPlan = relabeled.prune_to_achieved_goal()
-    subset_plan: pymimir.PartialOrderPlan = pymimir.PartialOrderPlan.empty(problem, goal=pruned.goal)
-    subset_reference: pymimir.PartialOrderPlan = pymimir.PartialOrderPlan.from_sequential_plan(problem, actions, goal=plan_goal)
-    plan_relations: list[tuple[str, int]] = pymimir.partial_plan_relations(problem.domain, "_plan")
-    _ = plan_links, plan_tombstones, plan_round, ordered, closure, ghosts, first_kind, first_resolver
-    _ = resolver_kind, step_kind, layout.resolver_node_ids, edit.applied_count, plan_solved, linearized
-    _ = plan_copy, plan_relations, subset_plan, subset_reference
     serial_plan: pymimir.SerialPlan = pymimir.SerialPlan.empty(problem)
     serial_reference: pymimir.plan_space.SerialPlan | None = pymimir.serial_search(problem, max_expansions=1000, timeout_seconds=1.0)
     serial_steps: tuple[pymimir.SerialStep, ...] = serial_plan.steps

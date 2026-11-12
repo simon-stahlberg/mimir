@@ -127,7 +127,7 @@ public static partial class Encoding
             SerialStep step = steps[index];
             int node = layout.StepNodeIds[index];
             context.GetOrCreateRelation($"serial_step{suffix}").Add(node);
-            AppendSchemaInstance(context, "serial", suffix, node, step.Schema, step.Binding, layout.ParameterNodeIds[index]);
+            AppendSchemaInstance(context, suffix, node, step.Schema, step.Binding, layout.ParameterNodeIds[index]);
             AppendPair(context, $"serial_next{suffix}", previousNode, node);
             previousNode = node;
 
@@ -146,7 +146,7 @@ public static partial class Encoding
         {
             int node = layout.CandidateNodeIds[index];
             context.GetOrCreateRelation($"serial_candidate{suffix}").Add(node);
-            AppendSchemaInstance(context, "serial", suffix, node, candidates[index].Schema, candidates[index].Binding, layout.CandidateParameterNodeIds[index]);
+            AppendSchemaInstance(context, suffix, node, candidates[index].Schema, candidates[index].Binding, layout.CandidateParameterNodeIds[index]);
         }
 
         foreach (SerialSupport support in diagnosis.Supports)
@@ -218,4 +218,50 @@ public static partial class Encoding
 
     private static string SerialLiteralRelation(string prefix, Literal<Fact> literal, string suffix)
         => $"{prefix}_{(literal.IsPositive ? "" : "not_")}{literal.Value.Predicate.Name}{suffix}";
+
+    private static int[] AllocateAuxiliary(EncodingContext context, int count)
+    {
+        var ids = new int[count];
+        for (int index = 0; index < count; index++)
+            ids[index] = context.NewAuxiliaryId();
+        return ids;
+    }
+
+    private static void AppendSchemaInstance(
+        EncodingContext context,
+        string suffix,
+        int node,
+        ActionSchema schema,
+        IReadOnlyList<Constant?> binding,
+        int[] parameterNodes)
+    {
+        List<int> action = context.GetOrCreateRelation($"serial_action_{schema.Name}{suffix}");
+        action.Add(node);
+        action.AddRange(parameterNodes);
+        for (int index = 0; index < binding.Count; index++)
+        {
+            Constant? value = binding[index];
+            if (value is null)
+            {
+                context.GetOrCreateRelation($"serial_unbound{suffix}").Add(parameterNodes[index]);
+                continue;
+            }
+            AppendPair(context, $"serial_bound{suffix}", parameterNodes[index], context.GetObjectId(value));
+        }
+    }
+
+    private static void AppendFactRow(EncodingContext context, string relationName, int node, Fact fact)
+    {
+        List<int> ids = context.GetOrCreateRelation(relationName);
+        ids.Add(node);
+        foreach (Constant argument in fact.Arguments)
+            ids.Add(context.GetObjectId(argument));
+    }
+
+    private static void AppendPair(EncodingContext context, string relationName, int first, int second)
+    {
+        List<int> ids = context.GetOrCreateRelation(relationName);
+        ids.Add(first);
+        ids.Add(second);
+    }
 }

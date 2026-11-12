@@ -3,10 +3,12 @@ using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
 using Mimir.Learning;
 using Mimir.PlanSpace;
+using GroundAction = Mimir.Core.Grounding.Action;
 
 namespace Mimir.Interop;
 
-// Serial-plan values cross the boundary like the plan-space values of Api.PlanSpace.cs. Record layouts:
+// Serial-plan values cross the boundary as flat int32 arrays. Every array is read with a
+// get_*_value_count call followed by a copy_* call into a caller-owned buffer. Record layouts:
 //
 // * steps:          per step      [id, schemaIndex, isFullyBound, purposeStepId, k, objectIndex | -1 × k]
 // * errors:         per error     [kind, stepId, parameterIndex, repairCount,
@@ -160,7 +162,7 @@ public static partial class Exports
         return CreateHandle(() => plan.Apply(diagnosis, repairIndices, stepIds));
     }
 
-    // The returned list is read with mimir_plan_space_action_list_get_count and _get_action.
+    // The returned list is read with mimir_serial_action_list_get_count and _get_action.
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_to_actions")]
     public static int SerialPlanToActions(int planHandle)
     {
@@ -169,6 +171,20 @@ public static partial class Exports
             return 0;
 
         return CreateHandle(plan.ToActions);
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_action_list_get_count")]
+    public static int SerialActionListGetCount(int listHandle)
+        => ReadValue(listHandle, -1, (IReadOnlyList<GroundAction> actions) => actions.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_action_list_get_action")]
+    public static int SerialActionListGetAction(int listHandle, int index)
+    {
+        IReadOnlyList<GroundAction>? actions = GetLearningHandle<IReadOnlyList<GroundAction>>(listHandle);
+        if (actions is null)
+            return 0;
+
+        return CreateHandle(() => actions[index]);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_diagnosis_get_error_value_count")]
@@ -317,6 +333,31 @@ public static partial class Exports
         });
     }
 
+    private static Dictionary<Constant, int> ObjectIndices(Problem problem)
+    {
+        var indices = new Dictionary<Constant, int>(ReferenceEqualityComparer.Instance);
+        for (int index = 0; index < problem.AllObjects.Count; index++)
+            indices.Add(problem.AllObjects[index], index);
+        return indices;
+    }
+
+    private static int SchemaIndex(Domain domain, ActionSchema schema)
+    {
+        for (int index = 0; index < domain.Actions.Count; index++)
+        {
+            if (ReferenceEquals(domain.Actions[index], schema)) return index;
+        }
+
+        throw new InvalidOperationException($"Action {schema.Name} is not part of the domain.");
+    }
+
+    private static void AppendBinding(List<int> values, IReadOnlyList<Constant?> binding, Dictionary<Constant, int> objectIndices)
+    {
+        values.Add(binding.Count);
+        foreach (Constant? constant in binding)
+            values.Add(constant is null ? -1 : objectIndices[constant]);
+    }
+
     private static List<int> StepValues(SerialPlan plan)
     {
         Dictionary<Constant, int> objectIndices = ObjectIndices(plan.Problem);
@@ -415,5 +456,11 @@ public static partial class Exports
         AppendCounted(values, layout.ErrorNodeIds);
         foreach (int[] repairNodes in layout.RepairNodeIds) AppendCounted(values, repairNodes);
         return values;
+    }
+
+    private static void AppendCounted(List<int> values, int[] ids)
+    {
+        values.Add(ids.Length);
+        values.AddRange(ids);
     }
 }

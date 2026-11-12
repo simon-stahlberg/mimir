@@ -84,6 +84,34 @@ internal static class SchemaTerms
     }
 }
 
+internal static class StaticFilter
+{
+    // Static preconditions whose arguments are all bound must hold initially; the others cannot be judged yet.
+    public static bool Passes(Problem problem, ActionSchema schema, IReadOnlyList<Constant?> binding)
+    {
+        foreach (Literal<Atom<Static>> literal in schema.StaticPreconditions)
+        {
+            Constant?[] arguments = SchemaTerms.Resolve(schema, literal.Value.Arguments, binding);
+            if (arguments.Any(argument => argument is null)) continue;
+            if (Holds(problem, literal.Value.Predicate, arguments.Select(argument => argument!).ToArray()) != literal.IsPositive) return false;
+        }
+
+        return true;
+    }
+
+    public static bool Holds(Problem problem, Mimir.Core.Schemas.Predicate<Static> predicate, Constant[] arguments)
+    {
+        if (problem.Domain.IsEqualityPredicate(predicate)) return ReferenceEquals(arguments[0], arguments[1]);
+        for (int i = 0; i < arguments.Length; i++)
+        {
+            if (!problem.Domain.IsCompatible(arguments[i].Type, predicate.Parameters[i].Type)) return false;
+        }
+
+        Fact<Static>? fact = problem.Context.FindFact(predicate, arguments);
+        return fact is not null && problem.Context.IsTrue(new StaticIndex(fact.LocalIndex));
+    }
+}
+
 public sealed class AchieverIndex
 {
     private readonly Domain _domain;
