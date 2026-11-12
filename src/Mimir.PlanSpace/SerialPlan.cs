@@ -201,6 +201,14 @@ public sealed partial class SerialPlan
         return clone;
     }
 
+    internal SerialPlan WithStepOrder(IEnumerable<SerialStep> steps)
+    {
+        SerialPlan clone = Clone();
+        clone._steps.Clear();
+        clone._steps.AddRange(steps);
+        return clone;
+    }
+
     public SerialPlan WithGoal(IReadOnlyList<Literal<Fact>> goal)
     {
         ArgumentNullException.ThrowIfNull(goal);

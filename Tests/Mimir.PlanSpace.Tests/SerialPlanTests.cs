@@ -1086,6 +1086,83 @@ public class SerialPlanTests
         Assert.Equal(["(pick ball1 rooma right)", "(move rooma roomb)", "(drop ball1 roomb right)"], AssertExecutes(current));
     }
 
+    private static Problem FourBlocksOnTable(string goal) => Problem.FromText(Blocksworld(), $"""
+(define (problem four-blocks-on-table)
+  (:domain blocksworld)
+  (:objects b1 b2 b3 b4)
+  (:init (arm-empty) (on-table b1) (on-table b2) (on-table b3) (on-table b4) (clear b1) (clear b2) (clear b3) (clear b4))
+  (:goal {goal}))
+""");
+
+    // Builds the second tower of the goal first.
+    private static SerialPlan SecondTowerFirst(Problem problem)
+    {
+        SerialPlan reference = SerialPlan.Empty(problem);
+        Repair(reference, ("UnmetGoal((on b3 b4))", "Insert(stack b3 b4)"));
+        Repair(reference, ("UnsatisfiedPrecondition(step 0, (holding b3))", "Insert(pickup b3)"));
+        Repair(reference, ("UnmetGoal((on b1 b2))", "Insert(stack b1 b2)"));
+        Repair(reference, ("UnsatisfiedPrecondition(step 2, (holding b1))", "Insert(pickup b1)"));
+        Assert.Equal("1:(pickup b3) 0:(stack b3 b4) 3:(pickup b1) 2:(stack b1 b2)", Describe(reference));
+        return reference;
+    }
+
+    [Fact]
+    public void OracleAsksForEveryGoalThatCanBeWorkedOnNextWhateverTheOrderOfTheReference()
+    {
+        Problem problem = FourBlocksOnTable("(and (on b1 b2) (on b3 b4))");
+        SerialPlan reference = SecondTowerFirst(problem);
+        SerialPlan current = SerialPlan.Empty(problem);
+
+        SerialDiagnosis diagnosis = current.Diagnose();
+        SerialOracleTargets targets = SerialOracle.Targets(current, diagnosis, reference);
+        Assert.Equal(["UnmetGoal((on b1 b2))", "UnmetGoal((on b3 b4))"], Errors(diagnosis));
+        Assert.Equal(["Insert(stack b1 b2)", "Insert(stack b3 b4)"], TargetTexts(diagnosis, targets));
+
+        RollOut(current, reference);
+        Assert.Equal(["(pickup b1)", "(stack b1 b2)", "(pickup b3)", "(stack b3 b4)"], AssertExecutes(current));
+    }
+
+    [Fact]
+    public void OracleKeepsGoalStepsThatWereInsertedInAnotherOrderThanTheReference()
+    {
+        Problem problem = FourBlocksOnTable("(and (on b1 b2) (on b3 b4))");
+        SerialPlan reference = SecondTowerFirst(problem);
+        SerialPlan current = SerialPlan.Empty(problem);
+        Repair(current, ("UnmetGoal((on b1 b2))", "Insert(stack b1 b2)"));
+
+        SerialDiagnosis diagnosis = current.Diagnose();
+        SerialOracleTargets targets = SerialOracle.Targets(current, diagnosis, reference);
+        Assert.Empty(targets.StepIdsToDelete);
+        Assert.Equal(["UnsatisfiedPrecondition(step 0, (holding b1))", "UnmetGoal((on b3 b4))"], Errors(diagnosis));
+        Assert.Equal(["Insert(pickup b1)", "Insert(stack b3 b4)"], TargetTexts(diagnosis, targets));
+    }
+
+    [Fact]
+    public void OracleWaitsWithAGoalWhoseStepsWouldBreakThePlanIfTheyCameNext()
+    {
+        Problem problem = BlocksOnTable("(and (on b1 b2) (on b2 b3))");
+        SerialPlan reference = SerialPlan.Empty(problem);
+        Repair(reference, ("UnmetGoal((on b2 b3))", "Insert(stack b2 b3)"));
+        Repair(reference, ("UnsatisfiedPrecondition(step 0, (holding b2))", "Insert(pickup b2)"));
+        Repair(reference, ("UnmetGoal((on b1 b2))", "Insert(stack b1 b2)"));
+        Repair(reference, ("UnsatisfiedPrecondition(step 2, (holding b1))", "Insert(pickup b1)"));
+        Assert.Equal(["(pickup b2)", "(stack b2 b3)", "(pickup b1)", "(stack b1 b2)"], AssertExecutes(reference));
+        SerialPlan current = SerialPlan.Empty(problem);
+
+        // Stacking b1 on b2 first would leave b2 covered when it has to be picked up.
+        SerialDiagnosis diagnosis = current.Diagnose();
+        SerialOracleTargets targets = SerialOracle.Targets(current, diagnosis, reference);
+        Assert.Equal(["UnmetGoal((on b1 b2))", "UnmetGoal((on b2 b3))"], Errors(diagnosis));
+        Assert.Equal(["NoOp", "Insert(stack b2 b3)"], TargetTexts(diagnosis, targets));
+
+        // The step for the lower block exists after one round, so the upper block is next.
+        current.Apply(diagnosis, targets.RepairIndexPerError, targets.StepIdsToDelete);
+        diagnosis = current.Diagnose();
+        targets = SerialOracle.Targets(current, diagnosis, reference);
+        Assert.Equal(["UnsatisfiedPrecondition(step 0, (holding b2))", "UnmetGoal((on b1 b2))"], Errors(diagnosis));
+        Assert.Equal(["Insert(pickup b2)", "Insert(stack b1 b2)"], TargetTexts(diagnosis, targets));
+    }
+
     public static TheoryData<string, int, int> PerturbedProblems() => new()
     {
         { "gripper", 2, 0 }, { "gripper", 3, 0 }, { "blocks", 4, 1 }, { "blocks", 4, 3 }, { "blocks", 5, 1 }, { "blocks", 5, 3 }
@@ -1104,9 +1181,10 @@ public class SerialPlanTests
 
             RollOut(current, reference);
 
-            // The objects may differ from the reference where others do as well, the actions may not.
+            // The objects may differ from the reference where others do as well, and the goals may be worked on
+            // in another order; the actions may not differ.
             AssertExecutes(current);
-            Assert.Equal(reference.Steps.Select(step => step.Schema.Name), current.Steps.Select(step => step.Schema.Name));
+            Assert.Equal(reference.Steps.Select(step => step.Schema.Name).Order(), current.Steps.Select(step => step.Schema.Name).Order());
         }
     }
 

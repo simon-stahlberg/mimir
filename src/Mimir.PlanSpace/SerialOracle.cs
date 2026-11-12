@@ -19,6 +19,8 @@ public sealed class SerialOracleTargets
 
 // The reference is one witness among the plans that differ from it only in how symmetric objects are chosen,
 // so a step stands for a reference step by the role it plays and is never corrected for its binding alone.
+// It is also one witness among the orders in which the goal literals can be worked on, so the oracle follows
+// the reference in an order that agrees with the current plan and its unmet goals wherever that is a solution.
 public static class SerialOracle
 {
     public static SerialOracleTargets Targets(SerialPlan current, SerialDiagnosis diagnosis, SerialPlan reference)
@@ -33,6 +35,7 @@ public static class SerialOracle
         if (!reference.IsSolution())
             throw new ArgumentException("The reference plan is not a solution.", nameof(reference));
 
+        reference = InAgreeingGoalOrder(current, diagnosis, reference);
         var matching = new Matching(current, reference);
         var targets = new int[diagnosis.Errors.Count];
         var requests = new List<Request>();
@@ -104,6 +107,67 @@ public static class SerialOracle
         }
 
         return new SerialOracleTargets(targets, deletions, matching.ReferenceByCurrent.Count);
+    }
+
+    // A goal block is a step inserted for a goal literal together with the steps inserted for it, which come
+    // right before it. The blocks the current plan already has come first, in its order, followed by the blocks
+    // of the unmet goals in the order of their errors, which is the order their steps land in when they are
+    // inserted in the same round. A block stays where the reference has it when moving it breaks the plan.
+    private static SerialPlan InAgreeingGoalOrder(SerialPlan current, SerialDiagnosis diagnosis, SerialPlan reference)
+    {
+        var wanted = new List<(Literal<Fact> Literal, ActionSchema? Schema)>();
+        foreach (SerialStep step in current.Steps)
+        {
+            if (step.PurposeStepId == -1) wanted.Add((step.Purpose, step.Schema));
+        }
+
+        foreach (SerialError error in diagnosis.Errors)
+        {
+            if (error.Kind == SerialErrorKind.UnmetGoal) wanted.Add((error.Literal!, null));
+        }
+
+        var agreeing = new List<List<SerialStep>>();
+        List<List<SerialStep>> remaining = GoalBlocks(reference);
+        bool isReordered = false;
+        foreach ((Literal<Fact> literal, ActionSchema? schema) in wanted)
+        {
+            int index = remaining.FindIndex(block =>
+                block[^1].PurposeStepId == -1 && block[^1].Purpose.Equals(literal) && (schema is null || ReferenceEquals(block[^1].Schema, schema)));
+            if (index < 0) continue;
+
+            List<SerialStep> block = remaining[index];
+            remaining.RemoveAt(index);
+            // The first of the remaining blocks is next in either order.
+            if (index == 0 || reference.WithStepOrder(agreeing.Append(block).Concat(remaining).SelectMany(steps => steps)).IsSolution())
+            {
+                agreeing.Add(block);
+                isReordered |= index > 0;
+            }
+            else
+            {
+                remaining.Insert(index, block);
+            }
+        }
+
+        return isReordered ? reference.WithStepOrder(agreeing.Concat(remaining).SelectMany(steps => steps)) : reference;
+    }
+
+    // Steps left after the last goal step, which a pruned reference can have, form a block without one.
+    private static List<List<SerialStep>> GoalBlocks(SerialPlan reference)
+    {
+        var blocks = new List<List<SerialStep>>();
+        var block = new List<SerialStep>();
+        foreach (SerialStep step in reference.Steps)
+        {
+            block.Add(step);
+            if (step.PurposeStepId != -1) continue;
+
+            blocks.Add(block);
+            block = new List<SerialStep>();
+        }
+
+        if (block.Count > 0) blocks.Add(block);
+        return blocks;
     }
 
     // An error that asks for a step standing for the reference step.
