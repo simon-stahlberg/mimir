@@ -177,6 +177,42 @@ def use_public_api(
     _ = plan_links, plan_tombstones, plan_round, ordered, closure, ghosts, first_kind, first_resolver
     _ = resolver_kind, step_kind, layout.resolver_node_ids, edit.applied_count, plan_solved, linearized
     _ = plan_copy, plan_relations, subset_plan, subset_reference
+    serial_plan: pymimir.SerialPlan = pymimir.SerialPlan.empty(problem)
+    serial_reference: pymimir.plan_space.SerialPlan | None = pymimir.serial_search(problem, max_expansions=1000, timeout_seconds=1.0)
+    serial_steps: tuple[pymimir.SerialStep, ...] = serial_plan.steps
+    serial_purpose: pymimir.GroundLiteral | None = serial_steps[0].purpose if serial_steps else None
+    serial_round: int = serial_plan.round
+    serial_diagnosis: pymimir.SerialDiagnosis = serial_plan.diagnose()
+    serial_errors: tuple[pymimir.SerialError, ...] = serial_diagnosis.errors
+    serial_candidates: tuple[pymimir.GhostStep, ...] = serial_diagnosis.candidates
+    serial_supports: tuple[pymimir.SerialSupport, ...] = serial_diagnosis.supports
+    serial_unused: tuple[int, ...] = serial_diagnosis.unused_step_ids
+    serial_diagnosed: bool = serial_diagnosis.is_solution
+    serial_owner: pymimir.SerialPlan = serial_diagnosis.plan
+    serial_error_kind: pymimir.SerialErrorKind | None = serial_errors[0].kind if serial_errors else None
+    serial_error_literal: pymimir.GroundLiteral | None = serial_errors[0].literal if serial_errors else None
+    serial_repair: pymimir.SerialRepair | None = serial_errors[0].repairs[0] if serial_errors else None
+    serial_repair_kind: pymimir.SerialRepairKind = pymimir.SerialRepairKind.NOOP
+    serial_layout: pymimir.SerialEncodingLayout = pymimir.encode_serial_plan(context, serial_plan, serial_diagnosis, suffix="_serial")
+    if serial_reference is not None:
+        serial_targets: pymimir.SerialOracleTargets = pymimir.serial_oracle_targets(serial_plan, serial_diagnosis, serial_reference)
+        serial_edit: pymimir.SerialEditResult = serial_plan.apply(
+            serial_diagnosis,
+            serial_targets.repair_index_per_error,
+            serial_targets.step_ids_to_delete,
+        )
+        serial_actions: list[pymimir.GroundAction] = serial_reference.to_actions()
+        _ = serial_edit.dropped_error_indices, serial_actions
+    serial_solved: bool = serial_plan.is_solution()
+    serial_copy: pymimir.SerialPlan = serial_plan.clone()
+    serial_goal: pymimir.GroundConjunctiveCondition = serial_plan.goal
+    serial_relabeled: pymimir.SerialPlan = serial_plan.with_goal(problem.goal)
+    serial_pruned: pymimir.SerialPlan = serial_relabeled.prune_to_achieved_goal()
+    serial_subset: pymimir.SerialPlan = pymimir.SerialPlan.empty(problem, goal=serial_pruned.goal)
+    serial_relations: list[tuple[str, int]] = pymimir.serial_plan_relations(problem.domain, "_serial")
+    _ = serial_purpose, serial_round, serial_candidates, serial_supports, serial_unused, serial_diagnosed, serial_owner
+    _ = serial_error_kind, serial_error_literal, serial_repair, serial_repair_kind, serial_layout.repair_node_ids
+    _ = serial_solved, serial_copy, serial_goal, serial_subset, serial_relations
     context.end_instance()
     relation_buffer: pymimir.RelationBuffer = context.to_relation_buffer()
     relation_values: memoryview = relation_buffer.values

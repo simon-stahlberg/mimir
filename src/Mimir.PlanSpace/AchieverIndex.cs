@@ -88,6 +88,7 @@ public sealed class AchieverIndex
 {
     private readonly Domain _domain;
     private readonly Dictionary<Predicate, List<(ActionSchema Schema, Atom<Fluent> Effect)>> _addEffectsByPredicate = new();
+    private readonly Dictionary<Predicate, List<(ActionSchema Schema, Atom<Fluent> Effect)>> _deleteEffectsByPredicate = new();
 
     public AchieverIndex(Domain domain)
     {
@@ -97,11 +98,12 @@ public sealed class AchieverIndex
         {
             foreach (ConditionalEffect effect in schema.Effects)
             {
-                if (!effect.IsUnconditional || effect.Effect.IsNegative) continue;
-                if (!_addEffectsByPredicate.TryGetValue(effect.Effect.Value.Predicate, out List<(ActionSchema, Atom<Fluent>)>? achievers))
+                if (!effect.IsUnconditional) continue;
+                Dictionary<Predicate, List<(ActionSchema, Atom<Fluent>)>> effectsByPredicate = effect.Effect.IsPositive ? _addEffectsByPredicate : _deleteEffectsByPredicate;
+                if (!effectsByPredicate.TryGetValue(effect.Effect.Value.Predicate, out List<(ActionSchema, Atom<Fluent>)>? achievers))
                 {
                     achievers = new List<(ActionSchema, Atom<Fluent>)>();
-                    _addEffectsByPredicate.Add(effect.Effect.Value.Predicate, achievers);
+                    effectsByPredicate.Add(effect.Effect.Value.Predicate, achievers);
                 }
 
                 achievers.Add((schema, effect.Effect.Value));
@@ -109,10 +111,14 @@ public sealed class AchieverIndex
         }
     }
 
-    public IReadOnlyList<GhostStep> Achievers(Fact<Fluent> fact)
+    public IReadOnlyList<GhostStep> Achievers(Fact<Fluent> fact) => Unifying(_addEffectsByPredicate, fact);
+
+    public IReadOnlyList<GhostStep> Deleters(Fact<Fluent> fact) => Unifying(_deleteEffectsByPredicate, fact);
+
+    private IReadOnlyList<GhostStep> Unifying(Dictionary<Predicate, List<(ActionSchema Schema, Atom<Fluent> Effect)>> effectsByPredicate, Fact<Fluent> fact)
     {
         ArgumentNullException.ThrowIfNull(fact);
-        if (!_addEffectsByPredicate.TryGetValue(fact.Predicate, out List<(ActionSchema Schema, Atom<Fluent> Effect)>? candidates)) return [];
+        if (!effectsByPredicate.TryGetValue(fact.Predicate, out List<(ActionSchema Schema, Atom<Fluent> Effect)>? candidates)) return [];
 
         var ghosts = new List<GhostStep>();
         foreach ((ActionSchema schema, Atom<Fluent> effect) in candidates)

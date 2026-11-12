@@ -152,7 +152,7 @@ public static partial class Encoding
                     break;
                 default:
                     context.GetOrCreateRelation($"plan_step{suffix}").Add(node);
-                    AppendSchemaInstance(context, suffix, node, step.Schema!, step.Binding, layout.ParameterNodeIds[index]);
+                    AppendSchemaInstance(context, "plan", suffix, node, step.Schema!, step.Binding, layout.ParameterNodeIds[index]);
                     break;
             }
         }
@@ -161,7 +161,7 @@ public static partial class Encoding
         {
             int node = layout.GhostNodeIds[index];
             context.GetOrCreateRelation($"plan_ghost{suffix}").Add(node);
-            AppendSchemaInstance(context, suffix, node, ghosts[index].Schema, ghosts[index].Binding, layout.GhostParameterNodeIds[index]);
+            AppendSchemaInstance(context, "plan", suffix, node, ghosts[index].Schema, ghosts[index].Binding, layout.GhostParameterNodeIds[index]);
         }
 
         foreach ((int before, int after) in ordering)
@@ -287,13 +287,14 @@ public static partial class Encoding
 
     private static void AppendSchemaInstance(
         EncodingContext context,
+        string prefix,
         string suffix,
         int node,
         ActionSchema schema,
         IReadOnlyList<Constant?> binding,
         int[] parameterNodes)
     {
-        List<int> action = context.GetOrCreateRelation($"plan_action_{schema.Name}{suffix}");
+        List<int> action = context.GetOrCreateRelation($"{prefix}_action_{schema.Name}{suffix}");
         action.Add(node);
         action.AddRange(parameterNodes);
         for (int index = 0; index < binding.Count; index++)
@@ -301,10 +302,10 @@ public static partial class Encoding
             Constant? value = binding[index];
             if (value is null)
             {
-                context.GetOrCreateRelation($"plan_unbound{suffix}").Add(parameterNodes[index]);
+                context.GetOrCreateRelation($"{prefix}_unbound{suffix}").Add(parameterNodes[index]);
                 continue;
             }
-            AppendPair(context, $"plan_bound{suffix}", parameterNodes[index], context.GetObjectId(value));
+            AppendPair(context, $"{prefix}_bound{suffix}", parameterNodes[index], context.GetObjectId(value));
         }
     }
 

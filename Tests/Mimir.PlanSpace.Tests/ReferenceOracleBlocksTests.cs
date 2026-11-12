@@ -9,7 +9,7 @@ namespace Mimir.PlanSpace.Tests;
 
 public class ReferenceOracleBlocksTests
 {
-    // Reference plans produced by GBFS/FF on Blocksworld; the test skips when the directory is absent.
+    // Reference plans produced by GBFS/FF on Blocksworld; the test skips when they are absent.
     private const string ReferencesPath = "/private/tmp/claude-501/-Users-simonstahlberg-git-foundation-planning-models/ca055d87-c424-4bc2-b8a0-814476536e43/scratchpad/sizes/blocks";
     private static readonly PlanSpaceOptions NoTombstones = new();
     private readonly ITestOutputHelper _output;
@@ -122,10 +122,11 @@ public class ReferenceOracleBlocksTests
     [Fact]
     public void GreedyRolloutReproducesEveryReferencePlan()
     {
-        if (!Directory.Exists(ReferencesPath)) return;
+        string referencesFile = Path.Combine(ReferencesPath, "references.json");
+        if (!File.Exists(referencesFile)) return;
 
         Domain domain = Domain.FromFile(Path.Combine(ReferencesPath, "domain.pddl"));
-        var references = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(File.ReadAllText(Path.Combine(ReferencesPath, "references.json")))!;
+        var references = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(File.ReadAllText(referencesFile))!;
         var failures = new List<string>();
         var watch = Stopwatch.StartNew();
         foreach ((string file, List<string> plan) in references.OrderBy(pair => pair.Key))

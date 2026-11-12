@@ -111,11 +111,26 @@ from .plan_space import (
     PlanStep,
     Resolver,
     ResolverKind,
+    SerialDiagnosis,
+    SerialEditResult,
+    SerialEncodingLayout,
+    SerialError,
+    SerialErrorKind,
+    SerialOracleTargets,
+    SerialPlan,
+    SerialRepair,
+    SerialRepairKind,
+    SerialStep,
+    SerialSupport,
     StepKind,
     Tombstone,
     encode_partial_plan,
+    encode_serial_plan,
     oracle_targets,
     partial_plan_relations,
+    serial_oracle_targets,
+    serial_plan_relations,
+    serial_search,
 )
 
 __version__: str = "0.14.0b6"
@@ -156,6 +171,9 @@ __all__ = [
     "plan_space", "StepKind", "FlawKind", "ResolverKind", "PlanStep", "CausalLink", "Tombstone",
     "GhostStep", "Resolver", "Flaw", "FlawSet", "EditResult", "OracleTargets", "PartialOrderPlan",
     "oracle_targets", "PlanEncodingLayout", "encode_partial_plan", "partial_plan_relations",
+    "SerialErrorKind", "SerialRepairKind", "SerialStep", "SerialRepair", "SerialError", "SerialSupport",
+    "SerialDiagnosis", "SerialEditResult", "SerialOracleTargets", "SerialPlan", "serial_search",
+    "serial_oracle_targets", "SerialEncodingLayout", "encode_serial_plan", "serial_plan_relations",
     # Errors
     "MimirError", "PddlError", "StateSpaceLimitExceeded", "UnsupportedError",
 ]
