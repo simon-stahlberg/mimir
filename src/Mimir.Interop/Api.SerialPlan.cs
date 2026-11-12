@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using Mimir.Core.Grounding;
 using Mimir.Core.Schemas;
-using Mimir.Learning;
 using Mimir.PlanSpace;
 using GroundAction = Mimir.Core.Grounding.Action;
 
@@ -10,17 +9,14 @@ namespace Mimir.Interop;
 // Serial-plan values cross the boundary as flat int32 arrays. Every array is read with a
 // get_*_value_count call followed by a copy_* call into a caller-owned buffer. Record layouts:
 //
-// * steps:          per step      [id, schemaIndex, isFullyBound, purposeStepId, k, objectIndex | -1 × k]
-// * errors:         per error     [kind, stepId, parameterIndex, repairCount,
-//                                  per repair: kind, candidateIndex, parameterIndex, objectIndex | -1]
-// * candidates:     per candidate [schemaIndex, k, objectIndex | -1 × k]
-// * supports:       per support   [producerStepId, consumerStepId]
-// * unused steps:   [stepId…]
-// * edit result:    [appliedCount, droppedCount, createdCount, deletedCount, dropped…, created…, deleted…]
-// * oracle targets: [matchedStepCount, errorCount, deleteCount, repairIndex…, stepIdsToDelete…]
-// * layout:         [initialNode, goalNode, stepCount, stepNode…, per step: k, parameterNode × k,
-//                    candidateCount, candidateNode…, per candidate: k, parameterNode × k,
-//                    errorCount, errorNode…, per error: repairCount, repairNode…]
+// * steps:           per step      [id, schemaIndex, k, objectIndex × k]
+// * errors:          per error     [kind, stepId, culpritStepId, candidateCount, candidateIndex…]
+// * edits:           [insertCount, per insert: point, schemaIndex, k, objectIndex × k, deleteCount, stepId…,
+//                     moveCount, per move: stepId, point, rebindCount, per rebind: stepId, k, objectIndex × k]
+// * candidates:      per candidate [schemaIndex, k, objectIndex | -1 × k]
+// * supports:        per support   [producerStepId, consumerStepId]
+// * unused steps:    [stepId…]
+// * options:         [objectIndex…]
 //
 // Schema indices refer to Domain.Actions and object indices to Problem.AllObjects.
 public static partial class Exports
@@ -95,10 +91,6 @@ public static partial class Exports
         return CreateHandle(plan.Clone);
     }
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_round")]
-    public static int SerialPlanGetRound(int planHandle)
-        => ReadValue(planHandle, -1, (SerialPlan plan) => plan.Round);
-
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_is_solution")]
     public static int SerialPlanIsSolution(int planHandle)
     {
@@ -117,15 +109,13 @@ public static partial class Exports
     public static int SerialPlanCopySteps(int planHandle, IntPtr destination, int capacity)
         => ReadValue(planHandle, -1, (SerialPlan plan) => CopyInt32Values(StepValues(plan), destination, capacity, "steps"));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_step_purpose")]
-    public static int SerialPlanGetStepPurpose(int planHandle, int stepIndex)
-    {
-        SerialPlan? plan = GetLearningHandle<SerialPlan>(planHandle);
-        if (plan is null)
-            return 0;
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_parameter_option_count")]
+    public static int SerialPlanGetParameterOptionCount(int planHandle, int schemaIndex, int parameterIndex)
+        => ReadValue(planHandle, -1, (SerialPlan plan) => ParameterOptionValues(plan, schemaIndex, parameterIndex).Count);
 
-        return CreateHandle(() => plan.Steps[stepIndex].Purpose);
-    }
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_copy_parameter_options")]
+    public static int SerialPlanCopyParameterOptions(int planHandle, int schemaIndex, int parameterIndex, IntPtr destination, int capacity)
+        => ReadValue(planHandle, -1, (SerialPlan plan) => CopyInt32Values(ParameterOptionValues(plan, schemaIndex, parameterIndex), destination, capacity, "options"));
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_diagnose")]
     public static int SerialPlanDiagnose(int planHandle)
@@ -137,29 +127,47 @@ public static partial class Exports
         return CreateHandle(plan.Diagnose);
     }
 
+    // Returns 1, or 0 with a recorded error when the edits do not fit the plan.
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_apply")]
-    public static int SerialPlanApply(
-        int planHandle,
-        int diagnosisHandle,
-        IntPtr repairIndicesPtr,
-        int repairCount,
-        IntPtr stepIdsPtr,
-        int stepIdCount)
+    public static int SerialPlanApply(int planHandle, IntPtr editsPtr, int editCount)
+    {
+        int[]? edits = ReadLearningInt32Array(editsPtr, editCount, "edits");
+        if (edits is null)
+            return 0;
+
+        return ReadValue(planHandle, 0, (SerialPlan plan) =>
+        {
+            plan.Apply(ReadEdits(plan.Problem, edits));
+            return 1;
+        });
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_step_precondition_count")]
+    public static int SerialPlanGetStepPreconditionCount(int planHandle, int stepIndex)
+        => ReadValue(planHandle, -1, (SerialPlan plan) => plan.Steps[stepIndex].Preconditions.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_step_precondition")]
+    public static int SerialPlanGetStepPrecondition(int planHandle, int stepIndex, int index)
     {
         SerialPlan? plan = GetLearningHandle<SerialPlan>(planHandle);
         if (plan is null)
             return 0;
-        SerialDiagnosis? diagnosis = GetLearningHandle<SerialDiagnosis>(diagnosisHandle);
-        if (diagnosis is null)
-            return 0;
-        int[]? repairIndices = ReadLearningInt32Array(repairIndicesPtr, repairCount, "chosenRepairIndex");
-        if (repairIndices is null)
-            return 0;
-        int[]? stepIds = ReadLearningInt32Array(stepIdsPtr, stepIdCount, "stepIdsToDelete");
-        if (stepIds is null)
+
+        return CreateHandle(() => plan.Steps[stepIndex].Preconditions[index]);
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_step_effect_count")]
+    public static int SerialPlanGetStepEffectCount(int planHandle, int stepIndex)
+        => ReadValue(planHandle, -1, (SerialPlan plan) => plan.Steps[stepIndex].Effects.Count);
+
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_plan_get_step_effect")]
+    public static int SerialPlanGetStepEffect(int planHandle, int stepIndex, int index)
+    {
+        SerialPlan? plan = GetLearningHandle<SerialPlan>(planHandle);
+        if (plan is null)
             return 0;
 
-        return CreateHandle(() => plan.Apply(diagnosis, repairIndices, stepIds));
+        return CreateHandle(() => plan.Steps[stepIndex].Effects[index]);
     }
 
     // The returned list is read with mimir_serial_action_list_get_count and _get_action.
@@ -202,8 +210,7 @@ public static partial class Exports
         if (diagnosis is null)
             return 0;
 
-        return CreateHandle(() => diagnosis.Errors[errorIndex].Literal
-            ?? throw new InvalidOperationException($"Error {errorIndex} has no literal."));
+        return CreateHandle(() => diagnosis.Errors[errorIndex].Literal);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "mimir_serial_diagnosis_get_candidate_value_count")]
@@ -240,97 +247,18 @@ public static partial class Exports
     public static int SerialDiagnosisCopyUnusedSteps(int diagnosisHandle, IntPtr destination, int capacity)
         => ReadValue(diagnosisHandle, -1, (SerialDiagnosis diagnosis) => CopyInt32Values(diagnosis.UnusedStepIds, destination, capacity, "unused steps"));
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_edit_result_get_value_count")]
-    public static int SerialEditResultGetValueCount(int resultHandle)
-        => ReadValue(resultHandle, -1, (SerialEditResult result) => EditResultValues(result).Count);
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_diagnosis_get_final_fact_count")]
+    public static int SerialDiagnosisGetFinalFactCount(int diagnosisHandle)
+        => ReadValue(diagnosisHandle, -1, (SerialDiagnosis diagnosis) => diagnosis.FinalTrueFacts.Count);
 
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_edit_result_copy_values")]
-    public static int SerialEditResultCopyValues(int resultHandle, IntPtr destination, int capacity)
-        => ReadValue(resultHandle, -1, (SerialEditResult result) => CopyInt32Values(EditResultValues(result), destination, capacity, "edit result"));
-
-    // Returns 0 without recording an error when the search finds no plan within its budget.
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_search")]
-    public static int SerialSearchSolve(int problemHandle, int maxExpansions, double timeoutSeconds)
+    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_diagnosis_get_final_fact")]
+    public static int SerialDiagnosisGetFinalFact(int diagnosisHandle, int factIndex)
     {
-        Problem? problem = GetLearningHandle<Problem>(problemHandle);
-        if (problem is null)
-            return 0;
-
-        try
-        {
-            return ObjectRegistry.Store(SerialSearch.Solve(problem, maxExpansions, TimeSpan.FromSeconds(timeoutSeconds)));
-        }
-        catch (Exception exception)
-        {
-            RecordError(exception);
-            return 0;
-        }
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_oracle_targets")]
-    public static int SerialOracleComputeTargets(int currentHandle, int diagnosisHandle, int referenceHandle)
-    {
-        SerialPlan? current = GetLearningHandle<SerialPlan>(currentHandle);
-        if (current is null)
-            return 0;
         SerialDiagnosis? diagnosis = GetLearningHandle<SerialDiagnosis>(diagnosisHandle);
         if (diagnosis is null)
             return 0;
-        SerialPlan? reference = GetLearningHandle<SerialPlan>(referenceHandle);
-        if (reference is null)
-            return 0;
 
-        return CreateHandle(() => SerialOracle.Targets(current, diagnosis, reference));
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_oracle_targets_get_value_count")]
-    public static int SerialOracleTargetsGetValueCount(int targetsHandle)
-        => ReadValue(targetsHandle, -1, (SerialOracleTargets targets) => OracleTargetValues(targets).Count);
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_oracle_targets_copy_values")]
-    public static int SerialOracleTargetsCopyValues(int targetsHandle, IntPtr destination, int capacity)
-        => ReadValue(targetsHandle, -1, (SerialOracleTargets targets) => CopyInt32Values(OracleTargetValues(targets), destination, capacity, "oracle targets"));
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_encode_plan")]
-    public static int SerialEncodePlan(int contextHandle, int planHandle, int diagnosisHandle, IntPtr suffixPtr)
-    {
-        EncodingContext? context = GetLearningHandle<EncodingContext>(contextHandle);
-        if (context is null)
-            return 0;
-        SerialPlan? plan = GetLearningHandle<SerialPlan>(planHandle);
-        if (plan is null)
-            return 0;
-        SerialDiagnosis? diagnosis = GetLearningHandle<SerialDiagnosis>(diagnosisHandle);
-        if (diagnosis is null)
-            return 0;
-        string? suffix = GetLearningSuffix(suffixPtr);
-        if (suffix is null)
-            return 0;
-
-        return CreateHandle(() => Encoding.EncodeSerialPlan(context, plan, diagnosis, suffix));
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_layout_get_value_count")]
-    public static int SerialLayoutGetValueCount(int layoutHandle)
-        => ReadValue(layoutHandle, -1, (SerialEncodingLayout layout) => LayoutValues(layout).Count);
-
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_layout_copy_values")]
-    public static int SerialLayoutCopyValues(int layoutHandle, IntPtr destination, int capacity)
-        => ReadValue(layoutHandle, -1, (SerialEncodingLayout layout) => CopyInt32Values(LayoutValues(layout), destination, capacity, "layout"));
-
-    // One "name arity" entry per line.
-    [UnmanagedCallersOnly(EntryPoint = "mimir_serial_relations")]
-    public static IntPtr SerialRelations(int domainHandle, IntPtr suffixPtr)
-    {
-        string? suffix = GetLearningSuffix(suffixPtr);
-        if (suffix is null)
-            return IntPtr.Zero;
-
-        return ReadValue(domainHandle, IntPtr.Zero, (Domain domain) =>
-        {
-            IReadOnlyList<(string Name, int Arity)> relations = Encoding.SerialPlanRelations(domain, suffix);
-            return AllocUtf8(string.Join("\n", relations.Select(relation => $"{relation.Name} {relation.Arity}")));
-        });
+        return CreateHandle(() => diagnosis.FinalTrueFacts[factIndex]);
     }
 
     private static Dictionary<Constant, int> ObjectIndices(Problem problem)
@@ -366,37 +294,34 @@ public static partial class Exports
         {
             values.Add(step.Id);
             values.Add(SchemaIndex(plan.Problem.Domain, step.Schema));
-            values.Add(step.IsFullyBound ? 1 : 0);
-            values.Add(step.PurposeStepId);
             AppendBinding(values, step.Binding, objectIndices);
         }
         return values;
     }
 
+    private static List<int> ParameterOptionValues(SerialPlan plan, int schemaIndex, int parameterIndex)
+    {
+        Dictionary<Constant, int> objectIndices = ObjectIndices(plan.Problem);
+        return plan.ParameterOptions(plan.Problem.Domain.Actions[schemaIndex], parameterIndex).Select(value => objectIndices[value]).ToList();
+    }
+
     private static List<int> ErrorValues(SerialDiagnosis diagnosis)
     {
-        Dictionary<Constant, int> objectIndices = ObjectIndices(diagnosis.Plan.Problem);
         var values = new List<int>();
         foreach (SerialError error in diagnosis.Errors)
         {
             values.Add((int)error.Kind);
             values.Add(error.StepId);
-            values.Add(error.ParameterIndex);
-            values.Add(error.Repairs.Count);
-            foreach (SerialRepair repair in error.Repairs)
-            {
-                values.Add((int)repair.Kind);
-                values.Add(repair.CandidateIndex);
-                values.Add(repair.ParameterIndex);
-                values.Add(repair.Object is null ? -1 : objectIndices[repair.Object]);
-            }
+            values.Add(error.CulpritStepId);
+            values.Add(error.CandidateIndices.Count);
+            values.AddRange(error.CandidateIndices);
         }
         return values;
     }
 
     private static List<int> CandidateValues(SerialDiagnosis diagnosis)
     {
-        Problem problem = diagnosis.Plan.Problem;
+        Problem problem = diagnosis.Problem;
         Dictionary<Constant, int> objectIndices = ObjectIndices(problem);
         var values = new List<int>();
         foreach (GhostStep candidate in diagnosis.Candidates)
@@ -418,49 +343,42 @@ public static partial class Exports
         return values;
     }
 
-    private static List<int> EditResultValues(SerialEditResult result)
+    private static SerialEdits ReadEdits(Problem problem, int[] values)
     {
-        var values = new List<int>
+        int position = 0;
+        int Next()
         {
-            result.AppliedCount,
-            result.DroppedErrorIndices.Count,
-            result.CreatedStepIds.Count,
-            result.DeletedStepIds.Count,
-        };
-        values.AddRange(result.DroppedErrorIndices);
-        values.AddRange(result.CreatedStepIds);
-        values.AddRange(result.DeletedStepIds);
-        return values;
-    }
+            if (position >= values.Length) throw new ArgumentException("The edits end prematurely.");
+            return values[position++];
+        }
 
-    private static List<int> OracleTargetValues(SerialOracleTargets targets)
-    {
-        var values = new List<int>
+        Constant[] Binding() => Enumerable.Range(0, Next()).Select(_ => problem.AllObjects[Next()]).ToArray();
+        // The fields of a record are read in the order they are written.
+        var inserts = new SerialInsert[Next()];
+        for (int index = 0; index < inserts.Length; index++)
         {
-            targets.MatchedStepCount,
-            targets.RepairIndexPerError.Count,
-            targets.StepIdsToDelete.Count,
-        };
-        values.AddRange(targets.RepairIndexPerError);
-        values.AddRange(targets.StepIdsToDelete);
-        return values;
-    }
+            int point = Next();
+            ActionSchema schema = problem.Domain.Actions[Next()];
+            inserts[index] = new SerialInsert(point, schema, Binding());
+        }
 
-    private static List<int> LayoutValues(SerialEncodingLayout layout)
-    {
-        var values = new List<int> { layout.InitialNodeId, layout.GoalNodeId };
-        AppendCounted(values, layout.StepNodeIds);
-        foreach (int[] parameterNodes in layout.ParameterNodeIds) AppendCounted(values, parameterNodes);
-        AppendCounted(values, layout.CandidateNodeIds);
-        foreach (int[] parameterNodes in layout.CandidateParameterNodeIds) AppendCounted(values, parameterNodes);
-        AppendCounted(values, layout.ErrorNodeIds);
-        foreach (int[] repairNodes in layout.RepairNodeIds) AppendCounted(values, repairNodes);
-        return values;
-    }
+        var deleted = new int[Next()];
+        for (int index = 0; index < deleted.Length; index++) deleted[index] = Next();
+        var moves = new SerialMove[Next()];
+        for (int index = 0; index < moves.Length; index++)
+        {
+            int stepId = Next();
+            moves[index] = new SerialMove(stepId, Next());
+        }
 
-    private static void AppendCounted(List<int> values, int[] ids)
-    {
-        values.Add(ids.Length);
-        values.AddRange(ids);
+        var rebinds = new SerialRebind[Next()];
+        for (int index = 0; index < rebinds.Length; index++)
+        {
+            int stepId = Next();
+            rebinds[index] = new SerialRebind(stepId, Binding());
+        }
+
+        if (position != values.Length) throw new ArgumentException("The edits have trailing values.");
+        return new SerialEdits { Inserts = inserts, DeletedStepIds = deleted, Moves = moves, Rebinds = rebinds };
     }
 }

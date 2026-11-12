@@ -4,146 +4,68 @@ using Action = Mimir.Core.Grounding.Action;
 
 namespace Mimir.PlanSpace;
 
-internal sealed record SerialPrecondition(Atom<Fluent> Atom, Fact<Fluent> Fact, bool IsPositive);
-
-// Condition is empty for an unconditional effect.
-internal sealed record SerialEffect(Fact<Fluent> Fact, bool IsPositive, IReadOnlyList<Literal<Fact>> Condition);
-
-// An effect whose fact is not determined yet: a null argument is open and ranges over the objects of its type.
-internal sealed record SerialOpenEffect(Mimir.Core.Schemas.Predicate<Fluent> Predicate, bool IsPositive, Constant?[] Arguments, string[] Types)
-{
-    public bool Matches(Fact<Fluent> fact, Domain domain)
-    {
-        if (!ReferenceEquals(fact.Predicate, Predicate)) return false;
-        for (int i = 0; i < Arguments.Length; i++)
-        {
-            if (Arguments[i] is null && !domain.IsCompatible(fact.Arguments[i].Type, Types[i])) return false;
-            if (Arguments[i] is not null && !ReferenceEquals(Arguments[i], fact.Arguments[i])) return false;
-        }
-
-        return true;
-    }
-}
-
 public sealed class SerialStep
 {
-    private readonly Constant?[] _binding;
-
     public int Id { get; }
     public ActionSchema Schema { get; }
-    public IReadOnlyList<Constant?> Binding { get; }
-    // The step whose error this step was inserted to repair, -1 when it was inserted for a goal literal.
-    public int PurposeStepId { get; }
-    public Literal<Fact> Purpose { get; }
-    public bool IsFullyBound => Action is not null;
-    internal Action? Action { get; }
-    internal IReadOnlyList<SerialPrecondition> Preconditions { get; }
-    internal IReadOnlyList<SerialEffect> Effects { get; }
-    internal IReadOnlyList<SerialOpenEffect> OpenEffects { get; }
+    public IReadOnlyList<Constant> Binding { get; }
+    internal Action Action { get; }
+    // The fluent preconditions of the schema followed by its static ones, so that two steps of one schema can
+    // be compared precondition by precondition whatever their bindings are.
+    public IReadOnlyList<Literal<Fact>> Preconditions { get; }
+    // The fluent literals the step makes true.
+    public IReadOnlyList<Literal<Fact>> Effects { get; }
 
-    internal SerialStep(int id, ActionSchema schema, Constant?[] binding, int purposeStepId, Literal<Fact> purpose, Problem problem)
+    internal SerialStep(int id, ActionSchema schema, IReadOnlyList<Constant> binding, Problem problem)
     {
-        if (binding.Length != schema.Parameters.Count)
-            throw new ArgumentException($"Action {schema.Name} expects {schema.Parameters.Count} arguments, got {binding.Length}.", nameof(binding));
+        if (binding.Count != schema.Parameters.Count)
+            throw new ArgumentException($"Action {schema.Name} expects {schema.Parameters.Count} arguments, got {binding.Count}.", nameof(binding));
+        for (int i = 0; i < binding.Count; i++)
+        {
+            if (!problem.Domain.IsCompatible(binding[i].Type, schema.Parameters[i].Type))
+                throw new ArgumentException($"Object {binding[i].Name} cannot be parameter {i} of action {schema.Name}.", nameof(binding));
+        }
 
         Id = id;
         Schema = schema;
-        _binding = binding;
-        Binding = Array.AsReadOnly(binding);
-        PurposeStepId = purposeStepId;
-        Purpose = purpose;
-        if (!StaticFilter.Passes(problem, schema, binding))
-            throw new InvalidOperationException($"The static preconditions of {this} do not hold.");
+        Constant[] arguments = binding.ToArray();
+        Binding = Array.AsReadOnly(arguments);
+        Action = problem.GroundAction(schema, arguments);
 
-        Preconditions = BoundPreconditions(problem);
-        var effects = new List<SerialEffect>();
-        var openEffects = new List<SerialOpenEffect>();
-        if (binding.All(constant => constant is not null))
+        var preconditions = new List<Literal<Fact>>();
+        foreach (Literal<Atom<Fluent>> literal in schema.FluentPreconditions)
         {
-            Action = problem.GroundAction(schema, binding.Select(constant => constant!).ToArray());
-            foreach (Literal<Fact> literal in Action.Effect.Literals)
-                effects.Add(new SerialEffect((Fact<Fluent>)literal.Value, literal.IsPositive, []));
-            foreach (GroundConditionalEffect effect in Action.ConditionalEffects)
-                effects.Add(new SerialEffect(effect.Effect.Value, effect.Effect.IsPositive, effect.Condition.Literals));
-        }
-        else
-        {
-            AddSchemaEffects(problem, effects, openEffects);
+            Constant[] atomArguments = SchemaTerms.ResolveBound(schema, literal.Value.Arguments, arguments);
+            preconditions.Add(new Literal<Fact>(problem.Context.RegisterFact(literal.Value.Predicate, atomArguments), literal.Polarity));
         }
 
-        Effects = effects;
-        OpenEffects = openEffects;
-    }
-
-    // Precondition atoms with an unbound argument cannot be judged yet and are left out.
-    private List<SerialPrecondition> BoundPreconditions(Problem problem)
-    {
-        var preconditions = new List<SerialPrecondition>();
-        foreach (Literal<Atom<Fluent>> literal in Schema.FluentPreconditions)
+        foreach (Literal<Atom<Static>> literal in schema.StaticPreconditions)
         {
-            Constant?[] arguments = SchemaTerms.Resolve(Schema, literal.Value.Arguments, _binding);
-            if (arguments.Any(argument => argument is null)) continue;
-
-            Fact<Fluent> fact = problem.Context.RegisterFact(literal.Value.Predicate, arguments.Select(argument => argument!).ToArray());
-            if (preconditions.Any(existing => existing.Fact.Equals(fact) && existing.IsPositive == literal.IsPositive)) continue;
-            preconditions.Add(new SerialPrecondition(literal.Value, fact, literal.IsPositive));
+            Constant[] atomArguments = SchemaTerms.ResolveBound(schema, literal.Value.Arguments, arguments);
+            preconditions.Add(new Literal<Fact>(problem.Context.RegisterFact(literal.Value.Predicate, atomArguments), literal.Polarity));
         }
 
-        return preconditions;
+        Preconditions = preconditions;
+        Effects = Action.Effect.Literals.ToArray();
     }
 
-    // The effects of a partially bound step: a conditional effect may or may not fire, so it leaves every fact of
-    // its predicate open, and an unconditional one leaves the facts open that its unbound arguments can still name.
-    private void AddSchemaEffects(Problem problem, List<SerialEffect> effects, List<SerialOpenEffect> openEffects)
-    {
-        foreach (ConditionalEffect effect in Schema.Effects)
-        {
-            Atom<Fluent> atom = effect.Effect.Value;
-            Mimir.Core.Schemas.Predicate<Fluent> predicate = atom.Predicate;
-            if (!effect.IsUnconditional)
-            {
-                string[] parameterTypes = predicate.Parameters.Select(parameter => parameter.Type).ToArray();
-                openEffects.Add(new SerialOpenEffect(predicate, effect.Effect.IsPositive, new Constant?[parameterTypes.Length], parameterTypes));
-                continue;
-            }
+    internal SerialStep WithBinding(IReadOnlyList<Constant> binding, Problem problem) => new(Id, Schema, binding, problem);
 
-            Constant?[] arguments = SchemaTerms.Resolve(Schema, atom.Arguments, _binding);
-            if (arguments.All(argument => argument is not null))
-            {
-                Fact<Fluent> fact = problem.Context.RegisterFact(predicate, arguments.Select(argument => argument!).ToArray());
-                effects.Add(new SerialEffect(fact, effect.Effect.IsPositive, []));
-                continue;
-            }
-
-            string[] types = atom.Arguments.Select((term, position) => term is Variable variable ? variable.Type : predicate.Parameters[position].Type).ToArray();
-            openEffects.Add(new SerialOpenEffect(predicate, effect.Effect.IsPositive, arguments, types));
-        }
-    }
-
-    internal SerialStep WithBinding(int parameterIndex, Constant value, Problem problem)
-    {
-        var binding = (Constant?[])_binding.Clone();
-        binding[parameterIndex] = value;
-        return new SerialStep(Id, Schema, binding, PurposeStepId, Purpose, problem);
-    }
-
-    public override string ToString()
-        => $"{Id}:({Schema.Name} {string.Join(" ", _binding.Select(constant => constant?.Name ?? "?"))})";
+    public override string ToString() => $"{Id}:({Schema.Name} {string.Join(" ", Binding.Select(constant => constant.Name))})";
 }
 
+// A plan is a sequence of ground actions that need not be executable. Between every two steps, before the
+// first and after the last there is an insertion point; point i is the one before the step at index i.
 public sealed partial class SerialPlan
 {
     private readonly List<SerialStep> _steps = new();
     private readonly AchieverIndex _achievers;
     private int _nextStepId;
-    private int _version;
     private SerialDiagnosis? _diagnosis;
 
     public Problem Problem { get; }
     public IReadOnlyList<Literal<Fact>> Goal { get; }
     public IReadOnlyList<SerialStep> Steps => _steps;
-    public int Round { get; private set; }
-    internal int Version => _version;
 
     private SerialPlan(Problem problem, IReadOnlyList<Literal<Fact>> goal, AchieverIndex achievers)
     {
@@ -166,6 +88,8 @@ public sealed partial class SerialPlan
             throw new NotSupportedException("Numeric preconditions, effects or goals are not supported by the serial plan space.");
         if (problem.Domain.Derived.Count > 0)
             throw new NotSupportedException("Derived predicates are not supported by the serial plan space.");
+        if (problem.Domain.Actions.Any(schema => schema.ConditionalEffects.Count > 0))
+            throw new NotSupportedException("Conditional effects are not supported by the serial plan space.");
 
         ValidateGoal(problem, goal);
         return new SerialPlan(problem, goal, new AchieverIndex(problem.Domain));
@@ -178,10 +102,17 @@ public sealed partial class SerialPlan
         {
             if (!ReferenceEquals(literal.Value.Context, problem.Context))
                 throw new ArgumentException($"Goal literal {literal} belongs to a different problem.", nameof(goal));
-            if (literal.Value is not Fact<Static> fact) continue;
-            if (StaticFilter.Holds(problem, fact.Predicate, fact.Arguments.ToArray()) != literal.IsPositive)
+            if (literal.Value is Fact<Static> fact && StaticFacts.Holds(problem, fact) != literal.IsPositive)
                 throw new InvalidOperationException($"Static goal literal {literal} does not hold, so the goal is unreachable.");
         }
+    }
+
+    // The objects a parameter of the schema can be bound to, in the order of the problem's objects.
+    public IReadOnlyList<Constant> ParameterOptions(ActionSchema schema, int parameterIndex)
+    {
+        ArgumentNullException.ThrowIfNull(schema);
+        string type = schema.Parameters[parameterIndex].Type;
+        return Problem.AllObjects.Where(candidate => Problem.Domain.IsCompatible(candidate.Type, type)).ToArray();
     }
 
     public bool IsSolution() => Diagnose().IsSolution;
@@ -189,23 +120,15 @@ public sealed partial class SerialPlan
     public IReadOnlyList<Action> ToActions()
     {
         if (!IsSolution()) throw new InvalidOperationException($"The plan still has errors; the first is {Diagnose().Errors[0]}.");
-        return _steps.Select(step => step.Action!).ToArray();
+        return _steps.Select(step => step.Action).ToArray();
     }
 
     public SerialPlan Clone() => Clone(Goal);
 
     private SerialPlan Clone(IReadOnlyList<Literal<Fact>> goal)
     {
-        var clone = new SerialPlan(Problem, goal, _achievers) { Round = Round, _nextStepId = _nextStepId, _version = _version };
+        var clone = new SerialPlan(Problem, goal, _achievers) { _nextStepId = _nextStepId };
         clone._steps.AddRange(_steps);
-        return clone;
-    }
-
-    internal SerialPlan WithStepOrder(IEnumerable<SerialStep> steps)
-    {
-        SerialPlan clone = Clone();
-        clone._steps.Clear();
-        clone._steps.AddRange(steps);
         return clone;
     }
 
@@ -239,7 +162,7 @@ public sealed partial class SerialPlan
             int closureCount = closures.Count;
             foreach (SerialError error in pruned.Errors)
             {
-                if (error.Kind == SerialErrorKind.UnmetGoal) closures.Remove(error.Literal!);
+                if (error.Kind == SerialErrorKind.UnmetGoal) closures.Remove(error.Literal);
                 foreach (Literal<Fact> literal in closures.Keys.Where(literal => closures[literal].Contains(error.StepId)).ToArray())
                     closures.Remove(literal);
             }

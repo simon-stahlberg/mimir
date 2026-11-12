@@ -101,20 +101,15 @@ from .learning import (
 from .plan_space import (
     GhostStep,
     SerialDiagnosis,
-    SerialEditResult,
-    SerialEncodingLayout,
+    SerialEdits,
     SerialError,
     SerialErrorKind,
-    SerialOracleTargets,
+    SerialInsert,
+    SerialMove,
     SerialPlan,
-    SerialRepair,
-    SerialRepairKind,
+    SerialRebind,
     SerialStep,
     SerialSupport,
-    encode_serial_plan,
-    serial_oracle_targets,
-    serial_plan_relations,
-    serial_search,
 )
 
 __version__: str = "0.14.0b6"
@@ -153,9 +148,8 @@ __all__ = [
     "encode_expressive_state", "encode_expressive_goal",
     # Plan space
     "plan_space", "GhostStep",
-    "SerialErrorKind", "SerialRepairKind", "SerialStep", "SerialRepair", "SerialError", "SerialSupport",
-    "SerialDiagnosis", "SerialEditResult", "SerialOracleTargets", "SerialPlan", "serial_search",
-    "serial_oracle_targets", "SerialEncodingLayout", "encode_serial_plan", "serial_plan_relations",
+    "SerialErrorKind", "SerialStep", "SerialError", "SerialSupport",
+    "SerialDiagnosis", "SerialInsert", "SerialMove", "SerialRebind", "SerialEdits", "SerialPlan",
     # Errors
     "MimirError", "PddlError", "StateSpaceLimitExceeded", "UnsupportedError",
 ]

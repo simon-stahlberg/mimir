@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Mimir.Interop" />
-    <InternalsVisibleTo Include="Mimir.Learning" />
     <InternalsVisibleTo Include="Mimir.PlanSpace.Tests" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-"""Plan-space planning: serial plans with their errors and repairs, and their graph encoding."""
+"""Plan-space planning: serial plans, their errors and the edits that change them."""
 
 from __future__ import annotations
 
@@ -6,21 +6,16 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from enum import Enum
 
-from .advanced import free_handle, lib, relationship_value, take_string
+from .advanced import free_handle, lib, relationship_value
 from .advanced._native import _Finalizer, _NativeOwner, _create_finalizer, raise_last_error
-from .learning import (
-    EncodingContext,
-    _copy_ints,
-    _int_pointer,
-    _require_context,
-    _sequence,
-    _validate_suffix,
-)
-from .model import Action, Domain, GroundAction, GroundConjunctiveCondition, GroundLiteral, Object, Problem
+from .learning import _copy_ints, _int_pointer
+from .model import Action, GroundAction, GroundAtom, GroundConjunctiveCondition, GroundLiteral, Object, Problem
 
 
 @dataclass(frozen=True, slots=True)
 class GhostStep:
+    """An achiever of a literal: bound where the literal determines its arguments and ``None`` where they are free."""
+
     schema: Action
     binding: tuple[Object | None, ...]
 
@@ -78,11 +73,9 @@ def _binding(problem: Problem, indices: tuple[int, ...]) -> tuple[Object | None,
     return tuple(None if index < 0 else objects[index] for index in indices)
 
 
-def _int_sequence(values: Sequence[int], name: str) -> list[int]:
-    result = list(_sequence(values, name))
-    if any(type(value) is not int for value in result):
-        raise TypeError(f"{name} must contain only integers")
-    return result
+def _full_binding(problem: Problem, indices: tuple[int, ...]) -> tuple[Object, ...]:
+    objects = problem.all_objects
+    return tuple(objects[index] for index in indices)
 
 
 def _goal_handles(problem: Problem, goal: GroundConjunctiveCondition) -> list[int]:
@@ -96,41 +89,28 @@ def _goal_handles(problem: Problem, goal: GroundConjunctiveCondition) -> list[in
 class SerialErrorKind(Enum):
     UNSATISFIED_PRECONDITION = 0
     UNMET_GOAL = 1
-    UNBOUND_PARAMETER = 2
-
-
-class SerialRepairKind(Enum):
-    NOOP = 0
-    INSERT = 1
-    BIND = 2
-    REBIND = 3
 
 
 @dataclass(frozen=True, slots=True)
 class SerialStep:
     id: int
     schema: Action
-    binding: tuple[Object | None, ...]
-    is_fully_bound: bool
-    purpose_step_id: int
-    purpose: GroundLiteral
-
-
-@dataclass(frozen=True, slots=True)
-class SerialRepair:
-    kind: SerialRepairKind
-    candidate_index: int
-    parameter_index: int
-    object: Object | None
+    binding: tuple[Object, ...]
 
 
 @dataclass(frozen=True, slots=True)
 class SerialError:
+    """A false precondition of a step, or an unmet goal literal (``step_id`` -1), with the candidates that make it true.
+
+    The candidates are indices into :attr:`SerialDiagnosis.candidates`.
+    """
+
     kind: SerialErrorKind
     step_id: int
-    literal: GroundLiteral | None
-    parameter_index: int
-    repairs: tuple[SerialRepair, ...]
+    literal: GroundLiteral
+    candidate_indices: tuple[int, ...]
+    # The step that last gave the atom the value the literal rejects, -1 when it has that value from the start.
+    culprit_step_id: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,30 +121,41 @@ class SerialSupport:
 
 
 @dataclass(frozen=True, slots=True)
-class SerialEditResult:
-    applied_count: int
-    dropped_error_indices: tuple[int, ...]
-    created_step_ids: tuple[int, ...]
-    deleted_step_ids: tuple[int, ...]
+class SerialInsert:
+    point: int
+    schema: Action
+    binding: tuple[Object, ...]
 
 
 @dataclass(frozen=True, slots=True)
-class SerialOracleTargets:
-    repair_index_per_error: tuple[int, ...]
-    step_ids_to_delete: tuple[int, ...]
-    matched_step_count: int
+class SerialMove:
+    step_id: int
+    point: int
 
 
 @dataclass(frozen=True, slots=True)
-class SerialEncodingLayout:
-    initial_node_id: int
-    goal_node_id: int
-    step_node_ids: tuple[int, ...]
-    parameter_node_ids: tuple[tuple[int, ...], ...]
-    candidate_node_ids: tuple[int, ...]
-    candidate_parameter_node_ids: tuple[tuple[int, ...], ...]
-    error_node_ids: tuple[int, ...]
-    repair_node_ids: tuple[tuple[int, ...], ...]
+class SerialRebind:
+    step_id: int
+    binding: tuple[Object, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SerialEdits:
+    """The edits of one round.
+
+    All of them refer to the plan as it is before the round: a point is the
+    insertion point before the step at that index (so a plan of ``n`` steps has
+    ``n + 1`` points), and a step is named by its id. The new plan is read off
+    point by point in the old order: the steps that enter at the point, inserted
+    ones in the order given and then moved ones in their old order, followed by
+    the old step after the point unless it was deleted or moved away. A rebound
+    step keeps its id and gets its new binding wherever it ends up.
+    """
+
+    inserts: tuple[SerialInsert, ...] = ()
+    deleted_step_ids: tuple[int, ...] = ()
+    moves: tuple[SerialMove, ...] = ()
+    rebinds: tuple[SerialRebind, ...] = ()
 
 
 def _literal(handle: int, problem: Problem, what: str) -> GroundLiteral:
@@ -174,7 +165,7 @@ def _literal(handle: int, problem: Problem, what: str) -> GroundLiteral:
 
 
 class SerialPlan(_NativeOwner):
-    """Native owner of one totally ordered plan whose steps may be partially bound and need not be executable."""
+    """Native owner of one sequence of ground actions that need not be executable."""
 
     __slots__ = ("_handle", "_finalizer", "_problem", "__weakref__")
 
@@ -183,7 +174,7 @@ class SerialPlan(_NativeOwner):
     _problem: Problem
 
     def __init__(self) -> None:
-        raise TypeError("use SerialPlan.empty() or serial_search()")
+        raise TypeError("use SerialPlan.empty()")
 
     @classmethod
     def _from_handle(cls, handle: int, problem: Problem) -> SerialPlan:
@@ -244,13 +235,6 @@ class SerialPlan(_NativeOwner):
         return SerialPlan._from_handle(handle, self._problem)
 
     @property
-    def round(self) -> int:
-        value = int(lib.mimir_serial_plan_get_round(self._handle))
-        if value < 0:
-            raise_last_error("native returned an invalid plan round")
-        return value
-
-    @property
     def steps(self) -> tuple[SerialStep, ...]:
         reader = _read_values(
             lib.mimir_serial_plan_get_step_value_count,
@@ -262,66 +246,67 @@ class SerialPlan(_NativeOwner):
         while reader.has_more():
             step_id = reader.next()
             schema = _schema(self._problem, reader.next())
-            is_fully_bound = reader.next() == 1
-            purpose_step_id = reader.next()
-            binding = _binding(self._problem, reader.take_counted())
-            purpose_handle = int(lib.mimir_serial_plan_get_step_purpose(self._handle, len(steps)))
-            purpose = _literal(purpose_handle, self._problem, "a step purpose")
-            steps.append(SerialStep(step_id, schema, binding, is_fully_bound, purpose_step_id, purpose))
+            steps.append(SerialStep(step_id, schema, _full_binding(self._problem, reader.take_counted())))
         reader.finish()
         return tuple(steps)
+
+    def parameter_options(self, schema: Action, parameter_index: int) -> tuple[Object, ...]:
+        """The objects a parameter of ``schema`` can be bound to, in the order of the problem's objects."""
+
+        schema_index = self._problem.domain.actions.index(schema)
+        count = int(lib.mimir_serial_plan_get_parameter_option_count(self._handle, schema_index, parameter_index))
+        indices = _copy_ints(
+            lambda handle, destination, capacity: lib.mimir_serial_plan_copy_parameter_options(
+                handle, schema_index, parameter_index, destination, capacity
+            ),
+            self._handle,
+            count,
+            "parameter option",
+        )
+        return _full_binding(self._problem, tuple(indices))
 
     def diagnose(self) -> SerialDiagnosis:
         handle = int(lib.mimir_serial_plan_diagnose(self._handle))
         return SerialDiagnosis._from_handle(handle, self)
 
-    def apply(
-        self,
-        diagnosis: SerialDiagnosis,
-        chosen_repair_index: Sequence[int],
-        step_ids_to_delete: Sequence[int],
-    ) -> SerialEditResult:
-        if not isinstance(diagnosis, SerialDiagnosis):
-            raise TypeError("diagnosis must be a SerialDiagnosis")
-        if diagnosis.plan is not self:
-            raise ValueError("diagnosis was computed from a different plan")
-        repair_indices = _int_sequence(chosen_repair_index, "chosen_repair_index")
-        step_ids = _int_sequence(step_ids_to_delete, "step_ids_to_delete")
-        repair_pointer, _repair_array = _int_pointer(repair_indices)
-        step_pointer, _step_array = _int_pointer(step_ids)
-        handle = int(
-            lib.mimir_serial_plan_apply(
-                self._handle,
-                diagnosis._handle,
-                repair_pointer,
-                len(repair_indices),
-                step_pointer,
-                len(step_ids),
-            )
-        )
-        if handle == 0:
+    def apply(self, edits: SerialEdits) -> None:
+        """Change the plan by ``edits``; a diagnosis computed before no longer describes it."""
+
+        if not isinstance(edits, SerialEdits):
+            raise TypeError("edits must be SerialEdits")
+        values = _edit_values(self._problem, edits)
+        pointer, _array = _int_pointer(values)
+        if int(lib.mimir_serial_plan_apply(self._handle, pointer, len(values))) != 1:
             raise_last_error("could not apply the plan edits")
-        try:
-            reader = _read_values(
-                lib.mimir_serial_edit_result_get_value_count,
-                lib.mimir_serial_edit_result_copy_values,
-                handle,
-                "serial edit result",
-            )
-        finally:
-            free_handle(handle)
-        applied_count = reader.next()
-        dropped_count = reader.next()
-        created_count = reader.next()
-        deleted_count = reader.next()
-        result = SerialEditResult(
-            applied_count,
-            reader.take(dropped_count),
-            reader.take(created_count),
-            reader.take(deleted_count),
+
+    def preconditions(self, step_index: int) -> tuple[GroundLiteral, ...]:
+        """The literals the step at ``step_index`` needs: the fluent preconditions of its schema, then the static ones.
+
+        Two steps of one schema list their preconditions in the same order whatever their bindings are.
+        """
+
+        return self._step_literals(
+            step_index, lib.mimir_serial_plan_get_step_precondition_count, lib.mimir_serial_plan_get_step_precondition, "precondition"
         )
-        reader.finish()
-        return result
+
+    def effects(self, step_index: int) -> tuple[GroundLiteral, ...]:
+        """The fluent literals the step at ``step_index`` makes true."""
+
+        return self._step_literals(step_index, lib.mimir_serial_plan_get_step_effect_count, lib.mimir_serial_plan_get_step_effect, "effect")
+
+    def _step_literals(
+        self,
+        step_index: int,
+        count_function: Callable[[int, int], int],
+        literal_function: Callable[[int, int, int], int],
+        what: str,
+    ) -> tuple[GroundLiteral, ...]:
+        count = int(count_function(self._handle, step_index))
+        if count < 0:
+            raise_last_error(f"could not read the {what}s of step {step_index}")
+        return tuple(
+            _literal(int(literal_function(self._handle, step_index, index)), self._problem, f"a step {what}") for index in range(count)
+        )
 
     def is_solution(self) -> bool:
         return relationship_value(
@@ -352,12 +337,11 @@ class SerialPlan(_NativeOwner):
         return SerialPlan._from_handle(handle, self._problem)
 
     def __repr__(self) -> str:
-        return f"SerialPlan(steps={len(self.steps)}, round={self.round})"
+        return f"SerialPlan(steps={len(self.steps)})"
 
 
 class SerialDiagnosis(_NativeOwner):
-    """Snapshot of one plan's errors, read once; the native diagnosis stays alive because
-    :meth:`SerialPlan.apply`, :func:`serial_oracle_targets` and :func:`encode_serial_plan` need it."""
+    """Snapshot of one plan's errors, read once, except for the final atoms."""
 
     __slots__ = (
         "_handle",
@@ -367,6 +351,7 @@ class SerialDiagnosis(_NativeOwner):
         "_candidates",
         "_supports",
         "_unused_step_ids",
+        "_final_atoms",
         "__weakref__",
     )
 
@@ -377,6 +362,7 @@ class SerialDiagnosis(_NativeOwner):
     _candidates: tuple[GhostStep, ...]
     _supports: tuple[SerialSupport, ...]
     _unused_step_ids: tuple[int, ...]
+    _final_atoms: tuple[GroundAtom, ...] | None
 
     def __init__(self) -> None:
         raise TypeError("use SerialPlan.diagnose()")
@@ -389,6 +375,7 @@ class SerialDiagnosis(_NativeOwner):
             diagnosis = object.__new__(cls)
             diagnosis._handle = handle
             diagnosis._plan = plan
+            diagnosis._final_atoms = None
         except BaseException:
             free_handle(handle)
             raise
@@ -423,6 +410,20 @@ class SerialDiagnosis(_NativeOwner):
         return self._unused_step_ids
 
     @property
+    def final_atoms(self) -> tuple[GroundAtom, ...]:
+        """The fluent atoms that are true after the last step, read on first use."""
+
+        if self._final_atoms is None:
+            count = int(lib.mimir_serial_diagnosis_get_final_fact_count(self._handle))
+            if count < 0:
+                raise_last_error("could not read the final atoms")
+            self._final_atoms = tuple(
+                GroundAtom._from_handle(lib.mimir_serial_diagnosis_get_final_fact(self._handle, index), self._plan.problem)
+                for index in range(count)
+            )
+        return self._final_atoms
+
+    @property
     def is_solution(self) -> bool:
         return not self._errors
 
@@ -443,7 +444,6 @@ class SerialDiagnosis(_NativeOwner):
 
     def _read_errors(self) -> tuple[SerialError, ...]:
         problem = self._plan.problem
-        objects = problem.all_objects
         reader = _read_values(
             lib.mimir_serial_diagnosis_get_error_value_count,
             lib.mimir_serial_diagnosis_copy_errors,
@@ -453,22 +453,11 @@ class SerialDiagnosis(_NativeOwner):
         errors: list[SerialError] = []
         while reader.has_more():
             kind = SerialErrorKind(reader.next())
-            step_id = reader.next()
-            parameter_index = reader.next()
-            repair_count = reader.next()
-            repairs: list[SerialRepair] = []
-            for _ in range(repair_count):
-                repair_kind = SerialRepairKind(reader.next())
-                candidate_index = reader.next()
-                repair_parameter_index = reader.next()
-                object_index = reader.next()
-                value = None if object_index < 0 else objects[object_index]
-                repairs.append(SerialRepair(repair_kind, candidate_index, repair_parameter_index, value))
-            literal: GroundLiteral | None = None
-            if kind is not SerialErrorKind.UNBOUND_PARAMETER:
-                literal_handle = int(lib.mimir_serial_diagnosis_get_error_literal(self._handle, len(errors)))
-                literal = _literal(literal_handle, problem, "an error literal")
-            errors.append(SerialError(kind, step_id, literal, parameter_index, tuple(repairs)))
+            step_id, culprit_step_id = reader.take(2)
+            candidate_indices = reader.take_counted()
+            literal_handle = int(lib.mimir_serial_diagnosis_get_error_literal(self._handle, len(errors)))
+            literal = _literal(literal_handle, problem, "an error literal")
+            errors.append(SerialError(kind, step_id, literal, candidate_indices, culprit_step_id))
         reader.finish()
         return tuple(errors)
 
@@ -495,150 +484,38 @@ class SerialDiagnosis(_NativeOwner):
         return f"SerialDiagnosis(errors={len(self._errors)}, candidates={len(self._candidates)})"
 
 
-def serial_search(
-    problem: Problem,
-    max_expansions: int = 100_000,
-    timeout_seconds: float = 10.0,
-) -> SerialPlan | None:
-    """A solution found by searching over single repairs from the empty plan, or ``None`` when the budget runs out."""
+def _edit_values(problem: Problem, edits: SerialEdits) -> list[int]:
+    """The flat record the native side reads edits from."""
 
-    if not isinstance(problem, Problem):
-        raise TypeError("problem must be a Problem")
-    if type(max_expansions) is not int:
-        raise TypeError("max_expansions must be int")
-    if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
-        raise TypeError("timeout_seconds must be a number")
-    if max_expansions < 0 or timeout_seconds < 0:
-        raise ValueError("max_expansions and timeout_seconds must be nonnegative")
-    # Native errors are raised by the call itself, so a null handle means that no plan was found.
-    handle = int(lib.mimir_serial_search(problem._handle, max_expansions, float(timeout_seconds)))
-    if handle == 0:
-        return None
-    return SerialPlan._from_handle(handle, problem)
+    object_indices = {value: index for index, value in enumerate(problem.all_objects)}
+    schema_indices = {schema: index for index, schema in enumerate(problem.domain.actions)}
 
+    def binding(values: Sequence[Object]) -> list[int]:
+        return [len(values), *(object_indices[value] for value in values)]
 
-def serial_oracle_targets(
-    current: SerialPlan,
-    diagnosis: SerialDiagnosis,
-    reference: SerialPlan,
-) -> SerialOracleTargets:
-    """Repair choices and deletions that move ``current`` towards ``reference``."""
-
-    if not isinstance(current, SerialPlan) or not isinstance(reference, SerialPlan):
-        raise TypeError("current and reference must be SerialPlan values")
-    if not isinstance(diagnosis, SerialDiagnosis):
-        raise TypeError("diagnosis must be a SerialDiagnosis")
-    if diagnosis.plan is not current:
-        raise ValueError("diagnosis was computed from a different plan")
-    if reference.problem is not current.problem:
-        raise ValueError("the reference plan belongs to a different Problem")
-    handle = int(lib.mimir_serial_oracle_targets(current._handle, diagnosis._handle, reference._handle))
-    if handle == 0:
-        raise_last_error("could not compute oracle targets")
-    try:
-        reader = _read_values(
-            lib.mimir_serial_oracle_targets_get_value_count,
-            lib.mimir_serial_oracle_targets_copy_values,
-            handle,
-            "serial oracle targets",
-        )
-    finally:
-        free_handle(handle)
-    matched_step_count = reader.next()
-    error_count = reader.next()
-    delete_count = reader.next()
-    targets = SerialOracleTargets(reader.take(error_count), reader.take(delete_count), matched_step_count)
-    reader.finish()
-    return targets
-
-
-def encode_serial_plan(
-    context: EncodingContext,
-    plan: SerialPlan,
-    diagnosis: SerialDiagnosis,
-    suffix: str = "",
-) -> SerialEncodingLayout:
-    """Append one serial plan with its errors and repairs to ``context`` and return the allocated node ids."""
-
-    context_value = _require_context(context)
-    if not isinstance(plan, SerialPlan):
-        raise TypeError("plan must be a SerialPlan")
-    if plan.problem is not context_value.problem:
-        raise ValueError("plan belongs to a different Problem than the context")
-    if not isinstance(diagnosis, SerialDiagnosis):
-        raise TypeError("diagnosis must be a SerialDiagnosis")
-    if diagnosis.plan is not plan:
-        raise ValueError("diagnosis was computed from a different plan")
-    handle = int(
-        lib.mimir_serial_encode_plan(
-            context_value._handle,
-            plan._handle,
-            diagnosis._handle,
-            _validate_suffix(suffix),
-        )
-    )
-    if handle == 0:
-        raise_last_error("native serial-plan encoding failed")
-    try:
-        reader = _read_values(
-            lib.mimir_serial_layout_get_value_count,
-            lib.mimir_serial_layout_copy_values,
-            handle,
-            "serial layout",
-        )
-    finally:
-        free_handle(handle)
-    initial_node_id = reader.next()
-    goal_node_id = reader.next()
-    step_node_ids = reader.take_counted()
-    parameter_node_ids = tuple(reader.take_counted() for _ in step_node_ids)
-    candidate_node_ids = reader.take_counted()
-    candidate_parameter_node_ids = tuple(reader.take_counted() for _ in candidate_node_ids)
-    error_node_ids = reader.take_counted()
-    repair_node_ids = tuple(reader.take_counted() for _ in error_node_ids)
-    reader.finish()
-    return SerialEncodingLayout(
-        initial_node_id,
-        goal_node_id,
-        step_node_ids,
-        parameter_node_ids,
-        candidate_node_ids,
-        candidate_parameter_node_ids,
-        error_node_ids,
-        repair_node_ids,
-    )
-
-
-def serial_plan_relations(domain: Domain, suffix: str = "") -> list[tuple[str, int]]:
-    """Every ``(name, arity)`` that :func:`encode_serial_plan` may emit for ``domain``."""
-
-    if not isinstance(domain, Domain):
-        raise TypeError("domain must be a Domain")
-    text = take_string(lib.mimir_serial_relations(domain._handle, _validate_suffix(suffix)))
-    if text is None:
-        raise RuntimeError("native returned a null relation list")
-    relations: list[tuple[str, int]] = []
-    for line in text.split("\n"):
-        name, _, arity = line.rpartition(" ")
-        relations.append((name, int(arity)))
-    return relations
+    values = [len(edits.inserts)]
+    for insert in edits.inserts:
+        values += [insert.point, schema_indices[insert.schema], *binding(insert.binding)]
+    values += [len(edits.deleted_step_ids), *edits.deleted_step_ids]
+    values.append(len(edits.moves))
+    for move in edits.moves:
+        values += [move.step_id, move.point]
+    values.append(len(edits.rebinds))
+    for rebind in edits.rebinds:
+        values += [rebind.step_id, *binding(rebind.binding)]
+    return values
 
 
 __all__ = [
     "GhostStep",
     "SerialErrorKind",
-    "SerialRepairKind",
     "SerialStep",
-    "SerialRepair",
     "SerialError",
     "SerialSupport",
     "SerialDiagnosis",
-    "SerialEditResult",
-    "SerialOracleTargets",
+    "SerialInsert",
+    "SerialMove",
+    "SerialRebind",
+    "SerialEdits",
     "SerialPlan",
-    "serial_search",
-    "serial_oracle_targets",
-    "SerialEncodingLayout",
-    "encode_serial_plan",
-    "serial_plan_relations",
 ]

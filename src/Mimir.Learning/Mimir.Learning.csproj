@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mimir.Core\Mimir.Core.csproj" />
-    <ProjectReference Include="..\Mimir.PlanSpace\Mimir.PlanSpace.csproj" />
   </ItemGroup>
 
   <ItemGroup>

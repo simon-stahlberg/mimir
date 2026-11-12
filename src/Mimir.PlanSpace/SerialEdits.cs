@@ -2,114 +2,79 @@ using Mimir.Core.Schemas;
 
 namespace Mimir.PlanSpace;
 
-public sealed class SerialEditResult
-{
-    public int AppliedCount { get; }
-    public IReadOnlyList<int> DroppedErrorIndices { get; }
-    public IReadOnlyList<int> CreatedStepIds { get; }
-    public IReadOnlyList<int> DeletedStepIds { get; }
+public sealed record SerialInsert(int Point, ActionSchema Schema, IReadOnlyList<Constant> Binding);
 
-    internal SerialEditResult(int appliedCount, IReadOnlyList<int> droppedErrorIndices, IReadOnlyList<int> createdStepIds, IReadOnlyList<int> deletedStepIds)
-    {
-        AppliedCount = appliedCount;
-        DroppedErrorIndices = droppedErrorIndices;
-        CreatedStepIds = createdStepIds;
-        DeletedStepIds = deletedStepIds;
-    }
+public sealed record SerialMove(int StepId, int Point);
+
+public sealed record SerialRebind(int StepId, IReadOnlyList<Constant> Binding);
+
+// The edits of one round. All of them refer to the plan as it is before the round: a point is the insertion
+// point before the step at that index, and a step is named by its id.
+public sealed class SerialEdits
+{
+    public IReadOnlyList<SerialInsert> Inserts { get; init; } = [];
+    public IReadOnlyList<int> DeletedStepIds { get; init; } = [];
+    public IReadOnlyList<SerialMove> Moves { get; init; } = [];
+    public IReadOnlyList<SerialRebind> Rebinds { get; init; } = [];
 }
 
 public sealed partial class SerialPlan
 {
-    public SerialEditResult Apply(SerialDiagnosis diagnosis, IReadOnlyList<int> chosenRepairIndex, IReadOnlyList<int> stepIdsToDelete)
+    // The new plan is read off point by point in the old order: the steps that enter at the point, inserted
+    // ones in the order given and then moved ones in their old order, followed by the old step after the point
+    // unless it was deleted or moved away. A rebound step keeps its id and gets its new binding wherever it ends up.
+    public void Apply(SerialEdits edits)
     {
-        ArgumentNullException.ThrowIfNull(diagnosis);
-        ArgumentNullException.ThrowIfNull(chosenRepairIndex);
-        ArgumentNullException.ThrowIfNull(stepIdsToDelete);
-        if (!ReferenceEquals(diagnosis.Plan, this) || diagnosis.Version != _version)
-            throw new InvalidOperationException("The diagnosis was not computed from this plan in its current state.");
-        if (chosenRepairIndex.Count != diagnosis.Errors.Count)
-            throw new ArgumentException($"Expected {diagnosis.Errors.Count} repair choices, got {chosenRepairIndex.Count}.", nameof(chosenRepairIndex));
+        ArgumentNullException.ThrowIfNull(edits);
+        int stepCount = _steps.Count;
+        var indexById = new Dictionary<int, int>();
+        for (int index = 0; index < stepCount; index++) indexById.Add(_steps[index].Id, index);
 
-        var chosen = new SerialRepair[diagnosis.Errors.Count];
-        for (int i = 0; i < chosen.Length; i++)
+        int IndexOf(int stepId)
+            => indexById.TryGetValue(stepId, out int index) ? index : throw new ArgumentException($"Step {stepId} is not part of the plan.", nameof(edits));
+
+        int Checked(int point)
+            => point >= 0 && point <= stepCount ? point : throw new ArgumentOutOfRangeException(nameof(edits), point, $"The plan has {stepCount + 1} insertion points.");
+
+        SerialStep[] steps = _steps.ToArray();
+        var rebound = new HashSet<int>();
+        foreach (SerialRebind rebind in edits.Rebinds)
         {
-            IReadOnlyList<SerialRepair> repairs = diagnosis.Errors[i].Repairs;
-            if (chosenRepairIndex[i] < 0 || chosenRepairIndex[i] >= repairs.Count)
-                throw new ArgumentOutOfRangeException(nameof(chosenRepairIndex), chosenRepairIndex[i], $"Error {i} has {repairs.Count} repairs.");
-            chosen[i] = repairs[chosenRepairIndex[i]];
+            int index = IndexOf(rebind.StepId);
+            if (!rebound.Add(index)) throw new ArgumentException($"Step {rebind.StepId} is rebound twice.", nameof(edits));
+            steps[index] = steps[index].WithBinding(rebind.Binding, Problem);
         }
 
-        var deleted = new List<int>();
-        foreach (int id in stepIdsToDelete)
+        var entering = new List<SerialStep>[stepCount + 1];
+        for (int point = 0; point <= stepCount; point++) entering[point] = new List<SerialStep>();
+        int nextStepId = _nextStepId;
+        foreach (SerialInsert insert in edits.Inserts)
+            entering[Checked(insert.Point)].Add(new SerialStep(nextStepId++, insert.Schema, insert.Binding, Problem));
+
+        var leaves = new bool[stepCount];
+        foreach (int stepId in edits.DeletedStepIds)
         {
-            if (IndexOfStep(id) < 0) throw new ArgumentException($"Step {id} is not part of the plan.", nameof(stepIdsToDelete));
-            if (!deleted.Contains(id)) deleted.Add(id);
+            int index = IndexOf(stepId);
+            if (leaves[index]) throw new ArgumentException($"Step {stepId} is deleted twice.", nameof(edits));
+            leaves[index] = true;
         }
 
-        _steps.RemoveAll(step => deleted.Contains(step.Id));
-        int applied = deleted.Count;
-        var dropped = new List<int>();
-
-        // A repair was offered against the binding at diagnosis time, so one that follows another change
-        // to the same step is checked again, and a parameter is changed at most once per round.
-        var changedParameters = new HashSet<(int StepId, int ParameterIndex)>();
-        for (int i = 0; i < chosen.Length; i++)
+        foreach (SerialMove move in edits.Moves.OrderBy(move => IndexOf(move.StepId)))
         {
-            SerialRepair repair = chosen[i];
-            if (repair.Kind != SerialRepairKind.Bind && repair.Kind != SerialRepairKind.Rebind) continue;
-
-            int stepId = diagnosis.Errors[i].StepId;
-            int index = IndexOfStep(stepId);
-            if (index < 0 || changedParameters.Contains((stepId, repair.ParameterIndex)))
-            {
-                dropped.Add(i);
-                continue;
-            }
-
-            SerialStep step = _steps[index];
-            Constant?[] trial = step.Binding.ToArray();
-            trial[repair.ParameterIndex] = repair.Object;
-            if (!StaticFilter.Passes(Problem, step.Schema, trial))
-            {
-                dropped.Add(i);
-                continue;
-            }
-
-            _steps[index] = step.WithBinding(repair.ParameterIndex, repair.Object!, Problem);
-            changedParameters.Add((stepId, repair.ParameterIndex));
-            applied++;
+            int index = IndexOf(move.StepId);
+            if (leaves[index]) throw new ArgumentException($"Step {move.StepId} is moved twice or also deleted.", nameof(edits));
+            leaves[index] = true;
+            entering[Checked(move.Point)].Add(steps[index]);
         }
 
-        var created = new List<int>();
-        var insertedCandidates = new HashSet<(int FlaggedStepId, GhostStep Candidate)>();
-        for (int i = 0; i < chosen.Length; i++)
+        _steps.Clear();
+        for (int point = 0; point <= stepCount; point++)
         {
-            if (chosen[i].Kind != SerialRepairKind.Insert) continue;
-
-            SerialError error = diagnosis.Errors[i];
-            int position = error.Kind == SerialErrorKind.UnmetGoal ? _steps.Count : IndexOfStep(error.StepId);
-            if (position < 0)
-            {
-                dropped.Add(i);
-                continue;
-            }
-
-            applied++;
-            // Errors of one step that choose the same candidate share the step it creates.
-            GhostStep candidate = diagnosis.Candidates[chosen[i].CandidateIndex];
-            if (!insertedCandidates.Add((error.StepId, candidate))) continue;
-
-            var step = new SerialStep(_nextStepId++, candidate.Schema, candidate.CopyBinding(), error.StepId, error.Literal!, Problem);
-            _steps.Insert(position, step);
-            created.Add(step.Id);
+            _steps.AddRange(entering[point]);
+            if (point < stepCount && !leaves[point]) _steps.Add(steps[point]);
         }
 
-        Round++;
-        _version++;
+        _nextStepId = nextStepId;
         _diagnosis = null;
-        dropped.Sort();
-        return new SerialEditResult(applied, dropped, created, deleted);
     }
-
-    private int IndexOfStep(int id) => _steps.FindIndex(step => step.Id == id);
 }
